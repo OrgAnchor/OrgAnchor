@@ -38,6 +38,7 @@ Implemented so far:
 - Stage 1 test vectors.
 - Static adopting-organization `/verify` page generation.
 - Machine-readable `public/verify/organchor.json`.
+- Human-visible and machine-readable carrier receipt summaries from `organchor.lock.json`.
 - Signed claims/evidence manifests are copied into `/verify` and indexed when available.
 - `organchor.lock.json` publish receipt records.
 - IPFS verify-directory dry-run receipts.

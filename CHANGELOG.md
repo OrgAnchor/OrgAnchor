@@ -4,6 +4,12 @@ All notable changes to OrgAnchor will be documented in this file.
 
 OrgAnchor uses semantic versioning once the public package is released. Alpha releases may still change CLI flags, file schemas, and operator workflows before v1.
 
+## Unreleased
+
+### Added
+
+- `/verify` pages now summarize carrier receipts from `organchor.lock.json`, giving people and AI agents a visible view of IPFS, Arweave, OpenTimestamps, and other publication receipts without exposing the full local lockfile.
+
 ## 0.1.0-alpha.1 - 2026-05-14
 
 First public alpha candidate for the OrgAnchor identity-continuity toolchain.

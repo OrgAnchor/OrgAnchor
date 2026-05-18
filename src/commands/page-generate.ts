@@ -1,5 +1,5 @@
 import { copyFile, writeFile } from "node:fs/promises";
-import { basename, join } from "node:path";
+import { basename, isAbsolute, join } from "node:path";
 import { validateClaimsManifest, validateEvidenceManifest } from "../core/evidence-validate.ts";
 import { ensureDir, pathExists, writeJsonFile } from "../core/files.ts";
 import { sha256CanonicalJson } from "../core/hash.ts";
@@ -14,6 +14,7 @@ import { verifySignatureFile } from "../crypto/signature.ts";
 import { renderVerifyPage } from "../page/template.ts";
 import type { JsonValue } from "../core/json.ts";
 import type {
+  VerifyCarrierReceipt,
   VerifyLinkedArtifact,
   VerifyMigrationArtifact,
   VerifyProofCheck,
@@ -37,6 +38,8 @@ export async function pageGenerateCommand(options: Record<string, string | boole
   const migrationPaths = parseCsv(options.migration ?? options.migrations);
   const migrationSigPaths = parseCsv(options["migration-sig"] ?? options["migration-sigs"]);
   const out = typeof options.out === "string" ? options.out : "public/verify";
+  const lockfilePath = typeof options.lockfile === "string" ? options.lockfile : "organchor.lock.json";
+  const explicitLockfile = typeof options.lockfile === "string";
   const generatedAt = new Date().toISOString();
 
   const statement = validateOfficialStatement(await readJsonFile(statementPath));
@@ -102,6 +105,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     targetDir: join(out, "migrations"),
     currentAuthorityHash: authorityHash
   });
+  const carrierReceipts = await includeCarrierReceipts(lockfilePath, explicitLockfile);
   const rootContinuity = buildRootContinuity({
     authority,
     authorityHash,
@@ -115,7 +119,8 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     signatureHash,
     validSignatures: verification.valid_signatures,
     linkedArtifacts,
-    migrationArtifacts
+    migrationArtifacts,
+    carrierReceipts
   });
 
   const index: JsonValue = {
@@ -155,7 +160,8 @@ export async function pageGenerateCommand(options: Record<string, string | boole
         valid_signature_count: verification.valid_signatures.length,
         required_signature_count: verification.required_signatures,
         linked_artifact_count: linkedArtifacts.length,
-        migration_count: migrationArtifacts.length
+        migration_count: migrationArtifacts.length,
+        carrier_receipt_count: carrierReceipts.length
       }
     },
     root_continuity: {
@@ -201,6 +207,20 @@ export async function pageGenerateCommand(options: Record<string, string | boole
       historical_verification_rule: rootContinuity.historicalVerificationRule,
       future_statement_rule: rootContinuity.futureStatementRule
     },
+    carrier_receipts: {
+      status: carrierReceipts.length > 0 ? "PRESENT" : "NOT_INCLUDED",
+      source_lockfile: carrierReceipts.length > 0 ? basename(lockfilePath) : null,
+      receipts: carrierReceipts.map((receipt) => ({
+        artifact_hash: receipt.artifactHash,
+        artifact_kind: receipt.artifactKind,
+        artifact_path: receipt.artifactPath,
+        provider: receipt.provider,
+        action: receipt.action,
+        status: receipt.status,
+        recorded_at: receipt.recordedAt,
+        summary: receipt.summary
+      }))
+    },
     linked_artifacts: linkedIndex,
     migration_history: {
       status: migrationArtifacts.length > 0 ? "PASS" : "NOT_INCLUDED",
@@ -239,6 +259,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     signature,
     linkedArtifacts,
     migrationArtifacts,
+    carrierReceipts,
     rootContinuity,
     proofChecks
   });
@@ -287,6 +308,7 @@ function buildProofChecks(options: {
   validSignatures: string[];
   linkedArtifacts: VerifyLinkedArtifact[];
   migrationArtifacts: VerifyMigrationArtifact[];
+  carrierReceipts: VerifyCarrierReceipt[];
 }): VerifyProofCheck[] {
   const claimsIncluded = options.linkedArtifacts.some((artifact) => artifact.path === "claims/product-claims.json");
   const evidenceIncluded = options.linkedArtifacts.some((artifact) => artifact.path === "evidence/evidence-manifest.json");
@@ -331,8 +353,86 @@ function buildProofChecks(options: {
       detail: options.migrationArtifacts.length > 0 ?
         `${options.migrationArtifacts.length} migration statement(s) included and verified as a chain to the current root authority.` :
         "No migration history is included in this verify package yet."
+    },
+    {
+      label: "Carrier receipts",
+      status: options.carrierReceipts.length > 0 ? "PRESENT" : "NOT_INCLUDED",
+      detail: options.carrierReceipts.length > 0 ?
+        `${options.carrierReceipts.length} carrier receipt(s) summarized from organchor.lock.json.` :
+        "No IPFS, Arweave, OpenTimestamps, or other carrier receipts were included."
     }
   ];
+}
+
+async function includeCarrierReceipts(lockfilePath: string, explicit: boolean): Promise<VerifyCarrierReceipt[]> {
+  if (!(await pathExists(lockfilePath))) {
+    if (explicit) throw new Error(`Missing lockfile: ${lockfilePath}`);
+    return [];
+  }
+
+  const lockfile = asRecord(await readJsonFile(lockfilePath));
+  if (lockfile.type !== "OrgAnchorLockfile") throw new Error(`Invalid lockfile type: ${lockfilePath}`);
+  if (lockfile.version !== "1.0") throw new Error(`Unsupported lockfile version: ${lockfilePath}`);
+
+  const artifacts = asRecord(lockfile.artifacts);
+  const receipts: VerifyCarrierReceipt[] = [];
+  for (const [artifactHash, artifactValue] of Object.entries(artifacts)) {
+    const artifact = asRecord(artifactValue);
+    const artifactReceipts = Array.isArray(artifact.receipts) ? artifact.receipts : [];
+    for (const receiptValue of artifactReceipts) {
+      const receipt = asRecord(receiptValue);
+      receipts.push({
+        artifactHash,
+        artifactKind: stringValue(artifact.kind) || "unknown-artifact",
+        artifactPath: publicPathLabel(stringValue(artifact.path)),
+        provider: stringValue(receipt.provider) || "unknown-provider",
+        action: stringValue(receipt.action) || "unknown-action",
+        status: stringValue(receipt.status) || "UNKNOWN",
+        recordedAt: stringValue(receipt.recorded_at),
+        summary: summarizeReceipt(asRecord(receipt.receipt))
+      });
+    }
+  }
+
+  return receipts.sort((a, b) => b.recordedAt.localeCompare(a.recordedAt));
+}
+
+function summarizeReceipt(receipt: Record<string, JsonValue>): Record<string, JsonValue> {
+  const summary: Record<string, JsonValue> = {};
+  for (const key of [
+    "mode",
+    "cid",
+    "directory_hash",
+    "total_size",
+    "file_count",
+    "pin_status",
+    "requestid",
+    "manifest_hash",
+    "manifest_canonical_hash",
+    "manifest_file_hash",
+    "bitcoin_anchor_status",
+    "tx_id",
+    "gateway_url"
+  ]) {
+    const value = receipt[key];
+    if (isPublicSummaryValue(value)) summary[key] = value;
+  }
+
+  const files = receipt.files;
+  if (Array.isArray(files)) {
+    const txIds = files
+      .map((file) => stringValue(asRecord(file).tx_id))
+      .filter(Boolean)
+      .slice(0, 8);
+    if (txIds.length > 0) summary.tx_ids = txIds;
+    summary.receipt_file_count = files.length;
+  }
+
+  return summary;
+}
+
+function isPublicSummaryValue(value: JsonValue | undefined): value is JsonValue {
+  return value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean";
 }
 
 async function includeMigrations(options: {
@@ -456,4 +556,18 @@ function parseCsv(value: string | boolean | undefined): string[] {
     .split(",")
     .map((part) => part.trim())
     .filter(Boolean);
+}
+
+function asRecord(value: JsonValue | undefined): Record<string, JsonValue> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return value;
+}
+
+function stringValue(value: JsonValue | undefined): string {
+  return typeof value === "string" ? value : "";
+}
+
+function publicPathLabel(value: string): string {
+  if (!value) return "";
+  return isAbsolute(value) ? basename(value) : value;
 }

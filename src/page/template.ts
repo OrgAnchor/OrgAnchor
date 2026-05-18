@@ -1,4 +1,5 @@
 import type { OfficialEndpointsStatement, RootAuthority, SignatureFile } from "../types/artifacts.ts";
+import type { JsonValue } from "../core/json.ts";
 
 export interface VerifyLinkedArtifact {
   label: string;
@@ -58,6 +59,17 @@ export interface VerifyProofCheck {
   detail: string;
 }
 
+export interface VerifyCarrierReceipt {
+  artifactHash: string;
+  artifactKind: string;
+  artifactPath: string;
+  provider: string;
+  action: string;
+  status: string;
+  recordedAt: string;
+  summary: Record<string, JsonValue>;
+}
+
 export interface VerifyPageModel {
   generatedAt: string;
   statementHash: string;
@@ -72,6 +84,7 @@ export interface VerifyPageModel {
   signature: SignatureFile;
   linkedArtifacts: VerifyLinkedArtifact[];
   migrationArtifacts: VerifyMigrationArtifact[];
+  carrierReceipts: VerifyCarrierReceipt[];
   rootContinuity: VerifyRootContinuity;
   proofChecks: VerifyProofCheck[];
 }
@@ -144,6 +157,18 @@ export function renderVerifyPage(model: VerifyPageModel): string {
           <br><a href="./${escapeHtml(migration.signaturePath)}">${escapeHtml(migration.signaturePath)}</a>
           <br><code>${escapeHtml(migration.signatureHash)}</code>
         </li>`
+    )
+    .join("\n");
+  const carrierRows = model.carrierReceipts
+    .map(
+      (receipt) => `
+        <tr>
+          <th scope="row">${escapeHtml(receipt.provider)}</th>
+          <td><span class="badge badge-${escapeHtml(cssClass(receipt.status))}">${escapeHtml(receipt.status)}</span></td>
+          <td>${escapeHtml(receipt.action)}<br>${escapeHtml(receipt.artifactKind)}<br><code>${escapeHtml(receipt.artifactHash)}</code></td>
+          <td>${renderCarrierSummary(receipt.summary)}</td>
+          <td>${escapeHtml(receipt.recordedAt)}</td>
+        </tr>`
     )
     .join("\n");
   const continuity = model.rootContinuity;
@@ -302,6 +327,19 @@ export function renderVerifyPage(model: VerifyPageModel): string {
       color: var(--neutral);
     }
 
+    .badge-published,
+    .badge-verified {
+      color: var(--ok);
+    }
+
+    .badge-manual_package {
+      color: var(--warn);
+    }
+
+    .badge-dry_run {
+      color: var(--neutral);
+    }
+
     .status::before {
       content: "";
       width: 10px;
@@ -451,6 +489,25 @@ ${proofRows}
       </dl>
     </section>
 
+    <section aria-labelledby="carrier-receipts">
+      <h2 id="carrier-receipts">Carrier Receipts</h2>
+      <p>These receipts summarize where this verification package or related proof artifacts were mirrored, archived, pinned, or timestamped. Carriers help discovery and durability; they are not the identity root.</p>
+      ${carrierRows ? `<table>
+        <thead>
+          <tr>
+            <th scope="col">Provider</th>
+            <th scope="col">Status</th>
+            <th scope="col">Artifact</th>
+            <th scope="col">Receipt summary</th>
+            <th scope="col">Recorded at</th>
+          </tr>
+        </thead>
+        <tbody>
+${carrierRows}
+        </tbody>
+      </table>` : "<p>No carrier receipts were included in this verification package.</p>"}
+    </section>
+
     <section aria-labelledby="root-continuity">
       <h2 id="root-continuity">Root Continuity</h2>
       <p>The current root authority is the root that verifies new statements in this package. Older statements remain historical records and must be checked against the root authority that signed them.</p>
@@ -591,6 +648,25 @@ function stringValue(value: unknown): string {
 function formatShortDate(value: string): string {
   const match = /^(\d{4}-\d{2}-\d{2})T/.exec(value);
   return match?.[1] ?? value;
+}
+
+function renderCarrierSummary(summary: Record<string, JsonValue>): string {
+  const entries = Object.entries(summary);
+  if (entries.length === 0) return "No public summary fields recorded.";
+  return entries
+    .map(([key, value]) => `<div><strong>${escapeHtml(key)}:</strong> ${escapeHtml(formatJsonValue(value))}</div>`)
+    .join("");
+}
+
+function formatJsonValue(value: JsonValue): string {
+  if (value === null) return "null";
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return String(value);
+  if (Array.isArray(value)) return value.map(formatJsonValue).join(", ");
+  return JSON.stringify(value);
+}
+
+function cssClass(value: string): string {
+  return value.toLowerCase().replaceAll(/[^a-z0-9_-]/g, "_");
 }
 
 function escapeHtml(value: string): string {

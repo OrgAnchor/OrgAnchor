@@ -45,10 +45,11 @@ It is not a product roadmap. It is the final gate for packaging, documentation, 
 - [x] TypeScript typecheck passes.
 - [x] Full test suite passes.
 - [ ] Example artifacts verify.
-- [ ] Page generation includes visible proof trail.
-- [ ] Page generation includes `root_continuity`.
-- [ ] Migration tests verify old-root-to-new-root continuity.
-- [ ] Negative tests fail as expected.
+- [x] Page generation includes visible proof trail.
+- [x] Page generation includes `root_continuity`.
+- [x] Page generation includes carrier receipt summaries from `organchor.lock.json`.
+- [x] Migration tests verify old-root-to-new-root continuity.
+- [x] Negative tests fail as expected.
 
 ## Examples
 

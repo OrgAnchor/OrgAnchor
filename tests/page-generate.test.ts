@@ -46,6 +46,11 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(html, /Root authority hash/);
     assert.match(html, /Visible Proof Trail/);
     assert.match(html, /Signature threshold/);
+    assert.match(html, /Carrier Receipts/);
+    assert.match(html, /ipfs-pinata/);
+    assert.match(html, /bafyexampleverifycid/);
+    assert.match(html, /arweave-tx-statement/);
+    assert.doesNotMatch(html, /SHOULD_NOT_BE_INCLUDED/);
     assert.match(html, /Migration history/);
     assert.match(html, /Root Continuity/);
     assert.match(html, /Historical statements use the root authority that signed them/);
@@ -75,12 +80,29 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(index.visible_proof.summary.threshold_met, true);
     assert.equal(index.visible_proof.summary.valid_signature_count, 1);
     assert.equal(index.visible_proof.summary.required_signature_count, 1);
+    assert.equal(index.visible_proof.summary.carrier_receipt_count, 2);
     assert.equal(
       index.visible_proof.checks.some((check: { label: string; status: string }) =>
         check.label === "Signature threshold" && check.status === "PASS"
       ),
       true
     );
+    assert.equal(
+      index.visible_proof.checks.some((check: { label: string; status: string }) =>
+        check.label === "Carrier receipts" && check.status === "PRESENT"
+      ),
+      true
+    );
+    assert.equal(index.carrier_receipts.status, "PRESENT");
+    assert.equal(index.carrier_receipts.receipts.length, 2);
+    assert.equal(index.carrier_receipts.receipts[0].provider, "arweave");
+    assert.deepEqual(index.carrier_receipts.receipts[0].summary.tx_ids, [
+      "arweave-tx-statement",
+      "arweave-tx-signature"
+    ]);
+    assert.equal(index.carrier_receipts.receipts[1].provider, "ipfs-pinata");
+    assert.equal(index.carrier_receipts.receipts[1].summary.cid, "bafyexampleverifycid");
+    assert.equal(index.carrier_receipts.receipts[1].summary.token_source, undefined);
     assert.equal(
       index.visible_proof.checks.some((check: { label: string; status: string }) =>
         check.label === "Migration history" && check.status === "NOT_INCLUDED"
@@ -273,6 +295,68 @@ function createSignedStatement(workspace: string): void {
   run(workspace, ["evidence", "create", "--config", "organchor.config.json"]);
   run(workspace, ["evidence", "add", "--file", "README.md", "--id", "evidence-001"]);
   run(workspace, ["evidence", "sign", "--key", "keys/root-2026.private.json", "--authority", "root-authority.json"]);
+  writeFileSync(
+    join(workspace, "organchor.lock.json"),
+    JSON.stringify(
+      {
+        type: "OrgAnchorLockfile",
+        version: "1.0",
+        created_at: "2026-05-18T00:00:00.000Z",
+        updated_at: "2026-05-18T00:03:00.000Z",
+        artifacts: {
+          "sha256:1111111111111111111111111111111111111111111111111111111111111111": {
+            hash: "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            kind: "verify-directory",
+            path: "public/verify",
+            updated_at: "2026-05-18T00:01:00.000Z",
+            receipts: [
+              {
+                provider: "ipfs-pinata",
+                action: "mirror.ipfs.upload",
+                status: "PUBLISHED",
+                recorded_at: "2026-05-18T00:01:00.000Z",
+                receipt: {
+                  mode: "pinata-upload",
+                  cid: "bafyexampleverifycid",
+                  directory_hash: "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+                  total_size: 1234,
+                  file_count: 5,
+                  token_source: "env:SHOULD_NOT_BE_INCLUDED"
+                }
+              }
+            ]
+          },
+          "sha256:2222222222222222222222222222222222222222222222222222222222222222": {
+            hash: "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            kind: "arweave-manual-package",
+            path: "arweave-manifest.json",
+            updated_at: "2026-05-18T00:02:00.000Z",
+            receipts: [
+              {
+                provider: "arweave",
+                action: "archive.arweave.publish",
+                status: "MANUAL_PACKAGE",
+                recorded_at: "2026-05-18T00:02:00.000Z",
+                receipt: {
+                  mode: "manual-package",
+                  manifest_path: "arweave-manifest.json",
+                  manifest_hash: "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+                  package_dir: "arweave-package",
+                  files: [
+                    { path: "official-endpoints.json", tx_id: "arweave-tx-statement" },
+                    { path: "official-endpoints.json.sig", tx_id: "arweave-tx-signature" }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      null,
+      2
+    ),
+    "utf8"
+  );
 }
 
 function createMigratedStatement(workspace: string): void {

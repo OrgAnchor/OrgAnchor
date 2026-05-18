@@ -11,11 +11,14 @@ It is not a product roadmap. It is the final gate for packaging, documentation, 
 ## Release Identity
 
 - [x] Release version chosen: `0.1.0-alpha.1`.
-- [ ] Release tag chosen.
+- [x] Release tag chosen: `v0.1.0-alpha.1`.
 - [x] Release notes drafted in `CHANGELOG.md`.
-- [x] NPM package name checked against the public registry: `organchor` currently returns `404 Not Found`.
+- [x] NPM package name occupied on the public registry: `organchor@0.1.0-alpha.1`.
 - [x] `package.json` defaults publish tag to `alpha`.
-- [ ] NPM publisher account is created, protected with 2FA, and logged in locally.
+- [x] NPM publisher account is created, protected with 2FA, and logged in locally.
+- [x] NPM alpha package published: `organchor@0.1.0-alpha.1`.
+- [x] NPM alpha install verified with `organchor --help`.
+- [ ] NPM `latest` dist-tag cleanup is deferred; current registry state also exposes `0.1.0-alpha.1` as `latest`, so public docs must keep calling it alpha-only.
 - [x] Local Git repository is initialized.
 - [x] Source repository is pushed to a public GitHub repository: `https://github.com/OrgAnchor/OrgAnchor`.
 - [x] Release tag pushed: `v0.1.0-alpha.1`.
@@ -25,22 +28,22 @@ It is not a product roadmap. It is the final gate for packaging, documentation, 
 
 ## Build and Package
 
-- [ ] `npm run build` produces `dist/`.
-- [ ] `dist/cli.js` exists and keeps the Node shebang.
-- [ ] `package.json` `bin.organchor` points to `dist/cli.js`.
-- [ ] `npm pack --dry-run` contains `dist/`, schemas, templates, examples, curated user/operator docs, README, changelog, and license.
-- [ ] `npm pack --dry-run` excludes internal self-pilot, Cloudflare handoff, domain-candidate, and release-checklist notes.
-- [ ] `node --run package:smoke` passes as a local fallback when `npm pack --dry-run` is unavailable.
-- [ ] A clean temporary install can run `organchor --help`.
+- [x] `npm run build` produces `dist/`.
+- [x] `dist/cli.js` exists and keeps the Node shebang.
+- [x] `package.json` `bin.organchor` points to `dist/cli.js`.
+- [x] `npm pack --dry-run` contains `dist/`, schemas, templates, examples, curated user/operator docs, README, changelog, and license.
+- [x] `npm pack --dry-run` excludes internal self-pilot, Cloudflare handoff, domain-candidate, and release-checklist notes.
+- [x] `node --run package:smoke` passes as a local fallback when `npm pack --dry-run` is unavailable.
+- [x] A clean temporary install can run `organchor --help`.
 - [ ] A clean temporary install can run the Stage 1 flow.
-- [ ] `node --run install:smoke` passes against a simulated `node_modules/organchor` install and `.bin/organchor` shim.
-- [ ] `node --run release:smoke` passes against the built `dist/cli.js`.
+- [x] `node --run install:smoke` passes against a simulated `node_modules/organchor` install and `.bin/organchor` shim.
+- [x] `node --run release:smoke` passes against the built `dist/cli.js`.
 - [x] `npm publish --dry-run --tag alpha` passes before any real publish.
 
 ## Tests
 
-- [ ] TypeScript typecheck passes.
-- [ ] Full test suite passes.
+- [x] TypeScript typecheck passes.
+- [x] Full test suite passes.
 - [ ] Example artifacts verify.
 - [ ] Page generation includes visible proof trail.
 - [ ] Page generation includes `root_continuity`.

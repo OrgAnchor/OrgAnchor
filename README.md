@@ -64,6 +64,17 @@ Implemented so far:
 - NPM build configuration that packages the CLI from `dist/cli.js`.
 - Public complete minimal example artifacts under `examples/complete`.
 
+## Install Alpha
+
+The current public package is a prerelease:
+
+```bash
+npm install -g organchor@alpha
+organchor --help
+```
+
+Use the explicit `@alpha` tag until OrgAnchor has a stable release. The npm registry may also show this first prerelease under `latest`, but that is not a stability claim.
+
 ## CLI Quick Start
 
 Run from an empty working directory:

@@ -1,6 +1,6 @@
 # OrgAnchor Release Publishing Plan
 
-Status: Draft operator plan for `0.1.0-alpha.1`.
+Status: Operator record for the published `0.1.0-alpha.1` prerelease.
 
 Last checked: 2026-05-18.
 
@@ -24,23 +24,29 @@ npm pack --dry-run
 npm publish --dry-run --tag alpha
 ```
 
-Current dry-run status:
+Current publish status:
 
 ```text
 npm publish --dry-run --tag alpha: PASS
+npm publish --tag alpha: PASS
+npm install -g organchor@alpha and organchor --help: PASS
 ```
 
 ## Current External State
 
 As of 2026-05-18:
 
-- `npm view organchor` against the public npm registry returns `404 Not Found`.
-- The local machine is not logged into npm.
+- `npm view organchor` against the public npm registry returns `0.1.0-alpha.1`.
+- NPM package `organchor@0.1.0-alpha.1` is published.
+- NPM dist-tags currently show both `alpha` and `latest` pointing to `0.1.0-alpha.1`.
+- The `latest` dist-tag should not be advertised as stable; public install instructions should use `organchor@alpha` until a stable release exists.
+- Long-lived npm credentials are not stored in this repository.
 - `E:\CivX\OrgAnchor` is initialized as a local Git repository.
 - `main` is pushed to `https://github.com/OrgAnchor/OrgAnchor`.
 - `v0.1.0-alpha.1` is pushed to GitHub.
+- A GitHub prerelease draft exists for `v0.1.0-alpha.1`.
 
-This means the package appears available, and the public source repository is ready. The project is not ready for npm publication until a publishing identity is set up.
+This means the first public alpha is available. It is still not a v1 stable release.
 
 ## Recommended Release Order
 
@@ -157,7 +163,9 @@ npm install -g organchor@alpha
 organchor --help
 ```
 
-Do not move the package to `latest` until after at least one external pilot has run through the documented adoption path.
+Do not intentionally promote the package as stable until after at least one external pilot has run through the documented adoption path.
+
+Current caveat: npm's first published version is also visible under `latest`. Treat this as a registry tag hygiene issue, not a stability claim. Correct it later when npm write authentication allows dist-tag cleanup, or let the first stable release replace `latest` with a non-prerelease version.
 
 ## Trusted Publishing Later
 

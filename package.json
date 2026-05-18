@@ -4,6 +4,14 @@
   "description": "Signed organizational identity continuity toolchain.",
   "type": "module",
   "main": "dist/cli.js",
+  "homepage": "https://organchor.org/verify/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OrgAnchor/OrgAnchor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OrgAnchor/OrgAnchor/issues"
+  },
   "bin": {
     "organchor": "dist/cli.js"
   },

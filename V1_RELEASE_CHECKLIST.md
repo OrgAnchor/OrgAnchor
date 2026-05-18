@@ -17,7 +17,8 @@ It is not a product roadmap. It is the final gate for packaging, documentation, 
 - [x] `package.json` defaults publish tag to `alpha`.
 - [ ] NPM publisher account is created, protected with 2FA, and logged in locally.
 - [x] Local Git repository is initialized.
-- [ ] Source repository is pushed to a public GitHub repository.
+- [x] Source repository is pushed to a public GitHub repository: `https://github.com/OrgAnchor/OrgAnchor`.
+- [x] Release tag pushed: `v0.1.0-alpha.1`.
 - [ ] README status reflects the actual stage.
 - [ ] Public claims avoid "permanent identity", "absolute censorship resistance", "fully decentralized", and "legal identity replacement".
 - [ ] Apache-2.0 license file is present.

@@ -13,6 +13,7 @@ package name: organchor
 version: 0.1.0-alpha.1
 default publish tag: alpha
 public registry: https://registry.npmjs.org/
+source repository: https://github.com/OrgAnchor/OrgAnchor
 ```
 
 Local checks already expected before publishing:
@@ -36,15 +37,16 @@ As of 2026-05-18:
 - `npm view organchor` against the public npm registry returns `404 Not Found`.
 - The local machine is not logged into npm.
 - `E:\CivX\OrgAnchor` is initialized as a local Git repository.
-- No public GitHub remote is configured yet.
+- `main` is pushed to `https://github.com/OrgAnchor/OrgAnchor`.
+- `v0.1.0-alpha.1` is pushed to GitHub.
 
-This means the package appears available, but the project is not ready for public release until a publishing identity and public source repository are set up.
+This means the package appears available, and the public source repository is ready. The project is not ready for npm publication until a publishing identity is set up.
 
 ## Recommended Release Order
 
 ### 1. Create The Source Repository
 
-Create a public GitHub repository for OrgAnchor.
+Completed.
 
 Recommended repository name:
 
@@ -62,7 +64,7 @@ Avoid publishing first only to npm. For an open-source identity toolchain, sourc
 
 ### 2. Prepare Local Git
 
-Local Git has been initialized. After the public repository exists:
+Completed.
 
 ```bash
 git add .

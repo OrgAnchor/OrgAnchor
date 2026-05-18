@@ -1,0 +1,60 @@
+{
+  "name": "organchor",
+  "version": "0.1.0-alpha.1",
+  "description": "Signed organizational identity continuity toolchain.",
+  "type": "module",
+  "main": "dist/cli.js",
+  "bin": {
+    "organchor": "dist/cli.js"
+  },
+  "files": [
+    "dist/",
+    "src/schema/",
+    "templates/",
+    "examples/",
+    "README.md",
+    "CHANGELOG.md",
+    "ADOPTION_GUIDE.md",
+    "ADOPTION_MODEL.md",
+    "ARCHITECTURE.md",
+    "CRYPTO_POLICY.md",
+    "DOMAIN_HARDENING_GUIDE.md",
+    "EVIDENCE_MODEL.md",
+    "EVIDENCE_ONBOARDING_GUIDE.md",
+    "EXTERNAL_PILOT_RUNBOOK.md",
+    "MIGRATION_GUIDE.md",
+    "ORG_ONBOARDING_CHECKLIST.md",
+    "PRODUCT_SHAPE.md",
+    "PUBLISHING_GUIDE.md",
+    "ROOT_AUTHORITY_CUSTODY_GUIDE.md",
+    "TECHNICAL_DECISIONS.md",
+    "THREAT_MODEL.md",
+    "V1_ACCEPTANCE.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "check": "node --run typecheck && node --run test",
+    "install:smoke": "node scripts/install-smoke.mjs",
+    "package:smoke": "node scripts/package-smoke.mjs",
+    "prepack": "node --run build",
+    "release:check": "node --run check && node --run release:smoke && node --run package:smoke && node --run install:smoke",
+    "release:smoke": "node scripts/release-smoke.mjs",
+    "test": "node --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "start": "node src/cli.ts"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public",
+    "tag": "alpha"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "24.12.3",
+    "typescript": "5.9.3"
+  }
+}

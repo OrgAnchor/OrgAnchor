@@ -1,0 +1,25 @@
+{
+  "schema": "https://organchor.org/schemas/root-authority.v1.json",
+  "type": "OrgAnchorRootAuthority",
+  "version": "1.0",
+  "authority_id": "root-authority-vector-2026",
+  "created_at": "2026-05-09T00:00:00.000Z",
+  "threshold": {
+    "required": 1,
+    "total": 1
+  },
+  "keys": [
+    {
+      "id": "root-vector-2026",
+      "algorithm": "ed25519",
+      "public_key": {
+        "format": "jwk",
+        "jwk": {
+          "crv": "Ed25519",
+          "x": "ekMLr3Md4iBNuAMtbZVVs24hT9CKsZdqnt1Icsx-eQ0",
+          "kty": "OKP"
+        }
+      }
+    }
+  ]
+}

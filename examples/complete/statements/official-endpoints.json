@@ -1,0 +1,62 @@
+{
+  "schema": "https://organchor.org/schemas/official-endpoints.v1.json",
+  "type": "OfficialOrganizationEndpoints",
+  "version": "1.0",
+  "statement_id": "organchor-vector-2026-001",
+  "issued_at": "2026-05-09T00:00:00.000Z",
+  "organization": {
+    "name": "Vector Org",
+    "display_name": "Vector Organization",
+    "description": "Stage 1 verification vector"
+  },
+  "root_authority": {
+    "schema": "https://organchor.org/schemas/root-authority.v1.json",
+    "type": "OrgAnchorRootAuthority",
+    "version": "1.0",
+    "authority_id": "root-authority-vector-2026",
+    "created_at": "2026-05-09T00:00:00.000Z",
+    "threshold": {
+      "required": 1,
+      "total": 1
+    },
+    "keys": [
+      {
+        "id": "root-vector-2026",
+        "algorithm": "ed25519",
+        "public_key": {
+          "format": "jwk",
+          "jwk": {
+            "crv": "Ed25519",
+            "x": "ekMLr3Md4iBNuAMtbZVVs24hT9CKsZdqnt1Icsx-eQ0",
+            "kty": "OKP"
+          }
+        }
+      }
+    ]
+  },
+  "root_authority_hash": "sha256:12ce12a2a8e24a9c364aa56156cf182e1fd118463c63f59b1cf452a05f6effeb",
+  "official_endpoints": {
+    "website": "https://vector.example",
+    "verify": "https://vector.example/verify",
+    "security": "mailto:security@vector.example"
+  },
+  "archives": {
+    "arweave": [],
+    "ipfs": []
+  },
+  "disaster_recovery": {
+    "onion": null
+  },
+  "auxiliary_names": {
+    "ens": null
+  },
+  "domain_security": {
+    "primary_domain": "vector.example",
+    "dnssec": null,
+    "spf": null,
+    "dkim": null,
+    "dmarc": null,
+    "registry_lock": null
+  },
+  "notes": "Only statements satisfying the root authority rule should be trusted for future migrations."
+}

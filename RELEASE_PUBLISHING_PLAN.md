@@ -1,0 +1,180 @@
+# OrgAnchor Release Publishing Plan
+
+Status: Draft operator plan for `0.1.0-alpha.1`.
+
+Last checked: 2026-05-18.
+
+## Current Readiness
+
+The package is buildable and installable locally:
+
+```text
+package name: organchor
+version: 0.1.0-alpha.1
+default publish tag: alpha
+public registry: https://registry.npmjs.org/
+```
+
+Local checks already expected before publishing:
+
+```bash
+npm run release:check
+npm pack --dry-run
+npm publish --dry-run --tag alpha
+```
+
+Current dry-run status:
+
+```text
+npm publish --dry-run --tag alpha: PASS
+```
+
+## Current External State
+
+As of 2026-05-18:
+
+- `npm view organchor` against the public npm registry returns `404 Not Found`.
+- The local machine is not logged into npm.
+- `E:\CivX\OrgAnchor` is initialized as a local Git repository.
+- No public GitHub remote is configured yet.
+
+This means the package appears available, but the project is not ready for public release until a publishing identity and public source repository are set up.
+
+## Recommended Release Order
+
+### 1. Create The Source Repository
+
+Create a public GitHub repository for OrgAnchor.
+
+Recommended repository name:
+
+```text
+OrgAnchor
+```
+
+Recommended owner:
+
+```text
+OrgAnchor project account or organization
+```
+
+Avoid publishing first only to npm. For an open-source identity toolchain, source review matters.
+
+### 2. Prepare Local Git
+
+Local Git has been initialized. After the public repository exists:
+
+```bash
+git add .
+git commit -m "Prepare 0.1.0-alpha.1 release candidate"
+git branch -M main
+git remote add origin <GITHUB_REPOSITORY_URL>
+git push -u origin main
+```
+
+Before `git add .`, run a secret scan and review the files manually.
+
+The public repository should not include local operations notes such as:
+
+```text
+CLOUDFLARE_*.md
+SELF_PILOT_*.md
+DOMAIN_CANDIDATE_REPORT.md
+vps-entry-layout-*.svg
+```
+
+Those files are useful local project memory, but they are not part of the clean public source release.
+
+### 3. Create NPM Publisher Identity
+
+Use a project-controlled npm account rather than a personal account.
+
+Recommended account email:
+
+```text
+organchor.admin@proton.me
+```
+
+Security settings:
+
+- Enable 2FA.
+- Prefer `auth-and-writes` protection.
+- Save recovery codes offline.
+- Do not store npm password, recovery codes, or long-lived tokens in this repository.
+
+### 4. Log In Locally
+
+Use npm's normal login flow:
+
+```bash
+npm login --registry=https://registry.npmjs.org/
+npm whoami --registry=https://registry.npmjs.org/
+```
+
+This is a human approval gate. The operator should type credentials and 2FA directly.
+
+### 5. Dry-Run Publish
+
+Run:
+
+```bash
+npm publish --dry-run --tag alpha
+```
+
+Confirm:
+
+- Package name is `organchor`.
+- Version is `0.1.0-alpha.1`.
+- Tag is `alpha`, not `latest`.
+- File list excludes private keys, provider tokens, wallets, payment data, Cloudflare handoff docs, self-pilot operational notes, and local secret files.
+
+### 6. Tag Git And Draft GitHub Release
+
+After the source repository is pushed:
+
+```bash
+git tag v0.1.0-alpha.1
+git push origin v0.1.0-alpha.1
+```
+
+Draft a GitHub Release using `CHANGELOG.md` as the base release notes.
+
+### 7. Publish To NPM
+
+Only after the previous steps pass:
+
+```bash
+npm publish --tag alpha
+```
+
+After publishing, verify:
+
+```bash
+npm view organchor dist-tags version
+npm install -g organchor@alpha
+organchor --help
+```
+
+Do not move the package to `latest` until after at least one external pilot has run through the documented adoption path.
+
+## Trusted Publishing Later
+
+NPM trusted publishing can publish from GitHub Actions or GitLab CI/CD using OIDC and can generate provenance attestations. This is a better long-term path, but it requires the public repository and CI workflow first.
+
+For `0.1.0-alpha.1`, manual `alpha` publishing is acceptable if the npm account uses 2FA and the package is dry-run checked first.
+
+## Human Approval Gates
+
+Pause for explicit human approval before:
+
+- Creating an npm account.
+- Entering npm credentials or 2FA.
+- Creating a public GitHub repository under a permanent owner.
+- Running real `npm publish`.
+- Moving any version to the `latest` dist-tag.
+
+## References
+
+- NPM publish command: https://docs.npmjs.com/cli/v11/commands/npm-publish/
+- NPM two-factor authentication: https://docs.npmjs.com/about-two-factor-authentication/
+- NPM trusted publishing: https://docs.npmjs.com/trusted-publishers/

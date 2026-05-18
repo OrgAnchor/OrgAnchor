@@ -1,0 +1,29 @@
+{
+  "type": "OrgAnchorConfig",
+  "version": "1.0",
+  "organization": {
+    "name": "OrgAnchor",
+    "display_name": "OrgAnchor",
+    "description": "OrgAnchor helps organizations publish signed official endpoint statements so their online presence remains verifiable across domain, platform, and infrastructure changes."
+  },
+  "official_endpoints": {
+    "website": "https://<domain>",
+    "verify": "https://<domain>/verify/",
+    "security": "mailto:security@<domain>",
+    "github": "https://github.com/<to-be-confirmed>"
+  },
+  "domain_security": {
+    "primary_domain": "<domain>",
+    "dnssec": null,
+    "spf": null,
+    "dkim": null,
+    "dmarc": null,
+    "registry_lock": null
+  },
+  "auxiliary_names": {
+    "ens": null
+  },
+  "disaster_recovery": {
+    "onion": null
+  }
+}

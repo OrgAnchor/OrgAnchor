@@ -1,0 +1,83 @@
+import { basename } from "node:path";
+import { hashFile } from "../core/artifacts.ts";
+import { readJsonFile } from "../core/json.ts";
+import { writeJsonFile } from "../core/files.ts";
+import { validateEvidenceManifest } from "../core/evidence-validate.ts";
+import { asObject } from "../core/validate.ts";
+import type { JsonValue } from "../core/json.ts";
+
+export async function evidenceAddCommand(options: Record<string, string | boolean>): Promise<void> {
+  const file = requireOption(options.file, "--file is required");
+  const manifestPath = typeof options.manifest === "string" ? options.manifest : "evidence/evidence-manifest.json";
+  const manifest = asObject(validateEvidenceManifest(await readJsonFile(manifestPath)), "evidence manifest");
+  const artifact = await hashFile(file);
+  const id = typeof options.id === "string" ? options.id : "evidence-001";
+  const title = typeof options.title === "string" ? options.title : basename(file);
+  const issuerType = typeof options["issuer-type"] === "string" ? options["issuer-type"] : "first_party";
+  const mediaType = typeof options["media-type"] === "string" ? options["media-type"] : mediaTypeFromPath(file);
+  const relation = typeof options.relation === "string" ? options.relation : "supports_claim";
+  const claimId = typeof options["claim-id"] === "string" ? options["claim-id"] : "claim-001";
+  const uri = typeof options.uri === "string" ? options.uri : null;
+  const locationType = typeof options["location-type"] === "string" ? options["location-type"] : inferLocationType(uri);
+
+  const evidence = Array.isArray(manifest.evidence) ? manifest.evidence : [];
+  if (evidence.some((item) => asObject(item, "evidence item").id === id)) {
+    throw new Error(`Evidence id "${id}" already exists`);
+  }
+  const locations: JsonValue[] = [
+    {
+      type: "local",
+      uri: file
+    }
+  ];
+  if (uri) {
+    locations.push({
+      type: locationType,
+      uri
+    });
+  }
+
+  evidence.push({
+    id,
+    title,
+    issuer_type: issuerType,
+    media_type: mediaType,
+    size: artifact.size,
+    hash: artifact.hash,
+    locations,
+    relations: [
+      {
+        type: relation,
+        claim_id: claimId
+      }
+    ]
+  });
+  manifest.evidence = evidence as JsonValue[];
+  await writeJsonFile(manifestPath, manifest);
+  console.log(`Added evidence item: ${id}`);
+  console.log(`Evidence hash: ${artifact.hash}`);
+  if (uri) console.log(`Evidence location: ${locationType} ${uri}`);
+}
+
+function requireOption(value: string | boolean | undefined, message: string): string {
+  if (typeof value !== "string" || value.length === 0) throw new Error(message);
+  return value;
+}
+
+function mediaTypeFromPath(path: string): string {
+  const lower = path.toLowerCase();
+  if (lower.endsWith(".md")) return "text/markdown";
+  if (lower.endsWith(".json")) return "application/json";
+  if (lower.endsWith(".txt")) return "text/plain";
+  if (lower.endsWith(".html")) return "text/html";
+  if (lower.endsWith(".pdf")) return "application/pdf";
+  return "application/octet-stream";
+}
+
+function inferLocationType(uri: string | null): string {
+  if (!uri) return "external";
+  if (uri.startsWith("ipfs://")) return "ipfs";
+  if (uri.startsWith("ar://") || uri.startsWith("arweave://")) return "arweave";
+  if (uri.startsWith("https://") || uri.startsWith("http://")) return "https";
+  return "external";
+}

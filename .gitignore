@@ -1,0 +1,25 @@
+# OrgAnchor private key material
+keys/*.private.json
+*.private.json
+
+# Node / build output
+node_modules/
+dist/
+coverage/
+
+# Local environment files
+.env
+.env.*
+cloudflare-credentials.local.json
+*.token
+*.secret
+
+# Local project operations notes
+CLOUDFLARE_*.md
+SELF_PILOT_*.md
+DOMAIN_CANDIDATE_REPORT.md
+vps-entry-layout-*.svg
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

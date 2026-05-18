@@ -1,0 +1,28 @@
+{
+  "type": "OrgAnchorConfig",
+  "version": "1.0",
+  "organization": {
+    "name": "Vector Org",
+    "display_name": "Vector Organization",
+    "description": "Unsafe public verification example"
+  },
+  "official_endpoints": {
+    "website": "https://vector.example",
+    "verify": "https://vector.example/verify",
+    "security": "mailto:security@vector.example"
+  },
+  "domain_security": {
+    "primary_domain": "vector.example",
+    "dnssec": null,
+    "spf": null,
+    "dkim": null,
+    "dmarc": null,
+    "registry_lock": null
+  },
+  "auxiliary_names": {
+    "ens": null
+  },
+  "disaster_recovery": {
+    "onion": null
+  }
+}

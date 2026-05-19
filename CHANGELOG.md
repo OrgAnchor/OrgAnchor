@@ -11,6 +11,7 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - `/verify` pages now summarize carrier receipts from `organchor.lock.json`, giving people and AI agents a visible view of IPFS, Arweave, OpenTimestamps, and other publication receipts without exposing the full local lockfile.
 - Arweave manual packages can now include the public verify index and HTML page with `--verify-index` and `--verify-page`.
 - Release integrity protocol documenting release-state alignment, carrier receipt self-reference limits, and release blockers.
+- Project purpose, adoption principles, and showcase policy documents clarify OrgAnchor's value stance and misuse boundaries.
 
 ## 0.1.0-alpha.1 - 2026-05-14
 

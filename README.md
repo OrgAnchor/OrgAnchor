@@ -19,6 +19,14 @@ It is designed around:
 
 The identity root is the adopting organization's root authority, not OrgAnchor's website, a domain, a platform account, IPFS, Arweave, ENS, or a lockfile.
 
+## Purpose and Values
+
+OrgAnchor is not only a tool for keeping an organizational name alive. Its purpose is to help long-term, evidence-bearing organizations make their public identity, claims, evidence, corrections, and migrations easier to verify over time.
+
+OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
+
+See `PURPOSE_AND_VALUES.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance.
+
 ## Current Status
 
 Stage 5 implementation is in release-hygiene mode. The core v1 surface now includes root authority records, signed endpoint statements, claims/evidence manifests, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, and `/verify` root continuity publication.
@@ -183,6 +191,8 @@ The adoption model is recorded in `ADOPTION_MODEL.md`.
 
 Operator-facing adoption drafts:
 
+- `PURPOSE_AND_VALUES.md`
+- `ADOPTION_PRINCIPLES.md`
 - `ADOPTION_GUIDE.md`
 - `EXTERNAL_PILOT_RUNBOOK.md`
 - `ORG_ONBOARDING_CHECKLIST.md`
@@ -190,6 +200,7 @@ Operator-facing adoption drafts:
 - `MIGRATION_GUIDE.md`
 - `PUBLISHING_GUIDE.md`
 - `RELEASE_INTEGRITY.md`
+- `SHOWCASE_POLICY.md`
 - `DOMAIN_HARDENING_GUIDE.md`
 - `EVIDENCE_ONBOARDING_GUIDE.md`
 

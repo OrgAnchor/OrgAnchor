@@ -16,6 +16,8 @@ Everything else helps publish, mirror, archive, or discover those statements.
 
 OrgAnchor does not replace domains, legal registration, government records, or normal security operations. It reduces single-carrier identity risk and makes endpoint changes more verifiable.
 
+Adoption should also reflect the project values in `PURPOSE_AND_VALUES.md`: OrgAnchor is strongest when used by organizations willing to publish evidence, accept long-term scrutiny, and correct history visibly instead of treating signed continuity as a trust badge.
+
 ## Who Should Adopt First
 
 Good early adopters:
@@ -25,6 +27,7 @@ Good early adopters:
 - Public-interest organizations.
 - Small companies with technical operators.
 - Organizations that already publish public technical artifacts.
+- Organizations willing to publish structured claims, evidence, limitations, and corrections.
 
 Wait or use a pilot-only setup if:
 
@@ -32,6 +35,7 @@ Wait or use a pilot-only setup if:
 - The organization has unresolved internal authority disputes.
 - The organization needs legal identity verification as the primary goal.
 - The organization wants a hosted account system rather than a local-first toolchain.
+- The organization mainly wants credibility theater without public evidence.
 
 ## Adoption Levels
 

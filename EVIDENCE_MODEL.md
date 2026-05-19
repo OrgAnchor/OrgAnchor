@@ -37,6 +37,23 @@ The customer case is representative.
 
 OrgAnchor makes evidence verifiable and inspectable. It does not replace testing, auditing, regulation, expert judgment, or real-world validation.
 
+## Value Orientation
+
+The evidence layer carries an important part of OrgAnchor's spirit.
+
+OrgAnchor should shift attention away from spectacle and toward inspectable claims:
+
+```text
+What is being claimed?
+Who published the claim?
+What evidence is offered?
+What are the limits of the evidence?
+What changed or was corrected later?
+Can people and AI agents verify the artifact trail?
+```
+
+This does not turn OrgAnchor into a moral judge. It does make the tool more useful for organizations that want to be accountable over time instead of merely polished in the moment.
+
 ## Relationship to Existing OrgAnchor Artifacts
 
 ```text

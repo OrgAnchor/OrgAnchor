@@ -53,12 +53,15 @@ try {
   assertContains(copiedFiles, "README.md");
   assertContains(copiedFiles, "CHANGELOG.md");
   assertContains(copiedFiles, "ARCHITECTURE.md");
+  assertContains(copiedFiles, "PURPOSE_AND_VALUES.md");
+  assertContains(copiedFiles, "ADOPTION_PRINCIPLES.md");
   assertContains(copiedFiles, "ADOPTION_GUIDE.md");
   assertContains(copiedFiles, "EXTERNAL_PILOT_RUNBOOK.md");
   assertContains(copiedFiles, "ROOT_AUTHORITY_CUSTODY_GUIDE.md");
   assertContains(copiedFiles, "MIGRATION_GUIDE.md");
   assertContains(copiedFiles, "PUBLISHING_GUIDE.md");
   assertContains(copiedFiles, "RELEASE_INTEGRITY.md");
+  assertContains(copiedFiles, "SHOWCASE_POLICY.md");
   assertContains(copiedFiles, "EVIDENCE_ONBOARDING_GUIDE.md");
   assertContains(copiedFiles, join("dist", "cli.js"));
   assertContains(copiedFiles, join("examples", "complete", "root-authority.json"));

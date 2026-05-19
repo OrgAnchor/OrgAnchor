@@ -58,6 +58,7 @@ try {
   assertContains(copiedFiles, "ROOT_AUTHORITY_CUSTODY_GUIDE.md");
   assertContains(copiedFiles, "MIGRATION_GUIDE.md");
   assertContains(copiedFiles, "PUBLISHING_GUIDE.md");
+  assertContains(copiedFiles, "RELEASE_INTEGRITY.md");
   assertContains(copiedFiles, "EVIDENCE_ONBOARDING_GUIDE.md");
   assertContains(copiedFiles, join("dist", "cli.js"));
   assertContains(copiedFiles, join("examples", "complete", "root-authority.json"));

@@ -24,6 +24,8 @@ npm pack --dry-run
 npm publish --dry-run --tag alpha
 ```
 
+For `0.1.0-alpha.2` and later, run the release integrity gate in `RELEASE_INTEGRITY.md` before npm publishing or GitHub release creation. The gate keeps source state, public `/verify` state, carrier receipts, package metadata, and release notes aligned.
+
 Current publish status:
 
 ```text
@@ -134,6 +136,7 @@ Confirm:
 - Package name is `organchor`.
 - Version is `0.1.0-alpha.1`.
 - Tag is `alpha`, not `latest`.
+- `RELEASE_INTEGRITY.md` has been reviewed for the target release.
 - File list excludes private keys, provider tokens, wallets, payment data, Cloudflare handoff docs, self-pilot operational notes, and local secret files.
 
 ### 6. Tag Git And Draft GitHub Release

@@ -189,10 +189,13 @@ Operator-facing adoption drafts:
 - `ROOT_AUTHORITY_CUSTODY_GUIDE.md`
 - `MIGRATION_GUIDE.md`
 - `PUBLISHING_GUIDE.md`
+- `RELEASE_INTEGRITY.md`
 - `DOMAIN_HARDENING_GUIDE.md`
 - `EVIDENCE_ONBOARDING_GUIDE.md`
 
 ## Release Hygiene
+
+Before publishing or promoting a release, use `RELEASE_INTEGRITY.md` as the consistency gate for source state, public `/verify` state, carrier receipts, package metadata, and release notes.
 
 Useful local checks:
 

@@ -127,6 +127,7 @@ Not good for:
 
 Before publishing:
 
+- [ ] Release integrity gate reviewed in `RELEASE_INTEGRITY.md`.
 - [ ] Statement verifies locally.
 - [ ] Signature threshold is satisfied.
 - [ ] `public/verify` generated.
@@ -325,6 +326,8 @@ Receipts must not include:
 - API tokens.
 - Passwords.
 - Payment data.
+
+Receipts can legitimately describe a previous content-addressed verify package. A current page cannot contain its own final CID, Arweave transaction id, or deployment hash without changing itself. Record that self-reference gap plainly instead of regenerating forever.
 
 ## Re-Publishing After Changes
 

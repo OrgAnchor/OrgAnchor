@@ -102,6 +102,16 @@ Review matches manually because documentation may mention these words safely.
 - [ ] Domain audit status is recorded.
 - [ ] Known gaps are explicit.
 
+## Release Integrity Gate
+
+- [x] Release integrity protocol is recorded in `RELEASE_INTEGRITY.md`.
+- [ ] Release state matrix is completed for the target release or milestone.
+- [ ] Source commit, package version, Git tag, npm dist-tag, and release notes describe the same state.
+- [ ] Public `/verify` artifact hashes are recorded.
+- [ ] IPFS, Arweave, OpenTimestamps, and website receipts are recorded or explicitly marked out of scope.
+- [ ] Content-addressing self-reference gaps are documented instead of hidden.
+- [ ] Carrier receipts are treated as receipts, not as identity roots.
+
 ## Release Decision
 
 Do not publish v1 if:

@@ -412,7 +412,13 @@ function summarizeReceipt(receipt: Record<string, JsonValue>): Record<string, Js
     "manifest_file_hash",
     "bitcoin_anchor_status",
     "tx_id",
-    "gateway_url"
+    "gateway_url",
+    "public_dir_hash",
+    "deployment_url",
+    "pages_url",
+    "pages_subdomain",
+    "custom_domain",
+    "domain_status"
   ]) {
     const value = receipt[key];
     if (isPublicSummaryValue(value)) summary[key] = value;

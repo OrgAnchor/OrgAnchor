@@ -426,6 +426,23 @@ function summarizeReceipt(receipt: Record<string, JsonValue>): Record<string, Js
 
   const files = receipt.files;
   if (Array.isArray(files)) {
+    const roleTxKeys: Record<string, string> = {
+      statement: "statement_tx_id",
+      signature: "signature_tx_id",
+      "root-authority": "root_authority_tx_id",
+      claims: "claims_tx_id",
+      evidence: "evidence_tx_id",
+      "verify-index": "verify_index_tx_id",
+      "verify-page": "verify_page_tx_id"
+    };
+    for (const file of files) {
+      const record = asRecord(file);
+      const role = stringValue(record.role);
+      const txId = stringValue(record.tx_id);
+      const key = roleTxKeys[role];
+      if (key && txId) summary[key] = txId;
+    }
+
     const txIds = files
       .map((file) => stringValue(asRecord(file).tx_id))
       .filter(Boolean)

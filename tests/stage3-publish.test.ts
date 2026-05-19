@@ -268,7 +268,11 @@ test("Arweave manual package records receipt and verifies packaged artifact hash
       "--sig",
       "statements/official-endpoints.json.sig",
       "--authority",
-      "root-authority.json"
+      "root-authority.json",
+      "--verify-index",
+      "public/verify/organchor.json",
+      "--verify-page",
+      "public/verify/index.html"
     ]);
     assert.match(publish.stdout, /Arweave manual package created/);
     const manifestHash = matchHash(publish.stdout, /Manifest canonical hash: (sha256:[0-9a-f]{64})/);
@@ -278,12 +282,17 @@ test("Arweave manual package records receipt and verifies packaged artifact hash
     assert.equal(existsSync(join(workspace, "arweave-package", "official-endpoints.json")), true);
     assert.equal(existsSync(join(workspace, "arweave-package", "official-endpoints.json.sig")), true);
     assert.equal(existsSync(join(workspace, "arweave-package", "root-authority.json")), true);
+    assert.equal(existsSync(join(workspace, "arweave-package", "verify", "organchor.json")), true);
+    assert.equal(existsSync(join(workspace, "arweave-package", "verify", "index.html")), true);
 
     const manifest = JSON.parse(readFileSync(join(workspace, "arweave-manifest.json"), "utf8"));
     assert.equal(manifest.type, "OrgAnchorArweaveManifest");
     assert.equal(manifest.mode, "manual-package");
     const statement = manifest.artifacts.find((artifact: { role: string }) => artifact.role === "statement");
     assert.ok(statement);
+    const roles = manifest.artifacts.map((artifact: { role: string }) => artifact.role);
+    assert.equal(roles.includes("verify-index"), true);
+    assert.equal(roles.includes("verify-page"), true);
 
     const lockfile = JSON.parse(readFileSync(join(workspace, "organchor.lock.json"), "utf8"));
     assert.equal(lockfile.artifacts[manifestHash].kind, "arweave-manual-package");

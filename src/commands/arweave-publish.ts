@@ -22,6 +22,8 @@ export async function arweavePublishCommand(options: Record<string, string | boo
   const claimsSigPath = typeof options["claims-sig"] === "string" ? options["claims-sig"] : `${claimsPath}.sig`;
   const evidencePath = typeof options.evidence === "string" ? options.evidence : "evidence/evidence-manifest.json";
   const evidenceSigPath = typeof options["evidence-sig"] === "string" ? options["evidence-sig"] : `${evidencePath}.sig`;
+  const verifyIndexPath = typeof options["verify-index"] === "string" ? options["verify-index"] : "public/verify/organchor.json";
+  const verifyPagePath = typeof options["verify-page"] === "string" ? options["verify-page"] : "public/verify/index.html";
   const now = new Date();
 
   const authority = validateRootAuthority(await readJsonFile(authorityPath));
@@ -65,6 +67,20 @@ export async function arweavePublishCommand(options: Record<string, string | boo
     authority,
     validate: validateEvidenceManifest,
     explicit: typeof options.evidence === "string" || typeof options["evidence-sig"] === "string"
+  });
+  await includeOptionalPublicArtifact(inputs, {
+    label: "Verify index",
+    role: "verify-index",
+    source: verifyIndexPath,
+    target: "verify/organchor.json",
+    explicit: typeof options["verify-index"] === "string"
+  });
+  await includeOptionalPublicArtifact(inputs, {
+    label: "Verify page",
+    role: "verify-page",
+    source: verifyPagePath,
+    target: "verify/index.html",
+    explicit: typeof options["verify-page"] === "string"
   });
 
   const artifacts: JsonValue[] = [];
@@ -166,4 +182,25 @@ async function includeOptionalSignedManifest(
     { role: options.role, source: options.source, target: options.target },
     { role: `${options.role}-signature`, source: options.signatureSource, target: options.signatureTarget }
   );
+}
+
+async function includeOptionalPublicArtifact(
+  inputs: Array<{ role: string; source: string; target: string }>,
+  options: {
+    label: string;
+    role: string;
+    source: string;
+    target: string;
+    explicit: boolean;
+  }
+): Promise<void> {
+  const exists = await pathExists(options.source);
+  if (!exists && !options.explicit) return;
+  if (!exists) throw new Error(`Missing ${options.label}: ${options.source}`);
+
+  inputs.push({
+    role: options.role,
+    source: options.source,
+    target: options.target
+  });
 }

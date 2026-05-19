@@ -98,8 +98,12 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(index.carrier_receipts.receipts[0].provider, "arweave");
     assert.deepEqual(index.carrier_receipts.receipts[0].summary.tx_ids, [
       "arweave-tx-statement",
-      "arweave-tx-signature"
+      "arweave-tx-signature",
+      "arweave-tx-verify-index",
+      "arweave-tx-verify-page"
     ]);
+    assert.equal(index.carrier_receipts.receipts[0].summary.verify_index_tx_id, "arweave-tx-verify-index");
+    assert.equal(index.carrier_receipts.receipts[0].summary.verify_page_tx_id, "arweave-tx-verify-page");
     assert.equal(index.carrier_receipts.receipts[1].provider, "ipfs-pinata");
     assert.equal(index.carrier_receipts.receipts[1].summary.cid, "bafyexampleverifycid");
     assert.equal(index.carrier_receipts.receipts[1].summary.token_source, undefined);
@@ -343,8 +347,10 @@ function createSignedStatement(workspace: string): void {
                   manifest_hash: "sha256:2222222222222222222222222222222222222222222222222222222222222222",
                   package_dir: "arweave-package",
                   files: [
-                    { path: "official-endpoints.json", tx_id: "arweave-tx-statement" },
-                    { path: "official-endpoints.json.sig", tx_id: "arweave-tx-signature" }
+                    { role: "statement", path: "official-endpoints.json", tx_id: "arweave-tx-statement" },
+                    { role: "signature", path: "official-endpoints.json.sig", tx_id: "arweave-tx-signature" },
+                    { role: "verify-index", path: "verify/organchor.json", tx_id: "arweave-tx-verify-index" },
+                    { role: "verify-page", path: "verify/index.html", tx_id: "arweave-tx-verify-page" }
                   ]
                 }
               }

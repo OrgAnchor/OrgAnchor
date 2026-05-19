@@ -93,7 +93,7 @@ organchor mirror ipfs publish --dir public/verify --api http://127.0.0.1:5001
 organchor mirror ipfs pin --cid <CID> --service-url <PINNING_SERVICE_API> --token-env ORGANCHOR_IPFS_PINNING_JWT
 organchor mirror ipfs upload --provider pinata --dir public/verify --token-env ORGANCHOR_IPFS_PINNING_JWT
 organchor mirror ipfs verify --cid <CID> --api http://127.0.0.1:5001 --expected-hash sha256:<HASH>
-organchor archive arweave publish --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json
+organchor archive arweave publish --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --verify-index public/verify/organchor.json --verify-page public/verify/index.html
 organchor archive arweave estimate --dir arweave-package
 organchor archive arweave upload --provider turbo --dir arweave-package --wallet-file arweave-wallet.local.json
 organchor archive arweave verify --tx <ARWEAVE_TX_ID> --gateway https://arweave.net --expected-hash sha256:<HASH>

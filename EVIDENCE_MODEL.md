@@ -54,6 +54,8 @@ Can people and AI agents verify the artifact trail?
 
 This does not turn OrgAnchor into a moral judge. It does make the tool more useful for organizations that want to be accountable over time instead of merely polished in the moment.
 
+See `VALUE_CONTINUITY_MODEL.md` for the broader claim/evidence/outcome/correction chain and the `organchor value audit` command.
+
 ## Relationship to Existing OrgAnchor Artifacts
 
 ```text

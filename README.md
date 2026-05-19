@@ -48,6 +48,7 @@ Implemented so far:
 - Machine-readable `public/verify/organchor.json`.
 - Human-visible and machine-readable carrier receipt summaries from `organchor.lock.json`.
 - Signed claims/evidence manifests are copied into `/verify` and indexed when available.
+- Value continuity audit reports for claim support levels, evidence quality, stale evidence, and unsupported claims.
 - `organchor.lock.json` publish receipt records.
 - IPFS verify-directory dry-run receipts.
 - Local Kubo IPFS publish support with CID receipts.
@@ -114,6 +115,7 @@ organchor evidence create --config organchor.config.json
 organchor evidence add --file README.md
 organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.mp4 --location-type https
 organchor evidence sign --key keys/root-2026.private.json --authority root-authority.json
+organchor value audit --claims claims/product-claims.json --evidence evidence/evidence-manifest.json --check-files
 organchor domain audit example.com
 organchor onion verify <v3-address.onion>
 organchor onion config generate --domain <v3-address.onion>
@@ -201,6 +203,7 @@ Operator-facing adoption drafts:
 - `PUBLISHING_GUIDE.md`
 - `RELEASE_INTEGRITY.md`
 - `SHOWCASE_POLICY.md`
+- `VALUE_CONTINUITY_MODEL.md`
 - `DOMAIN_HARDENING_GUIDE.md`
 - `EVIDENCE_ONBOARDING_GUIDE.md`
 

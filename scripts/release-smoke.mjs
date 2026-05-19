@@ -135,6 +135,21 @@ try {
     "--evidence",
     "evidence/evidence-manifest.json"
   ]);
+  const valueAudit = organchor(workspace, [
+    "value",
+    "audit",
+    "--claims",
+    "claims/product-claims.json",
+    "--evidence",
+    "evidence/evidence-manifest.json",
+    "--check-files"
+  ]);
+  if (!valueAudit.stdout.includes("Value continuity audit complete")) {
+    throw new Error(`value audit did not complete:\n${valueAudit.stdout}`);
+  }
+  const valueReport = JSON.parse(readFileSync(join(workspace, "reports", "value-continuity-report.json"), "utf8"));
+  assertEqual(valueReport.summary.FAIL, 0, "value audit FAIL count");
+  assertEqual(valueReport.summary.evidence_linked_claims, 1, "value audit evidence_linked_claims");
 
   organchor(workspace, [
     "page",

@@ -62,6 +62,7 @@ try {
   assertContains(copiedFiles, "PUBLISHING_GUIDE.md");
   assertContains(copiedFiles, "RELEASE_INTEGRITY.md");
   assertContains(copiedFiles, "SHOWCASE_POLICY.md");
+  assertContains(copiedFiles, "VALUE_CONTINUITY_MODEL.md");
   assertContains(copiedFiles, "EVIDENCE_ONBOARDING_GUIDE.md");
   assertContains(copiedFiles, join("dist", "cli.js"));
   assertContains(copiedFiles, join("examples", "complete", "root-authority.json"));

@@ -41,6 +41,7 @@ import { statementCreateCommand } from "./commands/statement-create.ts";
 import { statementHashCommand } from "./commands/statement-hash.ts";
 import { statementSignCommand } from "./commands/statement-sign.ts";
 import { statementVerifyCommand } from "./commands/statement-verify.ts";
+import { valueAuditCommand } from "./commands/value-audit.ts";
 
 type CommandHandler = (options: Record<string, string | boolean>) => Promise<void>;
 
@@ -85,7 +86,8 @@ const commands: Record<string, CommandHandler> = {
   "statement create": statementCreateCommand,
   "statement hash": statementHashCommand,
   "statement sign": statementSignCommand,
-  "statement verify": statementVerifyCommand
+  "statement verify": statementVerifyCommand,
+  "value audit": valueAuditCommand
 };
 
 async function main(argv: string[]): Promise<void> {
@@ -202,6 +204,7 @@ Usage:
   organchor statement sign --key keys/root-2026.private.json --authority root-authority.json --in statements/official-endpoints.json
   organchor statement sign --key keys/root-b.private.json --authority root-authority.json --in statements/official-endpoints.json --append
   organchor statement verify --authority root-authority.json --expected-authority-hash sha256:... --in statements/official-endpoints.json --sig statements/official-endpoints.json.sig
+  organchor value audit --claims claims/product-claims.json --evidence evidence/evidence-manifest.json --check-files
 `);
 }
 

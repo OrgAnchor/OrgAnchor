@@ -19,6 +19,13 @@ export async function evidenceAddCommand(options: Record<string, string | boolea
   const claimId = typeof options["claim-id"] === "string" ? options["claim-id"] : "claim-001";
   const uri = typeof options.uri === "string" ? options.uri : null;
   const locationType = typeof options["location-type"] === "string" ? options["location-type"] : inferLocationType(uri);
+  const reproducibility = typeof options.reproducibility === "string" ? options.reproducibility : "not_specified";
+  const evidenceStrength = typeof options["evidence-strength"] === "string" ? options["evidence-strength"] : "not_assessed";
+  const validUntil = typeof options["valid-until"] === "string" ? options["valid-until"] : null;
+  if (validUntil && Number.isNaN(Date.parse(validUntil))) {
+    throw new Error("--valid-until must be a valid date or ISO timestamp");
+  }
+  const limitations = parseList(options.limitations);
 
   const evidence = Array.isArray(manifest.evidence) ? manifest.evidence : [];
   if (evidence.some((item) => asObject(item, "evidence item").id === id)) {
@@ -37,11 +44,13 @@ export async function evidenceAddCommand(options: Record<string, string | boolea
     });
   }
 
-  evidence.push({
+  const item: Record<string, JsonValue> = {
     id,
     title,
     issuer_type: issuerType,
     media_type: mediaType,
+    reproducibility,
+    evidence_strength: evidenceStrength,
     size: artifact.size,
     hash: artifact.hash,
     locations,
@@ -51,7 +60,10 @@ export async function evidenceAddCommand(options: Record<string, string | boolea
         claim_id: claimId
       }
     ]
-  });
+  };
+  if (validUntil) item.valid_until = new Date(validUntil).toISOString();
+  if (limitations.length > 0) item.limitations = limitations;
+  evidence.push(item);
   manifest.evidence = evidence as JsonValue[];
   await writeJsonFile(manifestPath, manifest);
   console.log(`Added evidence item: ${id}`);
@@ -80,4 +92,12 @@ function inferLocationType(uri: string | null): string {
   if (uri.startsWith("ar://") || uri.startsWith("arweave://")) return "arweave";
   if (uri.startsWith("https://") || uri.startsWith("http://")) return "https";
   return "external";
+}
+
+function parseList(value: string | boolean | undefined): string[] {
+  if (typeof value !== "string" || value.length === 0) return [];
+  return value
+    .split(";")
+    .map((item) => item.trim())
+    .filter(Boolean);
 }

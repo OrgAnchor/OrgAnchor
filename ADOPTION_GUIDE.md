@@ -311,6 +311,7 @@ Claims and evidence should include:
 - Evidence issuer type.
 - Artifact hash.
 - Artifact location.
+- Value audit status for unsupported, first-party-only, stale, or non-reproducible evidence.
 
 This is the AI-agent-friendly layer.
 

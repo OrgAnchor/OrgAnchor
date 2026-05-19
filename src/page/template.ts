@@ -70,6 +70,15 @@ export interface VerifyCarrierReceipt {
   summary: Record<string, JsonValue>;
 }
 
+export interface VerifyValueContinuity {
+  status: "PRESENT" | "NOT_INCLUDED";
+  path?: string;
+  hash?: string;
+  markdownPath?: string;
+  markdownHash?: string;
+  summary: Record<string, JsonValue>;
+}
+
 export interface VerifyPageModel {
   generatedAt: string;
   statementHash: string;
@@ -86,6 +95,7 @@ export interface VerifyPageModel {
   migrationArtifacts: VerifyMigrationArtifact[];
   carrierReceipts: VerifyCarrierReceipt[];
   rootContinuity: VerifyRootContinuity;
+  valueContinuity: VerifyValueContinuity;
   proofChecks: VerifyProofCheck[];
 }
 
@@ -171,6 +181,16 @@ export function renderVerifyPage(model: VerifyPageModel): string {
         </tr>`
     )
     .join("\n");
+  const valueContinuity = model.valueContinuity;
+  const valueSummary = valueContinuity.summary;
+  const valueReportLinks = valueContinuity.status === "PRESENT" ?
+    `<dl>
+        <dt>Report JSON</dt>
+        <dd><a href="./${escapeHtml(valueContinuity.path ?? "")}">${escapeHtml(valueContinuity.path ?? "")}</a><br><code>${escapeHtml(valueContinuity.hash ?? "")}</code></dd>
+        ${valueContinuity.markdownPath ? `<dt>Report Markdown</dt>
+        <dd><a href="./${escapeHtml(valueContinuity.markdownPath)}">${escapeHtml(valueContinuity.markdownPath)}</a>${valueContinuity.markdownHash ? `<br><code>${escapeHtml(valueContinuity.markdownHash)}</code>` : ""}</dd>` : ""}
+      </dl>` :
+    "<p>No value continuity report was included in this verification package.</p>";
   const continuity = model.rootContinuity;
   const continuityStatusText = continuity.status === "MIGRATION_CHAIN_VERIFIED" ?
     `${continuity.migrationCount} migration statement(s) verified as a chain to the current root authority.` :
@@ -489,6 +509,46 @@ ${proofRows}
       </dl>
     </section>
 
+    <section aria-labelledby="value-continuity">
+      <h2 id="value-continuity">Value Continuity</h2>
+      <p>This section summarizes the organization's signed claims and evidence trail. It does not prove the organization is good or that every claim is true; it helps people and AI agents see how much support the claims currently have.</p>
+      <div class="summary" aria-label="Value continuity summary">
+        <div class="summary-item">
+          <span class="summary-label">Status</span>
+          <span class="summary-value">${escapeHtml(valueContinuity.status)}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Claims</span>
+          <span class="summary-value">${escapeHtml(formatMetric(valueSummary.total_claims))}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Evidence-linked</span>
+          <span class="summary-value">${escapeHtml(formatMetric(valueSummary.evidence_linked_claims))}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Third-party</span>
+          <span class="summary-value">${escapeHtml(formatMetric(valueSummary.third_party_claims))}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Reproducible</span>
+          <span class="summary-value">${escapeHtml(formatMetric(valueSummary.reproducible_claims))}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Unsupported</span>
+          <span class="summary-value">${escapeHtml(formatMetric(valueSummary.unsupported_claims))}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Stale evidence</span>
+          <span class="summary-value">${escapeHtml(formatMetric(valueSummary.stale_evidence_items))}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Audit warnings</span>
+          <span class="summary-value">${escapeHtml(formatMetric(valueSummary.WARN))}</span>
+        </div>
+      </div>
+      ${valueReportLinks}
+    </section>
+
     <section aria-labelledby="carrier-receipts">
       <h2 id="carrier-receipts">Carrier Receipts</h2>
       <p>These receipts summarize where this verification package or related proof artifacts were mirrored, archived, pinned, or timestamped. Carriers help discovery and durability; they are not the identity root.</p>
@@ -663,6 +723,12 @@ function formatJsonValue(value: JsonValue): string {
   if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return String(value);
   if (Array.isArray(value)) return value.map(formatJsonValue).join(", ");
   return JSON.stringify(value);
+}
+
+function formatMetric(value: JsonValue | undefined): string {
+  if (typeof value === "number") return String(value);
+  if (typeof value === "string") return value;
+  return "-";
 }
 
 function cssClass(value: string): string {

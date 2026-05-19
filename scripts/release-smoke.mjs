@@ -187,12 +187,15 @@ try {
   const index = JSON.parse(readFileSync(join(workspace, "public", "verify", "organchor.json"), "utf8"));
   assertEqual(index.visible_proof?.status, "PASS", "visible_proof.status");
   assertEqual(index.root_continuity?.status, "CURRENT_ROOT_ONLY", "root_continuity.status");
+  assertEqual(index.value_continuity?.status, "PRESENT", "value_continuity.status");
+  assertEqual(index.value_continuity?.summary?.evidence_linked_claims, 1, "value_continuity.summary.evidence_linked_claims");
   assertEqual(index.root_authority?.threshold?.required, 2, "root_authority.threshold.required");
   assertEqual(index.root_authority?.threshold?.total, 3, "root_authority.threshold.total");
 
   const html = readFileSync(join(workspace, "public", "verify", "index.html"), "utf8");
   if (!html.includes("Visible Proof Trail")) throw new Error("verify page missing Visible Proof Trail");
   if (!html.includes("Root Continuity")) throw new Error("verify page missing Root Continuity");
+  if (!html.includes("Value Continuity")) throw new Error("verify page missing Value Continuity");
   if (html.includes("OrgAnchorPrivateKey")) throw new Error("verify page appears to contain private key material");
 
   organchor(workspace, ["mirror", "ipfs", "publish", "--dir", "public/verify", "--dry-run"]);

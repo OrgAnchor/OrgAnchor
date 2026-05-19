@@ -18,14 +18,18 @@ import type {
   VerifyLinkedArtifact,
   VerifyMigrationArtifact,
   VerifyProofCheck,
-  VerifyRootContinuity
+  VerifyRootContinuity,
+  VerifyValueContinuity
 } from "../page/template.ts";
 import type { RootAuthority } from "../types/artifacts.ts";
+import { hashFile } from "../core/artifacts.ts";
 
 const STATEMENT_FILE = "official-endpoints.json";
 const SIGNATURE_FILE = "official-endpoints.json.sig";
 const AUTHORITY_FILE = "root-authority.json";
 const INDEX_FILE = "organchor.json";
+const VALUE_REPORT_FILE = "reports/value-continuity-report.json";
+const VALUE_REPORT_MARKDOWN_FILE = "reports/value-continuity-report.md";
 
 export async function pageGenerateCommand(options: Record<string, string | boolean>): Promise<void> {
   const statementPath = typeof options.statement === "string" ? options.statement : "statements/official-endpoints.json";
@@ -40,6 +44,10 @@ export async function pageGenerateCommand(options: Record<string, string | boole
   const out = typeof options.out === "string" ? options.out : "public/verify";
   const lockfilePath = typeof options.lockfile === "string" ? options.lockfile : "organchor.lock.json";
   const explicitLockfile = typeof options.lockfile === "string";
+  const valueReportPath = typeof options["value-report"] === "string" ? options["value-report"] : VALUE_REPORT_FILE;
+  const valueReportMarkdownPath =
+    typeof options["value-report-md"] === "string" ? options["value-report-md"] : VALUE_REPORT_MARKDOWN_FILE;
+  const explicitValueReport = typeof options["value-report"] === "string" || typeof options["value-report-md"] === "string";
   const generatedAt = new Date().toISOString();
 
   const statement = validateOfficialStatement(await readJsonFile(statementPath));
@@ -106,6 +114,12 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     currentAuthorityHash: authorityHash
   });
   const carrierReceipts = await includeCarrierReceipts(lockfilePath, explicitLockfile);
+  const valueContinuity = await includeValueContinuityReport({
+    reportPath: valueReportPath,
+    markdownPath: valueReportMarkdownPath,
+    targetDir: join(out, "reports"),
+    explicit: explicitValueReport
+  });
   const rootContinuity = buildRootContinuity({
     authority,
     authorityHash,
@@ -120,7 +134,8 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     validSignatures: verification.valid_signatures,
     linkedArtifacts,
     migrationArtifacts,
-    carrierReceipts
+    carrierReceipts,
+    valueContinuity
   });
 
   const index: JsonValue = {
@@ -221,6 +236,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
         summary: receipt.summary
       }))
     },
+    value_continuity: valueContinuityIndex(valueContinuity),
     linked_artifacts: linkedIndex,
     migration_history: {
       status: migrationArtifacts.length > 0 ? "PASS" : "NOT_INCLUDED",
@@ -261,6 +277,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     migrationArtifacts,
     carrierReceipts,
     rootContinuity,
+    valueContinuity,
     proofChecks
   });
   await writeFile(join(out, "index.html"), html, "utf8");
@@ -309,6 +326,7 @@ function buildProofChecks(options: {
   linkedArtifacts: VerifyLinkedArtifact[];
   migrationArtifacts: VerifyMigrationArtifact[];
   carrierReceipts: VerifyCarrierReceipt[];
+  valueContinuity: VerifyValueContinuity;
 }): VerifyProofCheck[] {
   const claimsIncluded = options.linkedArtifacts.some((artifact) => artifact.path === "claims/product-claims.json");
   const evidenceIncluded = options.linkedArtifacts.some((artifact) => artifact.path === "evidence/evidence-manifest.json");
@@ -348,6 +366,13 @@ function buildProofChecks(options: {
         "No signed evidence manifest was included in this verify package."
     },
     {
+      label: "Value continuity report",
+      status: options.valueContinuity.status === "PRESENT" ? "PRESENT" : "NOT_INCLUDED",
+      detail: options.valueContinuity.status === "PRESENT" ?
+        `Value audit report included with ${metric(options.valueContinuity.summary.total_claims)} claim(s), ${metric(options.valueContinuity.summary.evidence_linked_claims)} evidence-linked claim(s), and ${metric(options.valueContinuity.summary.unsupported_claims)} unsupported claim(s).` :
+        "No value continuity report was included in this verify package."
+    },
+    {
       label: "Migration history",
       status: options.migrationArtifacts.length > 0 ? "PASS" : "NOT_INCLUDED",
       detail: options.migrationArtifacts.length > 0 ?
@@ -362,6 +387,101 @@ function buildProofChecks(options: {
         "No IPFS, Arweave, OpenTimestamps, or other carrier receipts were included."
     }
   ];
+}
+
+async function includeValueContinuityReport(options: {
+  reportPath: string;
+  markdownPath: string;
+  targetDir: string;
+  explicit: boolean;
+}): Promise<VerifyValueContinuity> {
+  const reportExists = await pathExists(options.reportPath);
+  if (!reportExists) {
+    if (options.explicit) throw new Error(`Missing value continuity report: ${options.reportPath}`);
+    return {
+      status: "NOT_INCLUDED",
+      summary: emptyValueContinuitySummary()
+    };
+  }
+
+  const report = asRecord(await readJsonFile(options.reportPath));
+  if (report.type !== "OrgAnchorValueContinuityReport") {
+    throw new Error(`Invalid value continuity report type: ${options.reportPath}`);
+  }
+  if (report.version !== "1.0") {
+    throw new Error(`Unsupported value continuity report version: ${options.reportPath}`);
+  }
+
+  await ensureDir(options.targetDir);
+  await copyFile(options.reportPath, join(options.targetDir, "value-continuity-report.json"));
+  const markdownExists = await pathExists(options.markdownPath);
+  let markdownHash: string | undefined;
+  if (markdownExists) {
+    await copyFile(options.markdownPath, join(options.targetDir, "value-continuity-report.md"));
+    markdownHash = (await hashFile(options.markdownPath)).hash;
+  } else if (typeof options.markdownPath === "string" && options.explicit && options.markdownPath !== VALUE_REPORT_MARKDOWN_FILE) {
+    throw new Error(`Missing value continuity markdown report: ${options.markdownPath}`);
+  }
+
+  const result: VerifyValueContinuity = {
+    status: "PRESENT",
+    path: VALUE_REPORT_FILE,
+    hash: sha256CanonicalJson(report),
+    summary: publicValueContinuitySummary(asRecord(report.summary))
+  };
+  if (markdownExists) {
+    result.markdownPath = VALUE_REPORT_MARKDOWN_FILE;
+    if (markdownHash) result.markdownHash = markdownHash;
+  }
+  return result;
+}
+
+function emptyValueContinuitySummary(): Record<string, JsonValue> {
+  return {
+    total_claims: 0,
+    self_asserted_claims: 0,
+    evidence_linked_claims: 0,
+    third_party_claims: 0,
+    reproducible_claims: 0,
+    time_proven_claims: 0,
+    unsupported_claims: 0,
+    total_evidence_items: 0,
+    external_evidence_items: 0,
+    first_party_evidence_items: 0,
+    stale_evidence_items: 0,
+    PASS: 0,
+    WARN: 0,
+    FAIL: 0,
+    MANUAL_CHECK_REQUIRED: 0
+  };
+}
+
+function publicValueContinuitySummary(summary: Record<string, JsonValue>): Record<string, JsonValue> {
+  const output = emptyValueContinuitySummary();
+  for (const key of Object.keys(output)) {
+    const value = summary[key];
+    if (typeof value === "number" || typeof value === "string" || typeof value === "boolean" || value === null) {
+      output[key] = value;
+    }
+  }
+  return output;
+}
+
+function valueContinuityIndex(valueContinuity: VerifyValueContinuity): JsonValue {
+  if (valueContinuity.status !== "PRESENT") {
+    return {
+      status: "NOT_INCLUDED",
+      summary: valueContinuity.summary
+    };
+  }
+  return {
+    status: valueContinuity.status,
+    path: valueContinuity.path ?? VALUE_REPORT_FILE,
+    hash: valueContinuity.hash ?? "",
+    markdown_path: valueContinuity.markdownPath ?? null,
+    markdown_hash: valueContinuity.markdownHash ?? null,
+    summary: valueContinuity.summary
+  };
 }
 
 async function includeCarrierReceipts(lockfilePath: string, explicit: boolean): Promise<VerifyCarrierReceipt[]> {
@@ -456,6 +576,10 @@ function summarizeReceipt(receipt: Record<string, JsonValue>): Record<string, Js
 
 function isPublicSummaryValue(value: JsonValue | undefined): value is JsonValue {
   return value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean";
+}
+
+function metric(value: JsonValue | undefined): string {
+  return typeof value === "number" || typeof value === "string" ? String(value) : "0";
 }
 
 async function includeMigrations(options: {

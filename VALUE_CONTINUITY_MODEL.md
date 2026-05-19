@@ -254,6 +254,16 @@ The audit reports:
 
 It uses `PASS`, `WARN`, `FAIL`, and `MANUAL_CHECK_REQUIRED`.
 
+When `reports/value-continuity-report.json` exists, `organchor page generate` includes it in the public verify package by default:
+
+```text
+public/verify/reports/value-continuity-report.json
+public/verify/reports/value-continuity-report.md
+public/verify/organchor.json -> value_continuity
+```
+
+This makes value continuity visible to people and machine-readable for AI agents without turning the report into a trust root.
+
 ## What The Audit Must Not Do
 
 The audit must not say:

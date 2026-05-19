@@ -38,6 +38,8 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(existsSync(join(verifyDir, "claims", "product-claims.json.sig")), true);
     assert.equal(existsSync(join(verifyDir, "evidence", "evidence-manifest.json")), true);
     assert.equal(existsSync(join(verifyDir, "evidence", "evidence-manifest.json.sig")), true);
+    assert.equal(existsSync(join(verifyDir, "reports", "value-continuity-report.json")), true);
+    assert.equal(existsSync(join(verifyDir, "reports", "value-continuity-report.md")), true);
 
     const html = readFileSync(join(verifyDir, "index.html"), "utf8");
     assert.match(html, /Example Organization/);
@@ -57,6 +59,9 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(html, /Claims And Evidence/);
     assert.match(html, /Product Claims Manifest/);
     assert.match(html, /Evidence Manifest/);
+    assert.match(html, /Value Continuity/);
+    assert.match(html, /Evidence-linked/);
+    assert.match(html, /Unsupported/);
     assert.match(html, /CLI Verification/);
     assert.match(html, /display does not by itself prove identity/);
 
@@ -81,9 +86,22 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(index.visible_proof.summary.valid_signature_count, 1);
     assert.equal(index.visible_proof.summary.required_signature_count, 1);
     assert.equal(index.visible_proof.summary.carrier_receipt_count, 2);
+    assert.equal(index.value_continuity.status, "PRESENT");
+    assert.equal(index.value_continuity.path, "reports/value-continuity-report.json");
+    assert.match(index.value_continuity.hash, /^sha256:[0-9a-f]{64}$/);
+    assert.equal(index.value_continuity.markdown_path, "reports/value-continuity-report.md");
+    assert.equal(index.value_continuity.summary.total_claims, 1);
+    assert.equal(index.value_continuity.summary.evidence_linked_claims, 1);
+    assert.equal(index.value_continuity.summary.unsupported_claims, 0);
     assert.equal(
       index.visible_proof.checks.some((check: { label: string; status: string }) =>
         check.label === "Signature threshold" && check.status === "PASS"
+      ),
+      true
+    );
+    assert.equal(
+      index.visible_proof.checks.some((check: { label: string; status: string }) =>
+        check.label === "Value continuity report" && check.status === "PRESENT"
       ),
       true
     );
@@ -299,6 +317,7 @@ function createSignedStatement(workspace: string): void {
   run(workspace, ["evidence", "create", "--config", "organchor.config.json"]);
   run(workspace, ["evidence", "add", "--file", "README.md", "--id", "evidence-001"]);
   run(workspace, ["evidence", "sign", "--key", "keys/root-2026.private.json", "--authority", "root-authority.json"]);
+  run(workspace, ["value", "audit", "--claims", "claims/product-claims.json", "--evidence", "evidence/evidence-manifest.json", "--check-files"]);
   writeFileSync(
     join(workspace, "organchor.lock.json"),
     JSON.stringify(

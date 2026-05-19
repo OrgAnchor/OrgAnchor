@@ -198,6 +198,7 @@ Usage:
   organchor ens plan example.eth --statement statements/official-endpoints.json
   organchor ens verify example.eth --statement statements/official-endpoints.json --records ens-records.json
   organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json
+  organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --value-report reports/value-continuity-report.json
   organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --migration statements/migration-2027-001.json --migration-sig statements/migration-2027-001.json.sig
   organchor statement create --config organchor.config.json --authority root-authority.json
   organchor statement hash --in statements/official-endpoints.json

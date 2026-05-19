@@ -70,6 +70,7 @@ Implemented so far:
 - Operator migration guidance for root authority evolution.
 - `/verify` migration-history publication for migration chains that end at the current root authority.
 - `/verify` root continuity publication through human-visible page content and machine-readable `root_continuity`.
+- `/verify` value continuity publication through human-visible page content and machine-readable `value_continuity`.
 - External pilot runbook for repeatable low-risk organization adoption.
 - NPM build configuration that packages the CLI from `dist/cli.js`.
 - Public complete minimal example artifacts under `examples/complete`.

@@ -72,6 +72,10 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(index.statement.hash, /^sha256:[0-9a-f]{64}$/);
     assert.equal(index.signature.path, "official-endpoints.json.sig");
     assert.equal(index.root_authority.path, "root-authority.json");
+    assert.equal(index.agent_verification.contract_version, "1.0");
+    assert.equal(index.agent_verification.primary_entrypoint, "/.well-known/organchor.json");
+    assert.equal(index.agent_verification.artifact_base_path, "/verify/");
+    assert.equal(index.agent_verification.result_type, "OrgAnchorAgentVerificationResult");
     assert.equal(index.root_continuity.status, "CURRENT_ROOT_ONLY");
     assert.equal(index.root_continuity.current_root_authority.hash, index.root_authority.hash);
     assert.equal(index.root_continuity.current_root_authority.authority_id, index.root_authority.authority_id);

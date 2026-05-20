@@ -48,6 +48,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
   const valueReportMarkdownPath =
     typeof options["value-report-md"] === "string" ? options["value-report-md"] : VALUE_REPORT_MARKDOWN_FILE;
   const explicitValueReport = typeof options["value-report"] === "string" || typeof options["value-report-md"] === "string";
+  const artifactBasePath = typeof options["artifact-base-path"] === "string" ? options["artifact-base-path"] : "/verify/";
   const generatedAt = new Date().toISOString();
 
   const statement = validateOfficialStatement(await readJsonFile(statementPath));
@@ -160,6 +161,16 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     },
     verification: {
       command: `organchor statement verify --authority ${AUTHORITY_FILE} --expected-authority-hash ${authorityHash} --in ${STATEMENT_FILE} --sig ${SIGNATURE_FILE}`
+    },
+    agent_verification: {
+      contract: "https://organchor.org/specs/agent-verification.v1",
+      contract_version: "1.0",
+      primary_entrypoint: "/.well-known/organchor.json",
+      verify_base_path: artifactBasePath,
+      artifact_base_path: artifactBasePath,
+      command: "organchor verify url <organization-url>",
+      result_type: "OrgAnchorAgentVerificationResult",
+      trust_decision: "not_assigned_by_organchor"
     },
     visible_proof: {
       status: "PASS",

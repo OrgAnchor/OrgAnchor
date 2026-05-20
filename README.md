@@ -46,6 +46,8 @@ Implemented so far:
 - Stage 1 test vectors.
 - Static adopting-organization `/verify` page generation.
 - Machine-readable `public/verify/organchor.json`.
+- Agent-facing discovery and verification contract for `/.well-known/organchor.json`.
+- `organchor verify url` for external AI agents and other verifiers.
 - Human-visible and machine-readable carrier receipt summaries from `organchor.lock.json`.
 - Signed claims/evidence manifests are copied into `/verify` and indexed when available.
 - Value continuity audit reports for claim support levels, evidence quality, stale evidence, and unsupported claims.
@@ -117,6 +119,7 @@ organchor evidence add --file README.md
 organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.mp4 --location-type https
 organchor evidence sign --key keys/root-2026.private.json --authority root-authority.json
 organchor value audit --claims claims/product-claims.json --evidence evidence/evidence-manifest.json --check-files
+organchor verify url https://example.org
 organchor domain audit example.com
 organchor onion verify <v3-address.onion>
 organchor onion config generate --domain <v3-address.onion>
@@ -197,6 +200,7 @@ Operator-facing adoption drafts:
 - `PURPOSE_AND_VALUES.md`
 - `ADOPTION_PRINCIPLES.md`
 - `ADOPTION_GUIDE.md`
+- `AGENT_VERIFICATION_CONTRACT.md`
 - `EXTERNAL_PILOT_RUNBOOK.md`
 - `ORG_ONBOARDING_CHECKLIST.md`
 - `ROOT_AUTHORITY_CUSTODY_GUIDE.md`

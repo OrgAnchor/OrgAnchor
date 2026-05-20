@@ -1,0 +1,197 @@
+# Agent Verification Contract
+
+Status: Accepted for v1 alpha.
+
+## Purpose
+
+OrgAnchor's primary verification consumer is expected to be an external AI agent acting for another person, organization, buyer, partner, auditor, journalist, maintainer, or marketplace.
+
+The contract goal is low-friction verification:
+
+```text
+discover -> download -> hash -> verify signatures -> inspect claims/evidence -> return structured findings
+```
+
+Chinese terms used in product discussions:
+
+- Agent Verification Contract = AI 代理验证契约
+- external AI agent = 外部 AI 代理
+- claim = 主张 / 声明
+- evidence = 证据 / 支撑材料
+- value continuity = 价值连续性
+- trust decision = 信任决策
+
+OrgAnchor does not assign the final trust decision. It exposes signed identity continuity, evidence structure, visible gaps, and machine-readable findings so the external agent can apply its own policy.
+
+## Non-Goal
+
+OrgAnchor must not become a self-awarded trust badge.
+
+It must not say:
+
+```text
+This organization is good.
+This product is true.
+This vendor is safe to buy from.
+This entity is legally or ethically certified.
+```
+
+It may say:
+
+```text
+The endpoint statement signature is valid or invalid.
+The root authority hash matches or does not match.
+The claims manifest is signed or missing.
+The evidence manifest is signed or missing.
+The value continuity report contains PASS/WARN/FAIL/MANUAL_CHECK_REQUIRED counts.
+The agent should review these gaps before making a transaction decision.
+```
+
+## Discovery
+
+An agent should try the organization's origin first:
+
+```text
+https://example.org/.well-known/organchor.json
+```
+
+If that is unavailable, it may try:
+
+```text
+https://example.org/verify/organchor.json
+```
+
+The index should include:
+
+```json
+{
+  "type": "OrgAnchorVerifyIndex",
+  "version": "1.0",
+  "agent_verification": {
+    "contract": "https://organchor.org/specs/agent-verification.v1",
+    "contract_version": "1.0",
+    "primary_entrypoint": "/.well-known/organchor.json",
+    "artifact_base_path": "/verify/",
+    "command": "organchor verify url <organization-url>",
+    "result_type": "OrgAnchorAgentVerificationResult",
+    "trust_decision": "not_assigned_by_organchor"
+  }
+}
+```
+
+`artifact_base_path` tells the agent where relative artifact paths resolve. This prevents the agent from guessing whether files beside `/.well-known/organchor.json` or under `/verify/` are authoritative.
+
+## Required Identity Checks
+
+An agent verifying an organization should check at least:
+
+```text
+index.type == OrgAnchorVerifyIndex
+statement hash matches index.statement.hash
+signature hash matches index.signature.hash
+root authority hash matches index.root_authority.hash
+statement.root_authority_hash matches fetched root authority hash
+official endpoint statement signature meets root authority threshold
+```
+
+If any required identity check fails, the agent should treat the OrgAnchor identity result as failed.
+
+## Claims And Evidence Checks
+
+If present, the agent should also check:
+
+```text
+claims manifest hash matches linked_artifacts.claims.hash
+claims manifest signature meets root authority threshold
+evidence manifest hash matches linked_artifacts.evidence.hash
+evidence manifest signature meets root authority threshold
+claim evidence_refs resolve to evidence ids
+value continuity report hash matches value_continuity.hash
+value continuity summary has no hidden PASS-only interpretation
+```
+
+These checks do not prove product quality by themselves. They reduce the cost of finding what is claimed, what supports it, what is missing, and what needs human or policy-level review.
+
+## Result Object
+
+`organchor verify url` emits a machine-readable result:
+
+```json
+{
+  "type": "OrgAnchorAgentVerificationResult",
+  "version": "1.0",
+  "overall_status": "PASS",
+  "identity_status": "PASS",
+  "value_status": "PASS",
+  "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+  "checks": []
+}
+```
+
+The result separates:
+
+- `identity_status`: cryptographic and root-authority verification.
+- `value_status`: claims/evidence/value-continuity review surface.
+- `overall_status`: CLI summary for automation.
+- `trust_decision`: always not assigned by OrgAnchor.
+
+External agents should treat this result as input, not as the final answer.
+
+## Agent Policy Example
+
+A conservative buying agent might require:
+
+```text
+identity_status == PASS
+value_status != NOT_INCLUDED
+no identity FAIL checks
+value continuity FAIL count == 0
+unsupported_claims == 0
+at least one external evidence location for product claims
+manual checks reviewed for high-value transactions
+```
+
+A lower-risk discovery agent might only require:
+
+```text
+identity_status == PASS
+official endpoints are current
+claims/evidence are present enough to continue research
+```
+
+The key point: OrgAnchor lowers discovery and verification cost, while the agent's owner controls the policy.
+
+## CLI
+
+```bash
+organchor verify url https://example.org
+```
+
+The command:
+
+```text
+discovers the machine index
+resolves artifact paths
+downloads public artifacts
+validates strict JSON
+verifies canonical hashes
+verifies root-authority signatures
+checks optional claims/evidence/value reports
+prints an OrgAnchorAgentVerificationResult JSON object
+exits non-zero only when verification has FAIL checks
+```
+
+## Design Boundary
+
+OrgAnchor should keep optimizing for:
+
+```text
+minimum external-agent friction
+machine-readable artifacts
+human-readable verification pages
+explicit gaps and warnings
+no final trust badge
+no hidden dependence on OrgAnchor's own server
+```
+
+This is the core product axis: make it cheap for another will-bearing party, represented by an AI agent, to know what it needs to know before deciding whether to trust, transact, cooperate, or investigate further.

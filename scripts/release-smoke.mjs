@@ -186,6 +186,8 @@ try {
 
   const index = JSON.parse(readFileSync(join(workspace, "public", "verify", "organchor.json"), "utf8"));
   assertEqual(index.visible_proof?.status, "PASS", "visible_proof.status");
+  assertEqual(index.agent_verification?.contract_version, "1.0", "agent_verification.contract_version");
+  assertEqual(index.agent_verification?.artifact_base_path, "/verify/", "agent_verification.artifact_base_path");
   assertEqual(index.root_continuity?.status, "CURRENT_ROOT_ONLY", "root_continuity.status");
   assertEqual(index.value_continuity?.status, "PRESENT", "value_continuity.status");
   assertEqual(index.value_continuity?.summary?.evidence_linked_claims, 1, "value_continuity.summary.evidence_linked_claims");

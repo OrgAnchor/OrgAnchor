@@ -1,0 +1,28 @@
+{
+  "type": "OrgAnchorAgentVerificationCompactResult",
+  "version": "1.0",
+  "target": "https://organchor.org",
+  "overall_status": "PASS",
+  "identity_status": "PASS",
+  "value_status": "PASS",
+  "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+  "organization": {
+    "name": "OrgAnchor",
+    "display_name": "OrgAnchor"
+  },
+  "root_authority_hash": "sha256:7d720aa028e4b3b94d47b8e8789b0d7f5c8bb0564e80fac7f0ad7b275718e1b9",
+  "statement_hash": "sha256:5811e45488c093e8820b35edf144a8dbae0c20a79063a44993043bfdf26a0a36",
+  "evidence_summary": {
+    "claims": "PASS",
+    "evidence": "PASS",
+    "value": "PASS",
+    "unsupported_claims": 0,
+    "total_evidence_items": 23,
+    "third_party_claims": 0,
+    "reproducible_claims": 1,
+    "manual_checks": 23
+  },
+  "failures": [],
+  "warnings": [],
+  "next_step": "Use the verified artifacts as inputs to your own policy; OrgAnchor does not assign final trust."
+}

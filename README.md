@@ -47,6 +47,7 @@ Implemented so far:
 - Static adopting-organization `/verify` page generation.
 - Machine-readable `public/verify/organchor.json`.
 - Agent-facing discovery and verification contract for `/.well-known/organchor.json`.
+- Third-party AI agent integration guide with compact-result examples.
 - `organchor verify url` for external AI agents and other verifiers.
 - Compact `organchor verify url --compact` output for low-cost first-pass agent routing.
 - Human-visible and machine-readable carrier receipt summaries from `organchor.lock.json`.
@@ -203,6 +204,7 @@ Operator-facing adoption drafts:
 - `ADOPTION_PRINCIPLES.md`
 - `ADOPTION_GUIDE.md`
 - `AGENT_COMPATIBILITY_PLAN.md`
+- `AGENT_INTEGRATION_GUIDE.md`
 - `AGENT_VERIFICATION_CONTRACT.md`
 - `EXTERNAL_PILOT_RUNBOOK.md`
 - `ORG_ONBOARDING_CHECKLIST.md`

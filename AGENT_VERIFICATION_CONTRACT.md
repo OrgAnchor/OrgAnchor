@@ -182,6 +182,7 @@ The key point: OrgAnchor lowers discovery and verification cost, while the agent
 
 ```bash
 organchor verify url https://example.org
+organchor verify url https://example.org --compact
 ```
 
 The command:
@@ -212,3 +213,5 @@ no hidden dependence on OrgAnchor's own server
 ```
 
 This is the core product axis: make it cheap for another will-bearing party, represented by an AI agent, to know what it needs to know before deciding whether to trust, transact, cooperate, or investigate further.
+
+For an implementation-oriented guide, see `AGENT_INTEGRATION_GUIDE.md`.

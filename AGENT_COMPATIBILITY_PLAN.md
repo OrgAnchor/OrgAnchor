@@ -146,6 +146,13 @@ organchor verify url https://organchor.org --compact
 
 For public releases, the OrgAnchor self-pilot should be regenerated and verified after source changes that affect `organchor.json`, the `/verify` page, or the verification result shape.
 
+The integration guide and compact example should also remain valid:
+
+```text
+AGENT_INTEGRATION_GUIDE.md
+examples/agent-verification/organchor-compact-result.json
+```
+
 ## Feedback Loop
 
 Compatibility work should collect failures from real agents:

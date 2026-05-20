@@ -29,6 +29,35 @@ interface AgentVerificationResult {
   recommended_next_steps: string[];
 }
 
+interface AgentVerificationCompactResult {
+  type: "OrgAnchorAgentVerificationCompactResult";
+  version: "1.0";
+  target: string;
+  overall_status: "PASS" | "WARN" | "FAIL";
+  identity_status: "PASS" | "FAIL";
+  value_status: "PASS" | "WARN" | "NOT_INCLUDED";
+  trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
+  organization: {
+    name: string;
+    display_name?: string;
+  };
+  root_authority_hash: string;
+  statement_hash: string;
+  evidence_summary: {
+    claims: CheckStatus;
+    evidence: CheckStatus;
+    value: CheckStatus;
+    unsupported_claims: number;
+    total_evidence_items: number;
+    third_party_claims: number;
+    reproducible_claims: number;
+    manual_checks: number;
+  };
+  failures: string[];
+  warnings: string[];
+  next_step: string;
+}
+
 export async function verifyUrlCommand(options: Record<string, string | boolean>): Promise<void> {
   const target = requireTarget(options);
   const timeoutMs = parseTimeoutMs(options["timeout-ms"]);
@@ -166,8 +195,56 @@ export async function verifyUrlCommand(options: Record<string, string | boolean>
     recommended_next_steps: recommendedNextSteps(checks, valueContinuity.status)
   };
 
-  console.log(JSON.stringify(result, null, 2));
+  const output = options.compact === true ? compactResult(result) : result;
+  console.log(JSON.stringify(output, null, 2));
   if (overallStatus === "FAIL") process.exitCode = 1;
+}
+
+function compactResult(result: AgentVerificationResult): AgentVerificationCompactResult {
+  const organization = asObject(result.organization, "organization");
+  const valueContinuity = optionalRecord(result.value_continuity);
+  const summary = optionalRecord(valueContinuity.summary);
+
+  return {
+    type: "OrgAnchorAgentVerificationCompactResult",
+    version: "1.0",
+    target: result.target,
+    overall_status: result.overall_status,
+    identity_status: result.identity_status,
+    value_status: result.value_status,
+    trust_decision: result.trust_decision,
+    organization: compactOrganization(organization),
+    root_authority_hash: String(result.identity.root_authority_hash ?? ""),
+    statement_hash: String(result.identity.statement_hash ?? ""),
+    evidence_summary: {
+      claims: checkStatus(result.checks, "claims_manifest"),
+      evidence: checkStatus(result.checks, "evidence_manifest"),
+      value: checkStatus(result.checks, "value_continuity"),
+      unsupported_claims: numberValue(summary.unsupported_claims),
+      total_evidence_items: numberValue(summary.total_evidence_items),
+      third_party_claims: numberValue(summary.third_party_claims),
+      reproducible_claims: numberValue(summary.reproducible_claims),
+      manual_checks: numberValue(summary.MANUAL_CHECK_REQUIRED)
+    },
+    failures: result.checks
+      .filter((check) => check.status === "FAIL")
+      .map((check) => `${check.id}: ${check.detail}`),
+    warnings: result.checks
+      .filter((check) => check.status === "WARN")
+      .map((check) => `${check.id}: ${check.detail}`),
+    next_step: result.recommended_next_steps[0] ?? "Use the verified artifacts as inputs to your own policy."
+  };
+}
+
+function compactOrganization(organization: Record<string, JsonValue>): AgentVerificationCompactResult["organization"] {
+  const name = stringValue(organization.name) || "unknown";
+  const displayName = stringValue(organization.display_name);
+  if (!displayName) return { name };
+  return { name, display_name: displayName };
+}
+
+function checkStatus(checks: AgentCheck[], id: string): CheckStatus {
+  return checks.find((check) => check.id === id)?.status ?? "NOT_INCLUDED";
 }
 
 const identityCheckIds = new Set([

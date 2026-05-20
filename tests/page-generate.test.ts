@@ -76,6 +76,13 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(index.agent_verification.primary_entrypoint, "/.well-known/organchor.json");
     assert.equal(index.agent_verification.artifact_base_path, "/verify/");
     assert.equal(index.agent_verification.result_type, "OrgAnchorAgentVerificationResult");
+    assert.equal(index.agent_verification.compact_command, "organchor verify url <organization-url> --compact");
+    assert.equal(index.agent_verification.compact_result_type, "OrgAnchorAgentVerificationCompactResult");
+    assert.equal(index.agent_verification.summary.preferred_first_pass, "compact");
+    assert.equal(
+      index.agent_verification.summary.required_identity_checks.includes("statement_signature_threshold"),
+      true
+    );
     assert.equal(index.root_continuity.status, "CURRENT_ROOT_ONLY");
     assert.equal(index.root_continuity.current_root_authority.hash, index.root_authority.hash);
     assert.equal(index.root_continuity.current_root_authority.authority_id, index.root_authority.authority_id);

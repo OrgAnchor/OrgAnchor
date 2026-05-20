@@ -169,8 +169,30 @@ export async function pageGenerateCommand(options: Record<string, string | boole
       verify_base_path: artifactBasePath,
       artifact_base_path: artifactBasePath,
       command: "organchor verify url <organization-url>",
+      compact_command: "organchor verify url <organization-url> --compact",
       result_type: "OrgAnchorAgentVerificationResult",
-      trust_decision: "not_assigned_by_organchor"
+      compact_result_type: "OrgAnchorAgentVerificationCompactResult",
+      trust_decision: "not_assigned_by_organchor",
+      summary: {
+        kind: "signed_organization_verification_index",
+        goal: "Verify organization identity continuity and inspect value evidence with minimal external-agent friction.",
+        identity_root: "root_authority",
+        final_trust_decision: "external_agent_policy",
+        required_identity_checks: [
+          "statement_hash",
+          "signature_hash",
+          "authority_hash",
+          "statement_authority_binding",
+          "statement_signature_threshold"
+        ],
+        optional_value_checks: [
+          "claims_manifest",
+          "evidence_manifest",
+          "claims_evidence_references",
+          "value_continuity"
+        ],
+        preferred_first_pass: "compact"
+      }
     },
     visible_proof: {
       status: "PASS",

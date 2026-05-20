@@ -73,7 +73,9 @@ The index should include:
     "primary_entrypoint": "/.well-known/organchor.json",
     "artifact_base_path": "/verify/",
     "command": "organchor verify url <organization-url>",
+    "compact_command": "organchor verify url <organization-url> --compact",
     "result_type": "OrgAnchorAgentVerificationResult",
+    "compact_result_type": "OrgAnchorAgentVerificationCompactResult",
     "trust_decision": "not_assigned_by_organchor"
   }
 }
@@ -114,7 +116,22 @@ These checks do not prove product quality by themselves. They reduce the cost of
 
 ## Result Object
 
-`organchor verify url` emits a machine-readable result:
+`organchor verify url --compact` emits the preferred first-pass routing object:
+
+```json
+{
+  "type": "OrgAnchorAgentVerificationCompactResult",
+  "version": "1.0",
+  "overall_status": "PASS",
+  "identity_status": "PASS",
+  "value_status": "PASS",
+  "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+  "failures": [],
+  "warnings": []
+}
+```
+
+`organchor verify url` emits the full machine-readable result:
 
 ```json
 {

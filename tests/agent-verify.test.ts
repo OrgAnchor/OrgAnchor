@@ -41,6 +41,20 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(hasCheck(result, "claims_manifest", "PASS"), true);
       assert.equal(hasCheck(result, "evidence_manifest", "PASS"), true);
       assert.equal(hasCheck(result, "value_continuity", "PASS"), true);
+
+      const compactVerify = await runAsync(workspace, ["verify", "url", origin, "--compact"]);
+      const compact = JSON.parse(compactVerify.stdout);
+      assert.equal(compact.type, "OrgAnchorAgentVerificationCompactResult");
+      assert.equal(compact.overall_status, "PASS");
+      assert.equal(compact.identity_status, "PASS");
+      assert.equal(compact.value_status, "PASS");
+      assert.equal(compact.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
+      assert.equal(compact.evidence_summary.claims, "PASS");
+      assert.equal(compact.evidence_summary.evidence, "PASS");
+      assert.equal(compact.evidence_summary.value, "PASS");
+      assert.equal(compact.evidence_summary.unsupported_claims, 0);
+      assert.equal(compact.evidence_summary.total_evidence_items, 1);
+      assert.equal(compact.failures.length, 0);
     });
   } finally {
     rmSync(workspace, { recursive: true, force: true });
@@ -63,6 +77,19 @@ test("verify url fails when public statement content is changed after signing", 
       assert.equal(result.identity_status, "FAIL");
       assert.equal(hasCheck(result, "statement_hash", "FAIL"), true);
       assert.equal(hasCheck(result, "statement_signature_threshold", "FAIL"), true);
+
+      const compactVerify = await runAsync(workspace, ["verify", "url", origin, "--compact"], 1);
+      const compact = JSON.parse(compactVerify.stdout);
+      assert.equal(compact.overall_status, "FAIL");
+      assert.equal(compact.identity_status, "FAIL");
+      assert.equal(
+        compact.failures.some((failure: string) => failure.startsWith("statement_hash:")),
+        true
+      );
+      assert.equal(
+        compact.failures.some((failure: string) => failure.startsWith("statement_signature_threshold:")),
+        true
+      );
     });
   } finally {
     rmSync(workspace, { recursive: true, force: true });

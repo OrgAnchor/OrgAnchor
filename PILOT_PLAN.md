@@ -1,6 +1,6 @@
 # OrgAnchor Pilot Plan
 
-Status: Accepted; default self-pilot decision package accepted; public execution pending explicit domain, provider, spending, and root key confirmations.
+Status: Accepted; OrgAnchor self-pilot has been executed publicly after Stage 3. This document records the pilot decision model, while current operational self-pilot facts live outside the source repository in `E:\CivX\OrgAnchor-self-pilot\SELF_PILOT_STATUS.md`.
 
 ## Decision
 

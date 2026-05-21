@@ -14,6 +14,8 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - Project purpose, adoption principles, and showcase policy documents clarify OrgAnchor's value stance and misuse boundaries.
 - Value continuity model and `organchor value audit` reports for claim support levels, evidence quality, stale evidence, and unsupported claims.
 - `/verify` pages and `organchor.json` can now publish value continuity report summaries.
+- Agent verification contract, AI agent integration guide, compact verification result output, and compatibility iteration plan.
+- `DOCS_INDEX.md` as the public documentation map for current guidance, design records, adoption guides, AI agent documents, examples, and historical self-pilot notes.
 
 ## 0.1.0-alpha.1 - 2026-05-14
 

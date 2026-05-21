@@ -25,11 +25,11 @@ OrgAnchor is not only a tool for keeping an organizational name alive. Its purpo
 
 OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
 
-See `PURPOSE_AND_VALUES.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance.
+See `DOCS_INDEX.md`, `PURPOSE_AND_VALUES.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance and document map.
 
 ## Current Status
 
-Stage 5 implementation is in release-hygiene mode. The core v1 surface now includes root authority records, signed endpoint statements, claims/evidence manifests, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, and `/verify` root continuity publication.
+Stage 5 implementation is in release-hygiene mode. The core v1 surface now includes root authority records, signed endpoint statements, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, and `/verify` root continuity publication.
 
 OrgAnchor's own public self-pilot is active at `https://organchor.org/verify/`. Its real operational artifacts live outside this source repository so that the publishable project remains clean: no private keys, provider tokens, payment records, or deployment credentials are stored here.
 
@@ -198,8 +198,11 @@ OrgAnchor is intended to be repeatable by other organizations, not only usable b
 
 The adoption model is recorded in `ADOPTION_MODEL.md`.
 
-Operator-facing adoption drafts:
+Start with `DOCS_INDEX.md` when choosing what to read next.
 
+Operator-facing adoption and verification documents:
+
+- `DOCS_INDEX.md`
 - `PURPOSE_AND_VALUES.md`
 - `ADOPTION_PRINCIPLES.md`
 - `ADOPTION_GUIDE.md`

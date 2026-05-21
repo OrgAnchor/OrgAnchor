@@ -264,6 +264,44 @@ public/verify/organchor.json -> value_continuity
 
 This makes value continuity visible to people and machine-readable for AI agents without turning the report into a trust root.
 
+## Software Project Evidence Profile
+
+For an open-source software project such as OrgAnchor, the default value evidence profile should stay close to artifacts the project already produces.
+
+Minimum useful evidence:
+
+- Source repository URL and commit hash.
+- Release tag and package version.
+- Build, test, package, and install smoke results.
+- Public verification of the project's own `/verify` endpoint.
+- Signed claims and evidence manifests.
+- Current known gaps and limitations.
+
+Stronger evidence:
+
+- Reproducible build instructions.
+- CI logs or independently rerunnable test scripts.
+- Security policy and domain audit report.
+- Public release artifacts with hashes.
+- Third-party review, audit, citation, or adoption records.
+- Correction or incident history when something was wrong.
+
+For software, `REPRODUCIBLE` should mean more than "there is a document." It should mean a verifier or AI agent can find the command, input commit, expected output, and resulting hash or report. OrgAnchor's own release checks are therefore evidence, not just development chores.
+
+The first OrgAnchor self-pilot claim should remain narrow:
+
+```text
+OrgAnchor publishes signed official endpoint statements, claims/evidence manifests, visible verification pages, carrier receipts, and AI-agent-readable verification results for its own public self-pilot.
+```
+
+It should not claim:
+
+```text
+OrgAnchor is proven secure.
+OrgAnchor is production-ready for all organizations.
+OrgAnchor makes organizations trustworthy.
+```
+
 ## What The Audit Must Not Do
 
 The audit must not say:

@@ -327,6 +327,51 @@ Limitation:
 - Jurisdiction-specific.
 - May not cover product performance.
 
+## Software Project Evidence Profile
+
+For software projects, start with evidence that is already produced by normal engineering work. Do not invent ceremonial paperwork first.
+
+Recommended minimum package:
+
+- `source_commit`: the source commit that produced the current release or public verify state.
+- `release_tag`: the Git tag or package version being claimed.
+- `test_report`: command output or CI report for the test suite.
+- `package_report`: package smoke or install smoke report.
+- `public_verify_report`: result of `organchor verify url https://example.org --compact`.
+- `known_gaps`: explicit limitations, missing integrations, pending security work, or manual checks.
+
+Recommended stronger package:
+
+- `reproducible_build`: documented build steps and expected hashes.
+- `security_review`: independent review, audit, or focused threat-model review.
+- `third_party_usage`: external pilot, adoption, citation, or review.
+- `incident_or_correction`: signed correction when a prior claim was wrong or stale.
+
+Example claim:
+
+```text
+OrgAnchor v0.1.0-alpha.1 can generate, sign, publish, and verify an adopting organization's endpoint statement, claims/evidence manifests, public /verify page, and AI-agent-readable verification index.
+```
+
+Example evidence items:
+
+```text
+source commit <commit>
+node --run release:check output
+npm package smoke report
+`organchor verify url https://organchor.org --compact` output
+self-pilot value continuity report
+known gaps list
+```
+
+This profile is meant to reduce AI-agent friction. A third-party verifier should be able to ask:
+
+```text
+What exact claim is being made?
+Which commit, release, test, package, and public verification result support it?
+What is still missing or only manually checked?
+```
+
 ## AI-Agent-Friendly Requirements
 
 Evidence manifests should be easy for AI agents to parse.

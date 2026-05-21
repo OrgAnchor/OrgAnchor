@@ -76,7 +76,8 @@ Use this order for alpha, stable, and self-pilot milestone releases.
 11. Verify the public website, including `/verify/organchor.json` and `/.well-known/organchor.json`.
 12. Record the final deployment receipt without trying to make the page contain its own final deployment hash.
 13. Run source, package, and install checks.
-14. Tag Git, publish npm, and create the GitHub release.
+14. Confirm `README.md`, `DOCS_INDEX.md`, `CHANGELOG.md`, and `V1_RELEASE_CHECKLIST.md` describe the same public state.
+15. Tag Git, publish npm, and create the GitHub release.
 
 ## Release State Matrix
 
@@ -113,6 +114,7 @@ cloudflare deployment hash:
 domain audit status:
 known self-reference gap:
 known release gaps:
+documentation index status:
 ```
 
 ## Minimum Checks
@@ -122,6 +124,8 @@ Run the normal release checks:
 ```bash
 node --run release:check
 ```
+
+The test suite includes documentation-index checks that keep `README.md`, `DOCS_INDEX.md`, and package metadata aligned.
 
 Run a manual secret scan and inspect matches:
 
@@ -183,6 +187,7 @@ Do not publish or promote a release if any of these are true:
 - The public `/verify` page is unreachable for the claimed website carrier.
 - `organchor.json` is missing the visible proof trail, root continuity, or claimed carrier receipts.
 - README, changelog, npm version, Git tag, and release notes describe different release states.
+- `DOCS_INDEX.md` is missing from the package, not linked from README, or no longer maps the current package-facing documents.
 - A content-addressing self-reference gap exists but is not documented.
 - The release claims permanence, absolute censorship resistance, legal identity, or full decentralization.
 

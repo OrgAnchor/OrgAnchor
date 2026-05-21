@@ -1,6 +1,6 @@
 # OrgAnchor Evidence Model
 
-Status: Draft, pending user confirmation before implementation.
+Status: Accepted model; core claims/evidence commands, value audit, and `/verify` publication are implemented for alpha. Further work should refine evidence quality, third-party attestations, and AI-agent usability.
 
 ## Purpose
 

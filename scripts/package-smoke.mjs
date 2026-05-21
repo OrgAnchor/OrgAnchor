@@ -52,6 +52,7 @@ try {
   assertContains(copiedFiles, "LICENSE");
   assertContains(copiedFiles, "README.md");
   assertContains(copiedFiles, "CHANGELOG.md");
+  assertContains(copiedFiles, "DOCS_INDEX.md");
   assertContains(copiedFiles, "ARCHITECTURE.md");
   assertContains(copiedFiles, "PURPOSE_AND_VALUES.md");
   assertContains(copiedFiles, "ADOPTION_PRINCIPLES.md");

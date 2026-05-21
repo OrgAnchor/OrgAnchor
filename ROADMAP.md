@@ -202,7 +202,7 @@ Pilot status:
 Status:
 
 ```text
-Implementation complete; OrgAnchor self-pilot active on Cloudflare, with local Kubo and Pinata IPFS receipts plus Arweave manual package receipts
+Implementation complete for alpha; OrgAnchor self-pilot active on Cloudflare Pages, with local Kubo and Pinata IPFS receipts, Arweave manual package receipts, Arweave/Turbo TX receipts, OpenTimestamps proofs, signed claims/evidence manifests, and value continuity reporting
 ```
 
 Purpose:
@@ -329,7 +329,7 @@ Pilot status:
 Status:
 
 ```text
-In progress; domain audit, Onion foundation, and ENS offline planning implemented
+Basic implementation complete for alpha; domain audit, Onion foundation, ENS offline planning, and ENS records snapshot verification are implemented; live ENS RPC and real Onion registration remain external adoption decisions
 ```
 
 Purpose:
@@ -383,7 +383,7 @@ Pilot status:
 Status:
 
 ```text
-In progress; key rotate-plan, authority change-plan, root authority migration create/sign/verify, /verify migration-history publication, and machine-readable root continuity explanation implemented; self-pilot migration rehearsal complete; operator migration guide and external pilot runbook drafted
+Basic implementation complete for alpha; key rotate-plan, authority change-plan, root authority migration create/sign/verify, /verify migration-history publication, machine-readable root continuity explanation, self-pilot migration rehearsal, operator migration guide, and external pilot runbook are in place
 ```
 
 Purpose:
@@ -469,12 +469,16 @@ At the end of each stage:
 - Re-check product claims.
 - Avoid expanding scope beyond the current stage.
 
-## Current Next Step
+## Current Direction
 
-Stage 1 and Stage 2 are complete. Stage 3 implementation is complete enough for OrgAnchor's own self-pilot: threshold root authority creation, appended independent signatures, `organchor.lock.json`, IPFS dry-run receipts, local Kubo publish/verify paths, Arweave manual packages, Arweave gateway TX verification, and signed claims/evidence manifests are working and tested.
+Stage 1 and Stage 2 are complete. Stage 3 implementation is complete for the alpha self-pilot path: threshold root authority creation, appended independent signatures, `organchor.lock.json`, IPFS dry-run receipts, local Kubo publish/verify paths, Pinata directory upload receipts, Arweave manual packages, Arweave/Turbo upload receipts, Arweave gateway TX verification, OpenTimestamps proof creation, signed claims/evidence manifests, and value continuity reports are working and tested.
 
 The selected self-pilot domain is `organchor.org`. The official `2-of-3` self-pilot root authority has been generated locally outside the source repository. The public `/verify` site is active through Cloudflare Pages, and the Cloudflare publish receipt is recorded in the self-pilot `organchor.lock.json`.
 
-The first Stage 4 capabilities, `domain audit`, Onion config/validation, and ENS offline planning are implemented. `domain audit` has been run against `organchor.org`. The current self-pilot report has no `FAIL` results; remaining `WARN` items are DNSSEC, MX, SPF, DMARC, and CAA. Onion support can validate v3 addresses and generate Tor Hidden Service deployment guidance, but OrgAnchor has not registered a real onion address yet. ENS support can generate a suggested `organchor.eth` plan and verify a captured records snapshot, but live ENS resolver reads require choosing an Ethereum RPC provider or dependency path.
+The first Stage 4 capabilities, `domain audit`, Onion config/validation, ENS offline planning, and ENS snapshot verification are implemented. `domain audit` has been run against `organchor.org`. The current self-pilot report has no `FAIL` results; remaining warnings and manual checks are recorded in the separate self-pilot workspace. Onion support can validate v3 addresses and generate Tor Hidden Service deployment guidance, but OrgAnchor has not registered a real onion address yet. ENS support can generate a suggested `organchor.eth` plan and verify a captured records snapshot, but live ENS resolver reads require choosing an Ethereum RPC provider or dependency path.
 
-The implemented Stage 5 migration commands have now been exercised in the OrgAnchor self-pilot workspace without replacing the public root authority. `MIGRATION_GUIDE.md` records the operator runbook. `authority change-plan` now covers basic 1-of-1 to 2-of-3 and 2-of-3 to 3-of-5 planning flows. The `/verify` page now includes a visible proof trail for generated artifacts, can publish verified migration history when a real migration exists, and exposes `root_continuity` so AI agents can distinguish current root authority, previous root authority, migration chain, and historical verification rules. `EXTERNAL_PILOT_RUNBOOK.md` now defines the shortest repeatable path for a low-risk external organization pilot. The remaining Stage 5 work is final packaging and release hygiene for repeatable external adoption.
+The implemented Stage 5 migration commands have now been exercised in the OrgAnchor self-pilot workspace without replacing the public root authority. `MIGRATION_GUIDE.md` records the operator runbook. `authority change-plan` now covers basic 1-of-1 to 2-of-3 and 2-of-3 to 3-of-5 planning flows. The `/verify` page now includes a visible proof trail for generated artifacts, can publish verified migration history when a real migration exists, and exposes `root_continuity` so AI agents can distinguish current root authority, previous root authority, migration chain, and historical verification rules.
+
+The current emphasis is release hygiene and repeatable adoption: keep `README.md`, `DOCS_INDEX.md`, `CHANGELOG.md`, `V1_RELEASE_CHECKLIST.md`, public self-pilot state, npm package metadata, GitHub state, and carrier receipts aligned before promoting the next alpha or declaring v1 readiness.
+
+The next product-design frontier is the software value evidence layer: make OrgAnchor's own claims, evidence, reproducible checks, gaps, and corrections increasingly easy for third-party AI agents to inspect at low cost. `VALUE_CONTINUITY_MODEL.md`, `EVIDENCE_MODEL.md`, and `AGENT_INTEGRATION_GUIDE.md` are the current starting points.

@@ -17,6 +17,7 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - Agent verification contract, AI agent integration guide, compact verification result output, and compatibility iteration plan.
 - `DOCS_INDEX.md` as the public documentation map for current guidance, design records, adoption guides, AI agent documents, examples, and historical self-pilot notes.
 - `organchor verify url` now emits `policy_route` so external AI agents can route verified results to stop, request evidence, review warnings, or apply their own policy without treating `PASS` as a trust badge.
+- `DIRECTORY_MODEL.md` records the proposed post-v1 open discovery index model for helping people and AI agents find OrgAnchor-enabled organizations without turning discovery into a monopoly trust platform.
 
 ## 0.1.0-alpha.1 - 2026-05-14
 

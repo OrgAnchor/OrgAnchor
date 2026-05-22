@@ -27,6 +27,8 @@ OrgAnchor does not certify that an organization is good, lawful, ethical, effect
 
 See `DOCS_INDEX.md`, `PURPOSE_AND_VALUES.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance and document map.
 
+The proposed post-v1 `DIRECTORY_MODEL.md` describes an open discovery index for helping people and AI agents find OrgAnchor-enabled organizations. It is not a marketplace, certification authority, or v1 trust root.
+
 ## Current Status
 
 Stage 5 implementation is in release-hygiene mode. The core v1 surface now includes root authority records, signed endpoint statements, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
@@ -220,6 +222,7 @@ Operator-facing adoption and verification documents:
 - `SHOWCASE_POLICY.md`
 - `VALUE_CONTINUITY_MODEL.md`
 - `DOMAIN_HARDENING_GUIDE.md`
+- `DIRECTORY_MODEL.md`
 - `EVIDENCE_ONBOARDING_GUIDE.md`
 
 ## Release Hygiene

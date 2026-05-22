@@ -457,6 +457,54 @@ v1 must cover:
 - ENS auxiliary name planning and verification.
 - Migration statements.
 
+## Stage 6 / Post-v1: Open Directory And Discovery Anti-Capture
+
+Status:
+
+```text
+Design direction recorded; not part of v1 core completion
+```
+
+Purpose:
+
+Help people, organizations, platforms, and AI agents discover OrgAnchor-enabled organizations without depending on one closed marketplace or paid ranking platform.
+
+The Directory is an open discovery index. It stores summary records, verification status, policy-route hints, and pointers back to each organization's own `/.well-known/organchor.json` and `/verify/organchor.json`. It does not become the identity root, certification authority, evidence host, or final ranking engine.
+
+Required capabilities for a future implementation:
+
+- Define directory record shape.
+- Publish directory policy in machine-readable form.
+- Build static directory snapshots from known OrgAnchor origins.
+- Sign or hash directory snapshots.
+- Export snapshots as JSON and NDJSON.
+- Keep records verifiable back to each organization's own OrgAnchor package.
+- Make inclusion, exclusion, ranking, payment, and stale-record policy explicit.
+- Allow mirrors, forks, and independent Directory nodes.
+- Keep large evidence artifacts outside the Directory by default.
+
+Representative future commands:
+
+```bash
+organchor directory inspect https://example.org
+organchor directory add https://example.org
+organchor directory build --in directory-sources.json --out public/directory
+organchor directory verify --snapshot public/directory/directory-snapshot.json
+organchor directory export --format ndjson
+```
+
+Exit criteria for a future stage:
+
+- A static Directory snapshot can be generated without a hosted database.
+- A third-party agent can use the snapshot to find candidate organizations and then verify each organization at its own origin.
+- The Directory policy is public and machine-readable.
+- Paid discovery, if ever introduced, cannot be confused with verification status.
+- Mirrors and forks can reproduce the published snapshot.
+
+Reference:
+
+- `DIRECTORY_MODEL.md`
+
 ## Recommended Implementation Rhythm
 
 Implement one stage at a time.
@@ -482,3 +530,5 @@ The implemented Stage 5 migration commands have now been exercised in the OrgAnc
 The current emphasis is release hygiene and repeatable adoption: keep `README.md`, `DOCS_INDEX.md`, `CHANGELOG.md`, `V1_RELEASE_CHECKLIST.md`, public self-pilot state, npm package metadata, GitHub state, and carrier receipts aligned before promoting the next alpha or declaring v1 readiness.
 
 The next product-design frontier is the software value evidence layer: make OrgAnchor's own claims, evidence, reproducible checks, gaps, corrections, and policy-routing hints increasingly easy for third-party AI agents to inspect at low cost. `VALUE_CONTINUITY_MODEL.md`, `EVIDENCE_MODEL.md`, and `AGENT_INTEGRATION_GUIDE.md` are the current starting points.
+
+The longer post-v1 discovery frontier is `DIRECTORY_MODEL.md`: an open, forkable Directory model that can help agents find OrgAnchor-enabled organizations while preventing the discovery layer from becoming a monopoly trust platform.

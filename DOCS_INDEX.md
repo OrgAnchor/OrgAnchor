@@ -49,6 +49,12 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 
 OrgAnchor does not certify that an organization is good or truthful. It makes signed claims, evidence, gaps, and corrections easier to inspect.
 
+## Discovery And Directory
+
+- `DIRECTORY_MODEL.md`: proposed post-v1 open discovery index model for helping people and AI agents find OrgAnchor-enabled organizations without creating a monopoly trust platform.
+
+The Directory is not part of the v1 core requirement. It is a future discovery layer over verifiable organization packages, not a certification authority or final ranking service.
+
 ## AI Agent Documents
 
 - `AGENT_VERIFICATION_CONTRACT.md`: stable discovery and verification result contract.
@@ -85,4 +91,5 @@ That workspace may contain private keys, provider credentials, wallets, local re
 - ENS live resolver reads still require choosing an Ethereum RPC/provider path.
 - No real Onion disaster-recovery address has been registered.
 - OpenTimestamps proofs may remain pending until calendar proofs are upgraded to Bitcoin attestations.
+- The open Directory model is documented, but no Directory CLI or public index has been implemented yet.
 - OrgAnchor is still alpha software; CLI flags, schemas, and operator workflow may change before v1.

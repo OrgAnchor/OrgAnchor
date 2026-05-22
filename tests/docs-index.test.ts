@@ -11,8 +11,10 @@ test("documentation index is discoverable from README and package metadata", () 
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8")) as { files?: string[] };
 
   assert.match(readme, /DOCS_INDEX\.md/);
+  assert.match(readme, /DIRECTORY_MODEL\.md/);
   assert.match(readme, /Operator-facing adoption and verification documents/);
   assert.ok(packageJson.files?.includes("DOCS_INDEX.md"), "package.json files must include DOCS_INDEX.md");
+  assert.ok(packageJson.files?.includes("DIRECTORY_MODEL.md"), "package.json files must include DIRECTORY_MODEL.md");
 });
 
 test("documentation index names the package-facing guidance documents", () => {
@@ -20,6 +22,7 @@ test("documentation index names the package-facing guidance documents", () => {
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8")) as { files?: string[] };
 
   assert.match(docsIndex, /Current Public Entry Points/);
+  assert.match(docsIndex, /Discovery And Directory/);
   assert.match(docsIndex, /AI Agent Documents/);
   assert.match(docsIndex, /Historical Or Local Notes/);
   assert.match(docsIndex, /Current Known Gaps/);

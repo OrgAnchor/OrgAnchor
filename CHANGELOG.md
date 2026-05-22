@@ -16,6 +16,7 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - `/verify` pages and `organchor.json` can now publish value continuity report summaries.
 - Agent verification contract, AI agent integration guide, compact verification result output, and compatibility iteration plan.
 - `DOCS_INDEX.md` as the public documentation map for current guidance, design records, adoption guides, AI agent documents, examples, and historical self-pilot notes.
+- `organchor verify url` now emits `policy_route` so external AI agents can route verified results to stop, request evidence, review warnings, or apply their own policy without treating `PASS` as a trust badge.
 
 ## 0.1.0-alpha.1 - 2026-05-14
 

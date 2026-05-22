@@ -54,6 +54,7 @@ organization
 root_authority_hash
 statement_hash
 evidence_summary
+policy_route
 failures
 warnings
 next_step
@@ -70,6 +71,8 @@ It may include richer details, but it should still avoid ambiguity. Every status
 ### Optional Extension Fields
 
 New provider receipts, evidence categories, policy hints, or model-facing summaries should start as optional fields.
+
+`policy_route` is an optional-but-recommended v1 alpha field. Agents that do not understand it can ignore it, but agents that do understand it can avoid treating `PASS` as a trust badge.
 
 Agents must be able to ignore unknown fields and still verify identity continuity.
 
@@ -114,6 +117,7 @@ false_negative_risk down
 6. A missing value/evidence layer must never be interpreted as product quality.
 7. Unknown fields must be safe to ignore.
 8. Provider carriers such as domains, IPFS, Arweave, ENS, Onion, Cloudflare, GitHub, or NPM must never become the identity root.
+9. `policy_route` must remain a routing hint owned by the external agent, not a final trust decision assigned by OrgAnchor.
 
 ## Test Fixtures
 

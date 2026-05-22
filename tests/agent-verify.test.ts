@@ -37,6 +37,11 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(result.identity.threshold_required, 1);
       assert.equal(result.value_continuity.summary.evidence_linked_claims, 1);
       assert.equal(result.value_continuity.summary.unsupported_claims, 0);
+      assert.equal(result.policy_route.route, "EXTERNAL_POLICY_REVIEW");
+      assert.equal(result.policy_route.policy_owner, "EXTERNAL_AGENT");
+      assert.equal(result.policy_route.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
+      assert.equal(result.policy_route.reasons.includes("manual_checks_present"), true);
+      assert.equal(result.policy_route.reasons.includes("no_third_party_claims"), true);
       assert.equal(hasCheck(result, "statement_signature_threshold", "PASS"), true);
       assert.equal(hasCheck(result, "claims_manifest", "PASS"), true);
       assert.equal(hasCheck(result, "evidence_manifest", "PASS"), true);
@@ -54,6 +59,9 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(compact.evidence_summary.value, "PASS");
       assert.equal(compact.evidence_summary.unsupported_claims, 0);
       assert.equal(compact.evidence_summary.total_evidence_items, 1);
+      assert.equal(compact.policy_route.route, "EXTERNAL_POLICY_REVIEW");
+      assert.equal(compact.policy_route.policy_owner, "EXTERNAL_AGENT");
+      assert.equal(compact.policy_route.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
       assert.equal(compact.failures.length, 0);
     });
   } finally {
@@ -82,6 +90,8 @@ test("verify url fails when public statement content is changed after signing", 
       const compact = JSON.parse(compactVerify.stdout);
       assert.equal(compact.overall_status, "FAIL");
       assert.equal(compact.identity_status, "FAIL");
+      assert.equal(compact.policy_route.route, "STOP_IDENTITY_FAILURE");
+      assert.equal(compact.policy_route.reasons.includes("identity_verification_failed"), true);
       assert.equal(
         compact.failures.some((failure: string) => failure.startsWith("statement_hash:")),
         true

@@ -126,6 +126,15 @@ These checks do not prove product quality by themselves. They reduce the cost of
   "identity_status": "PASS",
   "value_status": "PASS",
   "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+  "policy_route": {
+    "route": "EXTERNAL_POLICY_REVIEW",
+    "policy_owner": "EXTERNAL_AGENT",
+    "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+    "reasons": [
+      "manual_checks_present",
+      "no_third_party_claims"
+    ]
+  },
   "failures": [],
   "warnings": []
 }
@@ -141,6 +150,11 @@ These checks do not prove product quality by themselves. They reduce the cost of
   "identity_status": "PASS",
   "value_status": "PASS",
   "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+  "policy_route": {
+    "route": "EXTERNAL_POLICY_REVIEW",
+    "policy_owner": "EXTERNAL_AGENT",
+    "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR"
+  },
   "checks": []
 }
 ```
@@ -151,8 +165,24 @@ The result separates:
 - `value_status`: claims/evidence/value-continuity review surface.
 - `overall_status`: CLI summary for automation.
 - `trust_decision`: always not assigned by OrgAnchor.
+- `policy_route`: a non-binding routing hint for the external agent's own policy.
 
 External agents should treat this result as input, not as the final answer.
+
+## Policy Route Values
+
+`policy_route.route` is a low-friction routing hint. It does not certify the organization.
+
+```text
+STOP_IDENTITY_FAILURE
+REVIEW_FAILED_CHECKS
+REQUEST_VALUE_EVIDENCE
+REVIEW_VALUE_WARNINGS
+EXTERNAL_POLICY_REVIEW
+READY_FOR_EXTERNAL_POLICY
+```
+
+The safest default is to treat anything other than `READY_FOR_EXTERNAL_POLICY` as requiring additional review by the agent owner's policy. Even `READY_FOR_EXTERNAL_POLICY` is not a trust badge; it only means OrgAnchor found no built-in reason to stop or request more evidence.
 
 ## Agent Policy Example
 

@@ -99,10 +99,20 @@ Example:
     "evidence": "PASS",
     "value": "PASS",
     "unsupported_claims": 0,
-    "total_evidence_items": 23,
+    "total_evidence_items": 34,
     "third_party_claims": 0,
     "reproducible_claims": 1,
-    "manual_checks": 23
+    "manual_checks": 34
+  },
+  "policy_route": {
+    "route": "EXTERNAL_POLICY_REVIEW",
+    "policy_owner": "EXTERNAL_AGENT",
+    "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+    "reasons": [
+      "manual_checks_present",
+      "no_third_party_claims"
+    ],
+    "guidance": "Verification passed, but external policy still needs to decide whether first-party evidence and manual checks are sufficient."
   },
   "failures": [],
   "warnings": [],
@@ -115,6 +125,37 @@ The same example is stored at:
 ```text
 examples/agent-verification/organchor-compact-result.json
 ```
+
+## Policy Route
+
+`policy_route` means strategy routing / 策略路由. It is not a final trust decision.
+
+It helps an external agent avoid a common mistake:
+
+```text
+identity PASS -> therefore organization is trustworthy
+```
+
+The correct interpretation is:
+
+```text
+identity PASS -> the signed identity package verified
+policy_route -> what the external agent should do next
+trust_decision -> still NOT_ASSIGNED_BY_ORGANCHOR
+```
+
+Current route values:
+
+```text
+STOP_IDENTITY_FAILURE = stop using the endpoint statement as verified OrgAnchor identity
+REVIEW_FAILED_CHECKS = identity passed, but other verification checks failed
+REQUEST_VALUE_EVIDENCE = identity passed, but claims/evidence/value layer is missing
+REVIEW_VALUE_WARNINGS = value layer exists but has warnings or unsupported claims
+EXTERNAL_POLICY_REVIEW = verification passed, but manual checks or first-party-only evidence remain
+READY_FOR_EXTERNAL_POLICY = package is ready as input to the agent's own policy
+```
+
+For example, OrgAnchor's own self-pilot can verify as `PASS` while still routing to `EXTERNAL_POLICY_REVIEW`, because it has first-party evidence and manual checks but not independent third-party claims. That is intentional.
 
 ## Status Meaning
 
@@ -195,6 +236,7 @@ artifact_base_url
 organization
 identity
 value_continuity
+policy_route
 checks[]
 recommended_next_steps[]
 ```

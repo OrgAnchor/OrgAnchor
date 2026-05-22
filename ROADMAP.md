@@ -481,4 +481,4 @@ The implemented Stage 5 migration commands have now been exercised in the OrgAnc
 
 The current emphasis is release hygiene and repeatable adoption: keep `README.md`, `DOCS_INDEX.md`, `CHANGELOG.md`, `V1_RELEASE_CHECKLIST.md`, public self-pilot state, npm package metadata, GitHub state, and carrier receipts aligned before promoting the next alpha or declaring v1 readiness.
 
-The next product-design frontier is the software value evidence layer: make OrgAnchor's own claims, evidence, reproducible checks, gaps, and corrections increasingly easy for third-party AI agents to inspect at low cost. `VALUE_CONTINUITY_MODEL.md`, `EVIDENCE_MODEL.md`, and `AGENT_INTEGRATION_GUIDE.md` are the current starting points.
+The next product-design frontier is the software value evidence layer: make OrgAnchor's own claims, evidence, reproducible checks, gaps, corrections, and policy-routing hints increasingly easy for third-party AI agents to inspect at low cost. `VALUE_CONTINUITY_MODEL.md`, `EVIDENCE_MODEL.md`, and `AGENT_INTEGRATION_GUIDE.md` are the current starting points.

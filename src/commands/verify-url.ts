@@ -25,6 +25,7 @@ interface AgentVerificationResult {
   organization: JsonValue;
   identity: Record<string, JsonValue>;
   value_continuity: Record<string, JsonValue>;
+  policy_route: AgentPolicyRoute;
   checks: AgentCheck[];
   recommended_next_steps: string[];
 }
@@ -53,9 +54,26 @@ interface AgentVerificationCompactResult {
     reproducible_claims: number;
     manual_checks: number;
   };
+  policy_route: AgentPolicyRoute;
   failures: string[];
   warnings: string[];
   next_step: string;
+}
+
+type AgentPolicyRouteName =
+  | "STOP_IDENTITY_FAILURE"
+  | "REVIEW_FAILED_CHECKS"
+  | "REQUEST_VALUE_EVIDENCE"
+  | "REVIEW_VALUE_WARNINGS"
+  | "EXTERNAL_POLICY_REVIEW"
+  | "READY_FOR_EXTERNAL_POLICY";
+
+interface AgentPolicyRoute {
+  route: AgentPolicyRouteName;
+  policy_owner: "EXTERNAL_AGENT";
+  trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
+  reasons: string[];
+  guidance: string;
 }
 
 export async function verifyUrlCommand(options: Record<string, string | boolean>): Promise<void> {
@@ -171,6 +189,13 @@ export async function verifyUrlCommand(options: Record<string, string | boolean>
   const hasWarnings = checks.some((check) => check.status === "WARN");
   const valueStatus = valueContinuity.status;
   const overallStatus = hasFailures ? "FAIL" : hasWarnings || valueStatus !== "PASS" ? "WARN" : "PASS";
+  const policyRoute = buildPolicyRoute({
+    identityStatus,
+    overallStatus,
+    valueStatus,
+    checks,
+    valueContinuity: valueContinuity.publicValue
+  });
   const result: AgentVerificationResult = {
     type: "OrgAnchorAgentVerificationResult",
     version: "1.0",
@@ -191,6 +216,7 @@ export async function verifyUrlCommand(options: Record<string, string | boolean>
       valid_signatures: statementVerification.valid_signatures
     },
     value_continuity: valueContinuity.publicValue,
+    policy_route: policyRoute,
     checks,
     recommended_next_steps: recommendedNextSteps(checks, valueContinuity.status)
   };
@@ -226,6 +252,7 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
       reproducible_claims: numberValue(summary.reproducible_claims),
       manual_checks: numberValue(summary.MANUAL_CHECK_REQUIRED)
     },
+    policy_route: result.policy_route,
     failures: result.checks
       .filter((check) => check.status === "FAIL")
       .map((check) => `${check.id}: ${check.detail}`),
@@ -233,6 +260,87 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
       .filter((check) => check.status === "WARN")
       .map((check) => `${check.id}: ${check.detail}`),
     next_step: result.recommended_next_steps[0] ?? "Use the verified artifacts as inputs to your own policy."
+  };
+}
+
+function buildPolicyRoute(options: {
+  identityStatus: AgentVerificationResult["identity_status"];
+  overallStatus: AgentVerificationResult["overall_status"];
+  valueStatus: AgentVerificationResult["value_status"];
+  checks: AgentCheck[];
+  valueContinuity: Record<string, JsonValue>;
+}): AgentPolicyRoute {
+  const summary = optionalRecord(options.valueContinuity.summary);
+  const failCount = options.checks.filter((check) => check.status === "FAIL").length;
+  const warnCount = options.checks.filter((check) => check.status === "WARN").length;
+  const manualChecks = numberValue(summary.MANUAL_CHECK_REQUIRED);
+  const unsupportedClaims = numberValue(summary.unsupported_claims);
+  const thirdPartyClaims = numberValue(summary.third_party_claims);
+  const totalClaims = numberValue(summary.total_claims);
+  const reasons: string[] = [];
+
+  if (options.identityStatus === "FAIL") {
+    reasons.push("identity_verification_failed");
+    return policyRoute(
+      "STOP_IDENTITY_FAILURE",
+      reasons,
+      "Do not use the published endpoints as verified OrgAnchor endpoints until identity failures are resolved."
+    );
+  }
+
+  if (options.overallStatus === "FAIL" || failCount > 0) {
+    reasons.push("non_identity_verification_failures_present");
+    return policyRoute(
+      "REVIEW_FAILED_CHECKS",
+      reasons,
+      "Identity passed, but one or more non-identity checks failed. Review the full result before using claims or evidence."
+    );
+  }
+
+  if (options.valueStatus === "NOT_INCLUDED") {
+    reasons.push("value_layer_not_included");
+    return policyRoute(
+      "REQUEST_VALUE_EVIDENCE",
+      reasons,
+      "Identity can be used for endpoint continuity, but product or service evaluation needs signed claims/evidence from the organization."
+    );
+  }
+
+  if (options.valueStatus === "WARN" || warnCount > 0 || unsupportedClaims > 0) {
+    if (warnCount > 0) reasons.push("value_warnings_present");
+    if (unsupportedClaims > 0) reasons.push("unsupported_claims_present");
+    return policyRoute(
+      "REVIEW_VALUE_WARNINGS",
+      reasons,
+      "The value layer is present but has warnings or unsupported claims. Route to external policy review before transaction decisions."
+    );
+  }
+
+  if (manualChecks > 0 || (totalClaims > 0 && thirdPartyClaims === 0)) {
+    if (manualChecks > 0) reasons.push("manual_checks_present");
+    if (totalClaims > 0 && thirdPartyClaims === 0) reasons.push("no_third_party_claims");
+    return policyRoute(
+      "EXTERNAL_POLICY_REVIEW",
+      reasons,
+      "Verification passed, but external policy still needs to decide whether first-party evidence and manual checks are sufficient."
+    );
+  }
+
+  reasons.push("identity_and_value_checks_passed");
+  return policyRoute(
+    "READY_FOR_EXTERNAL_POLICY",
+    reasons,
+    "The OrgAnchor package is ready as an input to the external agent's own policy. OrgAnchor still does not assign final trust."
+  );
+}
+
+function policyRoute(route: AgentPolicyRouteName, reasons: string[], guidance: string): AgentPolicyRoute {
+  return {
+    route,
+    policy_owner: "EXTERNAL_AGENT",
+    trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR",
+    reasons,
+    guidance
   };
 }
 

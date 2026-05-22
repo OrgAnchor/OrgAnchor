@@ -17,10 +17,20 @@
     "evidence": "PASS",
     "value": "PASS",
     "unsupported_claims": 0,
-    "total_evidence_items": 23,
+    "total_evidence_items": 34,
     "third_party_claims": 0,
     "reproducible_claims": 1,
-    "manual_checks": 23
+    "manual_checks": 34
+  },
+  "policy_route": {
+    "route": "EXTERNAL_POLICY_REVIEW",
+    "policy_owner": "EXTERNAL_AGENT",
+    "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+    "reasons": [
+      "manual_checks_present",
+      "no_third_party_claims"
+    ],
+    "guidance": "Verification passed, but external policy still needs to decide whether first-party evidence and manual checks are sufficient."
   },
   "failures": [],
   "warnings": [],

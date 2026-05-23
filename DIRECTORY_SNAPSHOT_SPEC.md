@@ -421,6 +421,14 @@ organchor directory build \
 
 organchor directory fetch https://example.org
 organchor directory fetch https://example.org --out downloaded-directory-snapshot.json
+organchor directory fetch https://example.org \
+  --category software \
+  --capability identity-continuity \
+  --region global \
+  --language en \
+  --identity-status PASS \
+  --value-status PASS,WARN \
+  --limit 5
 
 organchor directory inspect https://example.org
 
@@ -444,6 +452,21 @@ directory-snapshot.json.sha256
 ```text
 organchor verify url <origin> --compact
 ```
+
+Agents can filter fetched candidates before spending more verification work:
+
+```text
+--category <category>
+--capability <capability>
+--region <region>
+--language <language>
+--identity-status <PASS|FAIL|NOT_VERIFIED>
+--value-status <PASS|WARN|FAIL|NOT_INCLUDED|NOT_VERIFIED>
+--policy-route <route>
+--limit <positive-integer>
+```
+
+Comma-separated values are supported for a single filter flag. Filtering only narrows the candidate list; it does not make the Directory a certification authority.
 
 `directory verify` validates the snapshot shape, trust boundary, and origin-owned discovery links. It verifies the Directory artifact itself; agents should still fetch selected origins and run direct verification before acting.
 

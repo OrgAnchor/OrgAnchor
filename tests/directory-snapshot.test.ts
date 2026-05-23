@@ -18,6 +18,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { buildDirectorySnapshot, validateDirectorySnapshot } from "../src/directory/snapshot.ts";
 import type { JsonValue } from "../src/core/json.ts";
+import { sha256CanonicalJson } from "../src/core/hash.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const cliPath = join(repoRoot, "src", "cli.ts");
@@ -206,6 +207,56 @@ test("directory inspect discovers and verifies an origin-published Directory", a
         "2026-05-23T00:00:00.000Z",
         "--verify-origins"
       ]);
+      const snapshotPath = join(workspace, "public", "directory", "directory-snapshot.json");
+      const snapshot = validateDirectorySnapshot(readJson(snapshotPath) as JsonValue);
+      snapshot.records.push({
+        type: "OrgAnchorDirectoryRecord",
+        version: "0.1",
+        record_id: "hardware-vendor",
+        origin: "https://hardware.example",
+        well_known_url: "https://hardware.example/.well-known/organchor.json",
+        verify_index_url: "https://hardware.example/verify/organchor.json",
+        organization: {
+          name: "Hardware Vendor",
+          display_name: "Hardware Vendor"
+        },
+        discovery: {
+          categories: ["hardware"],
+          capabilities: ["precision-machining"],
+          regions: ["eu"],
+          languages: ["en"]
+        },
+        verification_summary: {
+          identity_status: "PASS",
+          value_status: "WARN",
+          policy_route: "REVIEW_VALUE_WARNINGS",
+          root_authority_hash: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          statement_hash: "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          last_verified_at: "2026-05-23T00:00:00.000Z"
+        },
+        evidence_summary: {
+          total_evidence_items: 3,
+          third_party_claims: 1,
+          reproducible_claims: 1,
+          manual_checks: 1,
+          unsupported_claims: 0
+        },
+        source: {
+          method: "manual",
+          added_at: "2026-05-23T00:00:00.000Z"
+        },
+        limitations: [
+          "Directory record is a summary only.",
+          "Agent must verify against the origin package before relying on it."
+        ]
+      });
+      validateDirectorySnapshot(snapshot as JsonValue);
+      writeFileSync(snapshotPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
+      writeFileSync(
+        `${snapshotPath}.sha256`,
+        `${sha256CanonicalJson(snapshot as JsonValue)}\n`,
+        "utf8"
+      );
       writeFileSync(
         join(workspace, "public", "directory", "directory-policy.json"),
         `${JSON.stringify({
@@ -232,7 +283,7 @@ test("directory inspect discovers and verifies an origin-published Directory", a
       assert.equal(report.directory.status, "PASS");
       assert.equal(report.directory.snapshot_url, `${origin}/directory/directory-snapshot.json`);
       assert.equal(report.directory.snapshot_id, "directory-inspect-test-001");
-      assert.equal(report.directory.record_count, 1);
+      assert.equal(report.directory.record_count, 2);
       assert.equal(report.directory.trust_boundary.directory_is_trust_root, false);
       assert.equal(hasInspectCheck(report, "directory_snapshot_hash", "PASS"), true);
       assert.equal(hasInspectCheck(report, "directory_hash_file", "PASS"), true);
@@ -249,14 +300,44 @@ test("directory inspect discovers and verifies an origin-published Directory", a
       assert.equal(fetchReport.type, "OrgAnchorDirectoryFetchResult");
       assert.equal(fetchReport.status, "PASS");
       assert.equal(fetchReport.snapshot.snapshot_id, "directory-inspect-test-001");
-      assert.equal(fetchReport.snapshot.record_count, 1);
+      assert.equal(fetchReport.snapshot.record_count, 2);
       assert.equal(fetchReport.snapshot.saved_to, join(workspace, "downloaded-directory-snapshot.json"));
-      assert.equal(fetchReport.candidates.length, 1);
+      assert.equal(fetchReport.counts.total_records, 2);
+      assert.equal(fetchReport.counts.matched_records, 2);
+      assert.equal(fetchReport.counts.returned_records, 2);
+      assert.equal(fetchReport.candidates.length, 2);
       assert.equal(fetchReport.candidates[0].record_id, "self");
       assert.equal(fetchReport.candidates[0].origin, origin);
       assert.equal(fetchReport.candidates[0].verification_summary.identity_status, "PASS");
       assert.equal(fetchReport.candidates[0].next_step, `organchor verify url ${origin} --compact`);
       assert.equal(existsSync(join(workspace, "downloaded-directory-snapshot.json")), true);
+
+      const filteredFetch = await runAsync([
+        "directory",
+        "fetch",
+        origin,
+        "--capability",
+        "identity-continuity",
+        "--identity-status",
+        "PASS",
+        "--limit",
+        "1"
+      ]);
+      const filteredFetchReport = JSON.parse(filteredFetch.stdout);
+      assert.equal(filteredFetchReport.status, "PASS");
+      assert.deepEqual(filteredFetchReport.filters.capabilities, ["identity-continuity"]);
+      assert.deepEqual(filteredFetchReport.filters.identity_statuses, ["PASS"]);
+      assert.equal(filteredFetchReport.filters.limit, 1);
+      assert.equal(filteredFetchReport.counts.total_records, 2);
+      assert.equal(filteredFetchReport.counts.matched_records, 1);
+      assert.equal(filteredFetchReport.counts.returned_records, 1);
+      assert.equal(filteredFetchReport.candidates[0].origin, origin);
+
+      const hardwareFetch = await runAsync(["directory", "fetch", origin, "--category", "hardware"]);
+      const hardwareFetchReport = JSON.parse(hardwareFetch.stdout);
+      assert.equal(hardwareFetchReport.counts.matched_records, 1);
+      assert.equal(hardwareFetchReport.candidates[0].origin, "https://hardware.example");
+      assert.equal(hardwareFetchReport.candidates[0].verification_summary.value_status, "WARN");
 
       writeFileSync(
         join(workspace, "public", "directory", "directory-snapshot.json.sha256"),

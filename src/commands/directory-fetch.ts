@@ -1,7 +1,13 @@
 import { sha256CanonicalJson } from "../core/hash.ts";
 import { parseStrictJson, type JsonValue } from "../core/json.ts";
 import { writeJsonFile } from "../core/files.ts";
-import { validateDirectorySnapshot, type DirectoryRecord } from "../directory/snapshot.ts";
+import {
+  validateDirectorySnapshot,
+  type DirectoryIdentityStatus,
+  type DirectoryPolicyRoute,
+  type DirectoryRecord,
+  type DirectoryValueStatus
+} from "../directory/snapshot.ts";
 import {
   inspectDirectoryTarget,
   parseDirectoryTimeoutMs,
@@ -41,6 +47,17 @@ interface DirectoryFetchCandidate {
   next_step: string;
 }
 
+interface DirectoryFetchFilters {
+  categories: string[];
+  capabilities: string[];
+  regions: string[];
+  languages: string[];
+  identity_statuses: DirectoryIdentityStatus[];
+  value_statuses: DirectoryValueStatus[];
+  policy_routes: DirectoryPolicyRoute[];
+  limit: number | null;
+}
+
 interface DirectoryFetchResult {
   type: "OrgAnchorDirectoryFetchResult";
   version: "0.1";
@@ -54,16 +71,24 @@ interface DirectoryFetchResult {
     record_count: number;
     saved_to: string | null;
   };
+  filters: DirectoryFetchFilters;
+  counts: {
+    total_records: number;
+    matched_records: number;
+    returned_records: number;
+  };
   candidates: DirectoryFetchCandidate[];
 }
 
 export async function directoryFetchCommand(options: Record<string, string | boolean>): Promise<void> {
   const target = typeof options.url === "string" ? options.url : typeof options._ === "string" ? options._ : "";
   if (!target) throw new Error("directory fetch requires <organization-url>");
+  const filters = parseFetchFilters(options);
   const report = await fetchDirectoryTarget({
     target,
     timeoutMs: parseDirectoryTimeoutMs(options["timeout-ms"]),
-    out: typeof options.out === "string" ? options.out : null
+    out: typeof options.out === "string" ? options.out : null,
+    filters
   });
   console.log(JSON.stringify(report, null, 2));
   if (report.status === "FAIL" || report.status === "NOT_INCLUDED") process.exitCode = 1;
@@ -73,6 +98,7 @@ async function fetchDirectoryTarget(options: {
   target: string;
   timeoutMs: number;
   out: string | null;
+  filters: DirectoryFetchFilters;
 }): Promise<DirectoryFetchResult> {
   const inspect = await inspectDirectoryTarget(options.target, options.timeoutMs);
   const snapshotUrl = inspect.directory.snapshot_url;
@@ -91,6 +117,8 @@ async function fetchDirectoryTarget(options: {
       status: inspect.status,
       inspect,
       snapshot: emptySnapshot,
+      filters: options.filters,
+      counts: emptyCounts(),
       candidates: []
     };
   }
@@ -119,6 +147,8 @@ async function fetchDirectoryTarget(options: {
         status: "FAIL",
         inspect: failedInspect,
         snapshot: emptySnapshot,
+        filters: options.filters,
+        counts: emptyCounts(),
         candidates: []
       };
     }
@@ -126,6 +156,9 @@ async function fetchDirectoryTarget(options: {
     if (options.out) {
       await writeJsonFile(options.out, snapshot as unknown as JsonValue);
     }
+
+    const matchedRecords = snapshot.records.filter((record) => recordMatchesFilters(record, options.filters));
+    const returnedRecords = options.filters.limit === null ? matchedRecords : matchedRecords.slice(0, options.filters.limit);
 
     return {
       type: "OrgAnchorDirectoryFetchResult",
@@ -140,7 +173,13 @@ async function fetchDirectoryTarget(options: {
         record_count: snapshot.records.length,
         saved_to: options.out
       },
-      candidates: snapshot.records.map(candidateFromRecord)
+      filters: options.filters,
+      counts: {
+        total_records: snapshot.records.length,
+        matched_records: matchedRecords.length,
+        returned_records: returnedRecords.length
+      },
+      candidates: returnedRecords.map(candidateFromRecord)
     };
   } catch (error) {
     const checks: InspectCheck[] = [
@@ -162,9 +201,99 @@ async function fetchDirectoryTarget(options: {
         checks
       },
       snapshot: emptySnapshot,
+      filters: options.filters,
+      counts: emptyCounts(),
       candidates: []
     };
   }
+}
+
+function parseFetchFilters(options: Record<string, string | boolean>): DirectoryFetchFilters {
+  return {
+    categories: parseStringList(options.category, "category"),
+    capabilities: parseStringList(options.capability, "capability"),
+    regions: parseStringList(options.region, "region"),
+    languages: parseStringList(options.language, "language"),
+    identity_statuses: parseEnumList(
+      options["identity-status"],
+      "identity-status",
+      ["PASS", "FAIL", "NOT_VERIFIED"]
+    ) as DirectoryIdentityStatus[],
+    value_statuses: parseEnumList(
+      options["value-status"],
+      "value-status",
+      ["PASS", "WARN", "FAIL", "NOT_INCLUDED", "NOT_VERIFIED"]
+    ) as DirectoryValueStatus[],
+    policy_routes: parseEnumList(
+      options["policy-route"],
+      "policy-route",
+      [
+        "STOP_IDENTITY_FAILURE",
+        "REVIEW_FAILED_CHECKS",
+        "REQUEST_VALUE_EVIDENCE",
+        "REVIEW_VALUE_WARNINGS",
+        "EXTERNAL_POLICY_REVIEW",
+        "READY_FOR_EXTERNAL_POLICY",
+        "REQUEST_ORIGIN_VERIFICATION"
+      ]
+    ) as DirectoryPolicyRoute[],
+    limit: parseLimit(options.limit)
+  };
+}
+
+function parseStringList(value: string | boolean | undefined, label: string): string[] {
+  if (value === undefined) return [];
+  if (typeof value !== "string") throw new Error(`--${label} requires a value`);
+  return value.split(",").map((item) => item.trim()).filter(Boolean);
+}
+
+function parseEnumList(value: string | boolean | undefined, label: string, allowed: string[]): string[] {
+  const allowedSet = new Set(allowed);
+  return parseStringList(value, label).map((item) => {
+    const normalized = item.toUpperCase();
+    if (!allowedSet.has(normalized)) {
+      throw new Error(`--${label} must be one of: ${allowed.join(", ")}`);
+    }
+    return normalized;
+  });
+}
+
+function parseLimit(value: string | boolean | undefined): number | null {
+  if (value === undefined) return null;
+  if (typeof value !== "string") throw new Error("--limit requires a value");
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1) throw new Error("--limit must be a positive integer");
+  return parsed;
+}
+
+function recordMatchesFilters(record: DirectoryRecord, filters: DirectoryFetchFilters): boolean {
+  return (
+    matchesAny(record.discovery.categories, filters.categories) &&
+    matchesAny(record.discovery.capabilities, filters.capabilities) &&
+    matchesAny(record.discovery.regions, filters.regions) &&
+    matchesAny(record.discovery.languages, filters.languages) &&
+    matchesExact(record.verification_summary.identity_status, filters.identity_statuses) &&
+    matchesExact(record.verification_summary.value_status, filters.value_statuses) &&
+    matchesExact(record.verification_summary.policy_route, filters.policy_routes)
+  );
+}
+
+function matchesAny(values: string[], filters: string[]): boolean {
+  if (filters.length === 0) return true;
+  const normalized = new Set(values.map((value) => value.toLowerCase()));
+  return filters.some((filter) => normalized.has(filter.toLowerCase()));
+}
+
+function matchesExact<T extends string>(value: T, filters: T[]): boolean {
+  return filters.length === 0 || filters.includes(value);
+}
+
+function emptyCounts(): DirectoryFetchResult["counts"] {
+  return {
+    total_records: 0,
+    matched_records: 0,
+    returned_records: 0
+  };
 }
 
 function candidateFromRecord(record: DirectoryRecord): DirectoryFetchCandidate {

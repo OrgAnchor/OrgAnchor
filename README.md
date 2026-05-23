@@ -84,6 +84,7 @@ Implemented so far:
 - Optional Directory origin verification that fetches each listed organization's OrgAnchor package before writing crawler-derived records.
 - `organchor directory inspect` for checking whether an organization exposes a machine-readable Directory pointer and whether the linked snapshot/hash/policy are consistent.
 - `organchor directory fetch` for retrieving verified Directory candidate records and next-step `verify url` commands.
+- `organchor directory fetch` filtering by category, capability, region, language, identity status, value status, policy route, and limit so AI agents can reduce candidate sets before direct origin verification.
 - Public complete minimal example artifacts under `examples/complete`.
 
 ## Install Alpha
@@ -131,6 +132,7 @@ organchor value audit --claims claims/product-claims.json --evidence evidence/ev
 organchor directory build --origins examples/directory/directory-origins.json --out public/directory
 organchor directory build --origins examples/directory/directory-origins.json --out public/directory --verify-origins
 organchor directory fetch https://example.org
+organchor directory fetch https://example.org --capability identity-continuity --identity-status PASS --limit 5
 organchor directory inspect https://example.org
 organchor directory verify --snapshot public/directory/directory-snapshot.json
 organchor verify url https://example.org

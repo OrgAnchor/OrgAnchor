@@ -199,6 +199,7 @@ Usage:
   organchor directory build --origins examples/directory/directory-origins.json --out public/directory
   organchor directory build --origins examples/directory/directory-origins.json --out public/directory --verify-origins
   organchor directory fetch https://example.org
+  organchor directory fetch https://example.org --capability identity-continuity --identity-status PASS --limit 5
   organchor directory inspect https://example.org
   organchor directory verify --snapshot public/directory/directory-snapshot.json
   organchor domain audit example.com

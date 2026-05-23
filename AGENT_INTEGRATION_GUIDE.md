@@ -117,6 +117,14 @@ organchor directory fetch https://example.org
 
 The fetch result includes candidate origins and a `next_step` field for each record. That next step remains direct origin verification, not trust by Directory listing.
 
+Agents should filter before deep verification when a Directory contains many records:
+
+```bash
+organchor directory fetch https://example.org --capability identity-continuity --identity-status PASS --limit 5
+```
+
+Supported filters are category, capability, region, language, identity status, value status, policy route, and limit. This keeps discovery cheap while preserving the rule that selected organizations must still be verified at their own origin.
+
 ## Compact Result
 
 The compact result is the preferred first-pass object.

@@ -193,6 +193,7 @@ Usage:
   organchor claims sign --key keys/root-b.private.json --authority root-authority.json --append
   organchor claims verify --authority root-authority.json --in claims/product-claims.json --sig claims/product-claims.json.sig
   organchor directory build --origins examples/directory/directory-origins.json --out public/directory
+  organchor directory build --origins examples/directory/directory-origins.json --out public/directory --verify-origins
   organchor directory verify --snapshot public/directory/directory-snapshot.json
   organchor domain audit example.com
   organchor evidence create --config organchor.config.json

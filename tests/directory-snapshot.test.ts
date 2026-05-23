@@ -1,7 +1,17 @@
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
-import { mkdtempSync, rmSync } from "node:fs";
+import { spawn, spawnSync } from "node:child_process";
+import { createServer } from "node:http";
+import type { AddressInfo } from "node:net";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFile,
+  readFileSync,
+  rmSync,
+  writeFileSync
+} from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import test from "node:test";
@@ -88,6 +98,72 @@ test("directory build and verify commands generate a static discovery snapshot",
   }
 });
 
+test("directory build can verify origins before writing crawler records", async () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-directory-live-"));
+  try {
+    createAgentFixture(workspace);
+    await withStaticServer(join(workspace, "public"), async (origin) => {
+      const originsPath = join(workspace, "directory-origins.json");
+      writeFileSync(
+        originsPath,
+        `${JSON.stringify({
+          snapshot_id: "directory-live-test-001",
+          directory_node: {
+            name: "Test Directory",
+            origin: "https://directory.example",
+            policy_url: "https://directory.example/directory-policy.json"
+          },
+          origins: [
+            {
+              origin,
+              discovery: {
+                categories: ["software"],
+                capabilities: ["identity-continuity"],
+                regions: ["global"],
+                languages: ["en"]
+              }
+            }
+          ]
+        }, null, 2)}\n`,
+        "utf8"
+      );
+
+      const build = await runAsync([
+        "directory",
+        "build",
+        "--origins",
+        originsPath,
+        "--out",
+        join(workspace, "public", "directory"),
+        "--generated-at",
+        "2026-05-23T00:00:00.000Z",
+        "--verify-origins"
+      ]);
+      assert.match(build.stdout, /Origin verification: enabled/);
+
+      const snapshotPath = join(workspace, "public", "directory", "directory-snapshot.json");
+      const generated = validateDirectorySnapshot(readJson(snapshotPath) as JsonValue);
+      const record = generated.records[0];
+      assert.ok(record);
+      assert.equal(record.origin, origin);
+      assert.equal(record.source.method, "crawler");
+      assert.equal(record.verification_summary.identity_status, "PASS");
+      assert.equal(record.verification_summary.value_status, "PASS");
+      assert.equal(record.verification_summary.policy_route, "EXTERNAL_POLICY_REVIEW");
+      assert.equal(record.verification_summary.last_verified_at, "2026-05-23T00:00:00.000Z");
+      assert.match(record.verification_summary.root_authority_hash, /^sha256:[0-9a-f]{64}$/);
+      assert.match(record.verification_summary.statement_hash, /^sha256:[0-9a-f]{64}$/);
+      assert.equal(record.evidence_summary.total_evidence_items, 1);
+      assert.equal(record.evidence_summary.reproducible_claims, 1);
+
+      const verify = run(["directory", "verify", "--snapshot", snapshotPath]);
+      assert.match(verify.stdout, /^PASS/m);
+    });
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
 test("directory snapshot builder fills safe discovery defaults but still requires origin hashes", () => {
   const snapshot = buildDirectorySnapshot({
     snapshotId: "directory-test-001",
@@ -126,6 +202,141 @@ test("directory verify fails closed when a snapshot claims directory trust-root 
   assert.throws(() => validateDirectorySnapshot(invalid as JsonValue), /directory_is_trust_root must be false/);
 });
 
+function createAgentFixture(workspace: string): void {
+  writeFileSync(join(workspace, "README.md"), "# Example Evidence\n\nAgent-verifiable evidence artifact.\n", "utf8");
+  run(["init"], 0, workspace);
+  run(["key", "generate", "--id", "root-2026"], 0, workspace);
+  run(["authority", "create", "--key", "keys/root-2026.private.json"], 0, workspace);
+  run(["statement", "create", "--config", "organchor.config.json", "--authority", "root-authority.json"], 0, workspace);
+  run([
+    "statement",
+    "sign",
+    "--key",
+    "keys/root-2026.private.json",
+    "--authority",
+    "root-authority.json",
+    "--in",
+    "statements/official-endpoints.json"
+  ], 0, workspace);
+  run(["claims", "create", "--config", "organchor.config.json"], 0, workspace);
+  run(["evidence", "create", "--config", "organchor.config.json"], 0, workspace);
+  run([
+    "evidence",
+    "add",
+    "--file",
+    "README.md",
+    "--id",
+    "evidence-001",
+    "--uri",
+    "https://example.org/evidence/README.md",
+    "--location-type",
+    "https",
+    "--reproducibility",
+    "independently_reproducible",
+    "--evidence-strength",
+    "moderate"
+  ], 0, workspace);
+  run(["claims", "sign", "--key", "keys/root-2026.private.json", "--authority", "root-authority.json"], 0, workspace);
+  run(["evidence", "sign", "--key", "keys/root-2026.private.json", "--authority", "root-authority.json"], 0, workspace);
+  run([
+    "value",
+    "audit",
+    "--claims",
+    "claims/product-claims.json",
+    "--evidence",
+    "evidence/evidence-manifest.json",
+    "--check-files"
+  ], 0, workspace);
+  run([
+    "page",
+    "generate",
+    "--statement",
+    "statements/official-endpoints.json",
+    "--sig",
+    "statements/official-endpoints.json.sig",
+    "--authority",
+    "root-authority.json",
+    "--claims",
+    "claims/product-claims.json",
+    "--claims-sig",
+    "claims/product-claims.json.sig",
+    "--evidence",
+    "evidence/evidence-manifest.json",
+    "--evidence-sig",
+    "evidence/evidence-manifest.json.sig",
+    "--value-report",
+    "reports/value-continuity-report.json",
+    "--value-report-md",
+    "reports/value-continuity-report.md",
+    "--out",
+    "public/verify"
+  ], 0, workspace);
+  mkdirSync(join(workspace, "public", ".well-known"), { recursive: true });
+  copyFileSync(
+    join(workspace, "public", "verify", "organchor.json"),
+    join(workspace, "public", ".well-known", "organchor.json")
+  );
+}
+
+async function withStaticServer(root: string, fn: (origin: string) => Promise<void>): Promise<void> {
+  assert.equal(existsSync(root), true);
+  const resolvedRoot = resolve(root);
+  const server = createServer((request, response) => {
+    const requestUrl = new URL(request.url ?? "/", "http://127.0.0.1");
+    const pathname = requestUrl.pathname === "/" ? "index.html" : decodeURIComponent(requestUrl.pathname).replace(/^\/+/, "");
+    const filePath = resolve(join(resolvedRoot, pathname));
+    if (!filePath.startsWith(resolvedRoot)) {
+      response.writeHead(403);
+      response.end("forbidden");
+      return;
+    }
+    readFile(filePath, (error, data) => {
+      if (error) {
+        response.writeHead(404);
+        response.end("not found");
+        return;
+      }
+      response.writeHead(200, { "content-type": filePath.endsWith(".json") ? "application/json" : "text/plain" });
+      response.end(data);
+    });
+  });
+  await new Promise<void>((resolvePromise) => server.listen(0, "127.0.0.1", resolvePromise));
+  try {
+    const address = server.address() as AddressInfo;
+    await fn(`http://127.0.0.1:${address.port}`);
+  } finally {
+    await new Promise<void>((resolvePromise, reject) => {
+      server.close((error) => (error ? reject(error) : resolvePromise()));
+    });
+  }
+}
+
+async function runAsync(args: string[], expectedStatus = 0, cwd = repoRoot): Promise<{ stdout: string; stderr: string }> {
+  const child = spawn(process.execPath, [cliPath, ...args], {
+    cwd,
+    stdio: ["ignore", "pipe", "pipe"]
+  });
+  let stdout = "";
+  let stderr = "";
+  child.stdout.setEncoding("utf8");
+  child.stderr.setEncoding("utf8");
+  child.stdout.on("data", (chunk: string) => {
+    stdout += chunk;
+  });
+  child.stderr.on("data", (chunk: string) => {
+    stderr += chunk;
+  });
+  const status = await new Promise<number | null>((resolvePromise) => {
+    child.on("close", resolvePromise);
+  });
+  assert.equal(
+    status,
+    expectedStatus,
+    `organchor ${args.join(" ")}\nstdout:\n${stdout}\nstderr:\n${stderr}`
+  );
+  return { stdout, stderr };
+}
+
 function readJson(path: string): Record<string, unknown> {
   return asRecord(JSON.parse(readFileSync(path, "utf8")));
 }
@@ -147,9 +358,9 @@ function asString(value: unknown): string {
   return value as string;
 }
 
-function run(args: string[], expectedStatus = 0): { stdout: string; stderr: string } {
+function run(args: string[], expectedStatus = 0, cwd = repoRoot): { stdout: string; stderr: string } {
   const result = spawnSync(process.execPath, [cliPath, ...args], {
-    cwd: repoRoot,
+    cwd,
     encoding: "utf8"
   });
   assert.equal(

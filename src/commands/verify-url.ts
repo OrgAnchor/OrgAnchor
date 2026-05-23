@@ -4,15 +4,15 @@ import { parseStrictJson, type JsonValue } from "../core/json.ts";
 import { asObject, validateOfficialStatement, validateRootAuthority, validateSignatureFile } from "../core/validate.ts";
 import { verifySignatureFile } from "../crypto/signature.ts";
 
-type CheckStatus = "PASS" | "WARN" | "FAIL" | "NOT_INCLUDED";
+export type CheckStatus = "PASS" | "WARN" | "FAIL" | "NOT_INCLUDED";
 
-interface AgentCheck {
+export interface AgentCheck {
   id: string;
   status: CheckStatus;
   detail: string;
 }
 
-interface AgentVerificationResult {
+export interface AgentVerificationResult {
   type: "OrgAnchorAgentVerificationResult";
   version: "1.0";
   target: string;
@@ -30,7 +30,7 @@ interface AgentVerificationResult {
   recommended_next_steps: string[];
 }
 
-interface AgentVerificationCompactResult {
+export interface AgentVerificationCompactResult {
   type: "OrgAnchorAgentVerificationCompactResult";
   version: "1.0";
   target: string;
@@ -60,7 +60,7 @@ interface AgentVerificationCompactResult {
   next_step: string;
 }
 
-type AgentPolicyRouteName =
+export type AgentPolicyRouteName =
   | "STOP_IDENTITY_FAILURE"
   | "REVIEW_FAILED_CHECKS"
   | "REQUEST_VALUE_EVIDENCE"
@@ -68,7 +68,7 @@ type AgentPolicyRouteName =
   | "EXTERNAL_POLICY_REVIEW"
   | "READY_FOR_EXTERNAL_POLICY";
 
-interface AgentPolicyRoute {
+export interface AgentPolicyRoute {
   route: AgentPolicyRouteName;
   policy_owner: "EXTERNAL_AGENT";
   trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
@@ -78,7 +78,19 @@ interface AgentPolicyRoute {
 
 export async function verifyUrlCommand(options: Record<string, string | boolean>): Promise<void> {
   const target = requireTarget(options);
-  const timeoutMs = parseTimeoutMs(options["timeout-ms"]);
+  const result = await verifyUrlTarget(target, { timeoutMs: parseTimeoutMs(options["timeout-ms"]) });
+  const output = options.compact === true ? compactResult(result) : result;
+  console.log(JSON.stringify(output, null, 2));
+  if (result.overall_status === "FAIL") process.exitCode = 1;
+}
+
+export async function verifyUrlTarget(
+  target: string,
+  options: {
+    timeoutMs?: number;
+  } = {}
+): Promise<AgentVerificationResult> {
+  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const index = await discoverIndex(target, timeoutMs);
   const indexObject = asObject(index.value, "verify index");
   const artifactBaseUrl = resolveArtifactBaseUrl(index.url, indexObject);
@@ -220,10 +232,7 @@ export async function verifyUrlCommand(options: Record<string, string | boolean>
     checks,
     recommended_next_steps: recommendedNextSteps(checks, valueContinuity.status)
   };
-
-  const output = options.compact === true ? compactResult(result) : result;
-  console.log(JSON.stringify(output, null, 2));
-  if (overallStatus === "FAIL") process.exitCode = 1;
+  return result;
 }
 
 function compactResult(result: AgentVerificationResult): AgentVerificationCompactResult {

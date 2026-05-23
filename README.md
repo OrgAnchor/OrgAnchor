@@ -80,6 +80,7 @@ Implemented so far:
 - External pilot runbook for repeatable low-risk organization adoption.
 - NPM build configuration that packages the CLI from `dist/cli.js`.
 - Static Directory snapshot build and verification commands for post-v1 discovery experiments.
+- Optional Directory origin verification that fetches each listed organization's OrgAnchor package before writing crawler-derived records.
 - Public complete minimal example artifacts under `examples/complete`.
 
 ## Install Alpha
@@ -125,6 +126,7 @@ organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.m
 organchor evidence sign --key keys/root-2026.private.json --authority root-authority.json
 organchor value audit --claims claims/product-claims.json --evidence evidence/evidence-manifest.json --check-files
 organchor directory build --origins examples/directory/directory-origins.json --out public/directory
+organchor directory build --origins examples/directory/directory-origins.json --out public/directory --verify-origins
 organchor directory verify --snapshot public/directory/directory-snapshot.json
 organchor verify url https://example.org
 organchor verify url https://example.org --compact

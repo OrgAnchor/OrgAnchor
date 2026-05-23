@@ -464,7 +464,7 @@ v1 must cover:
 Status:
 
 ```text
-Design direction recorded; static snapshot spec, example, build command, and verify command implemented; not part of v1 core completion
+Design direction recorded; static snapshot spec, example, build command, verify command, and optional origin verification implemented; not part of v1 core completion
 ```
 
 Purpose:
@@ -479,6 +479,7 @@ Required capabilities for a future implementation:
 - Define optional discovery fields for organization capabilities, regions, service categories, freshness, and evidence summaries.
 - Define static Directory snapshot format.
 - Build and verify static Directory snapshots. Basic implementation complete.
+- Optionally verify each listed origin before writing crawler-derived records. Basic implementation complete.
 - Publish directory policy in machine-readable form.
 - Build static directory snapshots from known OrgAnchor origins.
 - Sign or hash directory snapshots.
@@ -494,6 +495,7 @@ Representative future commands:
 organchor directory inspect https://example.org
 organchor directory add https://example.org
 organchor directory build --in directory-sources.json --out public/directory
+organchor directory build --in directory-sources.json --out public/directory --verify-origins
 organchor directory verify --snapshot public/directory/directory-snapshot.json
 organchor directory export --format ndjson
 ```
@@ -502,6 +504,7 @@ Exit criteria for a future stage:
 
 - A static Directory snapshot can be generated without a hosted database. Basic implementation complete.
 - A static Directory snapshot can be verified as a discovery aid and not a trust root. Basic implementation complete.
+- A Directory snapshot can be generated from live origin verification results without treating the Directory as the trust root. Basic implementation complete.
 - A third-party agent can use the snapshot to find candidate organizations and then verify each organization at its own origin.
 - The Directory policy is public and machine-readable.
 - Paid discovery, if ever introduced, cannot be confused with verification status.

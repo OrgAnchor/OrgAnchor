@@ -391,13 +391,18 @@ That example is not a real Directory service and does not identify a real organi
 
 ## Reference CLI
 
-The first executable MVP supports static build and verification:
+The first executable MVP supports static build, optional origin verification, and snapshot verification:
 
 ```bash
 organchor directory build \
   --origins examples/directory/directory-origins.json \
   --out public/directory \
   --generated-at 2026-05-23T00:00:00.000Z
+
+organchor directory build \
+  --origins examples/directory/directory-origins.json \
+  --out public/directory \
+  --verify-origins
 
 organchor directory verify \
   --snapshot public/directory/directory-snapshot.json
@@ -410,7 +415,9 @@ directory-snapshot.json
 directory-snapshot.json.sha256
 ```
 
-`directory verify` validates the snapshot shape, trust boundary, and origin-owned discovery links. It does not fetch origin packages yet.
+`directory build --verify-origins` fetches each listed origin's OrgAnchor package, reuses the same checks as `organchor verify url`, requires identity verification to pass, and writes crawler-derived hashes, status, evidence counts, and policy-route hints into the Directory record.
+
+`directory verify` validates the snapshot shape, trust boundary, and origin-owned discovery links. It verifies the Directory artifact itself; agents should still fetch selected origins and run direct verification before acting.
 
 ## Non-Goals
 

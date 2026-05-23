@@ -381,7 +381,36 @@ A minimal example snapshot is stored at:
 examples/directory/directory-snapshot.json
 ```
 
+The matching build input is stored at:
+
+```text
+examples/directory/directory-origins.json
+```
+
 That example is not a real Directory service and does not identify a real organization. It exists to keep the static record shape testable.
+
+## Reference CLI
+
+The first executable MVP supports static build and verification:
+
+```bash
+organchor directory build \
+  --origins examples/directory/directory-origins.json \
+  --out public/directory \
+  --generated-at 2026-05-23T00:00:00.000Z
+
+organchor directory verify \
+  --snapshot public/directory/directory-snapshot.json
+```
+
+`directory build` writes:
+
+```text
+directory-snapshot.json
+directory-snapshot.json.sha256
+```
+
+`directory verify` validates the snapshot shape, trust boundary, and origin-owned discovery links. It does not fetch origin packages yet.
 
 ## Non-Goals
 

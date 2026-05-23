@@ -9,6 +9,8 @@ import { authorityCreateCommand } from "./commands/authority-create.ts";
 import { claimsCreateCommand } from "./commands/claims-create.ts";
 import { claimsSignCommand } from "./commands/claims-sign.ts";
 import { claimsVerifyCommand } from "./commands/claims-verify.ts";
+import { directoryBuildCommand } from "./commands/directory-build.ts";
+import { directoryVerifyCommand } from "./commands/directory-verify.ts";
 import { evidenceAddCommand } from "./commands/evidence-add.ts";
 import { evidenceCreateCommand } from "./commands/evidence-create.ts";
 import { evidenceHashCommand } from "./commands/evidence-hash.ts";
@@ -55,6 +57,8 @@ const commands: Record<string, CommandHandler> = {
   "claims create": claimsCreateCommand,
   "claims sign": claimsSignCommand,
   "claims verify": claimsVerifyCommand,
+  "directory build": directoryBuildCommand,
+  "directory verify": directoryVerifyCommand,
   "domain audit": domainAuditCommand,
   "ens inspect": ensInspectCommand,
   "ens plan": ensPlanCommand,
@@ -188,6 +192,8 @@ Usage:
   organchor claims sign --key keys/root-2026.private.json --authority root-authority.json
   organchor claims sign --key keys/root-b.private.json --authority root-authority.json --append
   organchor claims verify --authority root-authority.json --in claims/product-claims.json --sig claims/product-claims.json.sig
+  organchor directory build --origins examples/directory/directory-origins.json --out public/directory
+  organchor directory verify --snapshot public/directory/directory-snapshot.json
   organchor domain audit example.com
   organchor evidence create --config organchor.config.json
   organchor evidence add --file README.md

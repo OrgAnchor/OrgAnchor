@@ -71,9 +71,11 @@ try {
   assertContains(copiedFiles, "EVIDENCE_ONBOARDING_GUIDE.md");
   assertContains(copiedFiles, join("dist", "cli.js"));
   assertContains(copiedFiles, join("examples", "complete", "root-authority.json"));
+  assertContains(copiedFiles, join("examples", "directory", "directory-origins.json"));
   assertContains(copiedFiles, join("examples", "directory", "directory-snapshot.json"));
   assertContains(copiedFiles, join("examples", "complete", "statements", "official-endpoints.json"));
   assertContains(copiedFiles, join("examples", "complete", "statements", "official-endpoints.json.sig"));
+  assertContains(copiedFiles, join("src", "schema", "directory-snapshot.schema.json"));
   assertContains(copiedFiles, join("src", "schema", "official-endpoints.schema.json"));
 
   const forbiddenPatterns = [

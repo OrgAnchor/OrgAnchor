@@ -75,6 +75,7 @@ organchor verify url https://example.org --compact
 
 - `examples/complete/`: public minimal example artifacts. These are test/example artifacts, not a real organization identity.
 - `examples/directory/directory-snapshot.json`: static Directory snapshot example for AI-agent discovery tests.
+- `examples/directory/directory-origins.json`: static Directory build input example.
 - `templates/self-pilot/`: templates for creating a separate OrgAnchor self-pilot workspace.
 
 ## Historical Or Local Notes
@@ -95,6 +96,6 @@ That workspace may contain private keys, provider credentials, wallets, local re
 - ENS live resolver reads still require choosing an Ethereum RPC/provider path.
 - No real Onion disaster-recovery address has been registered.
 - OpenTimestamps proofs may remain pending until calendar proofs are upgraded to Bitcoin attestations.
-- The discovery strategy and static Directory snapshot shape are documented, but no Directory CLI or public index has been implemented yet.
-- The open Directory model is documented, but no Directory CLI or public index has been implemented yet.
+- The discovery strategy and static Directory snapshot shape are documented, and static Directory build/verify commands exist; live crawling and a public Directory index have not been implemented yet.
+- The open Directory model is documented, but no public Directory index has been implemented yet.
 - OrgAnchor is still alpha software; CLI flags, schemas, and operator workflow may change before v1.

@@ -464,7 +464,7 @@ v1 must cover:
 Status:
 
 ```text
-Design direction recorded; not part of v1 core completion
+Design direction recorded; static snapshot spec, example, build command, and verify command implemented; not part of v1 core completion
 ```
 
 Purpose:
@@ -478,6 +478,7 @@ Required capabilities for a future implementation:
 - Define directory record shape.
 - Define optional discovery fields for organization capabilities, regions, service categories, freshness, and evidence summaries.
 - Define static Directory snapshot format.
+- Build and verify static Directory snapshots. Basic implementation complete.
 - Publish directory policy in machine-readable form.
 - Build static directory snapshots from known OrgAnchor origins.
 - Sign or hash directory snapshots.
@@ -499,7 +500,8 @@ organchor directory export --format ndjson
 
 Exit criteria for a future stage:
 
-- A static Directory snapshot can be generated without a hosted database.
+- A static Directory snapshot can be generated without a hosted database. Basic implementation complete.
+- A static Directory snapshot can be verified as a discovery aid and not a trust root. Basic implementation complete.
 - A third-party agent can use the snapshot to find candidate organizations and then verify each organization at its own origin.
 - The Directory policy is public and machine-readable.
 - Paid discovery, if ever introduced, cannot be confused with verification status.

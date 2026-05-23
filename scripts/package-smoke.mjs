@@ -54,6 +54,7 @@ try {
   assertContains(copiedFiles, "CHANGELOG.md");
   assertContains(copiedFiles, "DOCS_INDEX.md");
   assertContains(copiedFiles, "ARCHITECTURE.md");
+  assertContains(copiedFiles, "DISCOVERY_STRATEGY.md");
   assertContains(copiedFiles, "DIRECTORY_MODEL.md");
   assertContains(copiedFiles, "PURPOSE_AND_VALUES.md");
   assertContains(copiedFiles, "ADOPTION_PRINCIPLES.md");

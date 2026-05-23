@@ -469,11 +469,12 @@ Purpose:
 
 Help people, organizations, platforms, and AI agents discover OrgAnchor-enabled organizations without depending on one closed marketplace or paid ranking platform.
 
-The Directory is an open discovery index. It stores summary records, verification status, policy-route hints, and pointers back to each organization's own `/.well-known/organchor.json` and `/verify/organchor.json`. It does not become the identity root, certification authority, evidence host, or final ranking engine.
+The discovery strategy answers the product-level problem: verification only lowers transaction cost after two parties can find each other. The Directory is the first proposed open discovery index for that strategy. It stores summary records, verification status, policy-route hints, and pointers back to each organization's own `/.well-known/organchor.json` and `/verify/organchor.json`. It does not become the identity root, certification authority, evidence host, or final ranking engine.
 
 Required capabilities for a future implementation:
 
 - Define directory record shape.
+- Define optional discovery fields for organization capabilities, regions, service categories, freshness, and evidence summaries.
 - Publish directory policy in machine-readable form.
 - Build static directory snapshots from known OrgAnchor origins.
 - Sign or hash directory snapshots.
@@ -503,6 +504,7 @@ Exit criteria for a future stage:
 
 Reference:
 
+- `DISCOVERY_STRATEGY.md`
 - `DIRECTORY_MODEL.md`
 
 ## Recommended Implementation Rhythm
@@ -531,4 +533,4 @@ The current emphasis is release hygiene and repeatable adoption: keep `README.md
 
 The next product-design frontier is the software value evidence layer: make OrgAnchor's own claims, evidence, reproducible checks, gaps, corrections, and policy-routing hints increasingly easy for third-party AI agents to inspect at low cost. `VALUE_CONTINUITY_MODEL.md`, `EVIDENCE_MODEL.md`, and `AGENT_INTEGRATION_GUIDE.md` are the current starting points.
 
-The longer post-v1 discovery frontier is `DIRECTORY_MODEL.md`: an open, forkable Directory model that can help agents find OrgAnchor-enabled organizations while preventing the discovery layer from becoming a monopoly trust platform.
+The longer post-v1 discovery frontier is `DISCOVERY_STRATEGY.md` plus `DIRECTORY_MODEL.md`: an open, forkable discovery model that can help agents find OrgAnchor-enabled organizations while preventing the discovery layer from becoming a monopoly trust platform.

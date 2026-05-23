@@ -54,6 +54,7 @@ OrgAnchor does not certify that an organization is good or truthful. It makes si
 
 - `DISCOVERY_STRATEGY.md`: post-v1 discovery strategy explaining why OrgAnchor needs both verification and discoverability to reduce real transaction cost between organizations and agents.
 - `DIRECTORY_MODEL.md`: proposed post-v1 open discovery index model for helping people and AI agents find OrgAnchor-enabled organizations without creating a monopoly trust platform.
+- `DIRECTORY_SNAPSHOT_SPEC.md`: proposed static Directory snapshot format for low-cost AI-agent candidate discovery before direct origin verification.
 
 The Directory is not part of the v1 core requirement. It is a future discovery layer over verifiable organization packages, not a certification authority or final ranking service.
 
@@ -73,6 +74,7 @@ organchor verify url https://example.org --compact
 ## Examples And Templates
 
 - `examples/complete/`: public minimal example artifacts. These are test/example artifacts, not a real organization identity.
+- `examples/directory/directory-snapshot.json`: static Directory snapshot example for AI-agent discovery tests.
 - `templates/self-pilot/`: templates for creating a separate OrgAnchor self-pilot workspace.
 
 ## Historical Or Local Notes
@@ -93,6 +95,6 @@ That workspace may contain private keys, provider credentials, wallets, local re
 - ENS live resolver reads still require choosing an Ethereum RPC/provider path.
 - No real Onion disaster-recovery address has been registered.
 - OpenTimestamps proofs may remain pending until calendar proofs are upgraded to Bitcoin attestations.
-- The discovery strategy is documented, but no discovery fields, static Directory snapshot, or Directory CLI has been implemented yet.
+- The discovery strategy and static Directory snapshot shape are documented, but no Directory CLI or public index has been implemented yet.
 - The open Directory model is documented, but no Directory CLI or public index has been implemented yet.
 - OrgAnchor is still alpha software; CLI flags, schemas, and operator workflow may change before v1.

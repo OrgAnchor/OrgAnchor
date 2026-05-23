@@ -14,11 +14,13 @@ test("documentation index is discoverable from README and package metadata", () 
   assert.match(readme, /DOCS_INDEX\.md/);
   assert.match(readme, /DISCOVERY_STRATEGY\.md/);
   assert.match(readme, /DIRECTORY_MODEL\.md/);
+  assert.match(readme, /DIRECTORY_SNAPSHOT_SPEC\.md/);
   assert.match(readme, /Operator-facing adoption and verification documents/);
   assert.ok(packageJson.files?.includes("PROJECT_NORTH_STAR.md"), "package.json files must include PROJECT_NORTH_STAR.md");
   assert.ok(packageJson.files?.includes("DOCS_INDEX.md"), "package.json files must include DOCS_INDEX.md");
   assert.ok(packageJson.files?.includes("DISCOVERY_STRATEGY.md"), "package.json files must include DISCOVERY_STRATEGY.md");
   assert.ok(packageJson.files?.includes("DIRECTORY_MODEL.md"), "package.json files must include DIRECTORY_MODEL.md");
+  assert.ok(packageJson.files?.includes("DIRECTORY_SNAPSHOT_SPEC.md"), "package.json files must include DIRECTORY_SNAPSHOT_SPEC.md");
 });
 
 test("documentation index names the package-facing guidance documents", () => {

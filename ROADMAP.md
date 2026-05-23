@@ -477,6 +477,7 @@ Required capabilities for a future implementation:
 
 - Define directory record shape.
 - Define optional discovery fields for organization capabilities, regions, service categories, freshness, and evidence summaries.
+- Define static Directory snapshot format.
 - Publish directory policy in machine-readable form.
 - Build static directory snapshots from known OrgAnchor origins.
 - Sign or hash directory snapshots.
@@ -508,6 +509,7 @@ Reference:
 
 - `DISCOVERY_STRATEGY.md`
 - `DIRECTORY_MODEL.md`
+- `DIRECTORY_SNAPSHOT_SPEC.md`
 
 ## Recommended Implementation Rhythm
 
@@ -535,4 +537,4 @@ The current emphasis is release hygiene and repeatable adoption: keep `PROJECT_N
 
 The next product-design frontier is the software value evidence layer: make OrgAnchor's own claims, evidence, reproducible checks, gaps, corrections, and policy-routing hints increasingly easy for third-party AI agents to inspect at low cost. `VALUE_CONTINUITY_MODEL.md`, `EVIDENCE_MODEL.md`, and `AGENT_INTEGRATION_GUIDE.md` are the current starting points.
 
-The longer post-v1 discovery frontier is `DISCOVERY_STRATEGY.md` plus `DIRECTORY_MODEL.md`: an open, forkable discovery model that can help agents find OrgAnchor-enabled organizations while preventing the discovery layer from becoming a monopoly trust platform.
+The longer post-v1 discovery frontier is `DISCOVERY_STRATEGY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md`: an open, forkable discovery model that can help agents find OrgAnchor-enabled organizations while preventing the discovery layer from becoming a monopoly trust platform.

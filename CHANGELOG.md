@@ -20,6 +20,7 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - `organchor verify url` now emits `policy_route` so external AI agents can route verified results to stop, request evidence, review warnings, or apply their own policy without treating `PASS` as a trust badge.
 - `DISCOVERY_STRATEGY.md` records why OrgAnchor needs an open discovery layer, not only post-discovery verification, to reduce real transaction cost between organizations and AI agents.
 - `DIRECTORY_MODEL.md` records the proposed post-v1 open discovery index model for helping people and AI agents find OrgAnchor-enabled organizations without turning discovery into a monopoly trust platform.
+- `DIRECTORY_SNAPSHOT_SPEC.md` and `examples/directory/directory-snapshot.json` define the first static discovery snapshot shape for AI-agent candidate discovery before direct origin verification.
 
 ## 0.1.0-alpha.1 - 2026-05-14
 

@@ -1,0 +1,69 @@
+{
+  "type": "OrgAnchorDirectorySnapshot",
+  "version": "0.1",
+  "snapshot_id": "organchor-example-directory-2026-001",
+  "generated_at": "2026-05-23T00:00:00.000Z",
+  "directory_node": {
+    "name": "OrgAnchor Example Directory",
+    "origin": "https://organchor.org",
+    "policy_url": "https://organchor.org/directory-policy.json"
+  },
+  "trust_boundary": {
+    "directory_is_trust_root": false,
+    "final_trust_decision": "EXTERNAL_AGENT",
+    "records_must_verify_at_origin": true
+  },
+  "records": [
+    {
+      "type": "OrgAnchorDirectoryRecord",
+      "version": "0.1",
+      "record_id": "vector-org-example",
+      "origin": "https://vector.example",
+      "well_known_url": "https://vector.example/.well-known/organchor.json",
+      "verify_index_url": "https://vector.example/verify/organchor.json",
+      "organization": {
+        "name": "Vector Org",
+        "display_name": "Vector Organization"
+      },
+      "discovery": {
+        "categories": [
+          "software"
+        ],
+        "capabilities": [
+          "identity-continuity",
+          "verification-example"
+        ],
+        "regions": [
+          "global"
+        ],
+        "languages": [
+          "en"
+        ]
+      },
+      "verification_summary": {
+        "identity_status": "PASS",
+        "value_status": "NOT_INCLUDED",
+        "policy_route": "REQUEST_VALUE_EVIDENCE",
+        "root_authority_hash": "sha256:12ce12a2a8e24a9c364aa56156cf182e1fd118463c63f59b1cf452a05f6effeb",
+        "statement_hash": "sha256:c8ab6ad8dec4f474d6b8c126611655301c66b851ca2ae3a7f223b23b72739268",
+        "last_verified_at": "2026-05-23T00:00:00.000Z"
+      },
+      "evidence_summary": {
+        "total_evidence_items": 0,
+        "third_party_claims": 0,
+        "reproducible_claims": 0,
+        "manual_checks": 0,
+        "unsupported_claims": 0
+      },
+      "source": {
+        "method": "manual",
+        "added_at": "2026-05-23T00:00:00.000Z"
+      },
+      "limitations": [
+        "Directory record is a summary only.",
+        "This is a test vector, not a real organization listing.",
+        "Agent must verify against the origin package before relying on it."
+      ]
+    }
+  ]
+}

@@ -57,6 +57,7 @@ try {
   assertContains(copiedFiles, "ARCHITECTURE.md");
   assertContains(copiedFiles, "DISCOVERY_STRATEGY.md");
   assertContains(copiedFiles, "DIRECTORY_MODEL.md");
+  assertContains(copiedFiles, "DIRECTORY_SNAPSHOT_SPEC.md");
   assertContains(copiedFiles, "PURPOSE_AND_VALUES.md");
   assertContains(copiedFiles, "ADOPTION_PRINCIPLES.md");
   assertContains(copiedFiles, "ADOPTION_GUIDE.md");
@@ -70,6 +71,7 @@ try {
   assertContains(copiedFiles, "EVIDENCE_ONBOARDING_GUIDE.md");
   assertContains(copiedFiles, join("dist", "cli.js"));
   assertContains(copiedFiles, join("examples", "complete", "root-authority.json"));
+  assertContains(copiedFiles, join("examples", "directory", "directory-snapshot.json"));
   assertContains(copiedFiles, join("examples", "complete", "statements", "official-endpoints.json"));
   assertContains(copiedFiles, join("examples", "complete", "statements", "official-endpoints.json.sig"));
   assertContains(copiedFiles, join("src", "schema", "official-endpoints.schema.json"));

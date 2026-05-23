@@ -27,7 +27,7 @@ OrgAnchor does not certify that an organization is good, lawful, ethical, effect
 
 See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `PURPOSE_AND_VALUES.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance and document map.
 
-The proposed post-v1 `DISCOVERY_STRATEGY.md` and `DIRECTORY_MODEL.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
+The proposed post-v1 `DISCOVERY_STRATEGY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
 
 ## Current Status
 
@@ -225,6 +225,7 @@ Operator-facing adoption and verification documents:
 - `DOMAIN_HARDENING_GUIDE.md`
 - `DISCOVERY_STRATEGY.md`
 - `DIRECTORY_MODEL.md`
+- `DIRECTORY_SNAPSHOT_SPEC.md`
 - `EVIDENCE_ONBOARDING_GUIDE.md`
 
 ## Release Hygiene

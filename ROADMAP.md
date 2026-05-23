@@ -481,6 +481,7 @@ Required capabilities for a future implementation:
 - Build and verify static Directory snapshots. Basic implementation complete.
 - Optionally verify each listed origin before writing crawler-derived records. Basic implementation complete.
 - Expose optional Directory discovery pointers from `/verify/organchor.json` and `/.well-known/organchor.json`. Basic implementation complete.
+- Inspect an organization's Directory discovery pointer and validate linked snapshot/hash/policy artifacts. Basic implementation complete.
 - Publish directory policy in machine-readable form.
 - Build static directory snapshots from known OrgAnchor origins.
 - Sign or hash directory snapshots.

@@ -101,6 +101,14 @@ Agents can use this to find candidate organizations with lower discovery cost. T
 organchor verify url <origin> --compact
 ```
 
+To inspect a published Directory pointer before using it:
+
+```bash
+organchor directory inspect https://example.org
+```
+
+This command checks the verify-index pointer, snapshot shape, snapshot hash, optional hash file, policy hash, and trust-boundary flags.
+
 ## Compact Result
 
 The compact result is the preferred first-pass object.

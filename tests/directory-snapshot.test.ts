@@ -164,6 +164,95 @@ test("directory build can verify origins before writing crawler records", async 
   }
 });
 
+test("directory inspect discovers and verifies an origin-published Directory", async () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-directory-inspect-"));
+  try {
+    createAgentFixture(workspace);
+    await withStaticServer(join(workspace, "public"), async (origin) => {
+      const originsPath = join(workspace, "directory-origins.json");
+      writeFileSync(
+        originsPath,
+        `${JSON.stringify({
+          snapshot_id: "directory-inspect-test-001",
+          directory_node: {
+            name: "Test Directory",
+            origin,
+            policy_url: `${origin}/directory/directory-policy.json`
+          },
+          origins: [
+            {
+              record_id: "self",
+              origin,
+              discovery: {
+                categories: ["software"],
+                capabilities: ["identity-continuity"],
+                regions: ["global"],
+                languages: ["en"]
+              }
+            }
+          ]
+        }, null, 2)}\n`,
+        "utf8"
+      );
+
+      await runAsync([
+        "directory",
+        "build",
+        "--origins",
+        originsPath,
+        "--out",
+        join(workspace, "public", "directory"),
+        "--generated-at",
+        "2026-05-23T00:00:00.000Z",
+        "--verify-origins"
+      ]);
+      writeFileSync(
+        join(workspace, "public", "directory", "directory-policy.json"),
+        `${JSON.stringify({
+          type: "OrgAnchorDirectoryPolicy",
+          version: "0.1",
+          directory_node: {
+            name: "Test Directory",
+            origin
+          },
+          trust_boundary: {
+            directory_is_trust_root: false,
+            final_trust_decision: "EXTERNAL_AGENT",
+            records_must_verify_at_origin: true
+          }
+        }, null, 2)}\n`,
+        "utf8"
+      );
+      regenerateAgentPage(workspace);
+
+      const inspect = await runAsync(["directory", "inspect", origin]);
+      const report = JSON.parse(inspect.stdout);
+      assert.equal(report.type, "OrgAnchorDirectoryInspectReport");
+      assert.equal(report.status, "PASS");
+      assert.equal(report.directory.status, "PASS");
+      assert.equal(report.directory.snapshot_url, `${origin}/directory/directory-snapshot.json`);
+      assert.equal(report.directory.snapshot_id, "directory-inspect-test-001");
+      assert.equal(report.directory.record_count, 1);
+      assert.equal(report.directory.trust_boundary.directory_is_trust_root, false);
+      assert.equal(hasInspectCheck(report, "directory_snapshot_hash", "PASS"), true);
+      assert.equal(hasInspectCheck(report, "directory_hash_file", "PASS"), true);
+      assert.equal(hasInspectCheck(report, "directory_policy_hash", "PASS"), true);
+
+      writeFileSync(
+        join(workspace, "public", "directory", "directory-snapshot.json.sha256"),
+        "sha256:0000000000000000000000000000000000000000000000000000000000000000\n",
+        "utf8"
+      );
+      const failedInspect = await runAsync(["directory", "inspect", origin], 1);
+      const failedReport = JSON.parse(failedInspect.stdout);
+      assert.equal(failedReport.status, "FAIL");
+      assert.equal(hasInspectCheck(failedReport, "directory_hash_file", "FAIL"), true);
+    });
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
 test("directory snapshot builder fills safe discovery defaults but still requires origin hashes", () => {
   const snapshot = buildDirectorySnapshot({
     snapshotId: "directory-test-001",
@@ -276,6 +365,41 @@ function createAgentFixture(workspace: string): void {
     join(workspace, "public", "verify", "organchor.json"),
     join(workspace, "public", ".well-known", "organchor.json")
   );
+}
+
+function regenerateAgentPage(workspace: string): void {
+  run([
+    "page",
+    "generate",
+    "--statement",
+    "statements/official-endpoints.json",
+    "--sig",
+    "statements/official-endpoints.json.sig",
+    "--authority",
+    "root-authority.json",
+    "--claims",
+    "claims/product-claims.json",
+    "--claims-sig",
+    "claims/product-claims.json.sig",
+    "--evidence",
+    "evidence/evidence-manifest.json",
+    "--evidence-sig",
+    "evidence/evidence-manifest.json.sig",
+    "--value-report",
+    "reports/value-continuity-report.json",
+    "--value-report-md",
+    "reports/value-continuity-report.md",
+    "--out",
+    "public/verify"
+  ], 0, workspace);
+  copyFileSync(
+    join(workspace, "public", "verify", "organchor.json"),
+    join(workspace, "public", ".well-known", "organchor.json")
+  );
+}
+
+function hasInspectCheck(result: { checks: Array<{ id: string; status: string }> }, id: string, status: string): boolean {
+  return result.checks.some((check) => check.id === id && check.status === status);
 }
 
 async function withStaticServer(root: string, fn: (origin: string) => Promise<void>): Promise<void> {

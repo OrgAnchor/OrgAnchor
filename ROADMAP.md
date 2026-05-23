@@ -480,6 +480,7 @@ Required capabilities for a future implementation:
 - Define static Directory snapshot format.
 - Build and verify static Directory snapshots. Basic implementation complete.
 - Optionally verify each listed origin before writing crawler-derived records. Basic implementation complete.
+- Expose optional Directory discovery pointers from `/verify/organchor.json` and `/.well-known/organchor.json`. Basic implementation complete.
 - Publish directory policy in machine-readable form.
 - Build static directory snapshots from known OrgAnchor origins.
 - Sign or hash directory snapshots.
@@ -505,6 +506,7 @@ Exit criteria for a future stage:
 - A static Directory snapshot can be generated without a hosted database. Basic implementation complete.
 - A static Directory snapshot can be verified as a discovery aid and not a trust root. Basic implementation complete.
 - A Directory snapshot can be generated from live origin verification results without treating the Directory as the trust root. Basic implementation complete.
+- A third-party agent can discover a published Directory from the organization's normal OrgAnchor verify index. Basic implementation complete.
 - A third-party agent can use the snapshot to find candidate organizations and then verify each organization at its own origin.
 - The Directory policy is public and machine-readable.
 - Paid discovery, if ever introduced, cannot be confused with verification status.

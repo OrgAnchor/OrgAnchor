@@ -1,4 +1,4 @@
-import { copyFile, writeFile } from "node:fs/promises";
+import { copyFile, readFile, writeFile } from "node:fs/promises";
 import { basename, isAbsolute, join } from "node:path";
 import { validateClaimsManifest, validateEvidenceManifest } from "../core/evidence-validate.ts";
 import { ensureDir, pathExists, writeJsonFile } from "../core/files.ts";
@@ -12,6 +12,7 @@ import {
 } from "../core/validate.ts";
 import { verifySignatureFile } from "../crypto/signature.ts";
 import { renderVerifyPage } from "../page/template.ts";
+import { validateDirectorySnapshot } from "../directory/snapshot.ts";
 import type { JsonValue } from "../core/json.ts";
 import type {
   VerifyCarrierReceipt,
@@ -30,6 +31,9 @@ const AUTHORITY_FILE = "root-authority.json";
 const INDEX_FILE = "organchor.json";
 const VALUE_REPORT_FILE = "reports/value-continuity-report.json";
 const VALUE_REPORT_MARKDOWN_FILE = "reports/value-continuity-report.md";
+const DIRECTORY_SNAPSHOT_FILE = "directory-snapshot.json";
+const DIRECTORY_SNAPSHOT_HASH_FILE = "directory-snapshot.json.sha256";
+const DIRECTORY_POLICY_FILE = "directory-policy.json";
 
 export async function pageGenerateCommand(options: Record<string, string | boolean>): Promise<void> {
   const statementPath = typeof options.statement === "string" ? options.statement : "statements/official-endpoints.json";
@@ -49,6 +53,17 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     typeof options["value-report-md"] === "string" ? options["value-report-md"] : VALUE_REPORT_MARKDOWN_FILE;
   const explicitValueReport = typeof options["value-report"] === "string" || typeof options["value-report-md"] === "string";
   const artifactBasePath = typeof options["artifact-base-path"] === "string" ? options["artifact-base-path"] : "/verify/";
+  const directoryBasePath = typeof options["directory-base-path"] === "string" ? options["directory-base-path"] : "/directory/";
+  const directorySnapshotPath =
+    typeof options["directory-snapshot"] === "string" ? options["directory-snapshot"] : join(out, "..", "directory", DIRECTORY_SNAPSHOT_FILE);
+  const directorySnapshotHashPath = typeof options["directory-snapshot-hash"] === "string"
+    ? options["directory-snapshot-hash"]
+    : join(out, "..", "directory", DIRECTORY_SNAPSHOT_HASH_FILE);
+  const directoryPolicyPath =
+    typeof options["directory-policy"] === "string" ? options["directory-policy"] : join(out, "..", "directory", DIRECTORY_POLICY_FILE);
+  const explicitDirectory = typeof options["directory-snapshot"] === "string" ||
+    typeof options["directory-snapshot-hash"] === "string" ||
+    typeof options["directory-policy"] === "string";
   const generatedAt = new Date().toISOString();
 
   const statement = validateOfficialStatement(await readJsonFile(statementPath));
@@ -120,6 +135,13 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     markdownPath: valueReportMarkdownPath,
     targetDir: join(out, "reports"),
     explicit: explicitValueReport
+  });
+  const directoryDiscovery = await includeDirectoryDiscovery({
+    snapshotPath: directorySnapshotPath,
+    snapshotHashPath: directorySnapshotHashPath,
+    policyPath: directoryPolicyPath,
+    basePath: directoryBasePath,
+    explicit: explicitDirectory
   });
   const rootContinuity = buildRootContinuity({
     authority,
@@ -270,6 +292,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
       }))
     },
     value_continuity: valueContinuityIndex(valueContinuity),
+    directory_discovery: directoryDiscovery,
     linked_artifacts: linkedIndex,
     migration_history: {
       status: migrationArtifacts.length > 0 ? "PASS" : "NOT_INCLUDED",
@@ -515,6 +538,83 @@ function valueContinuityIndex(valueContinuity: VerifyValueContinuity): JsonValue
     markdown_hash: valueContinuity.markdownHash ?? null,
     summary: valueContinuity.summary
   };
+}
+
+async function includeDirectoryDiscovery(options: {
+  snapshotPath: string;
+  snapshotHashPath: string;
+  policyPath: string;
+  basePath: string;
+  explicit: boolean;
+}): Promise<JsonValue> {
+  const snapshotExists = await pathExists(options.snapshotPath);
+  if (!snapshotExists) {
+    if (options.explicit) throw new Error(`Missing Directory snapshot: ${options.snapshotPath}`);
+    return {
+      status: "NOT_INCLUDED",
+      trust_boundary: directoryTrustBoundary(),
+      note: "No Directory snapshot was included in this verification index."
+    };
+  }
+
+  const snapshot = validateDirectorySnapshot(await readJsonFile(options.snapshotPath));
+  const snapshotHash = sha256CanonicalJson(snapshot);
+  const snapshotHashExists = await pathExists(options.snapshotHashPath);
+  if (snapshotHashExists) {
+    const expectedHash = (await readFile(options.snapshotHashPath, "utf8")).trim();
+    if (expectedHash && expectedHash !== snapshotHash) {
+      throw new Error(`Directory snapshot hash file mismatch: expected ${expectedHash}, got ${snapshotHash}`);
+    }
+  } else if (options.explicit) {
+    throw new Error(`Missing Directory snapshot hash file: ${options.snapshotHashPath}`);
+  }
+
+  const policyExists = await pathExists(options.policyPath);
+  let policyIndex: JsonValue = null;
+  if (policyExists) {
+    const policy = await readJsonFile(options.policyPath);
+    policyIndex = {
+      path: directoryPublicPath(options.basePath, DIRECTORY_POLICY_FILE),
+      hash: sha256CanonicalJson(policy)
+    };
+  } else if (options.explicit) {
+    throw new Error(`Missing Directory policy: ${options.policyPath}`);
+  }
+
+  return {
+    status: "PRESENT",
+    role: "open-directory-discovery",
+    trust_boundary: directoryTrustBoundary(),
+    snapshot: {
+      path: directoryPublicPath(options.basePath, DIRECTORY_SNAPSHOT_FILE),
+      hash: snapshotHash,
+      hash_path: snapshotHashExists ? directoryPublicPath(options.basePath, DIRECTORY_SNAPSHOT_HASH_FILE) : null,
+      snapshot_id: snapshot.snapshot_id,
+      generated_at: snapshot.generated_at,
+      record_count: snapshot.records.length
+    },
+    policy: policyIndex,
+    agent_flow: {
+      use: "candidate_discovery_only",
+      first_pass: "Fetch the Directory snapshot to find candidate organizations.",
+      required_next_step: "Verify selected organizations directly at their own origin before relying on any Directory record.",
+      command: "organchor verify url <origin> --compact"
+    }
+  };
+}
+
+function directoryTrustBoundary(): JsonValue {
+  return {
+    directory_is_trust_root: false,
+    final_trust_decision: "EXTERNAL_AGENT",
+    records_must_verify_at_origin: true
+  };
+}
+
+function directoryPublicPath(basePath: string, file: string): string {
+  const normalizedBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
+  if (/^https?:\/\//.test(normalizedBase)) return new URL(file, normalizedBase).toString();
+  return `${normalizedBase.startsWith("/") ? normalizedBase : `/${normalizedBase}`}${file}`;
 }
 
 async function includeCarrierReceipts(lockfilePath: string, explicit: boolean): Promise<VerifyCarrierReceipt[]> {

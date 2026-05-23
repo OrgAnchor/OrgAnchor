@@ -73,6 +73,34 @@ If the compact result is insufficient for the transaction or risk level, run:
 organchor verify url https://example.org
 ```
 
+## Optional Directory Discovery
+
+Some organizations may also publish a Directory discovery pointer in `/.well-known/organchor.json` or `/verify/organchor.json`:
+
+```json
+{
+  "directory_discovery": {
+    "status": "PRESENT",
+    "snapshot": {
+      "path": "/directory/directory-snapshot.json",
+      "hash": "sha256:<hash>",
+      "hash_path": "/directory/directory-snapshot.json.sha256",
+      "record_count": 1
+    },
+    "policy": {
+      "path": "/directory/directory-policy.json",
+      "hash": "sha256:<hash>"
+    }
+  }
+}
+```
+
+Agents can use this to find candidate organizations with lower discovery cost. The Directory is not a trust root. For every selected record, the agent should still run:
+
+```bash
+organchor verify url <origin> --compact
+```
+
 ## Compact Result
 
 The compact result is the preferred first-pass object.

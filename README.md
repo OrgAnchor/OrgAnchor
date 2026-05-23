@@ -77,6 +77,7 @@ Implemented so far:
 - `/verify` migration-history publication for migration chains that end at the current root authority.
 - `/verify` root continuity publication through human-visible page content and machine-readable `root_continuity`.
 - `/verify` value continuity publication through human-visible page content and machine-readable `value_continuity`.
+- `/verify` and `/.well-known` Directory discovery pointers through machine-readable `directory_discovery`.
 - External pilot runbook for repeatable low-risk organization adoption.
 - NPM build configuration that packages the CLI from `dist/cli.js`.
 - Static Directory snapshot build and verification commands for post-v1 discovery experiments.

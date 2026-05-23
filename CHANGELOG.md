@@ -23,6 +23,7 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - `DIRECTORY_SNAPSHOT_SPEC.md` and `examples/directory/directory-snapshot.json` define the first static discovery snapshot shape for AI-agent candidate discovery before direct origin verification.
 - `organchor directory build` and `organchor directory verify` implement the first static Directory snapshot MVP without making the Directory a trust root.
 - `organchor directory build --verify-origins` can now fetch listed origin packages, reuse `organchor verify url` checks, require identity verification to pass, and write crawler-derived Directory records.
+- `/verify/organchor.json` can now expose optional `directory_discovery` pointers so AI agents can discover Directory snapshots without treating them as trust roots.
 
 ## 0.1.0-alpha.1 - 2026-05-14
 

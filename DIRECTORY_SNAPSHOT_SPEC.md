@@ -86,6 +86,21 @@ The default path for an official Directory node may be:
 /directory/directory-snapshot.json
 ```
 
+Organizations that publish a Directory should also expose a machine-readable pointer from their OrgAnchor verify index:
+
+```text
+/.well-known/organchor.json
+/verify/organchor.json
+```
+
+The pointer field is:
+
+```text
+directory_discovery
+```
+
+This lets agents discover the Directory without relying on sitemap scanning or a human-supplied URL.
+
 ## Minimal Snapshot Shape
 
 ```json

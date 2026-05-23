@@ -77,11 +77,36 @@ The index should include:
     "result_type": "OrgAnchorAgentVerificationResult",
     "compact_result_type": "OrgAnchorAgentVerificationCompactResult",
     "trust_decision": "not_assigned_by_organchor"
+  },
+  "directory_discovery": {
+    "status": "PRESENT",
+    "role": "open-directory-discovery",
+    "trust_boundary": {
+      "directory_is_trust_root": false,
+      "final_trust_decision": "EXTERNAL_AGENT",
+      "records_must_verify_at_origin": true
+    },
+    "snapshot": {
+      "path": "/directory/directory-snapshot.json",
+      "hash": "sha256:<hash>",
+      "hash_path": "/directory/directory-snapshot.json.sha256",
+      "record_count": 1
+    },
+    "policy": {
+      "path": "/directory/directory-policy.json",
+      "hash": "sha256:<hash>"
+    },
+    "agent_flow": {
+      "use": "candidate_discovery_only",
+      "command": "organchor verify url <origin> --compact"
+    }
   }
 }
 ```
 
 `artifact_base_path` tells the agent where relative artifact paths resolve. This prevents the agent from guessing whether files beside `/.well-known/organchor.json` or under `/verify/` are authoritative.
+
+`directory_discovery`, when present, tells the agent where to find an optional Directory snapshot. The Directory is only a candidate-discovery surface. It is not the organization's identity root and does not replace direct origin verification.
 
 ## Required Identity Checks
 

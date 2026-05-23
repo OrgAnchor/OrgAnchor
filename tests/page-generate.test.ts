@@ -13,6 +13,7 @@ test("page generate creates static verify page and machine-readable artifacts", 
   const workspace = mkdtempSync(join(tmpdir(), "organchor-page-"));
   try {
     createSignedStatement(workspace);
+    createDirectoryDiscoveryFiles(workspace);
 
     const page = run(workspace, [
       "page",
@@ -104,6 +105,16 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(index.value_continuity.summary.total_claims, 1);
     assert.equal(index.value_continuity.summary.evidence_linked_claims, 1);
     assert.equal(index.value_continuity.summary.unsupported_claims, 0);
+    assert.equal(index.directory_discovery.status, "PRESENT");
+    assert.equal(index.directory_discovery.trust_boundary.directory_is_trust_root, false);
+    assert.equal(index.directory_discovery.trust_boundary.records_must_verify_at_origin, true);
+    assert.equal(index.directory_discovery.snapshot.path, "/directory/directory-snapshot.json");
+    assert.equal(index.directory_discovery.snapshot.hash_path, "/directory/directory-snapshot.json.sha256");
+    assert.equal(index.directory_discovery.snapshot.snapshot_id, "test-directory-2026-001");
+    assert.equal(index.directory_discovery.snapshot.record_count, 1);
+    assert.equal(index.directory_discovery.policy.path, "/directory/directory-policy.json");
+    assert.match(index.directory_discovery.policy.hash, /^sha256:[0-9a-f]{64}$/);
+    assert.equal(index.directory_discovery.agent_flow.command, "organchor verify url <origin> --compact");
     assert.equal(
       index.visible_proof.checks.some((check: { label: string; status: string }) =>
         check.label === "Signature threshold" && check.status === "PASS"
@@ -386,6 +397,83 @@ function createSignedStatement(workspace: string): void {
               }
             ]
           }
+        }
+      },
+      null,
+      2
+    ),
+    "utf8"
+  );
+}
+
+function createDirectoryDiscoveryFiles(workspace: string): void {
+  writeFileSync(
+    join(workspace, "directory-origins.json"),
+    JSON.stringify(
+      {
+        snapshot_id: "test-directory-2026-001",
+        directory_node: {
+          name: "Example Directory",
+          origin: "https://directory.example",
+          policy_url: "https://directory.example/directory-policy.json"
+        },
+        origins: [
+          {
+            record_id: "example-org",
+            origin: "https://example.org",
+            organization: {
+              name: "Example Org",
+              display_name: "Example Organization"
+            },
+            discovery: {
+              categories: ["software"],
+              capabilities: ["identity-continuity"],
+              regions: ["global"],
+              languages: ["en"]
+            },
+            verification_summary: {
+              identity_status: "PASS",
+              value_status: "PASS",
+              policy_route: "EXTERNAL_POLICY_REVIEW",
+              root_authority_hash: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              statement_hash: "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            limitations: [
+              "Directory record is a summary only.",
+              "Agent must verify against the origin package before relying on it."
+            ]
+          }
+        ]
+      },
+      null,
+      2
+    ),
+    "utf8"
+  );
+  run(workspace, [
+    "directory",
+    "build",
+    "--origins",
+    "directory-origins.json",
+    "--out",
+    "public/directory",
+    "--generated-at",
+    "2026-05-23T00:00:00.000Z"
+  ]);
+  writeFileSync(
+    join(workspace, "public", "directory", "directory-policy.json"),
+    JSON.stringify(
+      {
+        type: "OrgAnchorDirectoryPolicy",
+        version: "0.1",
+        directory_node: {
+          name: "Example Directory",
+          origin: "https://directory.example"
+        },
+        trust_boundary: {
+          directory_is_trust_root: false,
+          final_trust_decision: "EXTERNAL_AGENT",
+          records_must_verify_at_origin: true
         }
       },
       null,

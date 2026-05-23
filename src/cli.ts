@@ -10,6 +10,7 @@ import { claimsCreateCommand } from "./commands/claims-create.ts";
 import { claimsSignCommand } from "./commands/claims-sign.ts";
 import { claimsVerifyCommand } from "./commands/claims-verify.ts";
 import { directoryBuildCommand } from "./commands/directory-build.ts";
+import { directoryFetchCommand } from "./commands/directory-fetch.ts";
 import { directoryInspectCommand } from "./commands/directory-inspect.ts";
 import { directoryVerifyCommand } from "./commands/directory-verify.ts";
 import { evidenceAddCommand } from "./commands/evidence-add.ts";
@@ -59,6 +60,7 @@ const commands: Record<string, CommandHandler> = {
   "claims sign": claimsSignCommand,
   "claims verify": claimsVerifyCommand,
   "directory build": directoryBuildCommand,
+  "directory fetch": directoryFetchCommand,
   "directory inspect": directoryInspectCommand,
   "directory verify": directoryVerifyCommand,
   "domain audit": domainAuditCommand,
@@ -196,6 +198,7 @@ Usage:
   organchor claims verify --authority root-authority.json --in claims/product-claims.json --sig claims/product-claims.json.sig
   organchor directory build --origins examples/directory/directory-origins.json --out public/directory
   organchor directory build --origins examples/directory/directory-origins.json --out public/directory --verify-origins
+  organchor directory fetch https://example.org
   organchor directory inspect https://example.org
   organchor directory verify --snapshot public/directory/directory-snapshot.json
   organchor domain audit example.com

@@ -25,6 +25,7 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - `organchor directory build --verify-origins` can now fetch listed origin packages, reuse `organchor verify url` checks, require identity verification to pass, and write crawler-derived Directory records.
 - `/verify/organchor.json` can now expose optional `directory_discovery` pointers so AI agents can discover Directory snapshots without treating them as trust roots.
 - `organchor directory inspect` can now discover an organization's Directory pointer, fetch the linked snapshot/hash/policy, and fail on hash or trust-boundary mismatches.
+- `organchor directory fetch` can now retrieve verified Directory snapshots, save them locally, and output candidate records with next-step direct origin verification commands.
 
 ## 0.1.0-alpha.1 - 2026-05-14
 

@@ -238,6 +238,26 @@ test("directory inspect discovers and verifies an origin-published Directory", a
       assert.equal(hasInspectCheck(report, "directory_hash_file", "PASS"), true);
       assert.equal(hasInspectCheck(report, "directory_policy_hash", "PASS"), true);
 
+      const fetch = await runAsync([
+        "directory",
+        "fetch",
+        origin,
+        "--out",
+        join(workspace, "downloaded-directory-snapshot.json")
+      ]);
+      const fetchReport = JSON.parse(fetch.stdout);
+      assert.equal(fetchReport.type, "OrgAnchorDirectoryFetchResult");
+      assert.equal(fetchReport.status, "PASS");
+      assert.equal(fetchReport.snapshot.snapshot_id, "directory-inspect-test-001");
+      assert.equal(fetchReport.snapshot.record_count, 1);
+      assert.equal(fetchReport.snapshot.saved_to, join(workspace, "downloaded-directory-snapshot.json"));
+      assert.equal(fetchReport.candidates.length, 1);
+      assert.equal(fetchReport.candidates[0].record_id, "self");
+      assert.equal(fetchReport.candidates[0].origin, origin);
+      assert.equal(fetchReport.candidates[0].verification_summary.identity_status, "PASS");
+      assert.equal(fetchReport.candidates[0].next_step, `organchor verify url ${origin} --compact`);
+      assert.equal(existsSync(join(workspace, "downloaded-directory-snapshot.json")), true);
+
       writeFileSync(
         join(workspace, "public", "directory", "directory-snapshot.json.sha256"),
         "sha256:0000000000000000000000000000000000000000000000000000000000000000\n",
@@ -247,6 +267,11 @@ test("directory inspect discovers and verifies an origin-published Directory", a
       const failedReport = JSON.parse(failedInspect.stdout);
       assert.equal(failedReport.status, "FAIL");
       assert.equal(hasInspectCheck(failedReport, "directory_hash_file", "FAIL"), true);
+
+      const failedFetch = await runAsync(["directory", "fetch", origin], 1);
+      const failedFetchReport = JSON.parse(failedFetch.stdout);
+      assert.equal(failedFetchReport.status, "FAIL");
+      assert.equal(failedFetchReport.candidates.length, 0);
     });
   } finally {
     rmSync(workspace, { recursive: true, force: true });

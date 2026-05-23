@@ -419,6 +419,9 @@ organchor directory build \
   --out public/directory \
   --verify-origins
 
+organchor directory fetch https://example.org
+organchor directory fetch https://example.org --out downloaded-directory-snapshot.json
+
 organchor directory inspect https://example.org
 
 organchor directory verify \
@@ -435,6 +438,12 @@ directory-snapshot.json.sha256
 `directory build --verify-origins` fetches each listed origin's OrgAnchor package, reuses the same checks as `organchor verify url`, requires identity verification to pass, and writes crawler-derived hashes, status, evidence counts, and policy-route hints into the Directory record.
 
 `directory inspect` fetches an organization's verify index, discovers `directory_discovery`, fetches the linked snapshot/hash/policy, validates the snapshot shape and trust boundary, and fails if the published hashes do not match.
+
+`directory fetch` performs the same inspection checks, then outputs candidate records and the recommended next command for each candidate:
+
+```text
+organchor verify url <origin> --compact
+```
 
 `directory verify` validates the snapshot shape, trust boundary, and origin-owned discovery links. It verifies the Directory artifact itself; agents should still fetch selected origins and run direct verification before acting.
 

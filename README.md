@@ -83,6 +83,7 @@ Implemented so far:
 - Static Directory snapshot build and verification commands for post-v1 discovery experiments.
 - Optional Directory origin verification that fetches each listed organization's OrgAnchor package before writing crawler-derived records.
 - `organchor directory inspect` for checking whether an organization exposes a machine-readable Directory pointer and whether the linked snapshot/hash/policy are consistent.
+- `organchor directory fetch` for retrieving verified Directory candidate records and next-step `verify url` commands.
 - Public complete minimal example artifacts under `examples/complete`.
 
 ## Install Alpha
@@ -129,6 +130,7 @@ organchor evidence sign --key keys/root-2026.private.json --authority root-autho
 organchor value audit --claims claims/product-claims.json --evidence evidence/evidence-manifest.json --check-files
 organchor directory build --origins examples/directory/directory-origins.json --out public/directory
 organchor directory build --origins examples/directory/directory-origins.json --out public/directory --verify-origins
+organchor directory fetch https://example.org
 organchor directory inspect https://example.org
 organchor directory verify --snapshot public/directory/directory-snapshot.json
 organchor verify url https://example.org

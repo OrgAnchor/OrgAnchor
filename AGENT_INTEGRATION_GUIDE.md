@@ -109,6 +109,14 @@ organchor directory inspect https://example.org
 
 This command checks the verify-index pointer, snapshot shape, snapshot hash, optional hash file, policy hash, and trust-boundary flags.
 
+To retrieve verified candidate records:
+
+```bash
+organchor directory fetch https://example.org
+```
+
+The fetch result includes candidate origins and a `next_step` field for each record. That next step remains direct origin verification, not trust by Directory listing.
+
 ## Compact Result
 
 The compact result is the preferred first-pass object.

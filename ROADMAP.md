@@ -482,6 +482,7 @@ Required capabilities for a future implementation:
 - Optionally verify each listed origin before writing crawler-derived records. Basic implementation complete.
 - Expose optional Directory discovery pointers from `/verify/organchor.json` and `/.well-known/organchor.json`. Basic implementation complete.
 - Inspect an organization's Directory discovery pointer and validate linked snapshot/hash/policy artifacts. Basic implementation complete.
+- Fetch verified Directory candidate records with next-step direct origin verification commands. Basic implementation complete.
 - Publish directory policy in machine-readable form.
 - Build static directory snapshots from known OrgAnchor origins.
 - Sign or hash directory snapshots.
@@ -495,6 +496,7 @@ Representative future commands:
 
 ```bash
 organchor directory inspect https://example.org
+organchor directory fetch https://example.org
 organchor directory add https://example.org
 organchor directory build --in directory-sources.json --out public/directory
 organchor directory build --in directory-sources.json --out public/directory --verify-origins

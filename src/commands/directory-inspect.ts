@@ -3,15 +3,15 @@ import { parseStrictJson, type JsonValue } from "../core/json.ts";
 import { asObject } from "../core/validate.ts";
 import { validateDirectorySnapshot } from "../directory/snapshot.ts";
 
-type InspectStatus = "PASS" | "WARN" | "FAIL" | "NOT_INCLUDED";
+export type InspectStatus = "PASS" | "WARN" | "FAIL" | "NOT_INCLUDED";
 
-interface InspectCheck {
+export interface InspectCheck {
   id: string;
   status: InspectStatus;
   detail: string;
 }
 
-interface DirectoryInspectReport {
+export interface DirectoryInspectReport {
   type: "OrgAnchorDirectoryInspectReport";
   version: "0.1";
   target: string;
@@ -34,17 +34,17 @@ interface DirectoryInspectReport {
   };
 }
 
-const DEFAULT_TIMEOUT_MS = 15000;
+export const DIRECTORY_INSPECT_DEFAULT_TIMEOUT_MS = 15000;
 
 export async function directoryInspectCommand(options: Record<string, string | boolean>): Promise<void> {
   const target = typeof options.url === "string" ? options.url : typeof options._ === "string" ? options._ : "";
   if (!target) throw new Error("directory inspect requires <organization-url>");
-  const report = await inspectDirectoryTarget(target, parseTimeoutMs(options["timeout-ms"]));
+  const report = await inspectDirectoryTarget(target, parseDirectoryTimeoutMs(options["timeout-ms"]));
   console.log(JSON.stringify(report, null, 2));
   if (report.status === "FAIL") process.exitCode = 1;
 }
 
-async function inspectDirectoryTarget(target: string, timeoutMs: number): Promise<DirectoryInspectReport> {
+export async function inspectDirectoryTarget(target: string, timeoutMs: number): Promise<DirectoryInspectReport> {
   const checks: InspectCheck[] = [];
   const emptyDirectory: DirectoryInspectReport["directory"] = {
     status: "NOT_INCLUDED",
@@ -291,8 +291,8 @@ function addCheck(checks: InspectCheck[], id: string, status: InspectStatus, det
   checks.push({ id, status, detail });
 }
 
-function parseTimeoutMs(value: string | boolean | undefined): number {
-  if (value === undefined || value === false) return DEFAULT_TIMEOUT_MS;
+export function parseDirectoryTimeoutMs(value: string | boolean | undefined): number {
+  if (value === undefined || value === false) return DIRECTORY_INSPECT_DEFAULT_TIMEOUT_MS;
   if (typeof value !== "string") throw new Error("--timeout-ms must be a positive integer");
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed < 1) throw new Error("--timeout-ms must be a positive integer");

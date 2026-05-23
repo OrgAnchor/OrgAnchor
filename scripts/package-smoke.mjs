@@ -53,6 +53,7 @@ try {
   assertContains(copiedFiles, "README.md");
   assertContains(copiedFiles, "CHANGELOG.md");
   assertContains(copiedFiles, "DOCS_INDEX.md");
+  assertContains(copiedFiles, "PROJECT_NORTH_STAR.md");
   assertContains(copiedFiles, "ARCHITECTURE.md");
   assertContains(copiedFiles, "DISCOVERY_STRATEGY.md");
   assertContains(copiedFiles, "DIRECTORY_MODEL.md");

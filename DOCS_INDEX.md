@@ -19,6 +19,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 
 ## Core Design Documents
 
+- `PROJECT_NORTH_STAR.md`: active alignment gate for keeping features focused on lower-friction discovery, verification, understanding, and non-monopolistic trust decisions.
 - `PROJECT_BRIEF.md`: original project brief and positioning.
 - `PRODUCT_SHAPE.md`: accepted product surfaces: core library, CLI, future local-first studio, and adopting-organization `/verify` page.
 - `ARCHITECTURE.md`: layered trust model and implementation structure.

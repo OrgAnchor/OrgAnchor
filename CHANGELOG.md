@@ -12,6 +12,7 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - Arweave manual packages can now include the public verify index and HTML page with `--verify-index` and `--verify-page`.
 - Release integrity protocol documenting release-state alignment, carrier receipt self-reference limits, and release blockers.
 - Project purpose, adoption principles, and showcase policy documents clarify OrgAnchor's value stance and misuse boundaries.
+- `PROJECT_NORTH_STAR.md` defines the project alignment gate for keeping identity, evidence, AI-agent access, and discovery work focused on lowering real transaction cost without making OrgAnchor a trust authority.
 - Value continuity model and `organchor value audit` reports for claim support levels, evidence quality, stale evidence, and unsupported claims.
 - `/verify` pages and `organchor.json` can now publish value continuity report summaries.
 - Agent verification contract, AI agent integration guide, compact verification result output, and compatibility iteration plan.

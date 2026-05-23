@@ -25,7 +25,7 @@ OrgAnchor is not only a tool for keeping an organizational name alive. Its purpo
 
 OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
 
-See `DOCS_INDEX.md`, `PURPOSE_AND_VALUES.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance and document map.
+See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `PURPOSE_AND_VALUES.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance and document map.
 
 The proposed post-v1 `DISCOVERY_STRATEGY.md` and `DIRECTORY_MODEL.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
 
@@ -207,6 +207,7 @@ For AI agents, `PASS` is not a trust badge. `organchor verify url --compact` inc
 Operator-facing adoption and verification documents:
 
 - `DOCS_INDEX.md`
+- `PROJECT_NORTH_STAR.md`
 - `PURPOSE_AND_VALUES.md`
 - `ADOPTION_PRINCIPLES.md`
 - `ADOPTION_GUIDE.md`

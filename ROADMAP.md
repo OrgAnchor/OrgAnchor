@@ -478,6 +478,8 @@ Required capabilities for a future implementation:
 - Define directory record shape.
 - Define the OrgAnchor Beacon model and default adopter discovery surfaces. Design complete.
 - Make every adopter's verify package emit strong Beacon signals from its own origin.
+- Make Beacon surfaces static, small, cache-friendly, and accessible without browser-only challenges.
+- Define publisher and crawler abuse-resistance behavior, including rate limits, cache validators, and polite crawler backoff.
 - Support direct Beacon inspection for a single origin.
 - Support direct Beacon sweeps for users who want to build their own local database without trusting a Directory.
 - Define optional discovery fields for organization capabilities, regions, service categories, freshness, and evidence summaries.
@@ -519,6 +521,8 @@ Exit criteria for a future stage:
 - A third-party agent can use the snapshot to find candidate organizations and then verify each organization at its own origin.
 - A third-party agent can discover an adopter directly from origin-owned Beacon signals without requiring Directory inclusion.
 - A user can run a repeatable sweep to build a local database of OrgAnchor-enabled organizations.
+- Beacon files remain fetchable by polite machine clients without login, cookies, JavaScript, or browser-only challenges.
+- Beacon files support cache-friendly repeated sweeps and overload backoff where practical.
 - The Directory policy is public and machine-readable.
 - Paid discovery, if ever introduced, cannot be confused with verification status.
 - Mirrors and forks can reproduce the published snapshot.

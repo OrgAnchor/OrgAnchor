@@ -464,7 +464,7 @@ v1 must cover:
 Status:
 
 ```text
-Design direction recorded; Beacon model, static snapshot spec, example, build command, verify command, and optional origin verification implemented; not part of v1 core completion
+Design direction recorded; Beacon model, beacon inspect command, static snapshot spec, example, build command, verify command, and optional origin verification implemented; not part of v1 core completion
 ```
 
 Purpose:
@@ -480,7 +480,8 @@ Required capabilities for a future implementation:
 - Make every adopter's verify package emit strong Beacon signals from its own origin.
 - Make Beacon surfaces static, small, cache-friendly, and accessible without browser-only challenges.
 - Define publisher and crawler abuse-resistance behavior, including rate limits, cache validators, and polite crawler backoff.
-- Support direct Beacon inspection for a single origin.
+- Define conformance states that separate claimed OrgAnchor signals from verified compatibility. Design complete.
+- Support direct Beacon inspection for a single origin. Basic implementation complete.
 - Support direct Beacon sweeps for users who want to build their own local database without trusting a Directory.
 - Define optional discovery fields for organization capabilities, regions, service categories, freshness, and evidence summaries.
 - Define static Directory snapshot format.
@@ -489,6 +490,7 @@ Required capabilities for a future implementation:
 - Expose optional Directory discovery pointers from `/verify/organchor.json` and `/.well-known/organchor.json`. Basic implementation complete.
 - Inspect an organization's Directory discovery pointer and validate linked snapshot/hash/policy artifacts. Basic implementation complete.
 - Fetch verified Directory candidate records with next-step direct origin verification commands. Basic implementation complete.
+- Record verifier-derived conformance status in crawler-built Directory records. Basic implementation complete.
 - Publish directory policy in machine-readable form.
 - Build static directory snapshots from known OrgAnchor origins.
 - Sign or hash directory snapshots.
@@ -523,6 +525,7 @@ Exit criteria for a future stage:
 - A user can run a repeatable sweep to build a local database of OrgAnchor-enabled organizations.
 - Beacon files remain fetchable by polite machine clients without login, cookies, JavaScript, or browser-only challenges.
 - Beacon files support cache-friendly repeated sweeps and overload backoff where practical.
+- Claimed or partial OrgAnchor signals cannot be confused with `FULL_COMPATIBLE` verification results. Basic implementation complete for `beacon inspect`.
 - The Directory policy is public and machine-readable.
 - Paid discovery, if ever introduced, cannot be confused with verification status.
 - Mirrors and forks can reproduce the published snapshot.

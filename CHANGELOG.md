@@ -21,11 +21,13 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - `DISCOVERY_STRATEGY.md` records why OrgAnchor needs an open discovery layer, not only post-discovery verification, to reduce real transaction cost between organizations and AI agents.
 - `ORGANCHOR_BEACON.md` records the Beacon-first discovery model so every adopter can emit origin-owned signals and be found without depending on official Directory inclusion.
 - `ORGANCHOR_BEACON.md` now records the Beacon discovery efficiency, cacheability, abuse-resistance, polite-crawler, and audit checklist requirements for future implementation checks.
+- `ORGANCHOR_BEACON.md` now defines conformance states that distinguish claimed OrgAnchor signals from strictly verified full compatibility.
 - `DIRECTORY_MODEL.md` records the proposed post-v1 open discovery index model for helping people and AI agents find OrgAnchor-enabled organizations without turning discovery into a monopoly trust platform.
 - `DIRECTORY_SNAPSHOT_SPEC.md` and `examples/directory/directory-snapshot.json` define the first static discovery snapshot shape for AI-agent candidate discovery before direct origin verification.
 - `organchor directory build` and `organchor directory verify` implement the first static Directory snapshot MVP without making the Directory a trust root.
 - `organchor directory build --verify-origins` can now fetch listed origin packages, reuse `organchor verify url` checks, require identity verification to pass, and write crawler-derived Directory records.
 - `/verify/organchor.json` can now expose optional `directory_discovery` pointers so AI agents can discover Directory snapshots without treating them as trust roots.
+- `organchor beacon inspect` can now distinguish claimed OrgAnchor signals, valid first-pass Beacon shapes, strict identity verification, value verification, full compatibility, partial adoption, and failed impostor signals.
 - `organchor directory inspect` can now discover an organization's Directory pointer, fetch the linked snapshot/hash/policy, and fail on hash or trust-boundary mismatches.
 - `organchor directory fetch` can now retrieve verified Directory snapshots, save them locally, and output candidate records with next-step direct origin verification commands.
 - `organchor directory fetch` can now filter candidates by discovery fields, verification status, policy route, and result limit before agents spend work on direct origin verification.

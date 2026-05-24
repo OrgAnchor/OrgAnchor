@@ -130,6 +130,7 @@ function directoryRecordFromAgentResult(
       statement_hash: stringValue(result.identity.statement_hash),
       last_verified_at: generatedAt,
       overall_status: result.overall_status,
+      conformance_status: conformanceStatus(result),
       index_url: result.index_url,
       artifact_base_url: result.artifact_base_url
     },
@@ -170,4 +171,12 @@ function stringValue(value: JsonValue | undefined): string {
 
 function numberValue(value: JsonValue | undefined): number {
   return typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : 0;
+}
+
+function conformanceStatus(result: AgentVerificationResult): string {
+  if (result.identity_status !== "PASS") return "FAILED";
+  if (result.value_status === "PASS" && result.overall_status === "PASS") return "FULL_COMPATIBLE";
+  if (result.value_status === "PASS") return "VALUE_VERIFY_PASS";
+  if (result.value_status === "WARN") return "PARTIAL";
+  return "IDENTITY_VERIFY_PASS";
 }

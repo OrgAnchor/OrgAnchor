@@ -34,3 +34,17 @@ test("Beacon model records cache and abuse-resistance requirements", () => {
   assert.match(beacon, /Good Crawler Contract/);
   assert.match(beacon, /Audit Checklist/);
 });
+
+test("Beacon model distinguishes self-claims from full compatibility", () => {
+  const beacon = readFileSync(join(repoRoot, "ORGANCHOR_BEACON.md"), "utf8");
+
+  assert.match(beacon, /Conformance And Impostor Defense/);
+  assert.match(beacon, /CLAIMED_SIGNAL/);
+  assert.match(beacon, /BEACON_SHAPE_PASS/);
+  assert.match(beacon, /IDENTITY_VERIFY_PASS/);
+  assert.match(beacon, /VALUE_VERIFY_PASS/);
+  assert.match(beacon, /FULL_COMPATIBLE/);
+  assert.match(beacon, /PARTIAL/);
+  assert.match(beacon, /FAILED/);
+  assert.match(beacon, /never treat CLAIMED_SIGNAL as adoption proof/);
+});

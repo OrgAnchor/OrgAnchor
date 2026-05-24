@@ -151,6 +151,7 @@ test("directory build can verify origins before writing crawler records", async 
       assert.equal(record.verification_summary.identity_status, "PASS");
       assert.equal(record.verification_summary.value_status, "PASS");
       assert.equal(record.verification_summary.policy_route, "EXTERNAL_POLICY_REVIEW");
+      assert.equal(record.verification_summary.conformance_status, "FULL_COMPATIBLE");
       assert.equal(record.verification_summary.last_verified_at, "2026-05-23T00:00:00.000Z");
       assert.match(record.verification_summary.root_authority_hash, /^sha256:[0-9a-f]{64}$/);
       assert.match(record.verification_summary.statement_hash, /^sha256:[0-9a-f]{64}$/);

@@ -6,6 +6,7 @@ import { arweaveUploadCommand } from "./commands/arweave-upload.ts";
 import { arweaveVerifyCommand } from "./commands/arweave-verify.ts";
 import { authorityChangePlanCommand } from "./commands/authority-change-plan.ts";
 import { authorityCreateCommand } from "./commands/authority-create.ts";
+import { beaconInspectCommand } from "./commands/beacon-inspect.ts";
 import { claimsCreateCommand } from "./commands/claims-create.ts";
 import { claimsSignCommand } from "./commands/claims-sign.ts";
 import { claimsVerifyCommand } from "./commands/claims-verify.ts";
@@ -56,6 +57,7 @@ const commands: Record<string, CommandHandler> = {
   "archive arweave upload": arweaveUploadCommand,
   "archive arweave verify": arweaveVerifyCommand,
   "authority change-plan": authorityChangePlanCommand,
+  "beacon inspect": beaconInspectCommand,
   "claims create": claimsCreateCommand,
   "claims sign": claimsSignCommand,
   "claims verify": claimsVerifyCommand,
@@ -170,6 +172,7 @@ Usage:
   organchor authority create --key keys/root-2026.private.json
   organchor authority create --keys keys/root-a.private.json,keys/root-b.private.json,keys/root-c.private.json --threshold 2
   organchor authority verify --authority root-authority.json
+  organchor beacon inspect https://example.org
   organchor mirror ipfs publish --dir public/verify --dry-run
   organchor mirror ipfs publish --dir public/verify --api http://127.0.0.1:5001
   organchor mirror ipfs publish --dir public/verify --allow-large

@@ -206,6 +206,8 @@ The Directory should reduce search cost. It should not replace direct verificati
 
 Agents that distrust all Directory nodes should still be able to run their own Beacon sweeps and build a local database.
 
+Directory nodes should record verifier-derived `conformance_status` values. They must not promote an origin from `CLAIMED_SIGNAL` or `BEACON_SHAPE_PASS` to full adoption based on self-declared Beacon fields.
+
 ## Future CLI Shape
 
 Possible post-v1 commands:

@@ -262,6 +262,69 @@ The compact Beacon object should be small enough for cheap first-pass crawling:
 
 The Beacon may be embedded inside `organchor.json` instead of existing as a separate file, as long as agents can discover it reliably.
 
+## Conformance And Impostor Defense
+
+A Beacon is only a claim to support OrgAnchor until strict verification succeeds.
+
+This prevents:
+
+```text
+impostors that copy field names
+partial adopters that publish only a small JSON file
+sites that add self-serving "certified" fields
+directories that accidentally index self-claims as verified facts
+```
+
+OrgAnchor verifiers should use these conformance states:
+
+```text
+CLAIMED_SIGNAL
+  An OrgAnchor-like signal was found, but it has not passed Beacon shape checks.
+
+BEACON_SHAPE_PASS
+  The Beacon or verify index has the required machine-readable shape, but strict identity verification has not passed.
+
+IDENTITY_VERIFY_PASS
+  The root authority, statement, signature, and required hashes verify.
+
+VALUE_VERIFY_PASS
+  Identity verifies and signed claims/evidence/value-continuity checks pass.
+
+FULL_COMPATIBLE
+  The origin satisfies the current required OrgAnchor verification path and value layer for a complete adopter.
+
+PARTIAL
+  Some OrgAnchor parts are valid, but required complete-adopter pieces are missing, weak, or warning.
+
+FAILED
+  Verification failed, hashes disagree, signatures do not validate, required files are absent, or the signal is unsafe.
+```
+
+Rules:
+
+```text
+never treat CLAIMED_SIGNAL as adoption proof
+never treat BEACON_SHAPE_PASS as identity proof
+never let unknown fields override core OrgAnchor meaning
+ignore self-serving fields such as "officially_verified" unless they are part of a signed OrgAnchor artifact
+custom extensions should live under extensions and use namespaced keys
+Directory records should store verifier results, not adopter self-claims
+fail closed when required identity artifacts are missing or inconsistent
+```
+
+The practical command shape is:
+
+```bash
+organchor beacon inspect https://example.org
+```
+
+This command should report both:
+
+```text
+what the origin claims
+what OrgAnchor could actually verify
+```
+
 ## Beacon Sweep
 
 A Beacon sweep is an agent or crawler process that tries to find OrgAnchor adopters directly.
@@ -292,6 +355,8 @@ An OrgAnchor adopter is Beacon-ready only if:
 /.well-known/organchor.json exists
 /verify/organchor.json exists
 /verify/index.html exists
+organchor beacon inspect reaches IDENTITY_VERIFY_PASS or better
+complete adopters reach FULL_COMPATIBLE
 the Beacon or verify index exposes origin, verify URL, root authority hash, statement hash, and direct verification command
 the Beacon or verify index exposes discovery hints such as categories, capabilities, regions, and languages when available
 the Beacon or verify index exposes identity status, value status, policy route, and freshness when available

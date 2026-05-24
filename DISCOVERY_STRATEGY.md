@@ -31,6 +31,15 @@ discovery layer = reduce the cost of finding candidate organizations worth verif
 
 The discovery layer must be open and repeatable. It should not turn OrgAnchor into a monopoly marketplace, paid ranking service, or central trust authority.
 
+The discovery layer should be Beacon-first:
+
+```text
+adopter Beacon = origin-owned discoverability signals emitted by every adopting organization
+Directory = optional shared index built by crawling, verifying, and summarizing Beacons
+```
+
+This means an organization should not need permission from the official Directory to become machine-discoverable.
+
 ## Why Discovery Matters
 
 For a small company, buyer, supplier, researcher, grant maker, auditor, or AI agent, the first expensive question is often:
@@ -94,6 +103,8 @@ reports/value-continuity-report.json
 
 This is the source-of-truth layer.
 
+See `ORGANCHOR_BEACON.md` for the Beacon layer: the origin-owned signals that make an adopter discoverable before any Directory includes it.
+
 ### 2. Search-Friendly Hints
 
 Organizations may expose ordinary web discovery hints:
@@ -108,7 +119,24 @@ schema.org-style metadata where appropriate
 
 These are convenience hints. They are not authority.
 
-### 3. Open Directory Snapshots
+### 3. Direct Beacon Sweeps
+
+Agents, buyers, researchers, communities, and competing indexes should be able to run their own sweeps for OrgAnchor Beacons.
+
+Expected sweep flow:
+
+```text
+start from seed domains or public web sources
+try /.well-known/organchor.json and /verify/organchor.json
+inspect sitemap, robots, and HTML hints where needed
+run organchor verify url <origin> --compact
+store a local database of discovered, verified, stale, failed, or unreachable candidates
+repeat weekly or monthly
+```
+
+This makes discovery reproducible by any serious party, even without trusting an official index.
+
+### 4. Open Directory Snapshots
 
 Directory nodes can crawl known origins, run compact verification, and publish static snapshots.
 
@@ -116,13 +144,13 @@ This is the preferred low-cost first implementation because it can be hosted as 
 
 See `DIRECTORY_MODEL.md`.
 
-### 4. Query Services
+### 5. Query Services
 
 Later, a Directory node may offer a richer query API over the same exportable records.
 
 The API is only a convenience surface. It must not be the only way to access the directory data.
 
-### 5. External Marketplaces And Search Engines
+### 6. External Marketplaces And Search Engines
 
 Existing platforms may consume OrgAnchor records.
 
@@ -163,7 +191,7 @@ A demand-side agent should follow this pattern:
 
 ```text
 state the need
-search one or more open directory snapshots
+search one or more open directory snapshots, or run a direct Beacon sweep
 filter by capability, region, freshness, and evidence summary
 fetch the organization's own /.well-known/organchor.json
 run organchor verify url <origin> --compact
@@ -182,9 +210,10 @@ Its basic path should be:
 
 ```text
 publish an OrgAnchor verify package
+emit OrgAnchor Beacon signals from its own origin
 publish claims and evidence manifests
 make product or service categories machine-readable
-submit or expose the origin to one or more Directory nodes
+submit to one or more Directory nodes when useful, but do not depend on them
 allow agents to verify directly from origin
 keep evidence fresh and corrections visible
 ```
@@ -242,11 +271,14 @@ OrgAnchor should not start with a heavy marketplace.
 The practical order is:
 
 1. Keep v1 focused on verifiable identity, evidence, and migration.
-2. Define discovery fields that can be added to claims, evidence, or verify indexes without breaking existing agents.
-3. Create a static Directory snapshot format.
-4. Publish a tiny reference snapshot containing OrgAnchor's self-pilot and example records.
-5. Add a CLI builder that fetches origins, runs compact verification, and emits snapshot files.
-6. Add comparison tools for multiple Directory nodes.
+2. Make every generated verify package emit strong Beacon surfaces by default.
+3. Define discovery fields that can be added to claims, evidence, or verify indexes without breaking existing agents.
+4. Create a static Directory snapshot format over Beacon-derived records.
+5. Publish a tiny reference snapshot containing OrgAnchor's self-pilot and example records.
+6. Add a CLI builder that fetches origins, runs compact verification, and emits snapshot files.
+7. Add single-origin Beacon inspection.
+8. Add direct Beacon sweep tools for users who want to build their own local database.
+9. Add comparison tools for multiple Directory nodes.
 
 The first useful Directory can be static files. A hosted search service can come later if the need is proven.
 
@@ -257,6 +289,7 @@ V1 should not be delayed until the full discovery layer exists.
 However, v1 data structures should avoid blocking discovery later. In particular:
 
 - `organchor.json` should stay machine-readable.
+- Beacon surfaces should be generated by default.
 - claim and evidence summaries should remain agent-friendly.
 - `policy_route` should remain clear.
 - unknown fields should be safe to ignore.

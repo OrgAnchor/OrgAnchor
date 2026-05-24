@@ -27,7 +27,7 @@ OrgAnchor does not certify that an organization is good, lawful, ethical, effect
 
 See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `PURPOSE_AND_VALUES.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance and document map.
 
-The proposed post-v1 `DISCOVERY_STRATEGY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
+The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
 
 ## Current Status
 
@@ -78,6 +78,7 @@ Implemented so far:
 - `/verify` root continuity publication through human-visible page content and machine-readable `root_continuity`.
 - `/verify` value continuity publication through human-visible page content and machine-readable `value_continuity`.
 - `/verify` and `/.well-known` Directory discovery pointers through machine-readable `directory_discovery`.
+- Beacon-first discovery direction for making every adopter natively discoverable without requiring official Directory inclusion.
 - External pilot runbook for repeatable low-risk organization adoption.
 - NPM build configuration that packages the CLI from `dist/cli.js`.
 - Static Directory snapshot build and verification commands for post-v1 discovery experiments.

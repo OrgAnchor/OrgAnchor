@@ -459,23 +459,27 @@ v1 must cover:
 - ENS auxiliary name planning and verification.
 - Migration statements.
 
-## Stage 6 / Post-v1: Open Directory And Discovery Anti-Capture
+## Stage 6 / Post-v1: Beacon-First Discovery And Directory Anti-Capture
 
 Status:
 
 ```text
-Design direction recorded; static snapshot spec, example, build command, verify command, and optional origin verification implemented; not part of v1 core completion
+Design direction recorded; Beacon model, static snapshot spec, example, build command, verify command, and optional origin verification implemented; not part of v1 core completion
 ```
 
 Purpose:
 
-Help people, organizations, platforms, and AI agents discover OrgAnchor-enabled organizations without depending on one closed marketplace or paid ranking platform.
+Help people, organizations, platforms, and AI agents discover OrgAnchor-enabled organizations without depending on one closed marketplace, one official Directory, or a paid ranking platform.
 
-The discovery strategy answers the product-level problem: verification only lowers transaction cost after two parties can find each other. The Directory is the first proposed open discovery index for that strategy. It stores summary records, verification status, policy-route hints, and pointers back to each organization's own `/.well-known/organchor.json` and `/verify/organchor.json`. It does not become the identity root, certification authority, evidence host, or final ranking engine.
+The discovery strategy answers the product-level problem: verification only lowers transaction cost after two parties can find each other. The Beacon layer is the origin-owned discoverability foundation. The Directory is an optional open discovery index over Beacon-derived records. It stores summary records, verification status, policy-route hints, and pointers back to each organization's own `/.well-known/organchor.json` and `/verify/organchor.json`. It does not become the identity root, certification authority, evidence host, or final ranking engine.
 
 Required capabilities for a future implementation:
 
 - Define directory record shape.
+- Define the OrgAnchor Beacon model and default adopter discovery surfaces. Design complete.
+- Make every adopter's verify package emit strong Beacon signals from its own origin.
+- Support direct Beacon inspection for a single origin.
+- Support direct Beacon sweeps for users who want to build their own local database without trusting a Directory.
 - Define optional discovery fields for organization capabilities, regions, service categories, freshness, and evidence summaries.
 - Define static Directory snapshot format.
 - Build and verify static Directory snapshots. Basic implementation complete.
@@ -502,6 +506,8 @@ organchor directory build --in directory-sources.json --out public/directory
 organchor directory build --in directory-sources.json --out public/directory --verify-origins
 organchor directory verify --snapshot public/directory/directory-snapshot.json
 organchor directory export --format ndjson
+organchor beacon inspect https://example.org
+organchor beacon sweep --seeds seeds.txt --out discovered-organchor.ndjson
 ```
 
 Exit criteria for a future stage:
@@ -511,6 +517,8 @@ Exit criteria for a future stage:
 - A Directory snapshot can be generated from live origin verification results without treating the Directory as the trust root. Basic implementation complete.
 - A third-party agent can discover a published Directory from the organization's normal OrgAnchor verify index. Basic implementation complete.
 - A third-party agent can use the snapshot to find candidate organizations and then verify each organization at its own origin.
+- A third-party agent can discover an adopter directly from origin-owned Beacon signals without requiring Directory inclusion.
+- A user can run a repeatable sweep to build a local database of OrgAnchor-enabled organizations.
 - The Directory policy is public and machine-readable.
 - Paid discovery, if ever introduced, cannot be confused with verification status.
 - Mirrors and forks can reproduce the published snapshot.
@@ -518,6 +526,7 @@ Exit criteria for a future stage:
 Reference:
 
 - `DISCOVERY_STRATEGY.md`
+- `ORGANCHOR_BEACON.md`
 - `DIRECTORY_MODEL.md`
 - `DIRECTORY_SNAPSHOT_SPEC.md`
 
@@ -547,4 +556,4 @@ The current emphasis is release hygiene and repeatable adoption: keep `PROJECT_N
 
 The next product-design frontier is the software value evidence layer: make OrgAnchor's own claims, evidence, reproducible checks, gaps, corrections, and policy-routing hints increasingly easy for third-party AI agents to inspect at low cost. `VALUE_CONTINUITY_MODEL.md`, `EVIDENCE_MODEL.md`, and `AGENT_INTEGRATION_GUIDE.md` are the current starting points.
 
-The longer post-v1 discovery frontier is `DISCOVERY_STRATEGY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md`: an open, forkable discovery model that can help agents find OrgAnchor-enabled organizations while preventing the discovery layer from becoming a monopoly trust platform.
+The longer post-v1 discovery frontier is `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md`: a Beacon-first, open, forkable discovery model that can help agents find OrgAnchor-enabled organizations while preventing the discovery layer from becoming a monopoly trust platform.

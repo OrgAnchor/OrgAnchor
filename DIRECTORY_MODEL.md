@@ -18,6 +18,8 @@ How can a person, organization, platform, or AI agent discover many OrgAnchor-en
 
 The OrgAnchor Directory is therefore an open discovery index, not a certification authority.
 
+The Directory is built on top of the OrgAnchor Beacon model. A Beacon is the origin-owned machine-readable signal emitted by each adopter; a Directory is a shared cache or index of Beacon-derived summaries.
+
 ## Core Position
 
 The Directory should help third-party AI agents cheaply find and pre-check OrgAnchor public packages.
@@ -30,6 +32,7 @@ a final ranking authority
 a closed marketplace
 a central gatekeeper
 a replacement for each organization's own /.well-known/organchor.json
+a prerequisite for native discoverability
 ```
 
 The trust path must always return to the adopting organization's own root authority, signed statements, hashes, evidence manifests, and migration history.
@@ -45,6 +48,8 @@ In theory, an AI agent can crawl the web directly and look for:
 
 That direct path should remain supported.
 
+`ORGANCHOR_BEACON.md` records this direct path as a first-class product layer. The Directory should make discovery cheaper, not make direct discovery unnecessary.
+
 In practice, discovery still has costs:
 
 - finding candidate organizations
@@ -55,6 +60,12 @@ In practice, discovery still has costs:
 - giving agents a small first-pass object before they fetch full evidence
 
 The Directory exists to reduce those costs without owning the final trust decision.
+
+It is best understood as:
+
+```text
+Directory = shared Beacon sweep result
+```
 
 ## What A Directory Record Is
 
@@ -155,6 +166,7 @@ The Directory should stay cheap by design:
 - mirror snapshots to IPFS when useful
 - archive important snapshot hashes or releases to Arweave/OpenTimestamps/Bitcoin anchors when useful
 - let anyone fork or mirror the feed
+- let anyone rebuild comparable records from public Beacons
 
 The default Directory should not require a database server, account system, or heavy storage backend.
 
@@ -192,6 +204,8 @@ apply the agent's own policy
 
 The Directory should reduce search cost. It should not replace direct verification.
 
+Agents that distrust all Directory nodes should still be able to run their own Beacon sweeps and build a local database.
+
 ## Future CLI Shape
 
 Possible post-v1 commands:
@@ -202,6 +216,8 @@ organchor directory add https://example.org
 organchor directory build --in directory-sources.json --out public/directory
 organchor directory verify --snapshot public/directory/directory-snapshot.json
 organchor directory export --format ndjson
+organchor beacon inspect https://example.org
+organchor beacon sweep --seeds seeds.txt --out discovered-organchor.ndjson
 ```
 
 The first implementation should prefer static files over a hosted service.
@@ -240,6 +256,7 @@ The Directory direction is successful if:
 - agents can find candidates faster
 - records remain verifiable back to origin
 - snapshots are easy to mirror and fork
+- records can be rebuilt from origin-owned Beacons
 - evidence storage costs stay with the organization or chosen carriers
 - the official OrgAnchor project does not become a trust monopoly
 - paid discovery, if it ever exists, cannot pretend to be verification

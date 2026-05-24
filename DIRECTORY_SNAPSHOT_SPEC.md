@@ -36,6 +36,8 @@ The Directory model explains how open Directory nodes can exist.
 
 This document defines the minimal static file those nodes can publish.
 
+The Directory should be treated as an optional index over OrgAnchor Beacons. `ORGANCHOR_BEACON.md` defines the origin-owned signals that let adopters be found even before a Directory includes them.
+
 ## Core Boundary
 
 A Directory snapshot is not a trust root.

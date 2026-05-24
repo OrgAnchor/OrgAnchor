@@ -98,19 +98,21 @@ Current surfaces:
 - `organchor verify url <origin> --compact`
 - `policy_route`
 
-### 4. Open Discovery
+### 4. Native Discoverability And Open Discovery
 
 Questions answered:
 
 ```text
+Can each adopter be discovered from its own origin-owned web signals?
 How can suitable organizations be found before verification starts?
 How can discovery stay open and multi-polar?
-How can directories reduce search cost without becoming trust monopolies?
+How can directories reduce search cost without becoming trust monopolies or prerequisites?
 ```
 
 Current design records:
 
 - `DISCOVERY_STRATEGY.md`
+- `ORGANCHOR_BEACON.md`
 - `DIRECTORY_MODEL.md`
 
 ## Alignment Questions
@@ -139,6 +141,7 @@ OrgAnchor should optimize for:
 - transparent gaps and corrections
 - repeatable adoption by small and serious organizations
 - portable public artifacts
+- native adopter discoverability through origin-owned Beacon signals
 - open discovery that can be mirrored or forked
 - resistance to platform lock-in
 
@@ -184,11 +187,12 @@ The external party or agent owns the final decision.
 
 ## Directory Boundary
 
-The Directory direction is valid only if it remains an open discovery layer.
+The Directory direction is valid only if it remains an open discovery accelerator over origin-owned Beacons.
 
 Valid:
 
 ```text
+Beacon-first origin discovery
 static snapshots
 exportable records
 public inclusion policy
@@ -211,7 +215,7 @@ exclusive official listing as a requirement for legitimacy
 When uncertain, choose the path that:
 
 ```text
-makes organizations easier to find
+makes organizations easier to find without asking permission from one index
 makes claims and evidence easier to verify
 makes limitations harder to hide
 makes AI agents spend less effort
@@ -231,7 +235,7 @@ The current priority is:
 finish a reliable v1 verification toolchain
 keep OrgAnchor's own self-pilot verifiable
 make claims and evidence useful to external agents
-define a minimal open discovery snapshot
+define a minimal Beacon-first open discovery path
 test the whole path with real or realistic organizations
 ```
 

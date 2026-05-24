@@ -73,6 +73,8 @@ If the compact result is insufficient for the transaction or risk level, run:
 organchor verify url https://example.org
 ```
 
+This direct origin path is the OrgAnchor Beacon path. A Directory can make discovery faster, but an agent should still be able to find and verify adopters from origin-owned Beacon signals such as `/.well-known/organchor.json`, `/verify/organchor.json`, sitemap hints, and HTML hints.
+
 ## Optional Directory Discovery
 
 Some organizations may also publish a Directory discovery pointer in `/.well-known/organchor.json` or `/verify/organchor.json`:

@@ -103,6 +103,15 @@ export function renderVerifyPage(model: VerifyPageModel): string {
   const organization = model.statement.organization;
   const organizationName = stringValue(organization.display_name) || stringValue(organization.name) || "Organization";
   const description = stringValue(organization.description);
+  const websiteUrl = stringValue(model.statement.official_endpoints.website);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: organizationName,
+    url: websiteUrl || undefined,
+    description: description || undefined,
+    sameAs: endpointUrls(model.statement.official_endpoints)
+  };
   const endpoints = Object.entries(model.statement.official_endpoints)
     .map(([key, value]) => renderEndpoint(key, value))
     .join("\n");
@@ -213,6 +222,9 @@ export function renderVerifyPage(model: VerifyPageModel): string {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(organizationName)} Verification</title>
+  <link rel="organchor" type="application/json" href="/.well-known/organchor.json">
+  <link rel="alternate" type="application/json" href="./${escapeHtml(model.indexFile)}" title="OrgAnchor verify index">
+  <script type="application/ld+json">${safeInlineJson(jsonLd)}</script>
   <style>
     :root {
       color-scheme: light dark;
@@ -703,6 +715,16 @@ function renderEndpoint(key: string, value: unknown): string {
 
 function stringValue(value: unknown): string {
   return typeof value === "string" ? value : "";
+}
+
+function endpointUrls(endpoints: Record<string, JsonValue>): string[] {
+  return Object.values(endpoints).filter((value): value is string =>
+    typeof value === "string" && /^https?:\/\//.test(value)
+  );
+}
+
+function safeInlineJson(value: unknown): string {
+  return JSON.stringify(value).replaceAll("<", "\\u003c");
 }
 
 function formatShortDate(value: string): string {

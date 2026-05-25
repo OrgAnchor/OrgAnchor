@@ -19,6 +19,7 @@ import {
 interface DirectoryFetchCandidate {
   record_id: string;
   origin: string;
+  candidate_priority: "HIGH" | "MEDIUM" | "REVIEW" | "LOW" | "REJECT";
   organization: {
     name: string;
     display_name: string;
@@ -44,6 +45,17 @@ interface DirectoryFetchCandidate {
     manual_checks: number;
     unsupported_claims: number;
   };
+  match_explanation: {
+    summary: string;
+    matched_filters: string[];
+  };
+  risk_gaps: {
+    code: string;
+    severity: "INFO" | "WARN" | "FAIL";
+    detail: string;
+    next_action: string;
+  }[];
+  verification_plan: string[];
   next_step: string;
 }
 
@@ -179,7 +191,7 @@ async function fetchDirectoryTarget(options: {
         matched_records: matchedRecords.length,
         returned_records: returnedRecords.length
       },
-      candidates: returnedRecords.map(candidateFromRecord)
+      candidates: returnedRecords.map((record) => candidateFromRecord(record, options.filters))
     };
   } catch (error) {
     const checks: InspectCheck[] = [
@@ -296,10 +308,11 @@ function emptyCounts(): DirectoryFetchResult["counts"] {
   };
 }
 
-function candidateFromRecord(record: DirectoryRecord): DirectoryFetchCandidate {
+function candidateFromRecord(record: DirectoryRecord, filters: DirectoryFetchFilters): DirectoryFetchCandidate {
   return {
     record_id: record.record_id,
     origin: record.origin,
+    candidate_priority: candidatePriority(record),
     organization: {
       name: record.organization.name,
       display_name: record.organization.display_name
@@ -325,8 +338,128 @@ function candidateFromRecord(record: DirectoryRecord): DirectoryFetchCandidate {
       manual_checks: record.evidence_summary.manual_checks,
       unsupported_claims: record.evidence_summary.unsupported_claims
     },
+    match_explanation: matchExplanation(record, filters),
+    risk_gaps: riskGapsForRecord(record),
+    verification_plan: verificationPlan(record),
     next_step: `organchor verify url ${record.origin} --compact`
   };
+}
+
+function candidatePriority(record: DirectoryRecord): DirectoryFetchCandidate["candidate_priority"] {
+  if (record.verification_summary.identity_status === "FAIL") return "REJECT";
+  if (record.verification_summary.identity_status !== "PASS") return "LOW";
+  if (record.verification_summary.value_status === "FAIL") return "REJECT";
+  if (record.verification_summary.value_status === "WARN") return "REVIEW";
+  if (record.verification_summary.value_status === "NOT_INCLUDED" || record.verification_summary.value_status === "NOT_VERIFIED") {
+    return "LOW";
+  }
+  if (record.evidence_summary.third_party_claims > 0 || record.evidence_summary.reproducible_claims > 0) return "HIGH";
+  return "MEDIUM";
+}
+
+function matchExplanation(record: DirectoryRecord, filters: DirectoryFetchFilters): DirectoryFetchCandidate["match_explanation"] {
+  const matched: string[] = [];
+  addListMatches(matched, "category", record.discovery.categories, filters.categories);
+  addListMatches(matched, "capability", record.discovery.capabilities, filters.capabilities);
+  addListMatches(matched, "region", record.discovery.regions, filters.regions);
+  addListMatches(matched, "language", record.discovery.languages, filters.languages);
+  addExactMatch(matched, "identity-status", record.verification_summary.identity_status, filters.identity_statuses);
+  addExactMatch(matched, "value-status", record.verification_summary.value_status, filters.value_statuses);
+  addExactMatch(matched, "policy-route", record.verification_summary.policy_route, filters.policy_routes);
+  if (matched.length === 0) {
+    matched.push("No explicit filters were supplied; candidate was returned from the Directory snapshot.");
+  }
+  return {
+    summary: `${record.organization.display_name} was returned as a Directory candidate. The Directory is not a trust root; verify directly at ${record.origin}.`,
+    matched_filters: matched
+  };
+}
+
+function addListMatches(output: string[], label: string, values: string[], filters: string[]): void {
+  if (filters.length === 0) return;
+  const normalized = new Set(values.map((value) => value.toLowerCase()));
+  const matched = filters.filter((filter) => normalized.has(filter.toLowerCase()));
+  if (matched.length > 0) output.push(`${label}: ${matched.join(", ")}`);
+}
+
+function addExactMatch<T extends string>(output: string[], label: string, value: T, filters: T[]): void {
+  if (filters.length === 0) return;
+  if (filters.includes(value)) output.push(`${label}: ${value}`);
+}
+
+function riskGapsForRecord(record: DirectoryRecord): DirectoryFetchCandidate["risk_gaps"] {
+  const risks: DirectoryFetchCandidate["risk_gaps"] = [];
+  if (record.verification_summary.identity_status === "FAIL") {
+    risks.push({
+      code: "IDENTITY_FAILED",
+      severity: "FAIL",
+      detail: "Directory record says identity verification failed.",
+      next_action: "Reject this candidate until direct origin verification passes."
+    });
+  } else if (record.verification_summary.identity_status !== "PASS") {
+    risks.push({
+      code: "IDENTITY_NOT_VERIFIED",
+      severity: "WARN",
+      detail: "Directory record has not verified identity at origin.",
+      next_action: `Run organchor verify url ${record.origin}.`
+    });
+  }
+  if (record.verification_summary.value_status === "FAIL") {
+    risks.push({
+      code: "VALUE_FAILED",
+      severity: "FAIL",
+      detail: "Directory record says value evidence verification failed.",
+      next_action: "Do not rely on product or service claims until the value layer is repaired."
+    });
+  } else if (record.verification_summary.value_status === "WARN") {
+    risks.push({
+      code: "VALUE_REQUIRES_REVIEW",
+      severity: "WARN",
+      detail: "Value evidence has warnings.",
+      next_action: "Review the full value continuity report and external policy before transaction decisions."
+    });
+  } else if (record.verification_summary.value_status === "NOT_INCLUDED" || record.verification_summary.value_status === "NOT_VERIFIED") {
+    risks.push({
+      code: "VALUE_LAYER_INCOMPLETE",
+      severity: "WARN",
+      detail: "Value evidence is missing or has not been verified.",
+      next_action: "Ask for signed claims, evidence, and a value continuity report if product/service evaluation matters."
+    });
+  }
+  if (record.evidence_summary.unsupported_claims > 0) {
+    risks.push({
+      code: "UNSUPPORTED_CLAIMS",
+      severity: "WARN",
+      detail: `${record.evidence_summary.unsupported_claims} unsupported claim(s) are summarized.`,
+      next_action: "Review unsupported claims before using this candidate in a recommendation."
+    });
+  }
+  if (record.evidence_summary.manual_checks > 0) {
+    risks.push({
+      code: "MANUAL_CHECKS_PRESENT",
+      severity: "INFO",
+      detail: `${record.evidence_summary.manual_checks} manual check(s) are summarized.`,
+      next_action: "Route manual checks to a human or domain-specific verifier."
+    });
+  }
+  if (risks.length === 0) {
+    risks.push({
+      code: "DIRECT_ORIGIN_VERIFICATION_REQUIRED",
+      severity: "INFO",
+      detail: "Directory summary has no obvious warning, but it is still only a candidate index.",
+      next_action: `Run organchor verify url ${record.origin} --compact before relying on this record.`
+    });
+  }
+  return risks;
+}
+
+function verificationPlan(record: DirectoryRecord): string[] {
+  return [
+    `Run organchor beacon inspect ${record.origin}.`,
+    `Run organchor verify url ${record.origin} --compact.`,
+    `If still relevant, run organchor verify url ${record.origin} for full checks.`,
+    "Review risk_gaps and apply the requesting agent's own external policy."
+  ];
 }
 
 async function fetchJson(url: URL, label: string, timeoutMs: number): Promise<JsonValue> {

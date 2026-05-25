@@ -3,9 +3,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import {
-  copyFileSync,
   existsSync,
-  mkdirSync,
   mkdtempSync,
   readFile,
   readFileSync,
@@ -87,13 +85,213 @@ test("directory build and verify commands generate a static discovery snapshot",
     assert.match(build.stdout, /Records: 1/);
 
     const snapshotPath = join(workspace, "public", "directory", "directory-snapshot.json");
+    const policyPath = join(workspace, "public", "directory", "directory-policy.json");
+    const feedPath = join(workspace, "directory-feed.ndjson");
     const verify = run(["directory", "verify", "--snapshot", snapshotPath]);
     assert.match(verify.stdout, /^PASS/m);
     assert.match(verify.stdout, /records_must_verify_at_origin|origin_links/);
+    const exportFeed = run([
+      "directory",
+      "export",
+      "--snapshot",
+      snapshotPath,
+      "--format",
+      "ndjson",
+      "--out",
+      feedPath
+    ]);
+    const exportSummary = JSON.parse(exportFeed.stdout);
+    assert.equal(exportSummary.type, "OrgAnchorDirectoryExportSummary");
+    assert.equal(exportSummary.record_count, 1);
+    const feedRecords = readFileSync(feedPath, "utf8").trim().split("\n").map((line) => JSON.parse(line));
+    assert.equal(feedRecords.length, 1);
+    assert.equal(feedRecords[0].type, "OrgAnchorDirectoryRecord");
+    assert.equal(feedRecords[0].origin, "https://vector.example");
 
     const generated = validateDirectorySnapshot(readJson(snapshotPath) as JsonValue);
     assert.equal(generated.trust_boundary.directory_is_trust_root, false);
     assert.equal(generated.records[0]?.well_known_url, "https://vector.example/.well-known/organchor.json");
+    const policy = readJson(policyPath);
+    assert.equal(policy.type, "OrgAnchorDirectoryPolicy");
+    assert.equal(asRecord(policy.trust_boundary).directory_is_trust_root, false);
+    assert.equal(asRecord(policy.inclusion_policy).selected_records_require_direct_origin_verification, true);
+    assert.equal(asRecord(policy.exclusion_policy).exclusion_is_not_a_negative_certification, true);
+    assert.equal(asRecord(policy.ranking_policy).paid_placement_changes_verification_status, false);
+    assert.equal(asRecord(policy.stale_record_policy).agents_should_reverify_before_use, true);
+    assert.equal(asRecord(policy.mirroring_policy).forks_and_mirrors_are_allowed, true);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test("directory add maintains a static candidate source without claiming verification", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-directory-add-"));
+  try {
+    const originsPath = join(workspace, "directory-origins.json");
+    const add = run([
+      "directory",
+      "add",
+      "--origins",
+      originsPath,
+      "--node-origin",
+      "https://directory.example",
+      "--origin",
+      "https://candidate.example/some/page?ref=1",
+      "--name",
+      "candidate-org",
+      "--display-name",
+      "Candidate Organization",
+      "--category",
+      "software",
+      "--capability",
+      "identity-continuity,precision-machining",
+      "--region",
+      "eu",
+      "--language",
+      "en,zh",
+      "--added-at",
+      "2026-05-24T00:00:00.000Z"
+    ]);
+    const summary = JSON.parse(add.stdout);
+    assert.equal(summary.type, "OrgAnchorDirectoryAddSummary");
+    assert.equal(summary.action, "added");
+    assert.equal(summary.origin, "https://candidate.example");
+
+    const origins = readJson(originsPath);
+    assert.equal(origins.type, "OrgAnchorDirectoryOrigins");
+    assert.equal(asRecord(origins.directory_node).origin, "https://directory.example");
+    const records = asArray(origins.origins);
+    assert.equal(records.length, 1);
+    const record = asRecord(records[0]);
+    assert.equal(record.origin, "https://candidate.example");
+    assert.equal(asRecord(record.organization).display_name, "Candidate Organization");
+    assert.deepEqual(asRecord(record.discovery).capabilities, ["identity-continuity", "precision-machining"]);
+    assert.equal(record.verification_summary, undefined);
+    assert.ok(asArray(record.limitations).map(asString).some((item) => item.includes("verify against the origin")));
+
+    const update = run([
+      "directory",
+      "add",
+      "--origins",
+      originsPath,
+      "--origin",
+      "https://candidate.example",
+      "--display-name",
+      "Candidate Org Updated",
+      "--capability",
+      "identity-continuity"
+    ]);
+    const updateSummary = JSON.parse(update.stdout);
+    assert.equal(updateSummary.action, "updated");
+    const updated = readJson(originsPath);
+    const updatedRecords = asArray(updated.origins);
+    assert.equal(updatedRecords.length, 1);
+    assert.equal(asRecord(asRecord(updatedRecords[0]).organization).display_name, "Candidate Org Updated");
+    assert.equal(asRecord(asRecord(updatedRecords[0]).source).added_at, "2026-05-24T00:00:00.000Z");
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test("directory build can publish a snapshot from a local Beacon index", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-directory-from-beacon-index-"));
+  try {
+    const indexPath = join(workspace, "beacon-index.json");
+    writeFileSync(
+      indexPath,
+      `${JSON.stringify({
+        type: "OrgAnchorBeaconLocalIndex",
+        version: "0.1",
+        generated_at: "2026-05-24T00:00:00.000Z",
+        sources: {
+          previous_index: null,
+          sweeps: ["beacon-sweep.ndjson"]
+        },
+        counts: {
+          total_origins: 1,
+          by_status: {
+            PASS: 1,
+            WARN: 0,
+            FAIL: 0
+          },
+          by_conformance: {
+            CLAIMED_SIGNAL: 0,
+            BEACON_SHAPE_PASS: 0,
+            IDENTITY_VERIFY_PASS: 0,
+            VALUE_VERIFY_PASS: 0,
+            FULL_COMPATIBLE: 1,
+            PARTIAL: 0,
+            FAILED: 0
+          }
+        },
+        records: [
+          {
+            record_key: "https://indexed.example",
+            origin: "https://indexed.example",
+            latest_target: "https://indexed.example",
+            first_seen_at: "2026-05-24T00:00:00.000Z",
+            last_checked_at: "2026-05-24T01:00:00.000Z",
+            seen_count: 2,
+            organization: {
+              name: "indexed-org",
+              display_name: "Indexed Organization"
+            },
+            discovery: {
+              categories: ["software"],
+              capabilities: ["identity-continuity"],
+              regions: ["global"],
+              languages: ["en"]
+            },
+            status: "PASS",
+            conformance_status: "FULL_COMPATIBLE",
+            signal_kind: "beacon",
+            signal_url: "https://indexed.example/.well-known/organchor.json",
+            identity_status: "PASS",
+            value_status: "PASS",
+            policy_route: "EXTERNAL_POLICY_REVIEW",
+            root_authority_hash: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            statement_hash: "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            risk_gap_codes: [],
+            next_step: "Use the verified artifacts as inputs to your own policy."
+          }
+        ]
+      }, null, 2)}\n`,
+      "utf8"
+    );
+
+    const build = run([
+      "directory",
+      "build",
+      "--beacon-index",
+      indexPath,
+      "--node-origin",
+      "https://directory.example",
+      "--node-name",
+      "Beacon Derived Directory",
+      "--snapshot-id",
+      "directory-from-index-001",
+      "--generated-at",
+      "2026-05-24T02:00:00.000Z",
+      "--out",
+      join(workspace, "public", "directory")
+    ]);
+    assert.match(build.stdout, /Beacon index:/);
+    assert.match(build.stdout, /Records: 1/);
+
+    const snapshotPath = join(workspace, "public", "directory", "directory-snapshot.json");
+    const snapshot = validateDirectorySnapshot(readJson(snapshotPath) as JsonValue);
+    const record = snapshot.records[0];
+    assert.ok(record);
+    assert.equal(record.origin, "https://indexed.example");
+    assert.equal(record.organization.display_name, "Indexed Organization");
+    assert.equal(record.source.method, "crawler");
+    assert.equal(record.source.imported_from, "OrgAnchorBeaconLocalIndex");
+    assert.equal(record.verification_summary.identity_status, "PASS");
+    assert.equal(record.verification_summary.value_status, "PASS");
+    assert.equal(record.verification_summary.policy_route, "EXTERNAL_POLICY_REVIEW");
+    assert.equal(record.verification_summary.conformance_status, "FULL_COMPATIBLE");
+    assert.equal(record.verification_summary.last_verified_at, "2026-05-24T01:00:00.000Z");
+    assert.equal(record.evidence_summary.total_evidence_items, 0);
   } finally {
     rmSync(workspace, { recursive: true, force: true });
   }
@@ -104,6 +302,7 @@ test("directory build can verify origins before writing crawler records", async 
   try {
     createAgentFixture(workspace);
     await withStaticServer(join(workspace, "public"), async (origin) => {
+      rewriteBeaconOrigin(workspace, origin);
       const originsPath = join(workspace, "directory-origins.json");
       writeFileSync(
         originsPath,
@@ -171,6 +370,7 @@ test("directory inspect discovers and verifies an origin-published Directory", a
   try {
     createAgentFixture(workspace);
     await withStaticServer(join(workspace, "public"), async (origin) => {
+      rewriteBeaconOrigin(workspace, origin);
       const originsPath = join(workspace, "directory-origins.json");
       writeFileSync(
         originsPath,
@@ -275,7 +475,7 @@ test("directory inspect discovers and verifies an origin-published Directory", a
         }, null, 2)}\n`,
         "utf8"
       );
-      regenerateAgentPage(workspace);
+      regenerateAgentPage(workspace, origin);
 
       const inspect = await runAsync(["directory", "inspect", origin]);
       const report = JSON.parse(inspect.stdout);
@@ -309,7 +509,11 @@ test("directory inspect discovers and verifies an origin-published Directory", a
       assert.equal(fetchReport.candidates.length, 2);
       assert.equal(fetchReport.candidates[0].record_id, "self");
       assert.equal(fetchReport.candidates[0].origin, origin);
+      assert.equal(fetchReport.candidates[0].candidate_priority, "HIGH");
       assert.equal(fetchReport.candidates[0].verification_summary.identity_status, "PASS");
+      assert.equal(fetchReport.candidates[0].match_explanation.summary.includes("not a trust root"), true);
+      assert.equal(fetchReport.candidates[0].risk_gaps.some((risk: { code: string }) => risk.code === "MANUAL_CHECKS_PRESENT"), true);
+      assert.equal(fetchReport.candidates[0].verification_plan[0], `Run organchor beacon inspect ${origin}.`);
       assert.equal(fetchReport.candidates[0].next_step, `organchor verify url ${origin} --compact`);
       assert.equal(existsSync(join(workspace, "downloaded-directory-snapshot.json")), true);
 
@@ -338,7 +542,9 @@ test("directory inspect discovers and verifies an origin-published Directory", a
       const hardwareFetchReport = JSON.parse(hardwareFetch.stdout);
       assert.equal(hardwareFetchReport.counts.matched_records, 1);
       assert.equal(hardwareFetchReport.candidates[0].origin, "https://hardware.example");
+      assert.equal(hardwareFetchReport.candidates[0].candidate_priority, "REVIEW");
       assert.equal(hardwareFetchReport.candidates[0].verification_summary.value_status, "WARN");
+      assert.equal(hardwareFetchReport.candidates[0].risk_gaps.some((risk: { code: string }) => risk.code === "VALUE_REQUIRES_REVIEW"), true);
 
       writeFileSync(
         join(workspace, "public", "directory", "directory-snapshot.json.sha256"),
@@ -396,6 +602,77 @@ test("directory verify fails closed when a snapshot claims directory trust-root 
   const invalid = readJson(join(repoRoot, "examples", "directory", "directory-snapshot.json"));
   asRecord(invalid.trust_boundary).directory_is_trust_root = true;
   assert.throws(() => validateDirectorySnapshot(invalid as JsonValue), /directory_is_trust_root must be false/);
+});
+
+test("directory compare reports cross-directory conflicts without making trust decisions", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-directory-compare-"));
+  try {
+    const snapshotA = buildDirectorySnapshot({
+      snapshotId: "directory-a-001",
+      generatedAt: "2026-05-23T00:00:00.000Z",
+      directoryNode: {
+        name: "Directory A",
+        origin: "https://directory-a.example",
+        policy_url: "https://directory-a.example/directory-policy.json"
+      },
+      records: [
+        directoryRecordInput("https://shared.example", {
+          valueStatus: "PASS",
+          statementHash: "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }),
+        directoryRecordInput("https://a-only.example")
+      ]
+    });
+    const snapshotB = buildDirectorySnapshot({
+      snapshotId: "directory-b-001",
+      generatedAt: "2026-05-23T01:00:00.000Z",
+      directoryNode: {
+        name: "Directory B",
+        origin: "https://directory-b.example",
+        policy_url: "https://directory-b.example/directory-policy.json"
+      },
+      records: [
+        directoryRecordInput("https://shared.example", {
+          valueStatus: "WARN",
+          statementHash: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }),
+        directoryRecordInput("https://b-only.example")
+      ]
+    });
+    const snapshotAPath = join(workspace, "directory-a.json");
+    const snapshotBPath = join(workspace, "directory-b.json");
+    writeFileSync(snapshotAPath, `${JSON.stringify(snapshotA, null, 2)}\n`, "utf8");
+    writeFileSync(snapshotBPath, `${JSON.stringify(snapshotB, null, 2)}\n`, "utf8");
+
+    const compare = run([
+      "directory",
+      "compare",
+      "--snapshots",
+      `${snapshotAPath},${snapshotBPath}`,
+      "--out",
+      join(workspace, "directory-compare.json")
+    ], 1);
+    const result = JSON.parse(compare.stdout);
+    assert.equal(result.type, "OrgAnchorDirectoryCompareResult");
+    assert.equal(result.trust_boundary.directory_comparison_is_not_trust_decision, true);
+    assert.equal(result.counts.snapshots, 2);
+    assert.equal(result.counts.total_unique_origins, 3);
+    assert.equal(result.counts.common_origins, 1);
+    assert.equal(result.counts.origins_with_conflicts, 1);
+    assert.equal(result.counts.fail_conflicts, 1);
+    assert.equal(result.counts.warn_conflicts, 2);
+    assert.equal(result.conflicts.some((conflict: { field: string; severity: string }) => conflict.field === "statement_hash" && conflict.severity === "FAIL"), true);
+    assert.equal(result.conflicts.some((conflict: { field: string; severity: string }) => conflict.field === "value_status" && conflict.severity === "WARN"), true);
+    const shared = result.origin_matrix.find((row: { origin: string }) => row.origin === "https://shared.example");
+    assert.ok(shared);
+    assert.equal(shared.conflict_status, "FAIL");
+    const aOnly = result.origin_matrix.find((row: { origin: string }) => row.origin === "https://a-only.example");
+    assert.ok(aOnly);
+    assert.deepEqual(aOnly.missing_from, ["directory-b-001"]);
+    assert.equal(existsSync(join(workspace, "directory-compare.json")), true);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
 });
 
 function createAgentFixture(workspace: string): void {
@@ -467,14 +744,55 @@ function createAgentFixture(workspace: string): void {
     "--out",
     "public/verify"
   ], 0, workspace);
-  mkdirSync(join(workspace, "public", ".well-known"), { recursive: true });
-  copyFileSync(
-    join(workspace, "public", "verify", "organchor.json"),
-    join(workspace, "public", ".well-known", "organchor.json")
-  );
 }
 
-function regenerateAgentPage(workspace: string): void {
+function directoryRecordInput(
+  origin: string,
+  options: {
+    valueStatus?: string;
+    statementHash?: string;
+  } = {}
+): JsonValue {
+  const hostname = new URL(origin).hostname;
+  return {
+    origin,
+    organization: {
+      name: hostname,
+      display_name: hostname
+    },
+    discovery: {
+      categories: ["software"],
+      capabilities: ["identity-continuity"],
+      regions: ["global"],
+      languages: ["en"]
+    },
+    verification_summary: {
+      identity_status: "PASS",
+      value_status: options.valueStatus ?? "PASS",
+      policy_route: options.valueStatus === "WARN" ? "REVIEW_VALUE_WARNINGS" : "EXTERNAL_POLICY_REVIEW",
+      root_authority_hash: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      statement_hash: options.statementHash ?? "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      last_verified_at: "2026-05-23T00:00:00.000Z"
+    },
+    evidence_summary: {
+      total_evidence_items: 1,
+      third_party_claims: 0,
+      reproducible_claims: 1,
+      manual_checks: 0,
+      unsupported_claims: 0
+    },
+    source: {
+      method: "crawler",
+      added_at: "2026-05-23T00:00:00.000Z"
+    },
+    limitations: [
+      "Directory record is a summary only.",
+      "Agent must verify against the origin package before relying on it."
+    ]
+  };
+}
+
+function regenerateAgentPage(workspace: string, origin: string): void {
   run([
     "page",
     "generate",
@@ -499,10 +817,19 @@ function regenerateAgentPage(workspace: string): void {
     "--out",
     "public/verify"
   ], 0, workspace);
-  copyFileSync(
-    join(workspace, "public", "verify", "organchor.json"),
-    join(workspace, "public", ".well-known", "organchor.json")
-  );
+  rewriteBeaconOrigin(workspace, origin);
+}
+
+function rewriteBeaconOrigin(workspace: string, origin: string): void {
+  const beaconPath = join(workspace, "public", ".well-known", "organchor.json");
+  const beacon = JSON.parse(readFileSync(beaconPath, "utf8"));
+  beacon.origin = origin;
+  beacon.verify_url = `${origin}/verify/`;
+  beacon.well_known_url = `${origin}/.well-known/organchor.json`;
+  beacon.verify_index_url = `${origin}/verify/organchor.json`;
+  beacon.agent_flow.first_pass = `organchor verify url ${origin} --compact`;
+  beacon.agent_flow.deep_verify = `organchor verify url ${origin}`;
+  writeFileSync(beaconPath, `${JSON.stringify(beacon, null, 2)}\n`, "utf8");
 }
 
 function hasInspectCheck(result: { checks: Array<{ id: string; status: string }> }, id: string, status: string): boolean {

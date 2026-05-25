@@ -16,7 +16,10 @@ import { beaconVerifyCommand } from "./commands/beacon-verify.ts";
 import { claimsCreateCommand } from "./commands/claims-create.ts";
 import { claimsSignCommand } from "./commands/claims-sign.ts";
 import { claimsVerifyCommand } from "./commands/claims-verify.ts";
+import { directoryAddCommand } from "./commands/directory-add.ts";
 import { directoryBuildCommand } from "./commands/directory-build.ts";
+import { directoryCompareCommand } from "./commands/directory-compare.ts";
+import { directoryExportCommand } from "./commands/directory-export.ts";
 import { directoryFetchCommand } from "./commands/directory-fetch.ts";
 import { directoryInspectCommand } from "./commands/directory-inspect.ts";
 import { directoryVerifyCommand } from "./commands/directory-verify.ts";
@@ -73,6 +76,9 @@ const commands: Record<string, CommandHandler> = {
   "claims create": claimsCreateCommand,
   "claims sign": claimsSignCommand,
   "claims verify": claimsVerifyCommand,
+  "directory add": directoryAddCommand,
+  "directory compare": directoryCompareCommand,
+  "directory export": directoryExportCommand,
   "directory build": directoryBuildCommand,
   "directory fetch": directoryFetchCommand,
   "directory inspect": directoryInspectCommand,
@@ -221,8 +227,12 @@ Usage:
   organchor claims sign --key keys/root-2026.private.json --authority root-authority.json
   organchor claims sign --key keys/root-b.private.json --authority root-authority.json --append
   organchor claims verify --authority root-authority.json --in claims/product-claims.json --sig claims/product-claims.json.sig
+  organchor directory add --origins examples/directory/directory-origins.json --origin https://example.org --category software --capability identity-continuity
   organchor directory build --origins examples/directory/directory-origins.json --out public/directory
   organchor directory build --origins examples/directory/directory-origins.json --out public/directory --verify-origins
+  organchor directory build --beacon-index beacon-index.json --node-origin https://directory.example --out public/directory
+  organchor directory compare --snapshots directory-a.json,directory-b.json --out directory-compare.json
+  organchor directory export --snapshot public/directory/directory-snapshot.json --format ndjson --out directory-feed.ndjson
   organchor directory fetch https://example.org
   organchor directory fetch https://example.org --capability identity-continuity --identity-status PASS --limit 5
   organchor directory inspect https://example.org

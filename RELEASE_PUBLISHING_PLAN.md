@@ -1,8 +1,8 @@
 # OrgAnchor Release Publishing Plan
 
-Status: Operator record for the published `0.1.0-alpha.1` prerelease.
+Status: Operator plan for the `0.1.0-alpha.2` MVP launch candidate, with `0.1.0-alpha.1` kept as the published baseline.
 
-Last checked: 2026-05-18.
+Last checked: 2026-05-25.
 
 ## Current Readiness
 
@@ -10,7 +10,7 @@ The package is buildable and installable locally:
 
 ```text
 package name: organchor
-version: 0.1.0-alpha.1
+candidate version: 0.1.0-alpha.2
 default publish tag: alpha
 public registry: https://registry.npmjs.org/
 source repository: https://github.com/OrgAnchor/OrgAnchor
@@ -26,12 +26,21 @@ npm publish --dry-run --tag alpha
 
 For `0.1.0-alpha.2` and later, run the release integrity gate in `RELEASE_INTEGRITY.md` before npm publishing or GitHub release creation. The gate keeps source state, public `/verify` state, carrier receipts, package metadata, and release notes aligned.
 
-Current publish status:
+Current `0.1.0-alpha.2` candidate status:
 
 ```text
+node --run release:check: PASS
+npm pack --dry-run: PASS
 npm publish --dry-run --tag alpha: PASS
-npm publish --tag alpha: PASS
-npm install -g organchor@alpha and organchor --help: PASS
+npm publish --tag alpha: not started; human approval and 2FA required
+```
+
+Published baseline:
+
+```text
+organchor@0.1.0-alpha.1: published
+v0.1.0-alpha.1: pushed
+GitHub prerelease for v0.1.0-alpha.1: draft prerelease
 ```
 
 ## Current External State
@@ -134,7 +143,7 @@ npm publish --dry-run --tag alpha
 Confirm:
 
 - Package name is `organchor`.
-- Version is `0.1.0-alpha.1`.
+- Version is `0.1.0-alpha.2`.
 - Tag is `alpha`, not `latest`.
 - `RELEASE_INTEGRITY.md` has been reviewed for the target release.
 - File list excludes private keys, provider tokens, wallets, payment data, Cloudflare handoff docs, self-pilot operational notes, and local secret files.
@@ -144,8 +153,8 @@ Confirm:
 After the source repository is pushed:
 
 ```bash
-git tag v0.1.0-alpha.1
-git push origin v0.1.0-alpha.1
+git tag v0.1.0-alpha.2
+git push origin v0.1.0-alpha.2
 ```
 
 Draft a GitHub Release using `CHANGELOG.md` as the base release notes.
@@ -174,7 +183,7 @@ Current caveat: npm's first published version is also visible under `latest`. Tr
 
 NPM trusted publishing can publish from GitHub Actions or GitLab CI/CD using OIDC and can generate provenance attestations. This is a better long-term path, but it requires the public repository and CI workflow first.
 
-For `0.1.0-alpha.1`, manual `alpha` publishing is acceptable if the npm account uses 2FA and the package is dry-run checked first.
+For alpha releases before trusted publishing is configured, manual `alpha` publishing is acceptable if the npm account uses 2FA and the package is dry-run checked first.
 
 ## Human Approval Gates
 

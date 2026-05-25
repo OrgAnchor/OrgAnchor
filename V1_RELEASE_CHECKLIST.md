@@ -10,18 +10,18 @@ It is not a product roadmap. It is the final gate for packaging, documentation, 
 
 ## Release Identity
 
-- [x] Release version chosen: `0.1.0-alpha.1`.
-- [x] Release tag chosen: `v0.1.0-alpha.1`.
+- [x] Current MVP launch candidate version chosen: `0.1.0-alpha.2`.
+- [x] Current MVP launch candidate tag chosen: `v0.1.0-alpha.2`.
 - [x] Release notes drafted in `CHANGELOG.md`.
 - [x] NPM package name occupied on the public registry: `organchor@0.1.0-alpha.1`.
 - [x] `package.json` defaults publish tag to `alpha`.
 - [x] NPM publisher account is created, protected with 2FA, and logged in locally.
-- [x] NPM alpha package published: `organchor@0.1.0-alpha.1`.
-- [x] NPM alpha install verified with `organchor --help`.
+- [ ] NPM alpha package published: `organchor@0.1.0-alpha.2`.
+- [ ] NPM alpha install verified with `organchor --help` for `0.1.0-alpha.2`.
 - [ ] NPM `latest` dist-tag cleanup is deferred; current registry state also exposes `0.1.0-alpha.1` as `latest`, so public docs must keep calling it alpha-only.
 - [x] Local Git repository is initialized.
 - [x] Source repository is pushed to a public GitHub repository: `https://github.com/OrgAnchor/OrgAnchor`.
-- [x] Release tag pushed: `v0.1.0-alpha.1`.
+- [ ] Release tag pushed: `v0.1.0-alpha.2`.
 - [x] README status reflects the actual stage.
 - [x] Public claims avoid "permanent identity", "absolute censorship resistance", "fully decentralized", and "legal identity replacement".
 - [x] Apache-2.0 license file is present.
@@ -107,7 +107,7 @@ Review matches manually because documentation may mention these words safely.
 
 - [x] Release integrity protocol is recorded in `RELEASE_INTEGRITY.md`.
 - [x] Release state matrix is completed for the current alpha-line milestone in `RELEASE_STATE_2026-05-25.md`.
-- [ ] Source commit, package version, Git tag, npm dist-tag, and release notes describe the same state; current PR work is intentionally ahead of `organchor@0.1.0-alpha.1`.
+- [ ] Source commit, package version, Git tag, npm dist-tag, and release notes describe the same state; `0.1.0-alpha.2` has package and changelog candidate state, but tag creation and real npm publish are still pending.
 - [x] Public `/verify` artifact hashes are recorded in `RELEASE_STATE_2026-05-25.md`.
 - [x] IPFS, Arweave, OpenTimestamps, and website receipts are recorded or explicitly marked out of scope.
 - [x] Content-addressing self-reference gaps are documented instead of hidden.

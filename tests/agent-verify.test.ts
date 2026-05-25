@@ -71,6 +71,9 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(compact.evidence_summary.claim_support_levels.L3_REPRODUCIBLE_METHOD, 1);
       assert.equal(compact.evidence_summary.claim_support_levels.L0_UNSUPPORTED, 0);
       assert.equal(compact.evidence_summary.risk_gaps, 1);
+      assert.equal(compact.evidence_summary.profile_declared_claims, 0);
+      assert.equal(compact.evidence_summary.profile_pass_claims, 0);
+      assert.equal(compact.evidence_summary.profile_gap_claims, 0);
       assert.equal(compact.evidence_summary.top_risk_gaps.includes("Only first-party evidence is linked."), true);
       assert.equal(
         compact.evidence_summary.next_best_actions.includes("Add an independent attestation or external evidence source for the exact claim."),

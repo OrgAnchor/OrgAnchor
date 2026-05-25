@@ -28,6 +28,23 @@ export type ClaimPolicyRoute =
   | "EXTERNAL_POLICY_REVIEW"
   | "READY_FOR_EXTERNAL_POLICY";
 
+export type RealWorldEvidenceProfile =
+  | "physical_product"
+  | "service_delivery"
+  | "saas_api"
+  | "certification_compliance"
+  | "dataset_research";
+
+export type ClaimProfileReviewStatus = "PASS" | "WARN" | "NOT_DECLARED";
+
+export interface ClaimProfileReview {
+  profile: RealWorldEvidenceProfile | "not_declared";
+  status: ClaimProfileReviewStatus;
+  missing_fields: string[];
+  risk_gaps: string[];
+  next_best_actions: string[];
+}
+
 export interface ClaimSupportAxes {
   artifact_integrity: "HASH_DECLARED" | "LOCAL_HASH_FAILED" | "NOT_CHECKED";
   retrievability: "HAS_PUBLIC_LOCATIONS" | "PARTIAL_PUBLIC_LOCATIONS" | "NO_PUBLIC_LOCATIONS" | "NO_EVIDENCE";
@@ -57,6 +74,7 @@ export interface ClaimValueAudit {
   next_best_actions: string[];
   organchor_trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
   policy_route: ClaimPolicyRoute;
+  profile_review: ClaimProfileReview;
   has_third_party_evidence: boolean;
   has_reproducible_evidence: boolean;
   evidence_refs: string[];
@@ -101,6 +119,9 @@ export interface ValueContinuityReport {
     external_evidence_items: number;
     first_party_evidence_items: number;
     stale_evidence_items: number;
+    profile_declared_claims: number;
+    profile_pass_claims: number;
+    profile_gap_claims: number;
   };
   checks: ValueAuditCheck[];
   claims: ClaimValueAudit[];
@@ -189,7 +210,7 @@ export function renderValueContinuityMarkdown(report: ValueContinuityReport): st
   const claims = report.claims
     .map(
       (claim) =>
-        `| ${claim.status} | ${escapeMarkdown(claim.id)} | ${claim.level} | ${claim.protocol_support_level} | ${claim.policy_route} | ${claim.risk_gaps.length} | ${claim.resolved_evidence_refs.length} | ${claim.missing_evidence_refs.length} |`
+        `| ${claim.status} | ${escapeMarkdown(claim.id)} | ${claim.level} | ${claim.protocol_support_level} | ${claim.policy_route} | ${claim.profile_review.profile} | ${claim.risk_gaps.length} | ${claim.resolved_evidence_refs.length} | ${claim.missing_evidence_refs.length} |`
     )
     .join("\n");
   const evidence = report.evidence
@@ -228,6 +249,9 @@ Evidence: \`${report.evidence_path}\`
 | External evidence items | ${report.summary.external_evidence_items} |
 | First-party evidence items | ${report.summary.first_party_evidence_items} |
 | Stale evidence items | ${report.summary.stale_evidence_items} |
+| Profile-declared claims | ${report.summary.profile_declared_claims} |
+| Profile PASS claims | ${report.summary.profile_pass_claims} |
+| Profile gap claims | ${report.summary.profile_gap_claims} |
 
 ## Checks
 
@@ -237,8 +261,8 @@ ${checks}
 
 ## Claims
 
-| Status | Claim | Legacy level | Protocol support | Policy route | Risk gaps | Resolved evidence | Missing evidence |
-| --- | --- | --- | --- | --- | ---: | ---: | ---: |
+| Status | Claim | Legacy level | Protocol support | Policy route | Profile | Risk gaps | Resolved evidence | Missing evidence |
+| --- | --- | --- | --- | --- | --- | ---: | ---: | ---: |
 ${claims}
 
 ## Evidence
@@ -326,18 +350,25 @@ function auditClaim(
 
   const level = claimLevel(claim, referencedEvidence);
   const supportAxes = claimSupportAxes(claim, referencedEvidence);
-  const riskGaps = claimRiskGaps(claim, refs, missing, referencedEvidence, supportAxes);
+  const profileReview = reviewClaimProfile(claim, referencedEvidence);
+  const riskGaps = [...claimRiskGaps(claim, refs, missing, referencedEvidence, supportAxes), ...profileReview.risk_gaps];
   const hasHardFailure = missing.length > 0;
+  const status = hasHardFailure
+    ? statusFromFindings(findings, true)
+    : profileReview.status === "WARN"
+      ? "WARN"
+      : statusFromFindings(findings, false);
   return {
     id,
-    status: statusFromFindings(findings, hasHardFailure),
+    status,
     level,
     protocol_support_level: protocolSupportLevel(claim, refs, missing, referencedEvidence),
     support_axes: supportAxes,
     risk_gaps: riskGaps,
-    next_best_actions: claimNextBestActions(riskGaps),
+    next_best_actions: uniqueStrings([...claimNextBestActions(riskGaps), ...profileReview.next_best_actions]),
     organchor_trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR",
     policy_route: claimPolicyRoute(refs, missing, riskGaps, referencedEvidence),
+    profile_review: profileReview,
     has_third_party_evidence: hasThirdPartyEvidence,
     has_reproducible_evidence: hasReproducibleEvidence,
     evidence_refs: refs,
@@ -433,6 +464,28 @@ function claimChecks(claim: Record<string, JsonValue>, audit: ClaimValueAudit): 
         `claim:${audit.id}:marketing_language`,
         `Claim ${audit.id} marketing language`,
         "Claim contains broad marketing language that should be narrowed or backed by stronger evidence."
+      )
+    );
+  }
+  if (audit.profile_review.status === "PASS") {
+    checks.push(
+      pass(
+        `claim:${audit.id}:profile`,
+        `Claim ${audit.id} real-world profile`,
+        `Claim satisfies the minimum ${audit.profile_review.profile} profile checks.`
+      )
+    );
+  } else if (audit.profile_review.status === "WARN") {
+    checks.push(
+      warn(
+        `claim:${audit.id}:profile`,
+        `Claim ${audit.id} real-world profile`,
+        `Claim is missing profile fields: ${audit.profile_review.missing_fields.join(", ")}.`,
+        {
+          profile: audit.profile_review.profile,
+          missing_fields: audit.profile_review.missing_fields,
+          next_best_actions: audit.profile_review.next_best_actions
+        }
       )
     );
   }
@@ -606,6 +659,273 @@ function claimPolicyRoute(
   return "READY_FOR_EXTERNAL_POLICY";
 }
 
+function reviewClaimProfile(claim: Record<string, JsonValue>, referencedEvidence: EvidenceValueAudit[]): ClaimProfileReview {
+  const profile = normalizeProfile(stringValue(claim.claim_category) || stringValue(claim.profile) || stringValue(claim.claim_type));
+  if (!profile) {
+    return {
+      profile: "not_declared",
+      status: "NOT_DECLARED",
+      missing_fields: [],
+      risk_gaps: [],
+      next_best_actions: []
+    };
+  }
+
+  const missing: string[] = [];
+  const gaps: string[] = [];
+  const actions: string[] = [];
+  for (const requirement of profileRequirements(profile, claim, referencedEvidence)) {
+    if (requirement.met()) continue;
+    missing.push(requirement.id);
+    gaps.push(requirement.risk_gap);
+    actions.push(requirement.next_best_action);
+  }
+
+  return {
+    profile,
+    status: missing.length === 0 ? "PASS" : "WARN",
+    missing_fields: missing,
+    risk_gaps: gaps,
+    next_best_actions: uniqueStrings(actions)
+  };
+}
+
+interface ProfileRequirement {
+  id: string;
+  met: () => boolean;
+  risk_gap: string;
+  next_best_action: string;
+}
+
+function profileRequirements(
+  profile: RealWorldEvidenceProfile,
+  claim: Record<string, JsonValue>,
+  referencedEvidence: EvidenceValueAudit[]
+): ProfileRequirement[] {
+  const linkedEvidence = {
+    id: "evidence_refs",
+    met: () => referencedEvidence.length > 0,
+    risk_gap: "Profile claim has no resolved evidence item.",
+    next_best_action: "Link at least one hash-bound evidence item to this profile claim."
+  };
+  const recheckMethod = {
+    id: "method_refs",
+    met: () => referencedEvidence.some((item) => item.has_recheck_method),
+    risk_gap: "Profile claim has no explicit low-friction recheck method.",
+    next_best_action: "Attach a recheck method with concrete steps, expected results, tools, cost, and limitations."
+  };
+
+  switch (profile) {
+    case "physical_product":
+      return [
+        fieldRequirement(claim, "product_id", ["product_id", "claim_scope.product_id"], "Physical product claim does not identify the product.", "Add product_id to the claim."),
+        fieldRequirement(
+          claim,
+          "claim_scope.batch_or_model",
+          ["claim_scope.batch_id", "claim_scope.lot_id", "claim_scope.serial_range", "claim_scope.model", "claim_scope.version"],
+          "Physical product claim does not identify a batch, lot, serial range, model, or version.",
+          "Add batch_id, lot_id, serial_range, model, or version to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.test_standard",
+          ["claim_scope.test_standard", "claim_scope.standard"],
+          "Physical product claim does not identify the test standard or inspection standard.",
+          "Add test_standard or standard to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.sampling_method",
+          ["claim_scope.sampling_method", "claim_scope.sample_size"],
+          "Physical product claim does not describe sampling method or sample size.",
+          "Add sampling_method or sample_size to claim_scope."
+        ),
+        linkedEvidence,
+        recheckMethod
+      ];
+    case "service_delivery":
+      return [
+        fieldRequirement(
+          claim,
+          "claim_scope.service_or_project",
+          ["claim_scope.service_id", "claim_scope.project_id", "product_id"],
+          "Service delivery claim does not identify the service or project.",
+          "Add service_id, project_id, or product_id."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.customer_ref",
+          ["claim_scope.customer_ref", "claim_scope.customer_id", "claim_scope.customer_segment"],
+          "Service delivery claim does not identify a customer reference or anonymized customer segment.",
+          "Add customer_ref, customer_id, or customer_segment."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.delivery_date",
+          ["claim_scope.delivered_at", "claim_scope.delivery_date", "claim_scope.time_window"],
+          "Service delivery claim does not identify a delivery date or delivery window.",
+          "Add delivered_at, delivery_date, or time_window."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.acceptance_record",
+          ["claim_scope.acceptance_record_id", "claim_scope.acceptance_status"],
+          "Service delivery claim does not identify acceptance status or acceptance record.",
+          "Add acceptance_record_id or acceptance_status."
+        ),
+        linkedEvidence,
+        recheckMethod
+      ];
+    case "saas_api":
+      return [
+        fieldRequirement(claim, "claim_scope.metric", ["claim_scope.metric"], "SaaS/API claim does not identify the measured metric.", "Add metric to claim_scope."),
+        fieldRequirement(
+          claim,
+          "claim_scope.time_window",
+          ["claim_scope.time_window", "claim_scope.start_at", "claim_scope.period"],
+          "SaaS/API claim does not define a measurement time window.",
+          "Add time_window, start_at/end_at, or period to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.regions",
+          ["claim_scope.regions", "claim_scope.region"],
+          "SaaS/API claim does not identify measurement region or regions.",
+          "Add region or regions to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.monitoring_method",
+          ["claim_scope.monitoring_method", "claim_scope.measurement_method"],
+          "SaaS/API claim does not identify the monitoring or measurement method.",
+          "Add monitoring_method or measurement_method to claim_scope."
+        ),
+        linkedEvidence,
+        recheckMethod
+      ];
+    case "certification_compliance":
+      return [
+        fieldRequirement(
+          claim,
+          "claim_scope.certificate_id",
+          ["claim_scope.certificate_id", "claim_scope.registration_id"],
+          "Certification claim does not identify a certificate or registration id.",
+          "Add certificate_id or registration_id to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.issuer",
+          ["claim_scope.issuer", "claim_scope.authority"],
+          "Certification claim does not identify the issuer or authority.",
+          "Add issuer or authority to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.valid_from",
+          ["claim_scope.valid_from"],
+          "Certification claim does not identify when validity begins.",
+          "Add valid_from to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.valid_until",
+          ["claim_scope.valid_until"],
+          "Certification claim does not identify when validity ends.",
+          "Add valid_until to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.scope",
+          ["claim_scope.scope", "claim_scope.covered_products", "claim_scope.covered_services"],
+          "Certification claim does not identify what the certificate covers.",
+          "Add scope, covered_products, or covered_services to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.verification_url",
+          ["claim_scope.verification_url", "claim_scope.registry_url"],
+          "Certification claim does not provide a registry or verification URL.",
+          "Add verification_url or registry_url to claim_scope."
+        ),
+        linkedEvidence
+      ];
+    case "dataset_research":
+      return [
+        fieldRequirement(
+          claim,
+          "claim_scope.dataset_version",
+          ["claim_scope.dataset_version", "claim_scope.version"],
+          "Dataset/research claim does not identify the dataset or result version.",
+          "Add dataset_version or version to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.sample_size",
+          ["claim_scope.sample_size", "claim_scope.record_count"],
+          "Dataset/research claim does not identify sample size or record count.",
+          "Add sample_size or record_count to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.source_description",
+          ["claim_scope.source_description", "claim_scope.source", "claim_scope.data_sources"],
+          "Dataset/research claim does not describe data source or sources.",
+          "Add source_description, source, or data_sources to claim_scope."
+        ),
+        fieldRequirement(
+          claim,
+          "claim_scope.collection_window",
+          ["claim_scope.collection_window", "claim_scope.time_window"],
+          "Dataset/research claim does not identify the collection or observation window.",
+          "Add collection_window or time_window to claim_scope."
+        ),
+        linkedEvidence,
+        recheckMethod
+      ];
+  }
+}
+
+function fieldRequirement(
+  claim: Record<string, JsonValue>,
+  id: string,
+  paths: string[],
+  riskGap: string,
+  nextBestAction: string
+): ProfileRequirement {
+  return {
+    id,
+    met: () => paths.some((path) => hasPath(claim, path)),
+    risk_gap: riskGap,
+    next_best_action: nextBestAction
+  };
+}
+
+function normalizeProfile(value: string): RealWorldEvidenceProfile | null {
+  const normalized = value.toLowerCase().replace(/[-\s]/g, "_");
+  if (normalized === "physical_product") return "physical_product";
+  if (normalized === "service_delivery" || normalized === "professional_service") return "service_delivery";
+  if (normalized === "saas_api" || normalized === "saas" || normalized === "api") return "saas_api";
+  if (normalized === "certification_compliance" || normalized === "certification" || normalized === "compliance") {
+    return "certification_compliance";
+  }
+  if (normalized === "dataset_research" || normalized === "dataset" || normalized === "research") return "dataset_research";
+  return null;
+}
+
+function hasPath(object: Record<string, JsonValue>, path: string): boolean {
+  let current: JsonValue | undefined = object;
+  for (const part of path.split(".")) {
+    if (!current || typeof current !== "object" || Array.isArray(current)) return false;
+    current = current[part];
+  }
+  if (typeof current === "string") return current.trim().length > 0;
+  if (Array.isArray(current)) return current.length > 0;
+  if (typeof current === "number") return Number.isFinite(current);
+  if (typeof current === "boolean") return true;
+  if (current && typeof current === "object") return Object.keys(current).length > 0;
+  return false;
+}
+
 function summarize(
   checks: ValueAuditCheck[],
   claims: ClaimValueAudit[],
@@ -626,7 +946,10 @@ function summarize(
     total_evidence_items: evidence.length,
     external_evidence_items: evidence.filter((item) => item.has_external_location).length,
     first_party_evidence_items: evidence.filter((item) => isFirstPartyIssuer(item.issuer_type)).length,
-    stale_evidence_items: evidence.filter((item) => item.is_stale).length
+    stale_evidence_items: evidence.filter((item) => item.is_stale).length,
+    profile_declared_claims: claims.filter((claim) => claim.profile_review.status !== "NOT_DECLARED").length,
+    profile_pass_claims: claims.filter((claim) => claim.profile_review.status === "PASS").length,
+    profile_gap_claims: claims.filter((claim) => claim.profile_review.status === "WARN").length
   };
 }
 

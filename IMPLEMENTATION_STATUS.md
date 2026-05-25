@@ -35,6 +35,7 @@ Value evidence layer:
 - Evidence recheck method objects linked by `method_refs`.
 - Value continuity reports.
 - Claim-level protocol support levels, support axes, risk gaps, next best actions, and compact support-level counts for external AI agents.
+- Real-world profile gap validators for physical product, service delivery, SaaS/API, certification/compliance, and dataset/research claims.
 - Policy-route hints for external AI agents.
 - Claims/evidence protocol baseline for claim support levels, reproducible methods, third-party attestations, challenges, and low-cost AI-agent evaluation.
 

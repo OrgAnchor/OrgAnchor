@@ -224,13 +224,15 @@ Implemented:
 - value audit recognition of explicit recheck methods
 - claim support level upgrade to `L3_REPRODUCIBLE_METHOD` when a linked evidence item has a valid method
 - compact agent output with support-level counts, risk-gap count, top risk gaps, and next actions
+- category-specific profile validators for `physical_product`, `service_delivery`, `saas_api`, `certification_compliance`, and `dataset_research`
+- compact agent output with profile-declared, profile-pass, and profile-gap counts
 
 Not yet implemented:
 
 - signed third-party attestation manifests;
 - challenge/correction manifests;
 - automatic method execution;
-- category-specific profile validators;
+- deeper industry-specific validators beyond the five generic profile categories;
 - UI workflow for non-technical operators.
 
 ## Acceptance Rule

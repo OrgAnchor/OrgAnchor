@@ -198,6 +198,127 @@ test("value audit treats explicit recheck methods as reproducible support", () =
   }
 });
 
+test("value audit reports profile gaps for underspecified physical product claims", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-value-audit-profile-gap-"));
+  try {
+    createAuthority(workspace);
+    writeFileSync(join(workspace, "inspection-report.md"), "# Inspection\n\nBatch inspection result.\n", "utf8");
+    run(workspace, ["claims", "create", "--config", "organchor.config.json"]);
+    updateClaim(workspace, {
+      claim_category: "physical_product",
+      claim_scope: {
+        batch_id: "B-2026-05"
+      }
+    });
+    run(workspace, ["evidence", "create", "--config", "organchor.config.json"]);
+    run(workspace, [
+      "evidence",
+      "add",
+      "--file",
+      "inspection-report.md",
+      "--id",
+      "evidence-001",
+      "--issuer-type",
+      "third_party",
+      "--uri",
+      "https://example.org/evidence/inspection-report.md",
+      "--location-type",
+      "https",
+      "--limitations",
+      "Single batch inspection"
+    ]);
+    addMethod(workspace);
+
+    run(workspace, [
+      "value",
+      "audit",
+      "--claims",
+      "claims/product-claims.json",
+      "--evidence",
+      "evidence/evidence-manifest.json",
+      "--check-files",
+      "--now",
+      "2026-05-19T00:00:00Z"
+    ]);
+
+    const report = readReport(workspace);
+    const claim = report.claims[0];
+    assert.ok(claim);
+    assert.equal(report.summary.profile_declared_claims, 1);
+    assert.equal(report.summary.profile_pass_claims, 0);
+    assert.equal(report.summary.profile_gap_claims, 1);
+    assert.equal(claim.status, "WARN");
+    assert.equal(claim.profile_review.profile, "physical_product");
+    assert.equal(claim.profile_review.status, "WARN");
+    assert.deepEqual(claim.profile_review.missing_fields, ["claim_scope.test_standard", "claim_scope.sampling_method"]);
+    assert.ok(claim.risk_gaps.some((gap) => gap.includes("test standard")));
+    assert.ok(claim.next_best_actions.some((action) => action.includes("test_standard")));
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test("value audit passes a complete SaaS API profile without turning it into a trust badge", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-value-audit-profile-pass-"));
+  try {
+    createAuthority(workspace);
+    writeFileSync(join(workspace, "uptime-report.json"), "{\"uptime\":0.9994}\n", "utf8");
+    run(workspace, ["claims", "create", "--config", "organchor.config.json"]);
+    updateClaim(workspace, {
+      claim_category: "saas_api",
+      claim_scope: {
+        metric: "monthly_uptime",
+        time_window: "2026-04-01/2026-04-30",
+        regions: ["iad", "fra", "sin"],
+        monitoring_method: "synthetic_https_probe"
+      }
+    });
+    run(workspace, ["evidence", "create", "--config", "organchor.config.json"]);
+    run(workspace, [
+      "evidence",
+      "add",
+      "--file",
+      "uptime-report.json",
+      "--id",
+      "evidence-001",
+      "--issuer-type",
+      "third_party",
+      "--uri",
+      "https://example.org/evidence/uptime-report.json",
+      "--location-type",
+      "https",
+      "--limitations",
+      "Synthetic monitoring only"
+    ]);
+    addMethod(workspace);
+
+    run(workspace, [
+      "value",
+      "audit",
+      "--claims",
+      "claims/product-claims.json",
+      "--evidence",
+      "evidence/evidence-manifest.json",
+      "--check-files",
+      "--now",
+      "2026-05-19T00:00:00Z"
+    ]);
+
+    const report = readReport(workspace);
+    const claim = report.claims[0];
+    assert.ok(claim);
+    assert.equal(report.summary.profile_declared_claims, 1);
+    assert.equal(report.summary.profile_pass_claims, 1);
+    assert.equal(report.summary.profile_gap_claims, 0);
+    assert.equal(claim.profile_review.profile, "saas_api");
+    assert.equal(claim.profile_review.status, "PASS");
+    assert.deepEqual(claim.profile_review.missing_fields, []);
+    assert.equal(claim.organchor_trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
 function createAuthority(workspace: string): void {
   run(workspace, ["init"]);
   run(workspace, ["key", "generate", "--id", "root-2026"]);
@@ -207,6 +328,7 @@ function createAuthority(workspace: string): void {
 function readReport(workspace: string): {
   summary: Record<string, number>;
   claims: Array<{
+    status: string;
     level: string;
     protocol_support_level: string;
     support_axes: Record<string, string>;
@@ -214,6 +336,13 @@ function readReport(workspace: string): {
     next_best_actions: string[];
     organchor_trust_decision: string;
     policy_route: string;
+    profile_review: {
+      profile: string;
+      status: string;
+      missing_fields: string[];
+      risk_gaps: string[];
+      next_best_actions: string[];
+    };
     missing_evidence_refs: string[];
   }>;
   evidence: Array<{
@@ -226,6 +355,37 @@ function readReport(workspace: string): {
   }>;
 } {
   return JSON.parse(readFileSync(join(workspace, "reports", "value-continuity-report.json"), "utf8"));
+}
+
+function updateClaim(workspace: string, patch: Record<string, unknown>): void {
+  const claimsPath = join(workspace, "claims", "product-claims.json");
+  const claims = JSON.parse(readFileSync(claimsPath, "utf8"));
+  Object.assign(claims.claims[0], patch);
+  writeFileSync(claimsPath, `${JSON.stringify(claims, null, 2)}\n`, "utf8");
+}
+
+function addMethod(workspace: string): void {
+  run(workspace, [
+    "evidence",
+    "method",
+    "add",
+    "--id",
+    "method-001",
+    "--evidence-id",
+    "evidence-001",
+    "--kind",
+    "public_artifact_hash_check",
+    "--steps",
+    "Download the public artifact;Compute SHA-256;Compare the hash with the signed evidence manifest",
+    "--expected-results",
+    "The downloaded artifact hash equals the declared evidence hash",
+    "--required-tools",
+    "curl;sha256sum",
+    "--cost-to-verify",
+    "low",
+    "--limitations",
+    "This verifies artifact integrity, not final product quality"
+  ]);
 }
 
 function run(workspace: string, args: string[], expectedStatus = 0): { stdout: string; stderr: string } {

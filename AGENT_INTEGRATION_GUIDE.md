@@ -235,6 +235,9 @@ Example:
     "third_party_claims": 0,
     "reproducible_claims": 1,
     "manual_checks": 34,
+    "profile_declared_claims": 0,
+    "profile_pass_claims": 0,
+    "profile_gap_claims": 0,
     "claim_support_levels": {
       "L0_UNSUPPORTED": 0,
       "L1_SIGNED_SELF_CLAIM": 0,

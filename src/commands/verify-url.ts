@@ -70,6 +70,9 @@ export interface AgentVerificationCompactResult {
     third_party_claims: number;
     reproducible_claims: number;
     manual_checks: number;
+    profile_declared_claims: number;
+    profile_pass_claims: number;
+    profile_gap_claims: number;
     claim_support_levels: Record<string, number>;
     risk_gaps: number;
     top_risk_gaps: string[];
@@ -301,6 +304,9 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
       third_party_claims: numberValue(summary.third_party_claims),
       reproducible_claims: numberValue(summary.reproducible_claims),
       manual_checks: numberValue(summary.MANUAL_CHECK_REQUIRED),
+      profile_declared_claims: numberValue(summary.profile_declared_claims),
+      profile_pass_claims: numberValue(summary.profile_pass_claims),
+      profile_gap_claims: numberValue(summary.profile_gap_claims),
       claim_support_levels: compactClaimSupportLevels(claimSupportLevels),
       risk_gaps: numberValue(claimSupportSummary.risk_gap_count),
       top_risk_gaps: arrayStrings(claimSupportSummary.top_risk_gaps),

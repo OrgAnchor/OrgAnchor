@@ -70,6 +70,7 @@ Implemented so far:
 - Signed product claims manifests, including appended threshold signatures.
 - Signed evidence manifests with local artifact hash checks and appended threshold signatures.
 - Evidence recheck method objects through `organchor evidence method add`, linking signed evidence to concrete steps, expected results, tools, verification cost, and limitations.
+- Real-world profile validators for physical product, service delivery, SaaS/API, certification/compliance, and dataset/research claims.
 - Domain security audit reports with `PASS`, `WARN`, `FAIL`, and `MANUAL_CHECK_REQUIRED`.
 - HTTPS, certificate expiration, DNSSEC, SPF, DMARC, MX, CAA, security.txt, `/verify`, statement, and signature checks.
 - Onion v3 address validation and Tor Hidden Service config guidance.

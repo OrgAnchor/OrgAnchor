@@ -22,6 +22,7 @@ Already implemented:
 - evidence artifact SHA-256 hashes;
 - explicit evidence recheck method objects;
 - evidence-to-method references;
+- five real-world profile validators for physical product, service delivery, SaaS/API, certification/compliance, and dataset/research claims;
 - local artifact hash checking for local evidence locations;
 - first-party versus external evidence metadata;
 - reproducibility metadata;
@@ -33,6 +34,7 @@ Already implemented:
 - value continuity report JSON and Markdown outputs;
 - value continuity summary copied into `/verify/organchor.json`;
 - `organchor verify url --compact` summary fields for unsupported, third-party, reproducible, manual-check, claim-support-level, risk-gap counts, top risk gaps, and next actions.
+- compact profile counts for declared, passing, and gap-bearing real-world profiles.
 - `REAL_WORLD_EVIDENCE_PROFILE.md` for minimum useful product and service evidence packages.
 
 Current limitation:
@@ -73,11 +75,7 @@ Next CLI/schema work should add:
    - Bind challenges to exact claims or evidence items.
    - Preserve older claims while making supersession visible.
 
-3. Category-specific real-world validators
-   - Add profile checks for physical product, service delivery, SaaS/API, certification, dataset, and software release claims.
-   - Keep validators advisory and gap-oriented, not badge-oriented.
-
-4. Low-burden templates
+3. Low-burden templates
    - Provide starter templates for software, API uptime, professional service, physical product, and dataset claims.
    - Keep the minimum useful path to one narrow claim plus one hash-bound evidence item.
 

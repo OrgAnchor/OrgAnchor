@@ -618,6 +618,19 @@ Do not publish rehearsal migrations as real migrations.
 
 Create a short public-facing status report in the adoption workspace.
 
+Recommended command:
+
+```bash
+organchor adoption status \
+  --verify-dir public/verify \
+  --origin https://example.org \
+  --level 3 \
+  --out ADOPTION_STATUS.md \
+  --json reports/adoption-status-report.json
+```
+
+This creates a human-readable adoption status file and a machine-readable JSON report. It is a transparency report for the adoption workspace, not a certification, ranking, legal identity claim, or final trust decision.
+
 Template:
 
 ```text

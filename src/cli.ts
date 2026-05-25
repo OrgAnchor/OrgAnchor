@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { OrgAnchorError } from "./core/errors.ts";
+import { adoptionStatusCommand } from "./commands/adoption-status.ts";
 import { arweavePublishCommand } from "./commands/arweave-publish.ts";
 import { arweaveEstimateCommand } from "./commands/arweave-estimate.ts";
 import { arweaveUploadCommand } from "./commands/arweave-upload.ts";
@@ -23,6 +24,7 @@ import { directoryExportCommand } from "./commands/directory-export.ts";
 import { directoryFetchCommand } from "./commands/directory-fetch.ts";
 import { directoryInspectCommand } from "./commands/directory-inspect.ts";
 import { directoryVerifyCommand } from "./commands/directory-verify.ts";
+import { doctorCommand } from "./commands/doctor.ts";
 import { evidenceAddCommand } from "./commands/evidence-add.ts";
 import { evidenceCreateCommand } from "./commands/evidence-create.ts";
 import { evidenceHashCommand } from "./commands/evidence-hash.ts";
@@ -61,6 +63,7 @@ import { verifyUrlCommand } from "./commands/verify-url.ts";
 type CommandHandler = (options: Record<string, string | boolean>) => Promise<void>;
 
 const commands: Record<string, CommandHandler> = {
+  "adoption status": adoptionStatusCommand,
   "archive arweave estimate": arweaveEstimateCommand,
   "archive arweave publish": arweavePublishCommand,
   "archive arweave upload": arweaveUploadCommand,
@@ -83,6 +86,7 @@ const commands: Record<string, CommandHandler> = {
   "directory fetch": directoryFetchCommand,
   "directory inspect": directoryInspectCommand,
   "directory verify": directoryVerifyCommand,
+  "doctor": doctorCommand,
   "domain audit": domainAuditCommand,
   "ens inspect": ensInspectCommand,
   "ens plan": ensPlanCommand,
@@ -182,6 +186,7 @@ function printHelp(): void {
   console.log(`OrgAnchor
 
 Usage:
+  organchor adoption status --verify-dir public/verify --origin https://example.org --level 3
   organchor init
   organchor key generate --id root-2026
   organchor key public --key keys/root-2026.private.json
@@ -237,6 +242,7 @@ Usage:
   organchor directory fetch https://example.org --capability identity-continuity --identity-status PASS --limit 5
   organchor directory inspect https://example.org
   organchor directory verify --snapshot public/directory/directory-snapshot.json
+  organchor doctor https://example.org
   organchor domain audit example.com
   organchor evidence create --config organchor.config.json
   organchor evidence add --file README.md

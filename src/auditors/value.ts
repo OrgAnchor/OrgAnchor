@@ -14,6 +14,31 @@ export type ClaimVerificationLevel =
   | "REPRODUCIBLE"
   | "TIME_PROVEN";
 
+export type ClaimProtocolSupportLevel =
+  | "L0_UNSUPPORTED"
+  | "L1_SIGNED_SELF_CLAIM"
+  | "L2_HASH_BOUND_EVIDENCE"
+  | "L3_REPRODUCIBLE_METHOD"
+  | "L4_INDEPENDENT_ATTESTATION"
+  | "TIME_OBSERVED";
+
+export type ClaimPolicyRoute =
+  | "REQUEST_VALUE_EVIDENCE"
+  | "REVIEW_VALUE_WARNINGS"
+  | "EXTERNAL_POLICY_REVIEW"
+  | "READY_FOR_EXTERNAL_POLICY";
+
+export interface ClaimSupportAxes {
+  artifact_integrity: "HASH_DECLARED" | "LOCAL_HASH_FAILED" | "NOT_CHECKED";
+  retrievability: "HAS_PUBLIC_LOCATIONS" | "PARTIAL_PUBLIC_LOCATIONS" | "NO_PUBLIC_LOCATIONS" | "NO_EVIDENCE";
+  specificity: "SCOPED" | "BROAD_OR_UNSCOPED";
+  limitations: "PRESENT" | "MISSING";
+  issuer_independence: "INDEPENDENT_EVIDENCE_PRESENT" | "FIRST_PARTY_ONLY" | "NO_EVIDENCE";
+  method_reproducibility: "REPRODUCIBLE_OR_INDEPENDENT" | "NOT_SPECIFIED";
+  freshness: "CURRENT_OR_NOT_DATED" | "STALE";
+  challenge_status: "NO_KNOWN_CHALLENGE" | "DISPUTED_OR_WITHDRAWN" | "SUPERSEDED_OR_CORRECTED";
+}
+
 export interface ValueAuditCheck {
   id: string;
   title: string;
@@ -26,6 +51,12 @@ export interface ClaimValueAudit {
   id: string;
   status: AuditStatus;
   level: ClaimVerificationLevel;
+  protocol_support_level: ClaimProtocolSupportLevel;
+  support_axes: ClaimSupportAxes;
+  risk_gaps: string[];
+  next_best_actions: string[];
+  organchor_trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
+  policy_route: ClaimPolicyRoute;
   has_third_party_evidence: boolean;
   has_reproducible_evidence: boolean;
   evidence_refs: string[];
@@ -37,6 +68,7 @@ export interface ClaimValueAudit {
 export interface EvidenceValueAudit {
   id: string;
   status: AuditStatus;
+  evidence_type: string;
   issuer_type: string;
   reproducibility: string;
   has_external_location: boolean;
@@ -145,7 +177,10 @@ export function renderValueContinuityMarkdown(report: ValueContinuityReport): st
     .map((check) => `| ${check.status} | ${escapeMarkdown(check.id)} | ${escapeMarkdown(check.summary)} |`)
     .join("\n");
   const claims = report.claims
-    .map((claim) => `| ${claim.status} | ${escapeMarkdown(claim.id)} | ${claim.level} | ${claim.resolved_evidence_refs.length} | ${claim.missing_evidence_refs.length} |`)
+    .map(
+      (claim) =>
+        `| ${claim.status} | ${escapeMarkdown(claim.id)} | ${claim.level} | ${claim.protocol_support_level} | ${claim.policy_route} | ${claim.risk_gaps.length} | ${claim.resolved_evidence_refs.length} | ${claim.missing_evidence_refs.length} |`
+    )
     .join("\n");
   const evidence = report.evidence
     .map((item) => `| ${item.status} | ${escapeMarkdown(item.id)} | ${escapeMarkdown(item.issuer_type)} | ${escapeMarkdown(item.reproducibility)} | ${item.has_external_location ? "yes" : "no"} |`)
@@ -192,8 +227,8 @@ ${checks}
 
 ## Claims
 
-| Status | Claim | Level | Resolved evidence | Missing evidence |
-| --- | --- | --- | ---: | ---: |
+| Status | Claim | Legacy level | Protocol support | Policy route | Risk gaps | Resolved evidence | Missing evidence |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: |
 ${claims}
 
 ## Evidence
@@ -210,6 +245,7 @@ async function auditEvidenceItem(
   checkFiles: boolean
 ): Promise<EvidenceValueAudit> {
   const id = stringValue(item.id);
+  const evidenceType = stringValue(item.evidence_type) || "not_specified";
   const issuerType = stringValue(item.issuer_type) || "unknown";
   const reproducibility = stringValue(item.reproducibility) || stringValue(asRecord(item.quality).reproducibility) || "not_specified";
   const locations = arrayObjects(item.locations);
@@ -231,6 +267,7 @@ async function auditEvidenceItem(
   return {
     id,
     status: statusFromFindings(findings, false),
+    evidence_type: evidenceType,
     issuer_type: issuerType,
     reproducibility,
     has_external_location: hasExternalLocation,
@@ -262,11 +299,19 @@ function auditClaim(
   }
 
   const level = claimLevel(claim, referencedEvidence);
+  const supportAxes = claimSupportAxes(claim, referencedEvidence);
+  const riskGaps = claimRiskGaps(claim, refs, missing, referencedEvidence, supportAxes);
   const hasHardFailure = missing.length > 0;
   return {
     id,
     status: statusFromFindings(findings, hasHardFailure),
     level,
+    protocol_support_level: protocolSupportLevel(claim, refs, missing, referencedEvidence),
+    support_axes: supportAxes,
+    risk_gaps: riskGaps,
+    next_best_actions: claimNextBestActions(riskGaps),
+    organchor_trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR",
+    policy_route: claimPolicyRoute(refs, missing, riskGaps, referencedEvidence),
     has_third_party_evidence: hasThirdPartyEvidence,
     has_reproducible_evidence: hasReproducibleEvidence,
     evidence_refs: refs,
@@ -382,6 +427,137 @@ function claimLevel(claim: Record<string, JsonValue>, referencedEvidence: Eviden
   return "SELF_ASSERTED";
 }
 
+function protocolSupportLevel(
+  claim: Record<string, JsonValue>,
+  refs: string[],
+  missing: string[],
+  referencedEvidence: EvidenceValueAudit[]
+): ClaimProtocolSupportLevel {
+  if (missing.length > 0) return "L0_UNSUPPORTED";
+  if (refs.length === 0) return "L1_SIGNED_SELF_CLAIM";
+  if (stringValue(claim.time_proven_since) && referencedEvidence.length > 0) return "TIME_OBSERVED";
+  if (referencedEvidence.some((item) => isDedicatedAttestation(item))) return "L4_INDEPENDENT_ATTESTATION";
+  if (referencedEvidence.some((item) => isReproducible(item.reproducibility))) return "L3_REPRODUCIBLE_METHOD";
+  if (referencedEvidence.length > 0) return "L2_HASH_BOUND_EVIDENCE";
+  return "L1_SIGNED_SELF_CLAIM";
+}
+
+function claimSupportAxes(claim: Record<string, JsonValue>, referencedEvidence: EvidenceValueAudit[]): ClaimSupportAxes {
+  return {
+    artifact_integrity: claimArtifactIntegrity(referencedEvidence),
+    retrievability: claimRetrievability(referencedEvidence),
+    specificity: hasScope(claim) ? "SCOPED" : "BROAD_OR_UNSCOPED",
+    limitations: hasLimitations(claim) ? "PRESENT" : "MISSING",
+    issuer_independence:
+      referencedEvidence.length === 0
+        ? "NO_EVIDENCE"
+        : referencedEvidence.some((item) => !isFirstPartyIssuer(item.issuer_type))
+          ? "INDEPENDENT_EVIDENCE_PRESENT"
+          : "FIRST_PARTY_ONLY",
+    method_reproducibility: referencedEvidence.some((item) => isReproducible(item.reproducibility))
+      ? "REPRODUCIBLE_OR_INDEPENDENT"
+      : "NOT_SPECIFIED",
+    freshness: referencedEvidence.some((item) => item.is_stale) ? "STALE" : "CURRENT_OR_NOT_DATED",
+    challenge_status: claimChallengeStatus(claim)
+  };
+}
+
+function claimArtifactIntegrity(referencedEvidence: EvidenceValueAudit[]): ClaimSupportAxes["artifact_integrity"] {
+  if (referencedEvidence.length === 0) return "NOT_CHECKED";
+  if (referencedEvidence.some((item) => item.findings.some((finding) => /hash mismatch|cannot be read/i.test(finding)))) {
+    return "LOCAL_HASH_FAILED";
+  }
+  return "HASH_DECLARED";
+}
+
+function claimRetrievability(referencedEvidence: EvidenceValueAudit[]): ClaimSupportAxes["retrievability"] {
+  if (referencedEvidence.length === 0) return "NO_EVIDENCE";
+  const publicCount = referencedEvidence.filter((item) => item.has_external_location).length;
+  if (publicCount === referencedEvidence.length) return "HAS_PUBLIC_LOCATIONS";
+  if (publicCount > 0) return "PARTIAL_PUBLIC_LOCATIONS";
+  return "NO_PUBLIC_LOCATIONS";
+}
+
+function claimChallengeStatus(claim: Record<string, JsonValue>): ClaimSupportAxes["challenge_status"] {
+  const status = stringValue(claim.status).toLowerCase();
+  if (["disputed", "challenged", "withdrawn"].includes(status)) return "DISPUTED_OR_WITHDRAWN";
+  if (["superseded", "corrected"].includes(status) || stringValue(claim.superseded_by) || stringValue(claim.corrected_by)) {
+    return "SUPERSEDED_OR_CORRECTED";
+  }
+  return "NO_KNOWN_CHALLENGE";
+}
+
+function claimRiskGaps(
+  claim: Record<string, JsonValue>,
+  refs: string[],
+  missing: string[],
+  referencedEvidence: EvidenceValueAudit[],
+  axes: ClaimSupportAxes
+): string[] {
+  const gaps: string[] = [];
+  if (refs.length === 0) gaps.push("No evidence is linked to this claim.");
+  for (const ref of missing) gaps.push(`Evidence reference is missing: ${ref}.`);
+  if (axes.specificity === "BROAD_OR_UNSCOPED") gaps.push("Claim has no explicit scope.");
+  if (axes.limitations === "MISSING") gaps.push("Claim has no limitations.");
+  if (axes.issuer_independence === "FIRST_PARTY_ONLY") gaps.push("Only first-party evidence is linked.");
+  if (axes.method_reproducibility === "NOT_SPECIFIED") gaps.push("No reproducible method is specified for linked evidence.");
+  if (axes.retrievability === "NO_PUBLIC_LOCATIONS") gaps.push("Linked evidence has no public retrieval location.");
+  if (axes.retrievability === "PARTIAL_PUBLIC_LOCATIONS") gaps.push("Only some linked evidence has public retrieval locations.");
+  if (axes.artifact_integrity === "LOCAL_HASH_FAILED") gaps.push("At least one local evidence hash check failed.");
+  if (axes.freshness === "STALE") gaps.push("At least one linked evidence item is stale.");
+  if (axes.challenge_status !== "NO_KNOWN_CHALLENGE") gaps.push("Claim is marked disputed, withdrawn, superseded, or corrected.");
+  if (hasBroadMarketingLanguage(stringValue(claim.claim_text))) gaps.push("Claim uses broad marketing language that should be narrowed.");
+  if (referencedEvidence.length === 0 && refs.length > 0 && missing.length === 0) gaps.push("Claim has no resolved evidence after audit.");
+  return gaps;
+}
+
+function claimNextBestActions(riskGaps: string[]): string[] {
+  const actions: string[] = [];
+  if (riskGaps.some((gap) => /No evidence|missing/i.test(gap))) {
+    actions.push("Link at least one hash-bound evidence item to the claim.");
+  }
+  if (riskGaps.some((gap) => /scope|marketing/i.test(gap))) {
+    actions.push("Narrow the claim to a specific product, version, metric, region, or time window.");
+  }
+  if (riskGaps.some((gap) => /limitations/i.test(gap))) {
+    actions.push("Add explicit limitations explaining what the claim does not prove.");
+  }
+  if (riskGaps.some((gap) => /first-party/i.test(gap))) {
+    actions.push("Add an independent attestation or external evidence source for the exact claim.");
+  }
+  if (riskGaps.some((gap) => /reproducible method/i.test(gap))) {
+    actions.push("Add a reproducible method, command, dataset, monitoring method, or test procedure.");
+  }
+  if (riskGaps.some((gap) => /public retrieval/i.test(gap))) {
+    actions.push("Publish evidence through HTTPS, IPFS, Arweave, Git release, or another public retrieval path.");
+  }
+  if (riskGaps.some((gap) => /hash check failed/i.test(gap))) {
+    actions.push("Fix the artifact hash or replace the evidence with a corrected signed manifest.");
+  }
+  if (riskGaps.some((gap) => /stale/i.test(gap))) {
+    actions.push("Refresh the evidence or mark the claim as expired, superseded, or withdrawn.");
+  }
+  if (riskGaps.some((gap) => /disputed|withdrawn|superseded|corrected/i.test(gap))) {
+    actions.push("Publish a correction or replacement claim that explains the current state.");
+  }
+  if (actions.length === 0) {
+    actions.push("Route this supported claim to the consuming agent's external policy for final trust evaluation.");
+  }
+  return actions;
+}
+
+function claimPolicyRoute(
+  refs: string[],
+  missing: string[],
+  riskGaps: string[],
+  referencedEvidence: EvidenceValueAudit[]
+): ClaimPolicyRoute {
+  if (refs.length === 0 || missing.length > 0 || referencedEvidence.length === 0) return "REQUEST_VALUE_EVIDENCE";
+  if (riskGaps.some((gap) => /hash check failed|stale|disputed|withdrawn|superseded|corrected/i.test(gap))) return "REVIEW_VALUE_WARNINGS";
+  if (riskGaps.length > 0) return "EXTERNAL_POLICY_REVIEW";
+  return "READY_FOR_EXTERNAL_POLICY";
+}
+
 function summarize(
   checks: ValueAuditCheck[],
   claims: ClaimValueAudit[],
@@ -442,6 +618,10 @@ function isFirstPartyIssuer(value: string): boolean {
 
 function isReproducible(value: string): boolean {
   return ["reproducible", "independently_reproducible", "fully_reproducible"].includes(value.toLowerCase());
+}
+
+function isDedicatedAttestation(item: EvidenceValueAudit): boolean {
+  return ["third_party_attestation", "signed_attestation", "automated_attestation"].includes(item.evidence_type.toLowerCase());
 }
 
 function isEvidenceStale(item: Record<string, JsonValue>, now: Date): boolean {

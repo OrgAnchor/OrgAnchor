@@ -47,6 +47,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 
 - `PURPOSE_AND_VALUES.md`: project purpose and misuse boundaries.
 - `CLAIMS_EVIDENCE_PROTOCOL.md`: protocol baseline for structured claims, evidence, methods, third-party attestations, challenges, and AI-agent claim-support output.
+- `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`: implementation map showing what is already alpha-ready and what remains for method, attestation, challenge, and agent-output work.
 - `VALUE_CONTINUITY_MODEL.md`: claims, evidence, outcomes, corrections, and value audit model.
 - `EVIDENCE_MODEL.md`: evidence and claims data model.
 - `EVIDENCE_ONBOARDING_GUIDE.md`: practical evidence onboarding guide.

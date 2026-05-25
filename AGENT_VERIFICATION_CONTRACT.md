@@ -242,6 +242,33 @@ These checks do not prove product quality by themselves. They reduce the cost of
   "identity_status": "PASS",
   "value_status": "PASS",
   "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+  "evidence_summary": {
+    "claims": "PASS",
+    "evidence": "PASS",
+    "value": "PASS",
+    "unsupported_claims": 0,
+    "total_evidence_items": 34,
+    "third_party_claims": 0,
+    "reproducible_claims": 1,
+    "manual_checks": 34,
+    "claim_support_levels": {
+      "L0_UNSUPPORTED": 0,
+      "L1_SIGNED_SELF_CLAIM": 0,
+      "L2_HASH_BOUND_EVIDENCE": 33,
+      "L3_REPRODUCIBLE_METHOD": 1,
+      "L4_INDEPENDENT_ATTESTATION": 0,
+      "TIME_OBSERVED": 0
+    },
+    "risk_gaps": 34,
+    "top_risk_gaps": [
+      "Only first-party evidence is linked.",
+      "No reproducible method is specified for linked evidence."
+    ],
+    "next_best_actions": [
+      "Add an independent attestation or external evidence source for the exact claim.",
+      "Add a reproducible method, command, dataset, monitoring method, or test procedure."
+    ]
+  },
   "policy_route": {
     "route": "EXTERNAL_POLICY_REVIEW",
     "policy_owner": "EXTERNAL_AGENT",

@@ -37,6 +37,11 @@ test("value audit exposes unsupported claims and missing evidence", () => {
     const claim = report.claims[0];
     assert.ok(claim);
     assert.equal(claim.level, "SELF_ASSERTED");
+    assert.equal(claim.protocol_support_level, "L0_UNSUPPORTED");
+    assert.equal(claim.policy_route, "REQUEST_VALUE_EVIDENCE");
+    assert.equal(claim.organchor_trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
+    assert.ok(claim.risk_gaps.some((gap) => gap.includes("Evidence reference is missing")));
+    assert.ok(claim.next_best_actions.some((action) => action.includes("Link at least one hash-bound evidence")));
     assert.deepEqual(claim.missing_evidence_refs, ["evidence-001"]);
   } finally {
     rmSync(workspace, { recursive: true, force: true });
@@ -96,6 +101,19 @@ test("value audit recognizes external reproducible evidence and local hash check
     assert.ok(claim);
     assert.ok(evidence);
     assert.equal(claim.level, "REPRODUCIBLE");
+    assert.equal(claim.protocol_support_level, "L3_REPRODUCIBLE_METHOD");
+    assert.equal(claim.policy_route, "READY_FOR_EXTERNAL_POLICY");
+    assert.deepEqual(claim.risk_gaps, []);
+    assert.deepEqual(claim.support_axes, {
+      artifact_integrity: "HASH_DECLARED",
+      retrievability: "HAS_PUBLIC_LOCATIONS",
+      specificity: "SCOPED",
+      limitations: "PRESENT",
+      issuer_independence: "INDEPENDENT_EVIDENCE_PRESENT",
+      method_reproducibility: "REPRODUCIBLE_OR_INDEPENDENT",
+      freshness: "CURRENT_OR_NOT_DATED",
+      challenge_status: "NO_KNOWN_CHALLENGE"
+    });
     assert.equal(evidence.has_external_location, true);
     assert.equal(evidence.reproducibility, "independently_reproducible");
   } finally {
@@ -111,7 +129,16 @@ function createAuthority(workspace: string): void {
 
 function readReport(workspace: string): {
   summary: Record<string, number>;
-  claims: Array<{ level: string; missing_evidence_refs: string[] }>;
+  claims: Array<{
+    level: string;
+    protocol_support_level: string;
+    support_axes: Record<string, string>;
+    risk_gaps: string[];
+    next_best_actions: string[];
+    organchor_trust_decision: string;
+    policy_route: string;
+    missing_evidence_refs: string[];
+  }>;
   evidence: Array<{ has_external_location: boolean; reproducibility: string }>;
 } {
   return JSON.parse(readFileSync(join(workspace, "reports", "value-continuity-report.json"), "utf8"));

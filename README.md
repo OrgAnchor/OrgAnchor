@@ -25,7 +25,7 @@ OrgAnchor is not only a tool for keeping an organizational name alive. Its purpo
 
 OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
 
-See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `IMPLEMENTATION_STATUS.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, evidence protocol, and document map.
+See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `IMPLEMENTATION_STATUS.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, evidence protocol, implementation map, and document map.
 
 The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DISCOVERY_TAXONOMY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
 
@@ -57,6 +57,7 @@ Implemented so far:
 - Human-visible and machine-readable carrier receipt summaries from `organchor.lock.json`.
 - Signed claims/evidence manifests are copied into `/verify` and indexed when available.
 - Value continuity audit reports for claim support levels, evidence quality, stale evidence, and unsupported claims.
+- Claim-level support axes, risk gaps, next best actions, and compact support-level counts for low-friction external AI-agent review.
 - Claims/evidence protocol baseline for structured claims, evidence, reproducible methods, third-party attestations, challenges, and AI-agent claim-support output.
 - `organchor.lock.json` publish receipt records.
 - IPFS verify-directory dry-run receipts.

@@ -39,6 +39,12 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(result.identity.threshold_required, 1);
       assert.equal(result.value_continuity.summary.evidence_linked_claims, 1);
       assert.equal(result.value_continuity.summary.unsupported_claims, 0);
+      assert.equal(result.value_continuity.claim_support_summary.support_levels.L3_REPRODUCIBLE_METHOD, 1);
+      assert.equal(result.value_continuity.claim_support_summary.risk_gap_count, 1);
+      assert.equal(
+        result.value_continuity.claim_support_summary.top_risk_gaps.includes("Only first-party evidence is linked."),
+        true
+      );
       assert.equal(result.policy_route.route, "EXTERNAL_POLICY_REVIEW");
       assert.equal(result.policy_route.policy_owner, "EXTERNAL_AGENT");
       assert.equal(result.policy_route.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
@@ -62,6 +68,14 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(compact.evidence_summary.value, "PASS");
       assert.equal(compact.evidence_summary.unsupported_claims, 0);
       assert.equal(compact.evidence_summary.total_evidence_items, 1);
+      assert.equal(compact.evidence_summary.claim_support_levels.L3_REPRODUCIBLE_METHOD, 1);
+      assert.equal(compact.evidence_summary.claim_support_levels.L0_UNSUPPORTED, 0);
+      assert.equal(compact.evidence_summary.risk_gaps, 1);
+      assert.equal(compact.evidence_summary.top_risk_gaps.includes("Only first-party evidence is linked."), true);
+      assert.equal(
+        compact.evidence_summary.next_best_actions.includes("Add an independent attestation or external evidence source for the exact claim."),
+        true
+      );
       assert.equal(compact.policy_route.route, "EXTERNAL_POLICY_REVIEW");
       assert.equal(compact.policy_route.policy_owner, "EXTERNAL_AGENT");
       assert.equal(compact.policy_route.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");

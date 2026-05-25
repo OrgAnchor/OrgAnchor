@@ -70,6 +70,10 @@ export interface AgentVerificationCompactResult {
     third_party_claims: number;
     reproducible_claims: number;
     manual_checks: number;
+    claim_support_levels: Record<string, number>;
+    risk_gaps: number;
+    top_risk_gaps: string[];
+    next_best_actions: string[];
   };
   policy_route: AgentPolicyRoute;
   failures: string[];
@@ -273,6 +277,8 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
   const organization = asObject(result.organization, "organization");
   const valueContinuity = optionalRecord(result.value_continuity);
   const summary = optionalRecord(valueContinuity.summary);
+  const claimSupportSummary = optionalRecord(valueContinuity.claim_support_summary);
+  const claimSupportLevels = optionalRecord(claimSupportSummary.support_levels);
 
   return {
     type: "OrgAnchorAgentVerificationCompactResult",
@@ -294,7 +300,11 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
       total_evidence_items: numberValue(summary.total_evidence_items),
       third_party_claims: numberValue(summary.third_party_claims),
       reproducible_claims: numberValue(summary.reproducible_claims),
-      manual_checks: numberValue(summary.MANUAL_CHECK_REQUIRED)
+      manual_checks: numberValue(summary.MANUAL_CHECK_REQUIRED),
+      claim_support_levels: compactClaimSupportLevels(claimSupportLevels),
+      risk_gaps: numberValue(claimSupportSummary.risk_gap_count),
+      top_risk_gaps: arrayStrings(claimSupportSummary.top_risk_gaps),
+      next_best_actions: arrayStrings(claimSupportSummary.next_best_actions)
     },
     policy_route: result.policy_route,
     failures: result.checks
@@ -676,8 +686,47 @@ async function verifyValueContinuity(options: {
       status: "PRESENT",
       path,
       hash: reportHash,
-      summary
+      summary,
+      claim_support_summary: summarizeClaimSupport(reportObject)
     }
+  };
+}
+
+function summarizeClaimSupport(report: Record<string, JsonValue>): Record<string, JsonValue> {
+  const claims = Array.isArray(report.claims) ? report.claims.map((claim) => asObject(claim, "value report claim")) : [];
+  const supportLevels = emptyClaimSupportLevels();
+  const riskGaps: string[] = [];
+  const nextBestActions: string[] = [];
+  for (const claim of claims) {
+    const level = stringValue(claim.protocol_support_level);
+    if (level in supportLevels) supportLevels[level] = (supportLevels[level] ?? 0) + 1;
+    for (const gap of arrayStrings(claim.risk_gaps)) riskGaps.push(gap);
+    for (const action of arrayStrings(claim.next_best_actions)) nextBestActions.push(action);
+  }
+  return {
+    support_levels: supportLevels as unknown as JsonValue,
+    risk_gap_count: riskGaps.length,
+    top_risk_gaps: uniqueFirst(riskGaps, 5) as unknown as JsonValue,
+    next_best_actions: uniqueFirst(nextBestActions, 5) as unknown as JsonValue
+  };
+}
+
+function compactClaimSupportLevels(value: Record<string, JsonValue>): Record<string, number> {
+  const result = emptyClaimSupportLevels();
+  for (const level of Object.keys(result)) {
+    result[level] = numberValue(value[level]);
+  }
+  return result;
+}
+
+function emptyClaimSupportLevels(): Record<string, number> {
+  return {
+    L0_UNSUPPORTED: 0,
+    L1_SIGNED_SELF_CLAIM: 0,
+    L2_HASH_BOUND_EVIDENCE: 0,
+    L3_REPRODUCIBLE_METHOD: 0,
+    L4_INDEPENDENT_ATTESTATION: 0,
+    TIME_OBSERVED: 0
   };
 }
 
@@ -796,4 +845,21 @@ function stringValue(value: JsonValue | undefined): string {
 
 function numberValue(value: JsonValue | undefined): number {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+function arrayStrings(value: JsonValue | undefined): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === "string" && item.length > 0);
+}
+
+function uniqueFirst(values: string[], limit: number): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const value of values) {
+    if (seen.has(value)) continue;
+    seen.add(value);
+    result.push(value);
+    if (result.length >= limit) break;
+  }
+  return result;
 }

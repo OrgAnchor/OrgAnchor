@@ -33,6 +33,7 @@ Value evidence layer:
 - Evidence hash checks.
 - External large-artifact references by URI and hash.
 - Value continuity reports.
+- Claim-level protocol support levels, support axes, risk gaps, next best actions, and compact support-level counts for external AI agents.
 - Policy-route hints for external AI agents.
 - Claims/evidence protocol baseline for claim support levels, reproducible methods, third-party attestations, challenges, and low-cost AI-agent evaluation.
 

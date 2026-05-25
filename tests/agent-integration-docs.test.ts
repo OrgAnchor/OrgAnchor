@@ -38,6 +38,11 @@ test("agent compact example is a valid first-pass result", () => {
   assert.equal(result.evidence_summary.evidence, "PASS");
   assert.equal(result.evidence_summary.value, "PASS");
   assert.equal(result.evidence_summary.unsupported_claims, 0);
+  assert.equal(result.evidence_summary.claim_support_levels.L0_UNSUPPORTED, 0);
+  assert.equal(result.evidence_summary.claim_support_levels.L3_REPRODUCIBLE_METHOD, 1);
+  assert.equal(result.evidence_summary.risk_gaps > 0, true);
+  assert.equal(result.evidence_summary.top_risk_gaps.length > 0, true);
+  assert.equal(result.evidence_summary.next_best_actions.length > 0, true);
   assert.equal(result.policy_route.route, "EXTERNAL_POLICY_REVIEW");
   assert.equal(result.policy_route.policy_owner, "EXTERNAL_AGENT");
   assert.equal(result.policy_route.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");

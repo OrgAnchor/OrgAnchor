@@ -32,24 +32,29 @@ Current `0.1.0-alpha.3` candidate status:
 node --run release:check: PASS
 npm pack --dry-run: PASS
 npm publish --dry-run --tag alpha: PASS
-npm publish --tag alpha: not started; GitHub Actions Trusted Publishing required
+npm publish --tag alpha: PASS through GitHub Actions Trusted Publishing
 ```
 
 Published baseline:
 
 ```text
 organchor@0.1.0-alpha.1: published
+organchor@0.1.0-alpha.3: published under alpha dist-tag
 v0.1.0-alpha.1: pushed
+v0.1.0-alpha.3: pushed
 GitHub prerelease for v0.1.0-alpha.1: draft prerelease
+GitHub prerelease for v0.1.0-alpha.3: published prerelease
 ```
 
 ## Current External State
 
-As of 2026-05-18:
+As of 2026-05-25:
 
-- `npm view organchor` against the public npm registry returns `0.1.0-alpha.1`.
+- `npm view organchor` against the public npm registry returns `0.1.0-alpha.1` because the registry `latest` dist-tag is intentionally not promoted to the newest alpha.
+- `npm view organchor@alpha` returns `0.1.0-alpha.3`.
 - NPM package `organchor@0.1.0-alpha.1` is published.
-- NPM dist-tags currently show both `alpha` and `latest` pointing to `0.1.0-alpha.1`.
+- NPM package `organchor@0.1.0-alpha.3` is published.
+- NPM dist-tags currently show `alpha` pointing to `0.1.0-alpha.3` and `latest` pointing to `0.1.0-alpha.1`.
 - The `latest` dist-tag should not be advertised as stable; public install instructions should use `organchor@alpha` until a stable release exists.
 - Long-lived npm credentials are not stored in this repository.
 - `E:\CivX\OrgAnchor` is initialized as a local Git repository.

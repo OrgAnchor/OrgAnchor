@@ -37,12 +37,12 @@ stable v1: not yet
 - [x] No private keys, provider tokens, wallets, payment data, or local self-pilot secrets are in the package file list.
 - [x] GitHub Actions trusted publishing workflow is prepared in `.github/workflows/publish-npm.yml`.
 - [x] npm package trusted publisher is configured on npmjs.com for `OrgAnchor/OrgAnchor` and `publish-npm.yml`.
-- [ ] GitHub Actions trusted-publishing run publishes `organchor@0.1.0-alpha.3` with the `alpha` dist-tag.
-- [ ] Git tag `v0.1.0-alpha.3` is created only after the candidate source is frozen.
+- [x] GitHub Actions trusted-publishing run publishes `organchor@0.1.0-alpha.3` with the `alpha` dist-tag.
+- [x] Git tag `v0.1.0-alpha.3` is created only after the candidate source is frozen.
 - [x] GitHub prerelease notes are drafted from `CHANGELOG.md`.
-- [ ] Real `npm publish --tag alpha` through Trusted Publishing is approved by the operator and completed.
-- [ ] Fresh install from npm can run `organchor --help`.
-- [ ] Fresh install from npm can run `organchor doctor https://organchor.org`.
+- [x] Real `npm publish --tag alpha` through Trusted Publishing is approved by the operator and completed.
+- [x] Fresh install from npm can run `organchor --help`.
+- [x] Fresh install from npm can run `organchor doctor https://organchor.org`.
 
 ## Must Be True Before Calling It V1
 

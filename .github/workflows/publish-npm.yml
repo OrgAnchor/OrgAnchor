@@ -1,0 +1,90 @@
+name: Publish npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_version:
+        description: Expected package version, for example 0.1.0-alpha.2
+        required: true
+        type: string
+      publish_tag:
+        description: npm dist-tag to publish
+        required: true
+        default: alpha
+        type: string
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-publish-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish npm package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - name: Verify release ref and package version
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const { readFileSync } = require("node:fs");
+
+          const pkg = JSON.parse(readFileSync("package.json", "utf8"));
+          const eventName = process.env.GITHUB_EVENT_NAME;
+          const refName = process.env.GITHUB_REF_NAME;
+          const expectedVersion = process.env.EXPECTED_VERSION;
+
+          if (eventName === "push" && refName !== `v${pkg.version}`) {
+            throw new Error(`Tag ${refName} does not match package version ${pkg.version}`);
+          }
+
+          if (expectedVersion && expectedVersion !== pkg.version) {
+            throw new Error(`Expected version ${expectedVersion} but package.json is ${pkg.version}`);
+          }
+
+          if (!pkg.publishConfig || pkg.publishConfig.tag !== "alpha") {
+            throw new Error("publishConfig.tag must remain alpha for prerelease publishing");
+          }
+
+          const publishTag = process.env.PUBLISH_TAG || "alpha";
+          if (publishTag !== "alpha") {
+            throw new Error(`This alpha workflow only allows the alpha dist-tag, not ${publishTag}`);
+          }
+
+          console.log(`${pkg.name}@${pkg.version}`);
+          NODE
+        env:
+          EXPECTED_VERSION: ${{ inputs.expected_version }}
+          PUBLISH_TAG: ${{ inputs.publish_tag || 'alpha' }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run release checks
+        run: npm run release:check
+
+      - name: Preview npm package
+        run: npm pack --dry-run
+
+      - name: Publish to npm
+        shell: bash
+        run: |
+          npm publish --tag "${PUBLISH_TAG:-alpha}"
+        env:
+          PUBLISH_TAG: ${{ inputs.publish_tag || 'alpha' }}

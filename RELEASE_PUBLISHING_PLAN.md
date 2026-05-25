@@ -181,9 +181,37 @@ Current caveat: npm's first published version is also visible under `latest`. Tr
 
 ## Trusted Publishing Later
 
-NPM trusted publishing can publish from GitHub Actions or GitLab CI/CD using OIDC and can generate provenance attestations. This is a better long-term path, but it requires the public repository and CI workflow first.
+NPM trusted publishing can publish from GitHub Actions or GitLab CI/CD using OIDC and can generate provenance attestations. This is now the preferred path for `0.1.0-alpha.2` and later because it avoids repeated local npm login and avoids storing a long-lived npm publish token.
 
-For alpha releases before trusted publishing is configured, manual `alpha` publishing is acceptable if the npm account uses 2FA and the package is dry-run checked first.
+Repository workflow:
+
+```text
+.github/workflows/publish-npm.yml
+```
+
+NPM website configuration:
+
+```text
+Package: organchor
+Provider: GitHub Actions
+Organization or user: OrgAnchor
+Repository: OrgAnchor
+Workflow filename: publish-npm.yml
+Environment name: leave blank
+Allowed action: npm publish
+```
+
+After the npm website configuration is complete, publish `0.1.0-alpha.2` from GitHub Actions:
+
+```bash
+gh workflow run publish-npm.yml \
+  --repo OrgAnchor/OrgAnchor \
+  --ref main \
+  -f expected_version=0.1.0-alpha.2 \
+  -f publish_tag=alpha
+```
+
+Manual `alpha` publishing remains an emergency fallback only if the npm account uses 2FA and the package is dry-run checked first.
 
 ## Human Approval Gates
 

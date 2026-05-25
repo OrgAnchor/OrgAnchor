@@ -1,6 +1,6 @@
 # OrgAnchor Evidence Model
 
-Status: Accepted model; core claims/evidence commands, value audit, and `/verify` publication are implemented for alpha. Further work should refine evidence quality, third-party attestations, and AI-agent usability.
+Status: Accepted model; core claims/evidence commands, value audit, and `/verify` publication are implemented for alpha. `CLAIMS_EVIDENCE_PROTOCOL.md` is the stricter protocol baseline for claim support levels, reproducible methods, third-party attestations, and challenges.
 
 ## Purpose
 
@@ -36,6 +36,17 @@ The customer case is representative.
 ```
 
 OrgAnchor makes evidence verifiable and inspectable. It does not replace testing, auditing, regulation, expert judgment, or real-world validation.
+
+This means current `value_status` or value audit output must not be read as "the product is true" or "the organization is good." It is closer to:
+
+```text
+claim support structure is present or missing;
+evidence artifacts are linked or absent;
+hashes and signatures verify or fail;
+reproducibility, freshness, issuer type, and limitations are visible.
+```
+
+See `CLAIMS_EVIDENCE_PROTOCOL.md` for the protocol direction that turns claims into scoped, method-backed, attestable, and challengeable units.
 
 ## Value Orientation
 

@@ -46,12 +46,13 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 ## Value, Evidence, And Showcase
 
 - `PURPOSE_AND_VALUES.md`: project purpose and misuse boundaries.
+- `CLAIMS_EVIDENCE_PROTOCOL.md`: protocol baseline for structured claims, evidence, methods, third-party attestations, challenges, and AI-agent claim-support output.
 - `VALUE_CONTINUITY_MODEL.md`: claims, evidence, outcomes, corrections, and value audit model.
 - `EVIDENCE_MODEL.md`: evidence and claims data model.
 - `EVIDENCE_ONBOARDING_GUIDE.md`: practical evidence onboarding guide.
 - `SHOWCASE_POLICY.md`: rules for examples, case studies, and public listings.
 
-OrgAnchor does not certify that an organization is good or truthful. It makes signed claims, evidence, gaps, and corrections easier to inspect.
+OrgAnchor does not certify that an organization is good or truthful. It makes signed claims, evidence, methods, attestations, gaps, challenges, and corrections easier to inspect.
 
 ## Discovery, Beacon, And Directory
 
@@ -113,6 +114,7 @@ That workspace may contain private keys, provider credentials, wallets, local re
 ## Current Known Gaps
 
 - No broad external organization pilot has completed yet.
+- The claims/evidence protocol is stronger than the current alpha implementation: signed claims, signed evidence, value audit, and `/verify` publication exist, while dedicated method, attestation, and challenge manifests remain future work.
 - ENS live resolver reads still require choosing an Ethereum RPC/provider path.
 - No real Onion disaster-recovery address has been registered.
 - OpenTimestamps proofs may remain pending until calendar proofs are upgraded to Bitcoin attestations.

@@ -34,6 +34,7 @@ Value evidence layer:
 - External large-artifact references by URI and hash.
 - Value continuity reports.
 - Policy-route hints for external AI agents.
+- Claims/evidence protocol baseline for claim support levels, reproducible methods, third-party attestations, challenges, and low-cost AI-agent evaluation.
 
 Carriers and auxiliary surfaces:
 
@@ -88,6 +89,7 @@ The shortest useful launch path is:
 These are not considered done:
 
 - Broad external organization pilot.
+- Dedicated method, attestation, and challenge manifests from `CLAIMS_EVIDENCE_PROTOCOL.md`.
 - Live ENS resolver reads through a chosen Ethereum RPC/provider path.
 - Real Onion disaster-recovery address registration.
 - Broad internet-scale crawling or search infrastructure.

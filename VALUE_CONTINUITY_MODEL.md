@@ -42,6 +42,8 @@ This claim was corrected, superseded, or withdrawn.
 
 This makes high-quality organizations easier to inspect while making shallow imitation more visible.
 
+See `CLAIMS_EVIDENCE_PROTOCOL.md` for the stricter protocol baseline. In that protocol, OrgAnchor reports claim support structure and risk gaps; the consuming AI agent, buyer, partner, or auditor applies its own policy.
+
 ## The Five Chains
 
 ### 1. Identity Chain
@@ -125,7 +127,7 @@ The important rule is that correction should be visible, not silently rewritten.
 
 ## Claim Levels
 
-OrgAnchor uses value levels to describe how much support a claim has.
+OrgAnchor uses value levels to describe how much support a claim has. These are support descriptors, not truth ratings.
 
 ```text
 SELF_ASSERTED
@@ -253,6 +255,13 @@ The audit reports:
 - correction policy presence
 
 It uses `PASS`, `WARN`, `FAIL`, and `MANUAL_CHECK_REQUIRED`.
+
+Important boundary:
+
+```text
+PASS means the checked evidence structure passed OrgAnchor's mechanical checks.
+PASS does not mean the claim is true, sufficient, representative, or the best available option.
+```
 
 When `reports/value-continuity-report.json` exists, `organchor page generate` includes it in the public verify package by default:
 

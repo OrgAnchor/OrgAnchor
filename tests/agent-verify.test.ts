@@ -160,6 +160,23 @@ function createAgentFixture(workspace: string): void {
     "--evidence-strength",
     "moderate"
   ]);
+  run(workspace, [
+    "evidence",
+    "method",
+    "add",
+    "--id",
+    "method-001",
+    "--evidence-id",
+    "evidence-001",
+    "--steps",
+    "Download the public evidence artifact;Compute SHA-256;Compare with the signed manifest",
+    "--expected-results",
+    "The public artifact hash matches the signed evidence manifest",
+    "--required-tools",
+    "curl;sha256sum",
+    "--limitations",
+    "This checks artifact integrity, not product quality"
+  ]);
   run(workspace, ["claims", "sign", "--key", "keys/root-2026.private.json", "--authority", "root-authority.json"]);
   run(workspace, ["evidence", "sign", "--key", "keys/root-2026.private.json", "--authority", "root-authority.json"]);
   run(workspace, [

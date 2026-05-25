@@ -1,6 +1,6 @@
 # OrgAnchor Claims and Evidence Protocol
 
-Status: Design baseline for strengthening OrgAnchor's value evidence layer. Current alpha implements signed claims, signed evidence manifests, value audit reports, hash checks, and `/verify` publication. This protocol defines the stricter direction for verifiable claims, reproducible methods, third-party attestations, and challenges.
+Status: Design baseline for strengthening OrgAnchor's value evidence layer. Current alpha implements signed claims, signed evidence manifests, value audit reports, hash checks, explicit evidence method objects, and `/verify` publication. This protocol defines the stricter direction for verifiable claims, reproducible methods, third-party attestations, and challenges.
 
 ## Purpose
 
@@ -148,7 +148,7 @@ Required evidence fields:
 
 A method explains how a claim or evidence item can be checked.
 
-For low-cost verification, methods should be practical and explicit:
+For low-cost verification, methods should be practical and explicit. In the current alpha, `organchor evidence method add` records methods in `evidence.methods[]` and links evidence items through `method_refs`.
 
 - input data;
 - tools and versions;
@@ -532,4 +532,3 @@ weak claims are visibly weak;
 strong claims can accumulate reproducible and independent support;
 AI agents can compare support structure without trusting OrgAnchor as a central authority.
 ```
-

@@ -41,6 +41,24 @@ test("claims and evidence manifests sign, verify, and check local evidence hashe
 
     const add = run(workspace, ["evidence", "add", "--file", "README.md", "--id", "evidence-001"]);
     assert.match(add.stdout, /Evidence hash: sha256:/);
+    const method = run(workspace, [
+      "evidence",
+      "method",
+      "add",
+      "--id",
+      "method-001",
+      "--evidence-id",
+      "evidence-001",
+      "--steps",
+      "Fetch README.md;Compute SHA-256;Compare with the signed evidence manifest",
+      "--expected-results",
+      "The computed hash matches the manifest hash",
+      "--required-tools",
+      "sha256sum;organchor",
+      "--limitations",
+      "This verifies artifact integrity, not objective product quality"
+    ]);
+    assert.match(method.stdout, /Added evidence method: method-001/);
 
     run(workspace, [
       "evidence",
@@ -82,6 +100,12 @@ test("claims and evidence manifests sign, verify, and check local evidence hashe
     assert.equal(manifest.evidence[0].issuer_type, "first_party");
     assert.equal(manifest.evidence[0].media_type, "text/markdown");
     assert.match(manifest.evidence[0].hash, /^sha256:[0-9a-f]{64}$/);
+    assert.deepEqual(manifest.evidence[0].method_refs, ["method-001"]);
+    assert.equal(manifest.methods[0].type, "OrgAnchorEvidenceMethod");
+    assert.equal(manifest.methods[0].id, "method-001");
+    assert.deepEqual(manifest.methods[0].target_claim_ids, ["claim-001"]);
+    assert.deepEqual(manifest.methods[0].target_evidence_ids, ["evidence-001"]);
+    assert.deepEqual(manifest.methods[0].required_tools, ["sha256sum", "organchor"]);
 
     writeFileSync(join(workspace, "README.md"), "# Evidence\n\nTampered.\n", "utf8");
     const mismatch = run(

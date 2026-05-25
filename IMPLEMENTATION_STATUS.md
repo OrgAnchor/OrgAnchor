@@ -32,6 +32,7 @@ Value evidence layer:
 - Signed evidence manifests.
 - Evidence hash checks.
 - External large-artifact references by URI and hash.
+- Evidence recheck method objects linked by `method_refs`.
 - Value continuity reports.
 - Claim-level protocol support levels, support axes, risk gaps, next best actions, and compact support-level counts for external AI agents.
 - Policy-route hints for external AI agents.

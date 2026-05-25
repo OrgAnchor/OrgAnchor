@@ -71,6 +71,12 @@ export interface EvidenceValueAudit {
   evidence_type: string;
   issuer_type: string;
   reproducibility: string;
+  method_refs: string[];
+  resolved_method_refs: string[];
+  missing_method_refs: string[];
+  method_kinds: string[];
+  has_recheck_method: boolean;
+  has_low_cost_recheck_method: boolean;
   has_external_location: boolean;
   is_stale: boolean;
   findings: string[];
@@ -132,6 +138,10 @@ export async function auditValueContinuity(
   }
 
   const evidenceItems = arrayObjects(evidenceManifest.evidence);
+  const methodsById = new Map<string, Record<string, JsonValue>>();
+  for (const method of arrayObjects(evidenceManifest.methods)) {
+    methodsById.set(stringValue(method.id), method);
+  }
   const evidenceById = new Map<string, Record<string, JsonValue>>();
   for (const item of evidenceItems) {
     evidenceById.set(stringValue(item.id), item);
@@ -139,7 +149,7 @@ export async function auditValueContinuity(
 
   const evidenceAudits: EvidenceValueAudit[] = [];
   for (const item of evidenceItems) {
-    const audit = await auditEvidenceItem(item, now, Boolean(options.checkFiles));
+    const audit = await auditEvidenceItem(item, now, Boolean(options.checkFiles), methodsById);
     evidenceAudits.push(audit);
     checks.push(...evidenceChecks(audit));
   }
@@ -242,13 +252,21 @@ ${evidence}
 async function auditEvidenceItem(
   item: Record<string, JsonValue>,
   now: Date,
-  checkFiles: boolean
+  checkFiles: boolean,
+  methodsById: Map<string, Record<string, JsonValue>>
 ): Promise<EvidenceValueAudit> {
   const id = stringValue(item.id);
   const evidenceType = stringValue(item.evidence_type) || "not_specified";
   const issuerType = stringValue(item.issuer_type) || "unknown";
   const reproducibility = stringValue(item.reproducibility) || stringValue(asRecord(item.quality).reproducibility) || "not_specified";
   const locations = arrayObjects(item.locations);
+  const methodRefs = arrayStrings(item.method_refs);
+  const resolvedMethodRefs = methodRefs.filter((ref) => methodsById.has(ref));
+  const missingMethodRefs = methodRefs.filter((ref) => !methodsById.has(ref));
+  const resolvedMethods = resolvedMethodRefs.map((ref) => methodsById.get(ref)).filter((method): method is Record<string, JsonValue> => Boolean(method));
+  const methodKinds = uniqueStrings(resolvedMethods.map((method) => stringValue(method.method_kind)).filter(Boolean));
+  const hasRecheckMethod = resolvedMethods.some(hasExecutableReviewShape);
+  const hasLowCostRecheckMethod = resolvedMethods.some((method) => isLowCostMethod(stringValue(method.cost_to_verify)));
   const hasExternalLocation = locations.some((location) => {
     const type = stringValue(location.type);
     return type !== "" && type !== "local";
@@ -257,6 +275,8 @@ async function auditEvidenceItem(
   if (!hasExternalLocation) findings.push("Evidence has no external/public location.");
   if (isFirstPartyIssuer(issuerType)) findings.push("Evidence is first-party; independent review may still be needed.");
   if (reproducibility === "not_specified") findings.push("Evidence reproducibility is not specified.");
+  for (const ref of missingMethodRefs) findings.push(`Evidence references missing recheck method: ${ref}.`);
+  if (methodRefs.length > 0 && !hasRecheckMethod) findings.push("Evidence method does not include actionable steps and expected results.");
   const isStale = isEvidenceStale(item, now);
   if (isStale) findings.push("Evidence is past its valid_until date.");
 
@@ -270,6 +290,12 @@ async function auditEvidenceItem(
     evidence_type: evidenceType,
     issuer_type: issuerType,
     reproducibility,
+    method_refs: methodRefs,
+    resolved_method_refs: resolvedMethodRefs,
+    missing_method_refs: missingMethodRefs,
+    method_kinds: methodKinds,
+    has_recheck_method: hasRecheckMethod,
+    has_low_cost_recheck_method: hasLowCostRecheckMethod,
     has_external_location: hasExternalLocation,
     is_stale: isStale,
     findings
@@ -287,7 +313,7 @@ function auditClaim(
   const missing = refs.filter((ref) => !evidenceById.has(ref));
   const referencedEvidence = evidenceAudits.filter((item) => resolved.includes(item.id));
   const hasThirdPartyEvidence = referencedEvidence.some((item) => !isFirstPartyIssuer(item.issuer_type));
-  const hasReproducibleEvidence = referencedEvidence.some((item) => isReproducible(item.reproducibility));
+  const hasReproducibleEvidence = referencedEvidence.some((item) => evidenceHasReproduciblePath(item));
   const findings: string[] = [];
 
   if (refs.length === 0) findings.push("Claim has no evidence_refs and remains self-asserted.");
@@ -352,6 +378,25 @@ function evidenceChecks(audit: EvidenceValueAudit): ValueAuditCheck[] {
   );
   if (audit.is_stale) {
     checks.push(warn(`evidence:${audit.id}:freshness`, `Evidence ${audit.id} freshness`, "Evidence is past its valid_until date."));
+  }
+  if (audit.missing_method_refs.length > 0) {
+    checks.push(
+      failCheck(
+        `evidence:${audit.id}:method_refs`,
+        `Evidence ${audit.id} recheck methods`,
+        `Evidence references missing recheck methods: ${audit.missing_method_refs.join(", ")}.`
+      )
+    );
+  } else if (audit.has_recheck_method) {
+    checks.push(
+      pass(
+        `evidence:${audit.id}:method_refs`,
+        `Evidence ${audit.id} recheck methods`,
+        audit.has_low_cost_recheck_method
+          ? "Evidence links to a low-cost recheck method."
+          : "Evidence links to a recheck method."
+      )
+    );
   }
   return checks;
 }
@@ -421,7 +466,7 @@ async function checkLocalLocations(
 
 function claimLevel(claim: Record<string, JsonValue>, referencedEvidence: EvidenceValueAudit[]): ClaimVerificationLevel {
   if (stringValue(claim.time_proven_since)) return "TIME_PROVEN";
-  if (referencedEvidence.some((item) => isReproducible(item.reproducibility))) return "REPRODUCIBLE";
+  if (referencedEvidence.some((item) => evidenceHasReproduciblePath(item))) return "REPRODUCIBLE";
   if (referencedEvidence.some((item) => !isFirstPartyIssuer(item.issuer_type))) return "THIRD_PARTY";
   if (referencedEvidence.length > 0) return "EVIDENCE_LINKED";
   return "SELF_ASSERTED";
@@ -437,7 +482,7 @@ function protocolSupportLevel(
   if (refs.length === 0) return "L1_SIGNED_SELF_CLAIM";
   if (stringValue(claim.time_proven_since) && referencedEvidence.length > 0) return "TIME_OBSERVED";
   if (referencedEvidence.some((item) => isDedicatedAttestation(item))) return "L4_INDEPENDENT_ATTESTATION";
-  if (referencedEvidence.some((item) => isReproducible(item.reproducibility))) return "L3_REPRODUCIBLE_METHOD";
+  if (referencedEvidence.some((item) => evidenceHasReproduciblePath(item))) return "L3_REPRODUCIBLE_METHOD";
   if (referencedEvidence.length > 0) return "L2_HASH_BOUND_EVIDENCE";
   return "L1_SIGNED_SELF_CLAIM";
 }
@@ -454,7 +499,7 @@ function claimSupportAxes(claim: Record<string, JsonValue>, referencedEvidence: 
         : referencedEvidence.some((item) => !isFirstPartyIssuer(item.issuer_type))
           ? "INDEPENDENT_EVIDENCE_PRESENT"
           : "FIRST_PARTY_ONLY",
-    method_reproducibility: referencedEvidence.some((item) => isReproducible(item.reproducibility))
+    method_reproducibility: referencedEvidence.some((item) => evidenceHasReproduciblePath(item))
       ? "REPRODUCIBLE_OR_INDEPENDENT"
       : "NOT_SPECIFIED",
     freshness: referencedEvidence.some((item) => item.is_stale) ? "STALE" : "CURRENT_OR_NOT_DATED",
@@ -500,7 +545,10 @@ function claimRiskGaps(
   if (axes.specificity === "BROAD_OR_UNSCOPED") gaps.push("Claim has no explicit scope.");
   if (axes.limitations === "MISSING") gaps.push("Claim has no limitations.");
   if (axes.issuer_independence === "FIRST_PARTY_ONLY") gaps.push("Only first-party evidence is linked.");
-  if (axes.method_reproducibility === "NOT_SPECIFIED") gaps.push("No reproducible method is specified for linked evidence.");
+  if (axes.method_reproducibility === "NOT_SPECIFIED") gaps.push("No explicit recheck method or reproducibility metadata is linked.");
+  if (referencedEvidence.some((item) => item.missing_method_refs.length > 0)) {
+    gaps.push("At least one linked evidence method reference is missing.");
+  }
   if (axes.retrievability === "NO_PUBLIC_LOCATIONS") gaps.push("Linked evidence has no public retrieval location.");
   if (axes.retrievability === "PARTIAL_PUBLIC_LOCATIONS") gaps.push("Only some linked evidence has public retrieval locations.");
   if (axes.artifact_integrity === "LOCAL_HASH_FAILED") gaps.push("At least one local evidence hash check failed.");
@@ -525,8 +573,8 @@ function claimNextBestActions(riskGaps: string[]): string[] {
   if (riskGaps.some((gap) => /first-party/i.test(gap))) {
     actions.push("Add an independent attestation or external evidence source for the exact claim.");
   }
-  if (riskGaps.some((gap) => /reproducible method/i.test(gap))) {
-    actions.push("Add a reproducible method, command, dataset, monitoring method, or test procedure.");
+  if (riskGaps.some((gap) => /reproducible method|recheck method|reproducibility metadata/i.test(gap))) {
+    actions.push("Add a concrete recheck method with steps, expected results, tools, cost, and limitations.");
   }
   if (riskGaps.some((gap) => /public retrieval/i.test(gap))) {
     actions.push("Publish evidence through HTTPS, IPFS, Arweave, Git release, or another public retrieval path.");
@@ -620,8 +668,24 @@ function isReproducible(value: string): boolean {
   return ["reproducible", "independently_reproducible", "fully_reproducible"].includes(value.toLowerCase());
 }
 
+function evidenceHasReproduciblePath(item: EvidenceValueAudit): boolean {
+  return isReproducible(item.reproducibility) || item.has_recheck_method;
+}
+
 function isDedicatedAttestation(item: EvidenceValueAudit): boolean {
   return ["third_party_attestation", "signed_attestation", "automated_attestation"].includes(item.evidence_type.toLowerCase());
+}
+
+function hasExecutableReviewShape(method: Record<string, JsonValue>): boolean {
+  return arrayStrings(method.steps).length > 0 && arrayStrings(method.expected_results).length > 0;
+}
+
+function isLowCostMethod(value: string): boolean {
+  return ["very_low", "low"].includes(value.toLowerCase());
+}
+
+function uniqueStrings(values: string[]): string[] {
+  return [...new Set(values)];
 }
 
 function isEvidenceStale(item: Record<string, JsonValue>, now: Date): boolean {

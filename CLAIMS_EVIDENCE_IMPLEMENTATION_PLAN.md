@@ -20,6 +20,8 @@ Already implemented:
 - signed evidence manifests;
 - claim-to-evidence references;
 - evidence artifact SHA-256 hashes;
+- explicit evidence recheck method objects;
+- evidence-to-method references;
 - local artifact hash checking for local evidence locations;
 - first-party versus external evidence metadata;
 - reproducibility metadata;
@@ -31,6 +33,7 @@ Already implemented:
 - value continuity report JSON and Markdown outputs;
 - value continuity summary copied into `/verify/organchor.json`;
 - `organchor verify url --compact` summary fields for unsupported, third-party, reproducible, manual-check, claim-support-level, risk-gap counts, top risk gaps, and next actions.
+- `REAL_WORLD_EVIDENCE_PROFILE.md` for minimum useful product and service evidence packages.
 
 Current limitation:
 
@@ -60,20 +63,19 @@ This was intentionally cheaper than adding new manifest types first. It makes ex
 
 Next CLI/schema work should add:
 
-1. Method objects
-   - Add method records or method refs to evidence manifests.
-   - Let claims point to method IDs.
-   - Report method coverage and cost-to-verify.
-
-2. Attestation manifests
+1. Attestation manifests
    - Add signed third-party or automated attestations.
    - Bind attestations to exact claim IDs, evidence IDs, methods, time windows, and results.
    - Avoid raw attestation-count scoring.
 
-3. Challenge/correction manifests
+2. Challenge/correction manifests
    - Add public challenge and correction records.
    - Bind challenges to exact claims or evidence items.
    - Preserve older claims while making supersession visible.
+
+3. Category-specific real-world validators
+   - Add profile checks for physical product, service delivery, SaaS/API, certification, dataset, and software release claims.
+   - Keep validators advisory and gap-oriented, not badge-oriented.
 
 4. Low-burden templates
    - Provide starter templates for software, API uptime, professional service, physical product, and dataset claims.

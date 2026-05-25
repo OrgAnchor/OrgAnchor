@@ -33,11 +33,11 @@
     "risk_gaps": 34,
     "top_risk_gaps": [
       "Only first-party evidence is linked.",
-      "No reproducible method is specified for linked evidence."
+      "No explicit recheck method or reproducibility metadata is linked."
     ],
     "next_best_actions": [
       "Add an independent attestation or external evidence source for the exact claim.",
-      "Add a reproducible method, command, dataset, monitoring method, or test procedure."
+      "Add a concrete recheck method with steps, expected results, tools, cost, and limitations."
     ]
   },
   "policy_route": {

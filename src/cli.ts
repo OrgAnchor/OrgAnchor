@@ -28,6 +28,7 @@ import { doctorCommand } from "./commands/doctor.ts";
 import { evidenceAddCommand } from "./commands/evidence-add.ts";
 import { evidenceCreateCommand } from "./commands/evidence-create.ts";
 import { evidenceHashCommand } from "./commands/evidence-hash.ts";
+import { evidenceMethodAddCommand } from "./commands/evidence-method-add.ts";
 import { evidenceSignCommand } from "./commands/evidence-sign.ts";
 import { evidenceVerifyCommand } from "./commands/evidence-verify.ts";
 import { domainAuditCommand } from "./commands/domain-audit.ts";
@@ -94,6 +95,7 @@ const commands: Record<string, CommandHandler> = {
   "evidence add": evidenceAddCommand,
   "evidence create": evidenceCreateCommand,
   "evidence hash": evidenceHashCommand,
+  "evidence method add": evidenceMethodAddCommand,
   "evidence sign": evidenceSignCommand,
   "evidence verify": evidenceVerifyCommand,
   "init": initCommand,
@@ -247,6 +249,7 @@ Usage:
   organchor evidence create --config organchor.config.json
   organchor evidence add --file README.md
   organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.mp4 --location-type https
+  organchor evidence method add --id method-001 --evidence-id evidence-001 --steps "Fetch the public artifact;Compare the SHA-256 hash" --expected-results "The artifact hash matches the signed manifest"
   organchor evidence hash --file README.md
   organchor evidence sign --key keys/root-2026.private.json --authority root-authority.json
   organchor evidence sign --key keys/root-b.private.json --authority root-authority.json --append

@@ -121,6 +121,83 @@ test("value audit recognizes external reproducible evidence and local hash check
   }
 });
 
+test("value audit treats explicit recheck methods as reproducible support", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-value-audit-method-"));
+  try {
+    createAuthority(workspace);
+    writeFileSync(join(workspace, "inspection-report.md"), "# Inspection\n\nBatch inspection result.\n", "utf8");
+    run(workspace, ["claims", "create", "--config", "organchor.config.json"]);
+    run(workspace, ["evidence", "create", "--config", "organchor.config.json"]);
+    run(workspace, [
+      "evidence",
+      "add",
+      "--file",
+      "inspection-report.md",
+      "--id",
+      "evidence-001",
+      "--issuer-type",
+      "third_party",
+      "--uri",
+      "https://example.org/evidence/inspection-report.md",
+      "--location-type",
+      "https",
+      "--evidence-strength",
+      "moderate",
+      "--limitations",
+      "Single batch inspection;Does not prove future batches"
+    ]);
+    run(workspace, [
+      "evidence",
+      "method",
+      "add",
+      "--id",
+      "method-001",
+      "--evidence-id",
+      "evidence-001",
+      "--kind",
+      "public_artifact_hash_check",
+      "--steps",
+      "Download the public inspection report;Compute SHA-256;Compare the hash with the signed evidence manifest",
+      "--expected-results",
+      "The downloaded report hash equals the declared evidence hash",
+      "--required-tools",
+      "curl;sha256sum",
+      "--cost-to-verify",
+      "low",
+      "--limitations",
+      "This verifies the published report artifact, not the laboratory's competence"
+    ]);
+
+    run(workspace, [
+      "value",
+      "audit",
+      "--claims",
+      "claims/product-claims.json",
+      "--evidence",
+      "evidence/evidence-manifest.json",
+      "--check-files",
+      "--now",
+      "2026-05-19T00:00:00Z"
+    ]);
+
+    const report = readReport(workspace);
+    const claim = report.claims[0];
+    const evidence = report.evidence[0];
+    assert.ok(claim);
+    assert.ok(evidence);
+    assert.equal(claim.level, "REPRODUCIBLE");
+    assert.equal(claim.protocol_support_level, "L3_REPRODUCIBLE_METHOD");
+    assert.equal(claim.policy_route, "READY_FOR_EXTERNAL_POLICY");
+    assert.deepEqual(claim.risk_gaps, []);
+    assert.equal(evidence.has_recheck_method, true);
+    assert.equal(evidence.has_low_cost_recheck_method, true);
+    assert.deepEqual(evidence.resolved_method_refs, ["method-001"]);
+    assert.deepEqual(evidence.method_kinds, ["public_artifact_hash_check"]);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
 function createAuthority(workspace: string): void {
   run(workspace, ["init"]);
   run(workspace, ["key", "generate", "--id", "root-2026"]);
@@ -139,7 +216,14 @@ function readReport(workspace: string): {
     policy_route: string;
     missing_evidence_refs: string[];
   }>;
-  evidence: Array<{ has_external_location: boolean; reproducibility: string }>;
+  evidence: Array<{
+    has_external_location: boolean;
+    reproducibility: string;
+    resolved_method_refs: string[];
+    method_kinds: string[];
+    has_recheck_method: boolean;
+    has_low_cost_recheck_method: boolean;
+  }>;
 } {
   return JSON.parse(readFileSync(join(workspace, "reports", "value-continuity-report.json"), "utf8"));
 }

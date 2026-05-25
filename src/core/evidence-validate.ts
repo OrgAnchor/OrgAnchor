@@ -31,6 +31,7 @@ export function validateEvidenceManifest(value: JsonValue): JsonValue {
   requireIsoTimestamp(object, "issued_at", "evidence manifest");
   asObject(object.organization_ref ?? null, "evidence manifest.organization_ref");
   if (!Array.isArray(object.evidence)) fail("VALIDATION_ERROR", "evidence manifest.evidence must be an array");
+  const methodIds = validateMethods(object);
   const ids = new Set<string>();
   for (const item of object.evidence) {
     const itemObject = asObject(item, "evidence item");
@@ -45,6 +46,46 @@ export function validateEvidenceManifest(value: JsonValue): JsonValue {
       fail("VALIDATION_ERROR", "evidence item.size must be a non-negative number");
     }
     if (!Array.isArray(itemObject.locations)) fail("VALIDATION_ERROR", "evidence item.locations must be an array");
+    if (itemObject.method_refs !== undefined) {
+      if (!Array.isArray(itemObject.method_refs)) fail("VALIDATION_ERROR", "evidence item.method_refs must be an array");
+      for (const ref of itemObject.method_refs) {
+        if (typeof ref !== "string" || ref.length === 0) fail("VALIDATION_ERROR", "evidence item.method_refs must contain strings");
+        if (!methodIds.has(ref)) fail("VALIDATION_ERROR", `Evidence method reference "${ref}" does not exist`);
+      }
+    }
   }
   return value;
+}
+
+function validateMethods(object: Record<string, JsonValue>): Set<string> {
+  const ids = new Set<string>();
+  if (object.methods === undefined) return ids;
+  if (!Array.isArray(object.methods)) fail("VALIDATION_ERROR", "evidence manifest.methods must be an array");
+  for (const method of object.methods) {
+    const methodObject = asObject(method, "evidence method");
+    if (methodObject.type !== undefined && methodObject.type !== "OrgAnchorEvidenceMethod") {
+      fail("VALIDATION_ERROR", "evidence method.type must be OrgAnchorEvidenceMethod");
+    }
+    const id = requireString(methodObject, "id", "evidence method");
+    if (ids.has(id)) fail("VALIDATION_ERROR", `Duplicate evidence method id "${id}"`);
+    ids.add(id);
+    requireString(methodObject, "method_kind", "evidence method");
+    requireString(methodObject, "title", "evidence method");
+    requireNonEmptyStringArray(methodObject.steps, "evidence method.steps");
+    requireNonEmptyStringArray(methodObject.expected_results, "evidence method.expected_results");
+    if (methodObject.target_evidence_ids !== undefined) {
+      requireNonEmptyStringArray(methodObject.target_evidence_ids, "evidence method.target_evidence_ids");
+    }
+    if (methodObject.target_claim_ids !== undefined) {
+      requireNonEmptyStringArray(methodObject.target_claim_ids, "evidence method.target_claim_ids");
+    }
+  }
+  return ids;
+}
+
+function requireNonEmptyStringArray(value: JsonValue | undefined, label: string): void {
+  if (!Array.isArray(value) || value.length === 0) fail("VALIDATION_ERROR", `${label} must be a non-empty array`);
+  for (const item of value) {
+    if (typeof item !== "string" || item.length === 0) fail("VALIDATION_ERROR", `${label} must contain non-empty strings`);
+  }
 }

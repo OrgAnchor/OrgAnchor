@@ -1,396 +1,307 @@
 # OrgAnchor Threat Model
 
-## 目的
+Status: Accepted baseline, actively implemented
 
-这份文档定义 OrgAnchor 要防什么、不防什么，以及每类风险如何被产品设计缓解。
+This document defines what OrgAnchor tries to defend against, what it does not defend against, and which residual risks remain.
 
-OrgAnchor 的目标不是让组织在线身份“绝对安全”，而是让组织在域名、平台、服务器、归档、镜像或命名系统出现问题时，仍然能够通过组织根权威和签名声明证明身份连续性。
+OrgAnchor does not make an online identity absolutely safe. It reduces single-point failure risk and makes identity, endpoint, discovery, and value-evidence claims easier to verify after domains, platforms, infrastructure, archives, or naming systems change.
 
-## 保护对象
+## Protected Assets
 
-OrgAnchor 重点保护这些资产：
+OrgAnchor focuses on these assets:
 
-- 组织根私钥，或多个负责人分别持有的根私钥。
-- 组织根公钥，或由多个根公钥组成的根权威集。
-- 根权威阈值规则。
-- 当前官方入口声明。
-- 官方入口声明签名。
-- 产品/服务声明清单。
-- 证据清单和证据 artifact hash。
-- 迁移声明和密钥轮换声明。
-- `/verify` 静态验证页。
-- Arweave 交易记录。
-- IPFS CID 和 pinning 记录。
-- Onion 灾备入口声明。
-- ENS 辅助名称记录。
-- 域名安全审计报告。
-- `organchor.lock.json` 中的发布结果和哈希记录。
+- root private keys,
+- root authority public key set,
+- threshold rule,
+- root authority migration statements,
+- official endpoint statements,
+- detached signatures,
+- claims manifests,
+- evidence manifests,
+- evidence artifact hashes,
+- value continuity reports,
+- `/verify` static package,
+- `/.well-known/organchor.json` Beacon,
+- Directory snapshots and records,
+- Arweave transaction receipts,
+- IPFS CIDs and pinning receipts,
+- OpenTimestamps proofs,
+- onion disaster-recovery addresses,
+- ENS auxiliary records,
+- domain security reports,
+- `organchor.lock.json` publication receipts.
 
-## 信任基础
+## Trust Base
 
-OrgAnchor 的最终信任基础是：
+The final OrgAnchor verification question is:
 
-> 当前声明或迁移声明是否满足组织根权威规则。
+```text
+Does the current statement satisfy the current root authority rule,
+or does it connect to that authority through a valid migration chain?
+```
 
-根权威的最小形态是单个根公钥和单个根私钥，也就是 `1-of-1`。成熟组织可以使用多个独立根密钥和阈值规则，例如 `2-of-3` 或 `3-of-5`。
+All other systems are carriers, hints, mirrors, archives, or discovery aids.
 
-OrgAnchor 不建议多人长期共享同一个根私钥。共享私钥会让泄露责任无法追踪，也无法在成员离开或组织内部分歧时只撤销其中一个人的权柄。
+## Threats And Mitigations
 
-其他系统的信任位置如下：
+### 1. Domain loss, DNS failure, or website outage
 
-- 域名：常用入口，不是身份根。
-- 官网：发布入口，不是身份根。
-- GitHub 等平台账号：辅助入口，不是身份根。
-- Arweave：归档承载体，不是身份根。
-- IPFS：内容寻址和镜像承载体，不是身份根。
-- Onion：灾备访问入口，不是身份根。
-- ENS：辅助名称，不是身份根。
-- `organchor.lock.json`：本地发布状态记录，不是身份根。
+Risk:
 
-## 主要威胁
+- domain expires,
+- DNS records are changed or broken,
+- registrar account is compromised,
+- website or CDN becomes unavailable,
+- users assume the domain itself is the identity root.
 
-### 1. 域名失效、被盗或无法访问
+Mitigation:
 
-风险：
+- signed endpoint statements are verified against root authority, not domain control,
+- statements can be mirrored to IPFS and archived to Arweave,
+- high-value hashes can be timestamped through OpenTimestamps,
+- onion and auxiliary names can be declared as disaster routes,
+- domain audit reports surface DNSSEC, SPF, DMARC, CAA, HTTPS, security.txt, `/verify`, and manual registrar checks.
 
-- 域名过期。
-- DNS 配置错误。
-- 注册商账号被盗。
-- 域名被暂停解析。
-- 官网无法访问。
+Residual risk:
 
-OrgAnchor 缓解方式：
+- if no one saved historical root authority records or statements, external observers may struggle to establish continuity after a complete disappearance,
+- short-term users can still be misled if they only read a web page and do not verify signatures.
 
-- 官方入口声明必须满足根权威签名规则，不依赖域名本身作为身份根。
-- 声明可被发布到 Arweave、IPFS、Onion 和其他平台。
-- 域名安全审计检查 DNSSEC、SPF、DMARC、MX、CAA、HTTPS、证书、security.txt、verify 页面等。
-- Registry Lock 和自动续费被标记为人工检查项，不假装能自动判断全部注册商状态。
+### 2. Platform account loss or censorship
 
-剩余风险：
+Risk:
 
-- 如果用户从未保存根权威记录或历史声明，外界可能难以确认新的声明是否连续。
-- 如果攻击者同时控制域名和用户传播渠道，短期内仍可能误导用户。
+- GitHub, social, app-store, document, or cloud accounts are suspended, stolen, or abandoned,
+- external observers confuse platform accounts with organization identity.
 
-### 2. 平台账号丢失或被封禁
+Mitigation:
 
-风险：
+- platform accounts are only signed endpoints,
+- a new signed statement can replace them,
+- old and new statements can be linked through the same root authority or a migration chain.
 
-- GitHub、社交媒体、文档平台、应用商店等账号被封、被盗或无法登录。
-- 用户误以为平台账号就是组织身份。
+Residual risk:
 
-OrgAnchor 缓解方式：
+- if the organization never published root authority material before the platform loss, rebuilding external confidence is harder.
 
-- 平台账号只写入 `official_endpoints`，作为被签名声明中的当前入口。
-- 平台账号变化时，组织可发布新的签名声明。
-- 旧声明和新声明可通过同一根权威或迁移声明建立连续性。
+### 3. Website compromise or artifact replacement
 
-剩余风险：
+Risk:
 
-- 如果组织从未公开过根权威记录，平台账号丢失后建立外部信任会更难。
+- attacker replaces `official-endpoints.json`,
+- attacker replaces `/verify/index.html`,
+- attacker publishes fake endpoints,
+- attacker publishes a fake Beacon.
 
-### 3. 官网或服务器被攻陷
+Mitigation:
 
-风险：
+- statements use canonical JSON hashes,
+- detached signatures must satisfy the root authority threshold,
+- verify index records expected hashes,
+- Beacon declared hashes must match strict verification results,
+- external agents should run `organchor verify url` or an independent verifier,
+- mirrors and archives provide cross-checking.
 
-- 攻击者修改官网上的 `official-endpoints.json`。
-- 攻击者替换 `/verify` 页面。
-- 攻击者发布虚假入口。
+Residual risk:
 
-OrgAnchor 缓解方式：
+- a human who only reads the page and never verifies can still be deceived,
+- if an attacker controls enough root keys to meet threshold, OrgAnchor cannot distinguish them from the legitimate authority.
 
-- 声明必须通过明确声明的签名算法验证，并且签名集合必须满足当前根权威规则。v1 默认算法是 Ed25519，但文件格式必须允许未来迁移到后量子签名。
-- 声明 hash 由 canonical JSON 计算。
-- 任意字段修改都会导致签名验证失败。
-- `/verify` 页面展示机器可验证的声明、公钥、签名和 hash。
-- 同一声明可在 Arweave、IPFS、Onion 等多处交叉验证。
+### 4. Root private key leakage
 
-剩余风险：
+Risk:
 
-- 如果用户只看网页文字而不验证签名，仍可能被欺骗。
-- 如果攻击者替换了页面内的验证逻辑，用户需要借助独立 CLI 或第三方验证器复核。
+- in `1-of-1`, one leaked private key can sign false statements,
+- in `m-of-n`, an attacker who obtains enough keys can meet threshold,
+- shared private keys destroy accountability.
 
-### 4. 根私钥泄露或根成员密钥泄露
+Mitigation:
 
-风险：
+- private keys are ignored by `.gitignore`,
+- private key files use restrictive permissions where supported,
+- root authority sets support threshold signing,
+- each root member should hold a separate key,
+- migrations allow movement from `1-of-1` to `m-of-n`,
+- custody guidance recommends offline storage, recovery planning, and periodic review.
 
-- 在 `1-of-1` 模型中，攻击者获得组织根私钥后，可以签署虚假声明。
-- 在 `m-of-n` 模型中，攻击者获得少于阈值数量的私钥时，不应能单独签署有效声明。
-- 如果攻击者获得达到阈值数量的私钥，就可以签署看起来有效的虚假声明。
+Residual risk:
 
-OrgAnchor 缓解方式：
+- enough leaked threshold keys is a highest-severity event,
+- software alone cannot repair a root compromise without previously trusted migration or external social/legal proof.
 
-- 私钥默认写入 `keys/*.private.json` 并被 `.gitignore` 忽略。
-- 私钥生成时应尽量设置较严格的文件权限。
-- CLI 必须明确提示离线保存和备份。
-- v1 设计密钥轮换和迁移声明机制。
-- 数据结构预留根权威集和阈值规则，避免长期绑定单一私钥模型。
+### 5. Root key loss or governance deadlock
 
-剩余风险：
+Risk:
 
-- 单根私钥泄露是最高严重度事件。
-- 多根权威中达到阈值数量的私钥泄露也是最高严重度事件。
-- 如果没有预先建立多方见证、线下声明、硬件密钥或轮换策略，软件本身无法完全修复已泄露的根身份。
+- a solo holder loses a `1-of-1` key,
+- too many members lose keys in `m-of-n`,
+- threshold is too high and the organization cannot sign,
+- threshold is too low and one faction can over-control the identity.
 
-推荐运营实践：
+Mitigation:
 
-- 根私钥离线保存。
-- 组织扩大后迁移到多根成员和阈值签名。
-- 日常发布可考虑未来引入 delegated signing key，但 v1 不把它作为核心复杂度。
-- 重要组织应有明确的密钥撤销和迁移公告流程。
+- start simple, migrate as governance matures,
+- document custody roles,
+- use migration statements to change root authority membership,
+- keep public root records and historical statements archived.
 
-### 5. 根私钥丢失或根成员失联
+Residual risk:
 
-风险：
+- poor governance choices cannot be fully solved by cryptography.
 
-- 在 `1-of-1` 模型中，组织无法签署新的官方入口声明。
-- 在 `m-of-n` 模型中，如果可用根成员数量低于阈值，组织无法签署新的官方入口声明。
-- 组织无法证明新入口与旧入口的连续性。
+### 6. Fake or partial OrgAnchor adopters
 
-OrgAnchor 缓解方式：
+Risk:
 
-- 生成私钥时提供离线保存提示。
-- 未来支持密钥轮换声明。
-- 鼓励组织把 root authority record、旧声明、签名和归档记录公开保存。
+- a site copies OrgAnchor wording but omits strict verification artifacts,
+- a fake Beacon declares hashes that do not match signed artifacts,
+- unknown extension fields try to override core semantics,
+- Directory records index unverified origins.
 
-剩余风险：
+Mitigation:
 
-- 私钥丢失后，如果可用签名数量低于根权威阈值，无法用旧根权威签发新声明。
-- 只能通过社会证明、旧渠道公告、法律实体证明或其他外部方式重新建立信任。
+- Beacon inspection distinguishes claimed signals from verified conformance,
+- unknown Beacon fields are ignored,
+- declared Beacon hashes must match strict verification,
+- Directory records must point back to origin-owned verification URLs,
+- Directory snapshots declare they are not trust roots,
+- `conformance_status` lets agents reject partial or failed adoption.
 
-### 6. 单一根权力过度集中或多人共享私钥
+Residual risk:
 
-风险：
+- crawlers will still see spam or malformed signals,
+- external agents need filtering, rate limits, deduplication, and direct origin verification.
 
-- 单个人长期控制 `1-of-1` 根私钥，组织命运过度依赖个人。
-- 多人共享同一个根私钥，泄露后无法判断责任来源。
-- 组织内部出现矛盾时，共享私钥可能导致反复发布互相冲突的声明。
+### 7. Directory capture or monopoly
 
-OrgAnchor 缓解方式：
+Risk:
 
-- 把身份根设计为根权威集，而不是只能是一把根公钥。
-- 小组织可以从 `1-of-1` 启动。
-- 组织扩大后应迁移到 `2-of-3`、`3-of-5` 等阈值规则。
-- 每个根成员持有自己的私钥。
-- 根成员变化通过迁移声明或根权威变更声明完成。
+- one Directory becomes a de facto gatekeeper,
+- Directory operator biases ranking,
+- Directory includes paid or manipulated recommendations,
+- adopters become invisible if they are not in the dominant Directory.
 
-剩余风险：
+Mitigation:
 
-- 阈值规则是治理选择，不是纯技术答案。
-- 如果组织选择了不合理阈值，例如 `1-of-5` 或过高的 `5-of-5`，仍可能造成滥用或僵局。
+- every adopter publishes its own Beacon,
+- anyone can crawl and build an alternative Directory,
+- Directory records are summaries only,
+- agents must verify at origin,
+- official Directory output must explain why a candidate was returned and which risks remain,
+- OrgAnchor does not assign final trust decisions.
 
-### 7. Arweave 内容不一致或上传失败
+Residual risk:
 
-风险：
+- discovery convenience can still concentrate attention,
+- external ecosystems may prefer a few popular indexes.
 
-- 上传的内容不是本地声明。
-- 上传凭证不可用。
-- 上传服务失败。
-- 用户误把 Arweave TX 当作身份根。
+### 8. Evidence laundering and value overclaiming
 
-OrgAnchor 缓解方式：
+Risk:
 
-- 发布前后必须输出 SHA-256 hash。
-- `archive arweave verify` 必须比较远端内容 hash 和本地 expected hash。
-- 交易 id 和 hash 写入 `organchor.lock.json`。
-- 没有钱包或上传凭证时提供 dry-run 和手动上传包。
+- an organization publishes true identity but weak or misleading product claims,
+- first-party evidence is presented as independent proof,
+- stale evidence remains visible,
+- large media artifacts are used to impress humans but do not prove claims.
 
-剩余风险：
+Mitigation:
 
-- Arweave 是否长期可访问不由 OrgAnchor 保证。
-- 上传服务提供商的可用性不由 OrgAnchor 保证。
+- claims and evidence are separate signed artifacts,
+- value audit distinguishes first-party, third-party, reproducible, stale, unsupported, and manual-check items,
+- evidence artifacts are hashed,
+- reports expose gaps instead of hiding them,
+- OrgAnchor refuses to assign a final trust score.
 
-### 8. IPFS CID 不一致或 pinning 失效
+Residual risk:
 
-风险：
+- product efficacy often requires domain-specific external evaluation,
+- dishonest organizations can still publish selective evidence,
+- third-party evidence can itself be low quality or captured.
 
-- IPFS 上的 CID 不对应本地内容。
-- 内容没有被 pin，后续不可访问。
-- pinning provider 失败。
+### 9. Carrier failure or carrier capture
 
-OrgAnchor 缓解方式：
+Risk:
 
-- 发布输出 CID 和 hash。
-- `mirror ipfs verify` 比较 CID 内容 hash 和 expected hash。
-- 发布结果写入 `organchor.lock.json`。
-- 支持本地 Kubo 和 dry-run。
+- IPFS content is not pinned,
+- Arweave upload fails,
+- gateways become unavailable,
+- timestamp services are temporarily unavailable,
+- users confuse a carrier receipt with identity authority.
 
-剩余风险：
+Mitigation:
 
-- IPFS CID 能证明内容，不保证内容永远在线。
-- pinning provider 是可用性增强，不是身份根。
+- carrier receipts are recorded in `organchor.lock.json`,
+- publish commands output hashes,
+- verify commands compare remote content to expected hashes,
+- carriers are documented as optional durability/discovery layers,
+- multiple carriers can cross-check the same artifact.
 
-### 9. Onion 地址被伪造或错误配置
+Residual risk:
 
-风险：
+- no carrier guarantees universal availability forever,
+- large evidence artifacts can create storage cost and retention tradeoffs.
 
-- 用户登记错误的 onion 地址。
-- 攻击者传播虚假 onion 地址。
-- Onion 服务不在线。
+### 10. Cryptographic obsolescence
 
-OrgAnchor 缓解方式：
+Risk:
 
-- 校验 onion v3 地址格式。
-- 生成 Tor Hidden Service 配置片段。
-- 把 onion 地址写入签名的官方入口声明。
-- `/verify` 页面说明 onion 入口如何验证。
+- Ed25519 could become insufficient in the future,
+- quantum-capable adversaries could eventually threaten current public-key signatures,
+- old statements may need historical interpretation after algorithm migration.
 
-剩余风险：
+Mitigation:
 
-- OrgAnchor 不运行 Tor，也不保证 onion 服务在线。
-- onion 地址只有被签名声明绑定后才有 OrgAnchor 意义。
+- algorithm identifiers are explicit,
+- canonical hashing is separate from signing,
+- root authority migration can introduce new key algorithms,
+- post-quantum migration is an explicit design path,
+- high-value historical hashes can be timestamped.
 
-### 10. ENS 记录错误或被误用
+Residual risk:
 
-风险：
+- quantum-safe operational migration depends on future mature libraries, standards, and adoption,
+- old signatures may become historical evidence rather than future-proof authentication.
 
-- ENS text record 或 contenthash 指向错误内容。
-- ENS name 过期、被转移或 resolver 被修改。
-- 用户误以为 ENS 是组织身份根。
+### 11. AI-agent misuse
 
-OrgAnchor 缓解方式：
+Risk:
 
-- ENS 只作为辅助名称模块。
-- `ens verify` 检查 ENS 当前记录是否与签名声明一致。
-- `ens plan` 生成建议记录，不默认自动写链。
-- 文档明确 ENS 不是身份根。
+- agents treat OrgAnchor PASS as final trust,
+- agents ignore warnings or manual checks,
+- agents trust Directory ranking without origin verification,
+- agents fail to understand unsupported claims.
 
-剩余风险：
+Mitigation:
 
-- ENS 自身治理、链上交易成本、钱包安全和解析器风险不由 OrgAnchor 解决。
+- result fields say `trust_decision: NOT_ASSIGNED_BY_ORGANCHOR`,
+- policy routes are owned by the external agent,
+- compact and full results expose failures, warnings, gaps, and next steps,
+- Directory candidate results include match explanations and verification plans.
 
-### 11. 依赖和供应链风险
+Residual risk:
 
-风险：
+- weak agents or bad integrations can still misuse the data,
+- OrgAnchor can reduce ambiguity but cannot control all downstream decisions.
 
-- 第三方库被攻陷。
-- 不明许可证依赖污染核心库。
-- 底层密码学实现错误。
+## Non-Goals
 
-OrgAnchor 缓解方式：
+OrgAnchor does not provide:
 
-- 不自行实现底层密码学算法。
-- 优先使用成熟、维护良好、许可证清晰的依赖。
-- 核心依赖优先 MIT、Apache-2.0、BSD、ISC。
-- 避免 GPL、AGPL、无许可证或许可证不明依赖进入核心库。
-- 测试覆盖 canonicalization、签名验证、错误公钥、篡改声明等关键路径。
+- a blockchain,
+- a DID method,
+- a government registry replacement,
+- a complete wallet,
+- a VC issuance platform,
+- DAO governance,
+- internal organization permissions,
+- SaaS user accounts,
+- hosting,
+- search monopoly,
+- final supplier ranking,
+- legal, medical, or financial assurance.
 
-剩余风险：
+## Severity Rule
 
-- 所有软件项目都有供应链风险，需要持续依赖审计和版本管理。
+If identity verification fails, agents must stop before evaluating value claims.
 
-### 12. 产品声明和证据链被误解或被替换
-
-风险：
-
-- 组织签署了产品/服务声明，但用户或 AI agent 误以为 OrgAnchor 已经证明产品效用客观真实。
-- 证据 artifact 被替换，但文件名或 URL 不变。
-- 第一方宣传材料被误当作第三方独立证明。
-- 证据只支持较窄结论，但被用于支持更宽泛的产品宣传。
-
-OrgAnchor 缓解方式：
-
-- 产品/服务声明和证据清单使用独立签名 manifest。
-- 每个 evidence artifact 必须记录 hash、media type、size、location、issuer type 和 claim relation。
-- AI-agent-friendly 字段必须区分 first-party、third-party、community、regulator 和 automated-system evidence。
-- Manifest 必须支持 limitations、scope、version 和 claim-evidence relation。
-- CLI 输出必须说明 OrgAnchor 证明的是发布、完整性和可追溯性，不是自动证明产品效用真实。
-
-剩余风险：
-
-- 判断证据是否充分仍需要 AI agent、用户、审计机构、监管者、专家或可复现实验。
-- 恶意组织仍可能发布误导性但签名有效的声明。
-
-### 13. 未来量子计算破坏当前公钥签名
-
-风险：
-
-- 如果未来出现足够强的密码学相关量子计算机，Ed25519 等椭圆曲线签名应被视为不再安全。
-- 攻击者可能利用已公开的 root public key 推导出对应 private key，并伪造看起来有效的新声明。
-
-OrgAnchor 缓解方式：
-
-- 根权威不是固定算法，而是一组带 `algorithm` 字段的根公钥和阈值规则。
-- 签名文件支持多个签名。
-- v1 使用 Ed25519，但 schema 保留后量子签名扩展空间。
-- 未来可以引入 ML-DSA 或 SLH-DSA 等后量子签名。
-- 迁移声明用于把旧根权威连接到新根权威。
-- 鼓励把历史声明发布到 Arweave、IPFS、Git tag、传统官网和第三方镜像，形成时间证据。
-
-剩余风险：
-
-- 如果组织在量子威胁变得现实之前没有迁移，旧算法的根权威可能被伪造。
-- 历史归档和时间证据不能替代签名，但能帮助区分较早真实存在的声明和较晚伪造的声明。
-
-## 不在 v1 防护范围内的风险
-
-OrgAnchor v1 不承诺解决：
-
-- 组织内部谁有权签署声明的问题。
-- 多人审批和权限管理。
-- 私钥硬件托管。
-- 完整密钥恢复服务。
-- 法律实体真实性证明。
-- 政府登记替代。
-- 社交媒体冒名账号治理。
-- 搜索引擎结果排序。
-- 托管 verify 页面。
-- 自动恢复已被盗域名。
-- 自动开启 Registry Lock。
-- 自动续费域名。
-
-## 风险等级建议
-
-| 风险 | 严重度 | v1 处理方式 |
-| --- | --- | --- |
-| 单根私钥泄露 | Critical | 强提示、默认忽略私钥、权限控制、迁移设计 |
-| 达到阈值数量的根成员私钥泄露 | Critical | 多根权威、轮换声明、运营提示 |
-| 根私钥丢失或可用根成员低于阈值 | Critical | 强提示、备份建议、迁移限制说明 |
-| 多人共享同一个根私钥 | High | 明确反对共享私钥，推荐独立密钥和阈值规则 |
-| 声明被篡改 | High | canonical JSON、SHA-256、签名验证、阈值规则 |
-| 未来量子计算破坏 Ed25519 | High | 算法敏捷、混合签名、后量子迁移计划、历史归档 |
-| 产品声明或证据链被误解 | High | claims/evidence manifest、issuer type、limitations、AI-agent-readable relations |
-| 证据 artifact 被替换 | High | artifact hash、IPFS/Arweave/HTTPS 多位置验证 |
-| 域名失效 | High | 多承载体发布、domain audit |
-| 官网被攻陷 | High | 签名验证、多处交叉验证 |
-| Arweave 内容不一致 | Medium | hash verify、lockfile |
-| IPFS pinning 失效 | Medium | CID verify、lockfile、provider 状态 |
-| ENS 记录不一致 | Medium | inspect、plan、verify |
-| Onion 地址错误 | Medium | 格式校验、声明绑定 |
-| Registry Lock 无法自动判断 | Medium | 人工检查项 |
-
-## 验证者视角
-
-OrgAnchor 的验证者可能是：
-
-- 普通用户。
-- 新闻读者。
-- 开源贡献者。
-- 软件包使用者。
-- 安全研究员。
-- 合作伙伴。
-- 未来接手维护组织入口的人。
-
-理想验证流程：
-
-1. 获得组织 root authority 记录。
-2. 获得 `official-endpoints.json`。
-3. 获得 `official-endpoints.json.sig`。
-4. 使用 OrgAnchor CLI 或独立验证页验证签名集合是否满足根权威规则。
-5. 对照 Arweave、IPFS、官网、Onion、ENS 等入口是否一致。
-6. 如果入口发生迁移，检查迁移声明是否由旧根密钥或有效链路签署。
-
-## 最重要的失败模式
-
-OrgAnchor 必须始终诚实呈现失败模式：
-
-- 没有根权威记录，就没有可靠身份锚点。
-- 单根私钥泄露后，软件不能魔法修复信任。
-- 多根权威中达到阈值数量的私钥泄露后，软件同样不能魔法修复信任。
-- 多人共享同一个根私钥会把组织治理风险变成不可追踪的技术风险。
-- IPFS 能证明内容，不保证在线。
-- Arweave 能归档内容，不保证用户一定能访问。
-- Onion 是灾备入口，不保证可用。
-- ENS 是辅助名称，不是身份根。
-- 域名是现实入口，不是最终信任根。
-
-这份诚实是 OrgAnchor 安全性的组成部分。
+If identity passes but value evidence is missing or weak, agents can use the identity result for endpoint continuity, but they should not use product or service claims as trusted transaction inputs without external review.

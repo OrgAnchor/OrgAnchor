@@ -31,6 +31,21 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - `organchor directory inspect` can now discover an organization's Directory pointer, fetch the linked snapshot/hash/policy, and fail on hash or trust-boundary mismatches.
 - `organchor directory fetch` can now retrieve verified Directory snapshots, save them locally, and output candidate records with next-step direct origin verification commands.
 - `organchor directory fetch` can now filter candidates by discovery fields, verification status, policy route, and result limit before agents spend work on direct origin verification.
+- `organchor beacon sweep` can now consume seed files, Directory snapshots, sitemaps, and bounded crawl starts, with basic `robots.txt` respect for crawl mode.
+- `organchor beacon index` and `organchor beacon query` can build a local discovery database and return AI-agent-facing need-match reports.
+- `organchor beacon verify` can validate shared Beacon sweep NDJSON files as reusable discovery artifacts.
+- `organchor beacon generate` can regenerate `/.well-known/organchor.json`, `robots.txt`, and `sitemap.xml` from an existing local verify package, but only after the verify index, signed statement, detached signature, and root authority hashes pass local checks.
+- `organchor beacon report` can summarize local discovery quality from sweep artifacts, including Beacon find rate, origin verification success rate, stale-record rate, and cross-sweep reproducibility.
+- `organchor beacon inspect` now includes first-pass HTTP publishing hints for Beacon content type, response size, and cache metadata.
+- `organchor directory add` can maintain static Directory candidate source files without claiming that added candidates are verified.
+- Generated Directory policy files now spell out inclusion, exclusion, ranking, payment, stale-record, and mirroring boundaries.
+- `IMPLEMENTATION_STATUS.md` records the current implemented surface, remaining gaps, non-goals, and verification commands for alignment checks.
+- `organchor directory build --beacon-index` can export a local Beacon index into a static Directory snapshot.
+- `organchor directory build` now writes a machine-readable `directory-policy.json` by default.
+- `organchor directory compare` can compare independent Directory snapshots and surface conflicting origin summaries without making trust decisions.
+- `organchor directory export --format ndjson` can export Directory records as a line-oriented feed for mirroring, merging, and independent Directory nodes.
+- `npm run agent:demo` runs a complete local discovery loop: temporary adopter, Beacon sweep, local index, Directory export, need query, and compact verification.
+- `organchor adoption status` can generate public `ADOPTION_STATUS.md` and machine-readable adoption status reports from a local adoption workspace, while explicitly preserving the trust boundary.
 
 ## 0.1.0-alpha.1 - 2026-05-14
 

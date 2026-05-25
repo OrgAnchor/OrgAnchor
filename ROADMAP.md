@@ -464,7 +464,7 @@ v1 must cover:
 Status:
 
 ```text
-Design direction recorded; Beacon model, beacon inspect command, static snapshot spec, example, build command, verify command, and optional origin verification implemented; not part of v1 core completion
+Design direction recorded; Beacon model, Beacon surface generation, direct inspection, sweep/index/query, static Directory add/build/verify/fetch/compare/export, Beacon-index export, policy publication, and optional origin verification implemented; not part of v1 core completion
 ```
 
 Purpose:
@@ -473,45 +473,51 @@ Help people, organizations, platforms, and AI agents discover OrgAnchor-enabled 
 
 The discovery strategy answers the product-level problem: verification only lowers transaction cost after two parties can find each other. The Beacon layer is the origin-owned discoverability foundation. The Directory is an optional open discovery index over Beacon-derived records. It stores summary records, verification status, policy-route hints, and pointers back to each organization's own `/.well-known/organchor.json` and `/verify/organchor.json`. It does not become the identity root, certification authority, evidence host, or final ranking engine.
 
-Required capabilities for a future implementation:
+Required capabilities for this discovery stage:
 
 - Define directory record shape.
 - Define the OrgAnchor Beacon model and default adopter discovery surfaces. Design complete.
-- Make every adopter's verify package emit strong Beacon signals from its own origin.
+- Make every adopter's verify package emit strong Beacon signals from its own origin. Basic implementation complete through `page generate` and verification-gated `beacon generate`.
 - Make Beacon surfaces static, small, cache-friendly, and accessible without browser-only challenges.
 - Define publisher and crawler abuse-resistance behavior, including rate limits, cache validators, and polite crawler backoff.
 - Define conformance states that separate claimed OrgAnchor signals from verified compatibility. Design complete.
 - Support direct Beacon inspection for a single origin. Basic implementation complete.
-- Support direct Beacon sweeps for users who want to build their own local database without trusting a Directory.
+- Support direct Beacon sweeps for users who want to build their own local database without trusting a Directory. Basic seed, sitemap, Directory snapshot, bounded-crawl, robots-aware sweep, local index, query, and discovery-quality report implementation complete.
 - Define optional discovery fields for organization capabilities, regions, service categories, freshness, and evidence summaries.
 - Define static Directory snapshot format.
+- Maintain static Directory candidate source files without turning additions into verification claims. Basic implementation complete.
 - Build and verify static Directory snapshots. Basic implementation complete.
 - Optionally verify each listed origin before writing crawler-derived records. Basic implementation complete.
 - Expose optional Directory discovery pointers from `/verify/organchor.json` and `/.well-known/organchor.json`. Basic implementation complete.
 - Inspect an organization's Directory discovery pointer and validate linked snapshot/hash/policy artifacts. Basic implementation complete.
 - Fetch verified Directory candidate records with next-step direct origin verification commands. Basic implementation complete.
 - Record verifier-derived conformance status in crawler-built Directory records. Basic implementation complete.
-- Publish directory policy in machine-readable form.
-- Build static directory snapshots from known OrgAnchor origins.
-- Sign or hash directory snapshots.
-- Export snapshots as JSON and NDJSON.
+- Publish directory policy in machine-readable form. Basic implementation complete.
+- Build static directory snapshots from known OrgAnchor origins. Basic implementation complete.
+- Sign or hash directory snapshots. Snapshot hash file implementation complete.
+- Export snapshots as JSON and NDJSON. Basic implementation complete.
 - Keep records verifiable back to each organization's own OrgAnchor package.
 - Make inclusion, exclusion, ranking, payment, and stale-record policy explicit.
-- Allow mirrors, forks, and independent Directory nodes.
+- Allow mirrors, forks, and independent Directory nodes. Static build, Beacon-index export, and snapshot comparison implementation complete.
 - Keep large evidence artifacts outside the Directory by default.
 
-Representative future commands:
+Representative commands:
 
 ```bash
 organchor directory inspect https://example.org
 organchor directory fetch https://example.org
-organchor directory add https://example.org
-organchor directory build --in directory-sources.json --out public/directory
-organchor directory build --in directory-sources.json --out public/directory --verify-origins
+organchor directory add --origins directory-origins.json --origin https://example.org --category software
+organchor directory build --origins directory-sources.json --out public/directory
+organchor directory build --origins directory-sources.json --out public/directory --verify-origins
+organchor directory build --beacon-index beacon-index.json --out public/directory
 organchor directory verify --snapshot public/directory/directory-snapshot.json
-organchor directory export --format ndjson
+organchor directory compare --snapshots a.json,b.json
+organchor directory export --snapshot public/directory/directory-snapshot.json --format ndjson
+organchor beacon generate --verify-dir public/verify --origin https://example.org
 organchor beacon inspect https://example.org
 organchor beacon sweep --seeds seeds.txt --out discovered-organchor.ndjson
+organchor beacon verify --in discovered-organchor.ndjson
+organchor beacon report --sweeps discovered-organchor.ndjson --out beacon-discovery-report.json
 ```
 
 Exit criteria for a future stage:
@@ -520,15 +526,16 @@ Exit criteria for a future stage:
 - A static Directory snapshot can be verified as a discovery aid and not a trust root. Basic implementation complete.
 - A Directory snapshot can be generated from live origin verification results without treating the Directory as the trust root. Basic implementation complete.
 - A third-party agent can discover a published Directory from the organization's normal OrgAnchor verify index. Basic implementation complete.
-- A third-party agent can use the snapshot to find candidate organizations and then verify each organization at its own origin.
-- A third-party agent can discover an adopter directly from origin-owned Beacon signals without requiring Directory inclusion.
-- A user can run a repeatable sweep to build a local database of OrgAnchor-enabled organizations.
+- A third-party agent can use the snapshot to find candidate organizations and then verify each organization at its own origin. Basic implementation complete.
+- A third-party agent can discover an adopter directly from origin-owned Beacon signals without requiring Directory inclusion. Basic implementation complete.
+- A third-party agent or Directory operator can generate local discovery-quality metrics from sweep artifacts without treating the report as a trust decision. Basic implementation complete.
+- A user can run a repeatable sweep to build a local database of OrgAnchor-enabled organizations. Basic implementation complete.
 - Beacon files remain fetchable by polite machine clients without login, cookies, JavaScript, or browser-only challenges.
-- Beacon files support cache-friendly repeated sweeps and overload backoff where practical.
+- Beacon files support cache-friendly repeated sweeps and overload backoff where practical. Basic bounded crawler respects robots.txt for crawl starts.
 - Claimed or partial OrgAnchor signals cannot be confused with `FULL_COMPATIBLE` verification results. Basic implementation complete for `beacon inspect`.
-- The Directory policy is public and machine-readable.
+- The Directory policy is public and machine-readable. `directory build` writes `directory-policy.json` by default.
 - Paid discovery, if ever introduced, cannot be confused with verification status.
-- Mirrors and forks can reproduce the published snapshot.
+- Mirrors and forks can reproduce the published snapshot. Static snapshot, hash, policy, compare, and NDJSON export implementation complete.
 
 Reference:
 

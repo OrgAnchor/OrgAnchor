@@ -1,6 +1,6 @@
 {
   "name": "organchor",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Signed organizational identity continuity toolchain.",
   "type": "module",
   "main": "dist/cli.js",
@@ -42,6 +42,7 @@
     "EXTERNAL_PILOT_RUNBOOK.md",
     "IMPLEMENTATION_STATUS.md",
     "MIGRATION_GUIDE.md",
+    "MVP_LAUNCH_CHECKLIST.md",
     "ORGANCHOR_BEACON.md",
     "ORG_ONBOARDING_CHECKLIST.md",
     "PROJECT_NORTH_STAR.md",

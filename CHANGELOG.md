@@ -6,6 +6,12 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 
 ## Unreleased
 
+No unreleased changes yet.
+
+## 0.1.0-alpha.2 - 2026-05-25
+
+MVP launch candidate for AI-agent-facing verification, Beacon-first discovery, open Directory experiments, adoption status reporting, and release-state alignment.
+
 ### Added
 
 - `/verify` pages now summarize carrier receipts from `organchor.lock.json`, giving people and AI agents a visible view of IPFS, Arweave, OpenTimestamps, and other publication receipts without exposing the full local lockfile.
@@ -46,6 +52,22 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - `organchor directory export --format ndjson` can export Directory records as a line-oriented feed for mirroring, merging, and independent Directory nodes.
 - `npm run agent:demo` runs a complete local discovery loop: temporary adopter, Beacon sweep, local index, Directory export, need query, and compact verification.
 - `organchor adoption status` can generate public `ADOPTION_STATUS.md` and machine-readable adoption status reports from a local adoption workspace, while explicitly preserving the trust boundary.
+
+### Notes
+
+- This is still an alpha release, not stable v1.
+- OrgAnchor remains a verification and evidence-continuity toolchain, not a certification authority, marketplace, ranking engine, or final trust oracle.
+- The next product milestone is an external low-risk pilot using `EXTERNAL_PILOT_RUNBOOK.md`.
+
+### Verification
+
+The release candidate is expected to pass:
+
+```bash
+node --run release:check
+npm pack --dry-run
+npm publish --dry-run --tag alpha
+```
 
 ## 0.1.0-alpha.1 - 2026-05-14
 

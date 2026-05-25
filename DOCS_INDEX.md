@@ -18,6 +18,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `MVP_LAUNCH_CHECKLIST.md`: alpha MVP launch gate for package publication and first external pilot readiness.
 - `CHANGELOG.md`: release-facing change history.
 - `RELEASE_INTEGRITY.md`: release consistency gate for source, package, public `/verify`, carrier receipts, and notes.
+- `NPM_TRUSTED_PUBLISHING.md`: GitHub Actions OIDC publishing setup so npm releases do not rely on repeated local login or long-lived publish tokens.
 
 ## Core Design Documents
 

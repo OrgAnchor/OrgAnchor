@@ -25,9 +25,9 @@ OrgAnchor is not only a tool for keeping an organizational name alive. Its purpo
 
 OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
 
-See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `PURPOSE_AND_VALUES.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance and document map.
+See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `IMPLEMENTATION_STATUS.md`, `PURPOSE_AND_VALUES.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, and document map.
 
-The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
+The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DISCOVERY_TAXONOMY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
 
 ## Current Status
 
@@ -47,11 +47,13 @@ Implemented so far:
 - Anchored verification with an expected root authority hash.
 - Stage 1 test vectors.
 - Static adopting-organization `/verify` page generation.
+- Automatic Beacon discovery surfaces: `/.well-known/organchor.json`, `robots.txt`, `sitemap.xml`, HTML discovery links, and JSON-LD metadata.
 - Machine-readable `public/verify/organchor.json`.
 - Agent-facing discovery and verification contract for `/.well-known/organchor.json`.
 - Third-party AI agent integration guide with compact-result examples.
 - `organchor verify url` for external AI agents and other verifiers.
 - Compact `organchor verify url --compact` output for low-cost first-pass agent routing.
+- `conformance_status` in agent verification output so integrations can separate claimed, partial, failed, and full-compatible adoption.
 - Human-visible and machine-readable carrier receipt summaries from `organchor.lock.json`.
 - Signed claims/evidence manifests are copied into `/verify` and indexed when available.
 - Value continuity audit reports for claim support levels, evidence quality, stale evidence, and unsupported claims.
@@ -79,14 +81,29 @@ Implemented so far:
 - `/verify` value continuity publication through human-visible page content and machine-readable `value_continuity`.
 - `/verify` and `/.well-known` Directory discovery pointers through machine-readable `directory_discovery`.
 - Beacon-first discovery direction for making every adopter natively discoverable without requiring official Directory inclusion.
+- `organchor beacon index` for merging repeated sweep NDJSON files into an incremental local discovery index.
 - `organchor beacon inspect` for distinguishing claimed OrgAnchor signals, partial implementations, impostor Beacons, and strictly verified full compatibility.
+- `organchor beacon generate` for regenerating `/.well-known/organchor.json`, `robots.txt`, and `sitemap.xml` from an already verified local `/verify` package without rebuilding the whole page.
+- `organchor beacon query` for filtering a local Beacon index and returning agent-facing need-match reports, candidate explanations, risk gaps, and verification plans.
+- `organchor beacon report` for measuring local discovery quality from sweep artifacts, including find rate, verification success rate, stale rate, and cross-sweep reproducibility.
+- `organchor beacon sweep` for checking seed files, Directory snapshots, sitemaps, and bounded crawl starts, then writing reusable NDJSON discovery results.
+- `organchor beacon verify` for checking that shared sweep NDJSON files are structurally valid discovery artifacts.
+- `node scripts/agent-discovery-demo.mjs` for running a complete local seed -> sweep -> index -> query -> verify loop without external credentials.
+- `organchor doctor` for adopter-facing readiness diagnosis and concrete next actions.
+- `organchor adoption status` for producing human-readable and machine-readable adoption workspace status without turning status into a trust badge.
 - External pilot runbook for repeatable low-risk organization adoption.
 - NPM build configuration that packages the CLI from `dist/cli.js`.
 - Static Directory snapshot build and verification commands for post-v1 discovery experiments.
+- Static Directory candidate source maintenance with `organchor directory add`, without treating additions as verification.
+- Directory snapshots can be generated directly from a local Beacon index.
+- Directory build writes a machine-readable `directory-policy.json` so Directory boundaries are public by default.
+- Directory snapshots can be exported as NDJSON feeds for mirroring, merging, and independent Directory nodes.
 - Optional Directory origin verification that fetches each listed organization's OrgAnchor package before writing crawler-derived records.
 - `organchor directory inspect` for checking whether an organization exposes a machine-readable Directory pointer and whether the linked snapshot/hash/policy are consistent.
 - `organchor directory fetch` for retrieving verified Directory candidate records and next-step `verify url` commands.
 - `organchor directory fetch` filtering by category, capability, region, language, identity status, value status, policy route, and limit so AI agents can reduce candidate sets before direct origin verification.
+- Directory candidate explanations with priority, matched filters, risk gaps, and verification plans.
+- `organchor directory compare` for comparing independent Directory snapshots and surfacing conflicting origin summaries without making trust decisions.
 - Public complete minimal example artifacts under `examples/complete`.
 
 ## Install Alpha
@@ -99,6 +116,16 @@ organchor --help
 ```
 
 Use the explicit `@alpha` tag until OrgAnchor has a stable release. The npm registry may also show this first prerelease under `latest`, but that is not a stability claim.
+
+## Local Agent Discovery Demo
+
+To see the AI-agent discovery loop without Cloudflare, IPFS, Arweave, wallets, tokens, or real domains, run:
+
+```bash
+npm run agent:demo
+```
+
+The demo creates a temporary adopting organization, serves its `/verify` package on localhost, then runs Beacon sweep, local indexing, Directory snapshot export, need-match query, and direct compact verification. It writes observable outputs under a temporary workspace so people can inspect what actually happened.
 
 ## CLI Quick Start
 
@@ -131,9 +158,22 @@ organchor evidence add --file README.md
 organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.mp4 --location-type https
 organchor evidence sign --key keys/root-2026.private.json --authority root-authority.json
 organchor value audit --claims claims/product-claims.json --evidence evidence/evidence-manifest.json --check-files
+organchor beacon index --in beacon-sweep.ndjson --out beacon-index.json
+organchor beacon index --previous beacon-index.json --in beacon-sweep-latest.ndjson --out beacon-index.json
+organchor beacon query --index beacon-index.json --need "identity continuity support" --capability identity-continuity --conformance FULL_COMPATIBLE --limit 10
 organchor beacon inspect https://example.org
+organchor beacon sweep --seeds seeds.txt --out beacon-sweep.ndjson --concurrency 4 --timeout-ms 10000
+organchor beacon sweep --crawl https://example.org --crawl-max-pages 25 --crawl-max-depth 1 --out beacon-sweep.ndjson
+organchor beacon sweep --directory-snapshot public/directory/directory-snapshot.json --out beacon-sweep.ndjson
+organchor beacon sweep --sitemap https://example.org/sitemap.xml --out beacon-sweep.ndjson
+organchor beacon verify --in beacon-sweep.ndjson
+organchor doctor https://example.org
+organchor adoption status --verify-dir public/verify --origin https://example.org --level 3
 organchor directory build --origins examples/directory/directory-origins.json --out public/directory
 organchor directory build --origins examples/directory/directory-origins.json --out public/directory --verify-origins
+organchor directory build --beacon-index beacon-index.json --node-origin https://directory.example --out public/directory
+organchor directory compare --snapshots directory-a.json,directory-b.json --out directory-compare.json
+organchor directory export --snapshot public/directory/directory-snapshot.json --format ndjson --out directory-feed.ndjson
 organchor directory fetch https://example.org
 organchor directory fetch https://example.org --capability identity-continuity --identity-status PASS --limit 5
 organchor directory inspect https://example.org
@@ -239,6 +279,7 @@ Operator-facing adoption and verification documents:
 - `VALUE_CONTINUITY_MODEL.md`
 - `DOMAIN_HARDENING_GUIDE.md`
 - `DISCOVERY_STRATEGY.md`
+- `DISCOVERY_TAXONOMY.md`
 - `DIRECTORY_MODEL.md`
 - `DIRECTORY_SNAPSHOT_SPEC.md`
 - `EVIDENCE_ONBOARDING_GUIDE.md`

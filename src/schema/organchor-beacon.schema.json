@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://organchor.org/schemas/organchor-beacon.v1.json",
+  "title": "OrgAnchor Beacon",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "version",
+    "origin",
+    "verify_url",
+    "verify_index_url",
+    "root_authority_hash",
+    "statement_hash",
+    "organization",
+    "discovery",
+    "summary_status",
+    "agent_flow"
+  ],
+  "properties": {
+    "type": { "const": "OrgAnchorBeacon" },
+    "version": { "const": "1.0" },
+    "origin": { "type": "string", "format": "uri" },
+    "verify_url": { "type": "string", "format": "uri" },
+    "well_known_url": { "type": "string", "format": "uri" },
+    "verify_index_url": { "type": "string", "format": "uri" },
+    "root_authority_hash": { "$ref": "#/$defs/sha256" },
+    "statement_hash": { "$ref": "#/$defs/sha256" },
+    "organization": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "display_name": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "required": ["categories", "capabilities", "regions", "languages"],
+      "additionalProperties": true,
+      "properties": {
+        "categories": { "$ref": "#/$defs/stringArray" },
+        "capabilities": { "$ref": "#/$defs/stringArray" },
+        "regions": { "$ref": "#/$defs/stringArray" },
+        "languages": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "summary_status": {
+      "type": "object",
+      "required": ["identity_status", "value_status", "policy_route", "updated_at"],
+      "additionalProperties": true,
+      "properties": {
+        "identity_status": { "enum": ["PASS", "FAIL", "NOT_VERIFIED"] },
+        "value_status": { "enum": ["PASS", "WARN", "FAIL", "NOT_INCLUDED", "NOT_VERIFIED"] },
+        "policy_route": { "type": "string", "minLength": 1 },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "agent_flow": {
+      "type": "object",
+      "required": ["first_pass", "deep_verify", "trust_decision"],
+      "additionalProperties": true,
+      "properties": {
+        "first_pass": { "type": "string", "minLength": 1 },
+        "deep_verify": { "type": "string", "minLength": 1 },
+        "beacon_inspect": { "type": "string" },
+        "doctor": { "type": "string" },
+        "trust_decision": { "const": "EXTERNAL_AGENT" }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "stringArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+# Example seed list for:
+#   organchor beacon sweep --seeds seeds.example.txt --out beacon-sweep.ndjson
+#
+# Replace these with real origins you want an agent to inspect.
+https://example.org

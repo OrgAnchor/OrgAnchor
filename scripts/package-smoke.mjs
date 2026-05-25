@@ -55,6 +55,7 @@ try {
   assertContains(copiedFiles, "DOCS_INDEX.md");
   assertContains(copiedFiles, "PROJECT_NORTH_STAR.md");
   assertContains(copiedFiles, "ARCHITECTURE.md");
+  assertContains(copiedFiles, "IMPLEMENTATION_STATUS.md");
   assertContains(copiedFiles, "DISCOVERY_STRATEGY.md");
   assertContains(copiedFiles, "DIRECTORY_MODEL.md");
   assertContains(copiedFiles, "DIRECTORY_SNAPSHOT_SPEC.md");
@@ -69,7 +70,10 @@ try {
   assertContains(copiedFiles, "SHOWCASE_POLICY.md");
   assertContains(copiedFiles, "VALUE_CONTINUITY_MODEL.md");
   assertContains(copiedFiles, "EVIDENCE_ONBOARDING_GUIDE.md");
+  assertContains(copiedFiles, join("scripts", "agent-discovery-demo.mjs"));
   assertContains(copiedFiles, join("dist", "cli.js"));
+  assertContains(copiedFiles, join("examples", "agent-discovery-loop", "README.md"));
+  assertContains(copiedFiles, join("examples", "agent-verification", "organchor-beacon-query-result.json"));
   assertContains(copiedFiles, join("examples", "complete", "root-authority.json"));
   assertContains(copiedFiles, join("examples", "directory", "directory-origins.json"));
   assertContains(copiedFiles, join("examples", "directory", "directory-snapshot.json"));
@@ -117,6 +121,14 @@ try {
   const help = run(process.execPath, [cliPath, "--help"], packageDir);
   if (!help.stdout.includes("organchor init")) {
     throw new Error("packaged CLI help does not contain organchor init");
+  }
+  if (!help.stdout.includes("organchor adoption status")) {
+    throw new Error("packaged CLI help does not contain organchor adoption status");
+  }
+
+  const demo = run(process.execPath, [join(packageDir, "scripts", "agent-discovery-demo.mjs"), "--cleanup"], packageDir);
+  if (!demo.stdout.includes("Agent discovery demo PASS")) {
+    throw new Error(`packaged agent discovery demo did not pass:\n${demo.stdout}`);
   }
 
   const exampleDir = join(packageDir, "examples", "complete");
@@ -171,6 +183,54 @@ try {
   ], fresh);
   if (!freshVerify.stdout.includes("PASS")) {
     throw new Error(`fresh packaged Stage 1 flow did not pass:\n${freshVerify.stdout}`);
+  }
+  run(process.execPath, [
+    cliPath,
+    "page",
+    "generate",
+    "--statement",
+    "statements/official-endpoints.json",
+    "--sig",
+    "statements/official-endpoints.json.sig",
+    "--authority",
+    "root-authority.json",
+    "--out",
+    "public/verify"
+  ], fresh);
+  const adoptionStatus = run(process.execPath, [
+    cliPath,
+    "adoption",
+    "status",
+    "--verify-dir",
+    "public/verify",
+    "--public-root",
+    "public",
+    "--origin",
+    "https://example.org",
+    "--level",
+    "1"
+  ], fresh);
+  if (!adoptionStatus.stdout.includes('"status": "READY"')) {
+    throw new Error(`fresh packaged adoption status did not pass:\n${adoptionStatus.stdout}`);
+  }
+  const originsPath = join(fresh, "directory-origins.json");
+  const directoryAdd = run(process.execPath, [
+    cliPath,
+    "directory",
+    "add",
+    "--origins",
+    originsPath,
+    "--node-origin",
+    "https://directory.example",
+    "--origin",
+    "https://candidate.example",
+    "--category",
+    "software",
+    "--capability",
+    "identity-continuity"
+  ], fresh);
+  if (!directoryAdd.stdout.includes("OrgAnchorDirectoryAddSummary")) {
+    throw new Error(`fresh packaged Directory add did not pass:\n${directoryAdd.stdout}`);
   }
 
   console.log("Package smoke PASS");

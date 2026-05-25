@@ -14,6 +14,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `DOCS_INDEX.md`: this documentation map.
 - `ROADMAP.md`: implementation stages and current project direction.
 - `V1_ACCEPTANCE.md`: definition of v1 completeness.
+- `IMPLEMENTATION_STATUS.md`: current implemented surface, remaining gaps, non-goals, and verification commands.
 - `CHANGELOG.md`: release-facing change history.
 - `RELEASE_INTEGRITY.md`: release consistency gate for source, package, public `/verify`, carrier receipts, and notes.
 
@@ -54,6 +55,7 @@ OrgAnchor does not certify that an organization is good or truthful. It makes si
 
 - `DISCOVERY_STRATEGY.md`: post-v1 discovery strategy explaining why OrgAnchor needs both verification and discoverability to reduce real transaction cost between organizations and agents.
 - `ORGANCHOR_BEACON.md`: Beacon-first discoverability model so every adopter can emit origin-owned machine-readable signals before any Directory includes it.
+- `DISCOVERY_TAXONOMY.md`: controlled-but-extensible category, capability, region, and language vocabulary for low-cost candidate discovery.
 - `DIRECTORY_MODEL.md`: proposed post-v1 open discovery index model for helping people and AI agents find OrgAnchor-enabled organizations without creating a monopoly trust platform.
 - `DIRECTORY_SNAPSHOT_SPEC.md`: proposed static Directory snapshot format, optional origin verification mode, inspect/fetch commands, and verify-index discovery pointer for low-cost AI-agent candidate discovery before direct origin verification.
 
@@ -65,23 +67,38 @@ The Beacon layer is the preferred anti-capture foundation for discovery. The Dir
 - `AGENT_INTEGRATION_GUIDE.md`: practical integration guide for third-party AI agents and automated verifiers.
 - `AGENT_COMPATIBILITY_PLAN.md`: iteration plan for improving cross-agent compatibility.
 - `examples/agent-verification/organchor-compact-result.json`: compact verification result example.
+- `examples/agent-verification/organchor-beacon-query-result.json`: Beacon need-match discovery result example.
+- `examples/agent-discovery-loop/`: runnable seed -> sweep -> index -> query -> verify discovery-loop example.
 
 The preferred low-friction agent path is `/.well-known/organchor.json` plus:
 
 ```bash
 organchor verify url https://example.org --compact
+organchor doctor https://example.org
+organchor beacon sweep --seeds seeds.txt --out beacon-sweep.ndjson
+organchor beacon sweep --crawl https://example.org --crawl-max-pages 25 --crawl-max-depth 1 --out beacon-sweep.ndjson
+organchor beacon sweep --directory-snapshot public/directory/directory-snapshot.json --out beacon-sweep.ndjson
+organchor beacon verify --in beacon-sweep.ndjson
+organchor beacon index --in beacon-sweep.ndjson --out beacon-index.json
+organchor beacon query --index beacon-index.json --need "identity continuity support" --capability identity-continuity --limit 10
+organchor adoption status --verify-dir public/verify --origin https://example.org --level 3
+organchor directory build --beacon-index beacon-index.json --node-origin https://directory.example --out public/directory
+organchor directory compare --snapshots directory-a.json,directory-b.json
+organchor directory export --snapshot public/directory/directory-snapshot.json --format ndjson
+npm run agent:demo
 ```
 
 ## Examples And Templates
 
 - `examples/complete/`: public minimal example artifacts. These are test/example artifacts, not a real organization identity.
+- `examples/agent-discovery-loop/`: local AI-agent discovery loop example, backed by `npm run agent:demo`.
 - `examples/directory/directory-snapshot.json`: static Directory snapshot example for AI-agent discovery tests.
 - `examples/directory/directory-origins.json`: static Directory build input example.
 - `templates/self-pilot/`: templates for creating a separate OrgAnchor self-pilot workspace.
 
 ## Historical Or Local Notes
 
-The source repository may also contain ignored local notes such as `SELF_PILOT_*.md`, `CLOUDFLARE_*.md`, and `DOMAIN_CANDIDATE_REPORT.md`. These record decisions and provider-specific experience from OrgAnchor's own self-pilot, but they are not package-facing operator instructions.
+The source repository may also contain milestone review or ignored local notes such as `ACCEPTANCE_REVIEW_*.md`, `RELEASE_STATE_*.md`, `CHANGESET_PLAN_*.md`, `DIFF_REVIEW_*.md`, `SELF_PILOT_*.md`, `CLOUDFLARE_*.md`, and `DOMAIN_CANDIDATE_REPORT.md`. These record decisions, review snapshots, release-state snapshots, commit planning, and provider-specific experience from OrgAnchor's own self-pilot, but they are not package-facing operator instructions.
 
 The current operational self-pilot fact source lives outside this source repository:
 
@@ -97,6 +114,6 @@ That workspace may contain private keys, provider credentials, wallets, local re
 - ENS live resolver reads still require choosing an Ethereum RPC/provider path.
 - No real Onion disaster-recovery address has been registered.
 - OpenTimestamps proofs may remain pending until calendar proofs are upgraded to Bitcoin attestations.
-- The discovery strategy, Beacon model, and static Directory snapshot shape are documented, and static Directory build/verify/inspect/fetch, optional per-origin verification, and verify-index discovery pointers exist; broader Beacon sweeping, crawling, and ranking policy have not been implemented yet.
+- The discovery strategy, Beacon model, verification-gated Beacon generation, static Directory snapshot shape, controlled discovery taxonomy, first-pass doctor report, seed/sitemap/Directory/bounded-crawl Beacon sweep, local Beacon index, local Beacon need-match query result, local discovery-quality reporting, static Directory candidate source maintenance, Beacon-index-to-Directory export, Directory export, and Directory snapshot comparison are documented or implemented; broad internet-scale crawling is still intentionally outside the local CLI.
 - The open Directory model is documented, but broad third-party Directory adoption has not begun yet.
 - OrgAnchor is still alpha software; CLI flags, schemas, and operator workflow may change before v1.

@@ -211,17 +211,41 @@ async function discoverIndex(target: string, timeoutMs: number): Promise<{ url: 
   const candidates = indexCandidates(targetUrl);
   const failures: string[] = [];
   for (const candidate of candidates) {
-    const response = await fetchWithTimeout(candidate, timeoutMs);
-    if (!response.ok) {
-      failures.push(`${candidate.toString()} returned ${response.status}`);
-      continue;
+    try {
+      const response = await fetchWithTimeout(candidate, timeoutMs);
+      if (!response.ok) {
+        failures.push(`${candidate.toString()} returned ${response.status}`);
+        continue;
+      }
+      const value = parseStrictJson(await response.text(), candidate.toString());
+      const object = optionalRecord(value);
+      if (object.type === "OrgAnchorVerifyIndex") {
+        return {
+          url: candidate,
+          value
+        };
+      }
+      if (object.type === "OrgAnchorBeacon") {
+        const verifyIndexUrl = resolveBeaconVerifyIndexUrl(object, candidate);
+        return {
+          url: verifyIndexUrl,
+          value: await fetchJson(verifyIndexUrl, "OrgAnchor verify index", timeoutMs)
+        };
+      }
+      failures.push(`${candidate.toString()} is not an OrgAnchor verify index or Beacon`);
+    } catch (error) {
+      failures.push(`${candidate.toString()} failed: ${error instanceof Error ? error.message : String(error)}`);
     }
-    return {
-      url: candidate,
-      value: parseStrictJson(await response.text(), candidate.toString())
-    };
   }
   throw new Error(`Could not discover OrgAnchor index. Tried: ${failures.join("; ")}`);
+}
+
+function resolveBeaconVerifyIndexUrl(beacon: Record<string, JsonValue>, beaconUrl: URL): URL {
+  const explicitIndex = stringValue(beacon.verify_index_url);
+  if (explicitIndex) return new URL(explicitIndex, beaconUrl);
+  const verifyUrl = stringValue(beacon.verify_url);
+  if (verifyUrl) return new URL("organchor.json", ensureDirectoryUrl(new URL(verifyUrl, beaconUrl)));
+  throw new Error("OrgAnchor Beacon must include verify_index_url or verify_url");
 }
 
 function indexCandidates(targetUrl: URL): URL[] {

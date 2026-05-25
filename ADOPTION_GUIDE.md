@@ -319,16 +319,18 @@ This is the AI-agent-friendly layer.
 
 Create a human-readable status report:
 
-```text
-root authority hash
-statement hash
-verification URL
-IPFS CID
-Arweave TX ids
-OpenTimestamps status
-domain audit summary
-known limitations
+```bash
+organchor adoption status \
+  --verify-dir public/verify \
+  --origin https://example.org \
+  --level 3 \
+  --out ADOPTION_STATUS.md \
+  --json reports/adoption-status-report.json
 ```
+
+The command checks the local adoption workspace, writes a public `ADOPTION_STATUS.md`, and writes a machine-readable report for AI agents and maintainers. It summarizes the root authority hash, statement hash, verification URL, carrier receipts, domain audit, value evidence, discovery surfaces, and known gaps for the selected adoption level.
+
+This status is not a trust badge. It is a transparent workspace health report; external agents still verify the origin package and apply their own policy.
 
 ### 14. Plan Migration
 

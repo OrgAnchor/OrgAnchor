@@ -30,8 +30,12 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(page.stdout, /Generated verify page/);
 
     const verifyDir = join(workspace, "public", "verify");
+    const publicDir = join(workspace, "public");
     assert.equal(existsSync(join(verifyDir, "index.html")), true);
     assert.equal(existsSync(join(verifyDir, "organchor.json")), true);
+    assert.equal(existsSync(join(publicDir, ".well-known", "organchor.json")), true);
+    assert.equal(existsSync(join(publicDir, "robots.txt")), true);
+    assert.equal(existsSync(join(publicDir, "sitemap.xml")), true);
     assert.equal(existsSync(join(verifyDir, "official-endpoints.json")), true);
     assert.equal(existsSync(join(verifyDir, "official-endpoints.json.sig")), true);
     assert.equal(existsSync(join(verifyDir, "root-authority.json")), true);
@@ -65,6 +69,8 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(html, /Unsupported/);
     assert.match(html, /CLI Verification/);
     assert.match(html, /display does not by itself prove identity/);
+    assert.match(html, /rel="organchor"/);
+    assert.match(html, /application\/ld\+json/);
 
     const index = JSON.parse(readFileSync(join(verifyDir, "organchor.json"), "utf8"));
     assert.equal(index.type, "OrgAnchorVerifyIndex");
@@ -158,6 +164,22 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(index.linked_artifacts.evidence.path, "evidence/evidence-manifest.json");
     assert.match(index.linked_artifacts.evidence.hash, /^sha256:[0-9a-f]{64}$/);
     assert.match(index.verification.command, /expected-authority-hash/);
+
+    const beacon = JSON.parse(readFileSync(join(publicDir, ".well-known", "organchor.json"), "utf8"));
+    assert.equal(beacon.type, "OrgAnchorBeacon");
+    assert.equal(beacon.version, "1.0");
+    assert.equal(beacon.origin, "https://example.org");
+    assert.equal(beacon.verify_url, "https://example.org/verify/");
+    assert.equal(beacon.verify_index_url, "https://example.org/verify/organchor.json");
+    assert.equal(beacon.well_known_url, "https://example.org/.well-known/organchor.json");
+    assert.equal(beacon.root_authority_hash, index.root_authority.hash);
+    assert.equal(beacon.statement_hash, index.statement.hash);
+    assert.equal(beacon.discovery.capabilities.includes("identity-continuity"), true);
+    assert.equal(beacon.summary_status.identity_status, "PASS");
+    assert.equal(beacon.summary_status.value_status, "WARN");
+    assert.equal(beacon.agent_flow.trust_decision, "EXTERNAL_AGENT");
+    assert.match(readFileSync(join(publicDir, "robots.txt"), "utf8"), /\/\.well-known\/organchor\.json/);
+    assert.match(readFileSync(join(publicDir, "sitemap.xml"), "utf8"), /https:\/\/example\.org\/verify\/organchor\.json/);
 
     const copiedVerify = run(verifyDir, [
       "statement",

@@ -4,6 +4,7 @@ import { validateClaimsManifest, validateEvidenceManifest } from "../core/eviden
 import { ensureDir, pathExists, writeJsonFile } from "../core/files.ts";
 import { sha256CanonicalJson } from "../core/hash.ts";
 import { readJsonFile } from "../core/json.ts";
+import { normalizeBeaconOrigin, writeBeaconDiscoverySurfaces } from "../beacon/surfaces.ts";
 import {
   validateOfficialStatement,
   validateRootAuthority,
@@ -22,7 +23,7 @@ import type {
   VerifyRootContinuity,
   VerifyValueContinuity
 } from "../page/template.ts";
-import type { RootAuthority } from "../types/artifacts.ts";
+import type { OfficialEndpointsStatement, RootAuthority } from "../types/artifacts.ts";
 import { hashFile } from "../core/artifacts.ts";
 
 const STATEMENT_FILE = "official-endpoints.json";
@@ -72,6 +73,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
   const authorityHash = sha256CanonicalJson(authority);
   const statementHash = sha256CanonicalJson(statement);
   const signatureHash = sha256CanonicalJson(signature);
+  const publicOrigin = typeof options.origin === "string" ? normalizeBeaconOrigin(options.origin) : originFromStatement(statement);
 
   const errors: string[] = [];
   if (statement.root_authority_hash !== authorityHash) {
@@ -316,6 +318,17 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     ]
   };
   await writeJsonFile(join(out, INDEX_FILE), index);
+  await writeBeaconDiscoverySurfaces({
+    publicRootDir: join(out, ".."),
+    origin: publicOrigin || originFromStatement(statement),
+    artifactBasePath,
+    organization: statement.organization as unknown as Record<string, JsonValue>,
+    authorityHash,
+    statementHash,
+    generatedAt,
+    valueContinuity,
+    discovery: discoveryFromOptions(options)
+  });
 
   const html = renderVerifyPage({
     generatedAt,
@@ -828,6 +841,38 @@ function artifactIndex(artifact: VerifyLinkedArtifact): JsonValue {
     signature_path: artifact.signaturePath,
     signature_hash: artifact.signatureHash
   };
+}
+
+function discoveryFromOptions(options: Record<string, string | boolean>): Record<string, JsonValue> {
+  return {
+    categories: parseListOption(options.category ?? options.categories, ["uncategorized"]),
+    capabilities: parseListOption(options.capability ?? options.capabilities, ["identity-continuity"]),
+    regions: parseListOption(options.region ?? options.regions, ["global"]),
+    languages: parseListOption(options.language ?? options.languages, ["en"])
+  };
+}
+
+function parseListOption(value: string | boolean | undefined, fallback: string[]): string[] {
+  if (typeof value !== "string") return fallback;
+  const values = value
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  return values.length > 0 ? values : fallback;
+}
+
+function originFromStatement(statement: OfficialEndpointsStatement): string {
+  const website = statement.official_endpoints.website;
+  if (typeof website === "string" && website) return normalizeBeaconOrigin(website);
+  const verify = statement.official_endpoints.verify;
+  if (typeof verify === "string" && verify) return normalizeBeaconOrigin(verify);
+  const primaryDomain = statement.domain_security.primary_domain;
+  if (typeof primaryDomain === "string" && primaryDomain) return normalizeBeaconOrigin(`https://${primaryDomain}`);
+  throw new Error("Cannot infer public origin for discovery surfaces; pass --origin https://example.org");
+}
+
+function numberMetric(value: JsonValue | undefined): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
 function parseCsv(value: string | boolean | undefined): string[] {

@@ -1,0 +1,140 @@
+{
+  "type": "OrgAnchorBeaconQueryResult",
+  "version": "0.1",
+  "index": {
+    "path": "beacon-index.json",
+    "generated_at": "2026-05-24T00:00:00.000Z",
+    "total_origins": 1
+  },
+  "trust_boundary": {
+    "local_index_is_trust_root": false,
+    "final_trust_decision": "EXTERNAL_AGENT",
+    "records_must_verify_at_origin": true
+  },
+  "filters": {
+    "need": "identity continuity support",
+    "q": null,
+    "categories": [],
+    "capabilities": [
+      "identity-continuity"
+    ],
+    "regions": [],
+    "languages": [],
+    "statuses": [],
+    "conformance_statuses": [
+      "FULL_COMPATIBLE"
+    ],
+    "identity_statuses": [],
+    "value_statuses": [],
+    "limit": 10
+  },
+  "match_report": {
+    "type": "OrgAnchorBeaconNeedMatchReport",
+    "version": "0.1",
+    "request": {
+      "need": "identity continuity support",
+      "q": null,
+      "explicit_filters": [
+        "capability: identity-continuity",
+        "conformance: FULL_COMPATIBLE",
+        "limit: 10"
+      ]
+    },
+    "boundary": {
+      "discovery_match_is_not_recommendation": true,
+      "no_paid_ranking": true,
+      "final_decision": "EXTERNAL_AGENT"
+    },
+    "summary": {
+      "high_priority_candidates": 1,
+      "review_candidates": 0,
+      "rejected_candidates": 0,
+      "strongest_candidate_origins": [
+        "https://example.org"
+      ],
+      "no_results": false
+    },
+    "recommended_actions": [
+      "Start with https://example.org: organchor verify url https://example.org --compact.",
+      "Run full origin verification before outreach, listing, procurement, or transaction decisions.",
+      "Review each candidate's risk_gaps and apply the requesting agent's own external policy."
+    ]
+  },
+  "counts": {
+    "total_records": 1,
+    "matched_records": 1,
+    "returned_records": 1
+  },
+  "candidates": [
+    {
+      "origin": "https://example.org",
+      "candidate_priority": "HIGH",
+      "organization": {
+        "name": "example-org",
+        "display_name": "Example Organization"
+      },
+      "discovery": {
+        "categories": [
+          "software"
+        ],
+        "capabilities": [
+          "identity-continuity",
+          "agent-verification"
+        ],
+        "regions": [
+          "global"
+        ],
+        "languages": [
+          "en"
+        ]
+      },
+      "verification_summary": {
+        "status": "PASS",
+        "conformance_status": "FULL_COMPATIBLE",
+        "identity_status": "PASS",
+        "value_status": "PASS",
+        "policy_route": "EXTERNAL_POLICY_REVIEW",
+        "root_authority_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "statement_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "last_checked_at": "2026-05-24T00:00:00.000Z",
+        "seen_count": 1
+      },
+      "match_explanation": {
+        "summary": "Example Organization was returned from a local Beacon index. The index is not a trust root; verify directly at https://example.org.",
+        "matched_filters": [
+          "need terms: identity, continuity",
+          "capability: identity-continuity",
+          "conformance: FULL_COMPATIBLE"
+        ]
+      },
+      "need_match": {
+        "status": "STRONG_DISCOVERY_MATCH",
+        "rationale": [
+          "need terms: identity, continuity",
+          "capability: identity-continuity",
+          "conformance: FULL_COMPATIBLE"
+        ],
+        "limitations": [
+          "This is a discovery match only, not a recommendation or trust decision.",
+          "The local Beacon index is a cached observation and must be checked against the origin."
+        ],
+        "next_best_action": "Run organchor verify url https://example.org for full checks, then apply the requesting agent's own policy."
+      },
+      "risk_gaps": [
+        {
+          "code": "DIRECT_ORIGIN_VERIFICATION_REQUIRED",
+          "severity": "INFO",
+          "detail": "The local index has no obvious warning, but it is still only a cached observation.",
+          "next_action": "Run organchor verify url https://example.org --compact before relying on this candidate."
+        }
+      ],
+      "verification_plan": [
+        "Run organchor beacon inspect https://example.org.",
+        "Run organchor verify url https://example.org --compact.",
+        "If still relevant, run organchor verify url https://example.org for full checks.",
+        "Review risk_gaps and apply the requesting agent's own external policy."
+      ],
+      "next_step": "organchor verify url https://example.org --compact"
+    }
+  ]
+}

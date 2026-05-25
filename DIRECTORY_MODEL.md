@@ -208,21 +208,28 @@ Agents that distrust all Directory nodes should still be able to run their own B
 
 Directory nodes should record verifier-derived `conformance_status` values. They must not promote an origin from `CLAIMED_SIGNAL` or `BEACON_SHAPE_PASS` to full adoption based on self-declared Beacon fields.
 
-## Future CLI Shape
+## Current And Future CLI Shape
 
-Possible post-v1 commands:
+Implemented commands:
 
 ```bash
 organchor directory inspect https://example.org
-organchor directory add https://example.org
-organchor directory build --in directory-sources.json --out public/directory
+organchor directory add --origins directory-origins.json --origin https://example.org --category software --capability identity-continuity
+organchor directory build --origins examples/directory/directory-origins.json --out public/directory
+organchor directory build --beacon-index beacon-index.json --node-origin https://directory.example --out public/directory
 organchor directory verify --snapshot public/directory/directory-snapshot.json
-organchor directory export --format ndjson
+organchor directory fetch https://example.org
+organchor directory compare --snapshots directory-a.json,directory-b.json
+organchor directory export --snapshot public/directory/directory-snapshot.json --format ndjson
 organchor beacon inspect https://example.org
 organchor beacon sweep --seeds seeds.txt --out discovered-organchor.ndjson
 ```
 
-The first implementation should prefer static files over a hosted service.
+`directory add` only maintains a static candidate source file. It does not mark the candidate as verified; use `directory build --verify-origins` or direct origin verification before relying on the record.
+
+Generated Directory policy files explicitly record inclusion, exclusion, ranking, payment, stale-record, and mirroring rules. The important rule is stable: Directory inclusion helps discovery, but it never replaces direct origin verification and never becomes proof that a supplier is best.
+
+The first implementation prefers static files over a hosted service.
 
 ## Roadmap
 
@@ -250,6 +257,8 @@ Which records disagree?
 Which records are stale?
 Which policy included or excluded a record?
 ```
+
+`organchor directory compare --snapshots a.json,b.json` implements the first static comparison path. It is a consistency check, not a ranking or trust decision. It helps agents see whether independent Directory nodes agree on listed origins and whether cached root authority hash, statement hash, identity status, value status, or policy route disagree. Any selected origin still requires direct origin verification.
 
 ## Success Criteria
 

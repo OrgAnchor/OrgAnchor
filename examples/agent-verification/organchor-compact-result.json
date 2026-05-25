@@ -5,6 +5,7 @@
   "overall_status": "PASS",
   "identity_status": "PASS",
   "value_status": "PASS",
+  "conformance_status": "FULL_COMPATIBLE",
   "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
   "organization": {
     "name": "OrgAnchor",

@@ -83,6 +83,76 @@ organchor beacon inspect https://example.org
 
 Agents should treat `CLAIMED_SIGNAL` and `BEACON_SHAPE_PASS` as discovery-only states. `FULL_COMPATIBLE` requires strict signature, hash, identity, and value-layer verification.
 
+Adopting organizations can regenerate the standard Beacon discovery surfaces from an existing local verify package with:
+
+```bash
+organchor beacon generate --verify-dir public/verify --origin https://example.org
+```
+
+This command is intentionally verification-gated: it checks the local verify index, statement, signature, and root authority hashes before writing public PASS Beacon surfaces.
+
+## Local Beacon Discovery
+
+When an agent starts from a broad need instead of a known organization, it can build its own local candidate index:
+
+```bash
+organchor beacon sweep --seeds seeds.txt --out beacon-sweep.ndjson
+organchor beacon sweep --crawl https://example.org --crawl-max-pages 25 --crawl-max-depth 1 --out beacon-sweep.ndjson
+organchor beacon verify --in beacon-sweep.ndjson
+organchor beacon index --in beacon-sweep.ndjson --out beacon-index.json
+organchor beacon query --index beacon-index.json --need "identity continuity support" --capability identity-continuity --limit 10
+organchor beacon report --sweeps beacon-sweep.ndjson --out beacon-discovery-report.json
+```
+
+`--crawl` is intentionally bounded. It is for polite discovery from known starting points, not for pretending OrgAnchor can crawl the entire web by itself. Large-scale crawlers should feed their discovered origins into the same sweep/index/query loop.
+
+`beacon report` helps agents and Directory operators measure whether their discovery path is improving. It reports local Beacon find rate, direct verification success rate, stale-record rate, and cross-sweep reproducibility when multiple sweep files are supplied. These metrics are diagnostics, not trust decisions.
+
+The query result type is:
+
+```text
+OrgAnchorBeaconQueryResult
+```
+
+It includes:
+
+```text
+match_report
+candidates[]
+candidate_priority
+match_explanation
+need_match
+risk_gaps
+verification_plan
+next_step
+```
+
+Agents should read `match_report.boundary.discovery_match_is_not_recommendation == true` as a hard rule. A discovery match means "worth checking next", not "best supplier", "safe vendor", or "trusted organization".
+
+Recommended agent behavior:
+
+```text
+use beacon query to reduce candidate count
+prefer HIGH and MEDIUM candidates for first verification
+route REVIEW candidates to value-layer review
+ignore or recheck REJECT candidates only after the origin is repaired
+always run direct origin verification before contact, listing, procurement, funding, or transaction decisions
+```
+
+The reference example is:
+
+```text
+examples/agent-verification/organchor-beacon-query-result.json
+```
+
+For a runnable local version of the whole loop, use:
+
+```bash
+npm run agent:demo
+```
+
+It creates a temporary adopter, starts a localhost verify endpoint, and produces sweep, index, query, compact-verify, and command-log artifacts. This is the quickest way for an agent developer to see the intended flow without depending on a real Directory or external provider account.
+
 ## Optional Directory Discovery
 
 Some organizations may also publish a Directory discovery pointer in `/.well-known/organchor.json` or `/verify/organchor.json`:

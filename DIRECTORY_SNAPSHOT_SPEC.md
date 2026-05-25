@@ -421,6 +421,11 @@ organchor directory build \
   --out public/directory \
   --verify-origins
 
+organchor directory build \
+  --beacon-index beacon-index.json \
+  --node-origin https://directory.example \
+  --out public/directory
+
 organchor directory fetch https://example.org
 organchor directory fetch https://example.org --out downloaded-directory-snapshot.json
 organchor directory fetch https://example.org \
@@ -431,6 +436,15 @@ organchor directory fetch https://example.org \
   --identity-status PASS \
   --value-status PASS,WARN \
   --limit 5
+
+organchor directory compare \
+  --snapshots directory-a.json,directory-b.json \
+  --out directory-compare.json
+
+organchor directory export \
+  --snapshot public/directory/directory-snapshot.json \
+  --format ndjson \
+  --out directory-feed.ndjson
 
 organchor directory inspect https://example.org
 
@@ -443,9 +457,12 @@ organchor directory verify \
 ```text
 directory-snapshot.json
 directory-snapshot.json.sha256
+directory-policy.json
 ```
 
 `directory build --verify-origins` fetches each listed origin's OrgAnchor package, reuses the same checks as `organchor verify url`, requires identity verification to pass, and writes crawler-derived hashes, status, evidence counts, and policy-route hints into the Directory record.
+
+`directory build --beacon-index` converts a local `OrgAnchorBeaconLocalIndex` into a static Directory snapshot. This is the bridge between independent Beacon sweeping and forkable Directory publication. Records without both `root_authority_hash` and `statement_hash` are not usable as Directory records because selected candidates must still point agents back to verifiable origin-owned packages.
 
 `directory inspect` fetches an organization's verify index, discovers `directory_discovery`, fetches the linked snapshot/hash/policy, validates the snapshot shape and trust boundary, and fails if the published hashes do not match.
 
@@ -471,6 +488,10 @@ Agents can filter fetched candidates before spending more verification work:
 Comma-separated values are supported for a single filter flag. Filtering only narrows the candidate list; it does not make the Directory a certification authority.
 
 `directory verify` validates the snapshot shape, trust boundary, and origin-owned discovery links. It verifies the Directory artifact itself; agents should still fetch selected origins and run direct verification before acting.
+
+`directory compare` compares two or more static snapshots. It reports overlapping origins, origins missing from some snapshots, and conflicts in cached root authority hash, statement hash, identity status, value status, and policy route. A conflict is not proof that either Directory is malicious; snapshots may be stale or generated with different policies. The required next step remains direct origin verification.
+
+`directory export --format ndjson` writes one `OrgAnchorDirectoryRecord` per line. This makes Directory records cheap to mirror, merge, diff, archive, and import into independent Directory nodes without requiring a database server.
 
 ## Non-Goals
 

@@ -31,7 +31,7 @@ The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DISCOVERY_
 
 ## Current Status
 
-Stage 5 now has a merged alpha-line release-hygiene baseline. The current focus is MVP launch: keep the CLI installable, keep the public self-pilot verifiable, publish any next alpha under a new release id, and start the first low-risk external pilot. The core v1 surface now includes root authority records, signed endpoint statements, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
+Stage 5 now has a published MVP alpha: `organchor@0.1.0-alpha.3` under the npm `alpha` dist-tag, with Git tag `v0.1.0-alpha.3` and a published GitHub prerelease. The current focus is to keep the CLI installable, keep the public self-pilot verifiable, and start the first low-risk external pilot. The core v1 surface now includes root authority records, signed endpoint statements, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
 
 OrgAnchor's own public self-pilot is active at `https://organchor.org/verify/`. Its real operational artifacts live outside this source repository so that the publishable project remains clean: no private keys, provider tokens, payment records, or deployment credentials are stored here.
 
@@ -115,7 +115,7 @@ npm install -g organchor@alpha
 organchor --help
 ```
 
-Use the explicit `@alpha` tag until OrgAnchor has a stable release. The npm registry may also show this first prerelease under `latest`, but that is not a stability claim.
+Use the explicit `@alpha` tag until OrgAnchor has a stable release. The npm registry still exposes an older alpha under `latest`, but that is not a stability claim and should not be used in public install instructions.
 
 ## Local Agent Discovery Demo
 

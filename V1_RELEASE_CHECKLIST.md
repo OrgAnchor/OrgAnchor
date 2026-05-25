@@ -15,7 +15,7 @@ It is not a product roadmap. It is the final gate for packaging, documentation, 
 - [x] Release notes drafted in `CHANGELOG.md`.
 - [x] NPM package name occupied on the public registry: `organchor@0.1.0-alpha.1`.
 - [x] `package.json` defaults publish tag to `alpha`.
-- [x] NPM publisher account is created, protected with 2FA, and logged in locally.
+- [x] NPM publisher account is created and protected with 2FA; normal publishing uses GitHub Actions Trusted Publishing, so local npm login is not required.
 - [x] NPM alpha package published: `organchor@0.1.0-alpha.3`.
 - [x] NPM alpha install verified with `organchor --help` for `0.1.0-alpha.3`.
 - [ ] NPM `latest` dist-tag cleanup is deferred; current registry state also exposes `0.1.0-alpha.1` as `latest`, so public docs must keep calling it alpha-only.

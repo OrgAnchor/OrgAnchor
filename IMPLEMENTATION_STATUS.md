@@ -70,6 +70,7 @@ Release hygiene:
 - Install smoke.
 - Package inclusion checks that reject private keys, local credentials, wallets, Cloudflare notes, and self-pilot private artifacts.
 - Alpha-line release-state matrix and checklist alignment merged into `main`.
+- `organchor@0.1.0-alpha.3` published through npm Trusted Publishing under the `alpha` dist-tag.
 - Public self-pilot release-state hashes and carrier receipts recorded in `RELEASE_STATE_2026-05-25.md`.
 
 ## Current MVP Launch Focus
@@ -78,7 +79,7 @@ The shortest useful launch path is:
 
 1. Keep `main` green and installable.
 2. Keep `https://organchor.org` publicly verifiable as the reference self-pilot.
-3. Publish the next alpha only under a new release id, not as a stable v1 claim.
+3. Keep future alpha publishes under new release ids, not as stable v1 claims.
 4. Run the first low-risk external pilot using `EXTERNAL_PILOT_RUNBOOK.md`.
 5. Feed pilot lessons back into onboarding, evidence, and agent-facing verification outputs.
 

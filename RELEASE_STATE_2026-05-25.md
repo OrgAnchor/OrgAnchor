@@ -1,18 +1,19 @@
 # OrgAnchor Release State - 2026-05-25
 
-Status: alpha-line release-state matrix for the current PR and public self-pilot.
+Status: alpha-line release-state matrix after the `0.1.0-alpha.3` MVP alpha publication and public self-pilot verification.
 
 This snapshot records the alignment between:
 
 ```text
 current source branch
+published alpha release commit
 published npm alpha package
 Git tag and GitHub release state
 public self-pilot verification state
 carrier receipt state
 ```
 
-It is not a new release declaration. It is a consistency checkpoint so the project does not confuse a working public self-pilot with a promoted package release.
+It is a consistency checkpoint so the project does not confuse the moving `main` branch, the published alpha release commit, and the public self-pilot state.
 
 ## Executive Summary
 
@@ -22,13 +23,16 @@ Current verdict:
 Public self-pilot verification: PASS
 Public agent conformance: FULL_COMPATIBLE
 Public doctor status: READY
-Current source PR: draft, mergeable
-Published npm alpha: 0.1.0-alpha.1
-Published alpha tag: v0.1.0-alpha.1
+Current source branch: main
+Published npm alpha: 0.1.0-alpha.3
+Published alpha tag: v0.1.0-alpha.3
+GitHub prerelease: published
 Stable v1 declaration: not ready
 ```
 
-The public OrgAnchor self-pilot at `https://organchor.org` is currently machine-verifiable and agent-ready. The current source branch is ahead of the published `0.1.0-alpha.1` tag and package, so the next release decision must choose a new release id before publishing or promoting this branch.
+The public OrgAnchor self-pilot at `https://organchor.org` is currently machine-verifiable and agent-ready. `organchor@alpha` now points to `0.1.0-alpha.3`.
+
+The moving `main` branch is one documentation/status commit ahead of the `v0.1.0-alpha.3` release commit. That is expected: the release artifact is anchored at the tag commit, while `main` records post-release status.
 
 ## Source And Package Matrix
 
@@ -36,26 +40,24 @@ Observed on 2026-05-25:
 
 | Field | Value | Status |
 | --- | --- | --- |
-| Current branch | `codex/alpha-release-alignment-20260525` | Active PR branch |
-| Current HEAD | `c25093e24a2b05952e534077ad6f770e67cc3a80` | Current source state |
-| Current PR | `https://github.com/OrgAnchor/OrgAnchor/pull/1` | Draft, mergeable |
-| PR title | `[codex] Align discovery alpha and release review` | Current review surface |
-| Base branch | `main` | PR target |
-| `origin/main` | `62a1a9d1f1d4dbfa7c29260bfc94bafbddbf7a99` | Behind current PR |
-| Published package | `organchor@0.1.0-alpha.1` | Existing npm alpha |
-| npm `alpha` dist-tag | `0.1.0-alpha.1` | Alpha tag points to alpha |
-| npm `latest` dist-tag | `0.1.0-alpha.1` | Must still be described as alpha-only |
-| Git tag | `v0.1.0-alpha.1` | Existing alpha tag |
-| Git tag object | `b70881e73d17b37bbe6cb5faa9e25b22c3db5271` | Annotated tag |
-| Git tag commit | `866b0d7d739a937996109f10fac276f31963f9ee` | Published alpha source point |
-| GitHub release | `OrgAnchor 0.1.0-alpha.1` | Draft prerelease |
+| Current branch | `main` | Active development branch |
+| Current HEAD | `406213dae06c882eec6c5635fa99d6bdd9c7175a` | Post-release status documentation commit |
+| Release source commit | `aeadaeddc5d736320cbda73929bda11154d1f2e7` | Commit used by `v0.1.0-alpha.3`, npm publish, and GitHub Actions |
+| Release source subject | `Prepare alpha.3 aligned release candidate` | Frozen release source |
+| Post-release status subject | `Record alpha.3 publication status` | Documentation-only follow-up on `main` |
+| Published package | `organchor@0.1.0-alpha.3` | Current npm alpha |
+| npm `alpha` dist-tag | `0.1.0-alpha.3` | Current alpha install target |
+| npm `latest` dist-tag | `0.1.0-alpha.1` | Intentionally not promoted to the newest alpha |
+| Git tag | `v0.1.0-alpha.3` | Annotated release tag |
+| Git tag commit | `aeadaeddc5d736320cbda73929bda11154d1f2e7` | Published alpha source point |
+| GitHub release | `OrgAnchor 0.1.0-alpha.3` | Published prerelease |
+| GitHub Actions run | `26382217438` | Successful Trusted Publishing run |
 
 Interpretation:
 
-- The current PR is not the same state as `organchor@0.1.0-alpha.1`.
-- The current PR should not be described as the already-published alpha package.
-- A future package publish should use a new release id, for example `0.1.0-alpha.2` or another explicitly chosen version.
-- The npm `latest` tag currently points to the alpha package. Public docs must avoid implying stable readiness.
+- `v0.1.0-alpha.3`, the npm package `organchor@0.1.0-alpha.3`, the npm `alpha` dist-tag, and the GitHub prerelease describe the same release source commit.
+- `main` is allowed to move after a release, but post-release commits must not be retroactively described as part of the already-published tag.
+- The npm `latest` tag still points to `0.1.0-alpha.1`. Public docs must use `organchor@alpha` and avoid implying stable readiness.
 
 ## Public Verification State
 
@@ -219,28 +221,30 @@ Current observed example:
 
 This difference is expected. It is a content-addressing self-reference limit, not a verification failure.
 
-## GitHub Connector State
+## Publication Automation State
 
-The GitHub connector was rechecked on 2026-05-25:
+The publication path was rechecked on 2026-05-25:
 
 ```text
-GitHub App: chatgpt-codex-connector
-Organization: OrgAnchor
-Repository scope: selected repository only
-Repository: OrgAnchor/OrgAnchor
-Connector write test: PR update succeeded
+GitHub repository: OrgAnchor/OrgAnchor
+Trusted publisher provider: GitHub Actions
+Trusted publisher workflow: .github/workflows/publish-npm.yml
+Trusted publisher npm configuration: OrgAnchor/OrgAnchor, publish-npm.yml, npm publish permission
+Workflow run: 26382217438
+Workflow conclusion: success
+npm alpha package: organchor@0.1.0-alpha.3
+GitHub release: https://github.com/OrgAnchor/OrgAnchor/releases/tag/v0.1.0-alpha.3
 ```
 
 Interpretation:
 
-- The connector can read and update the OrgAnchor repository and PR #1.
-- The installation is not organization-wide for future repositories.
+- OrgAnchor now publishes npm alpha releases through short-lived GitHub Actions OIDC, not a long-lived npm token.
+- `v0.1.0-alpha.3` is the first release published through this path.
 
 ## Known Gaps
 
-- Current source branch is ahead of the published `0.1.0-alpha.1` package and tag.
-- GitHub release `OrgAnchor 0.1.0-alpha.1` is still a draft prerelease.
-- The npm `latest` dist-tag currently points to the alpha package; documentation must keep calling it alpha.
+- `main` is ahead of the `v0.1.0-alpha.3` release tag by a post-release documentation/status commit.
+- The npm `latest` dist-tag currently points to `0.1.0-alpha.1`; documentation must keep calling the package alpha and recommend `organchor@alpha`.
 - No broad external organization pilot has completed yet.
 - Directory state is self-pilot alpha with one record, not ecosystem coverage.
 - ENS live resolver reads still require a chosen Ethereum RPC/provider path.
@@ -252,6 +256,7 @@ Interpretation:
 Completed for this milestone:
 
 - Release state matrix recorded in this file.
+- `v0.1.0-alpha.3`, npm `alpha`, GitHub release, and Trusted Publishing workflow run aligned to the same release source commit.
 - Public `/verify` artifact hashes recorded.
 - Website, IPFS, Arweave, and OpenTimestamps receipt states recorded.
 - Content-addressing self-reference gap documented.
@@ -259,5 +264,6 @@ Completed for this milestone:
 
 Not complete:
 
-- Source commit, package version, Git tag, npm dist-tag, and GitHub release do not yet describe the same current source state.
-- A new release id and release candidate freeze are required before publishing this PR as a package or promoted release.
+- Stable v1 declaration is not ready.
+- A broad external organization pilot has not yet completed.
+- `latest` is not promoted to a stable package version.

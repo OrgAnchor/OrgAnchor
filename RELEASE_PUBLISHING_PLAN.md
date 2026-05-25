@@ -126,16 +126,18 @@ Security settings:
 - Save recovery codes offline.
 - Do not store npm password, recovery codes, or long-lived tokens in this repository.
 
-### 4. Log In Locally
+### 4. Local Login Fallback
 
-Use npm's normal login flow:
+Normal alpha publishing now uses GitHub Actions Trusted Publishing. A local npm session is not required for the standard release path.
+
+Use npm's normal login flow only as an emergency fallback:
 
 ```bash
 npm login --registry=https://registry.npmjs.org/
 npm whoami --registry=https://registry.npmjs.org/
 ```
 
-This is a human approval gate. The operator should type credentials and 2FA directly.
+This is a human approval gate. The operator should type credentials and 2FA directly. Do not treat local `npm whoami` failure as a release blocker when Trusted Publishing is configured and verified.
 
 ### 5. Dry-Run Publish
 

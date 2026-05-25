@@ -5,11 +5,25 @@ import { asObject, validateOfficialStatement, validateRootAuthority, validateSig
 import { verifySignatureFile } from "../crypto/signature.ts";
 
 export type CheckStatus = "PASS" | "WARN" | "FAIL" | "NOT_INCLUDED";
+export type AgentConformanceStatus =
+  | "IDENTITY_VERIFY_PASS"
+  | "VALUE_VERIFY_PASS"
+  | "FULL_COMPATIBLE"
+  | "PARTIAL"
+  | "FAILED";
 
 export interface AgentCheck {
   id: string;
   status: CheckStatus;
   detail: string;
+}
+
+export interface AgentDiscoverySignal {
+  kind: "beacon" | "verify_index";
+  url: string;
+  verify_index_url: string;
+  declared_root_authority_hash: string | null;
+  declared_statement_hash: string | null;
 }
 
 export interface AgentVerificationResult {
@@ -21,7 +35,9 @@ export interface AgentVerificationResult {
   overall_status: "PASS" | "WARN" | "FAIL";
   identity_status: "PASS" | "FAIL";
   value_status: "PASS" | "WARN" | "NOT_INCLUDED";
+  conformance_status: AgentConformanceStatus;
   trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
+  discovery_signal: AgentDiscoverySignal;
   organization: JsonValue;
   identity: Record<string, JsonValue>;
   value_continuity: Record<string, JsonValue>;
@@ -37,6 +53,7 @@ export interface AgentVerificationCompactResult {
   overall_status: "PASS" | "WARN" | "FAIL";
   identity_status: "PASS" | "FAIL";
   value_status: "PASS" | "WARN" | "NOT_INCLUDED";
+  conformance_status: AgentConformanceStatus;
   trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
   organization: {
     name: string;
@@ -125,6 +142,20 @@ export async function verifyUrlTarget(
   addHashCheck(checks, "statement_hash", statementRef.hash, statementHash, "Official endpoint statement hash");
   addHashCheck(checks, "signature_hash", signatureRef.hash, signatureHash, "Official endpoint signature hash");
   addHashCheck(checks, "authority_hash", authorityRef.hash, authorityHash, "Root authority hash");
+  addOptionalDeclaredHashCheck(
+    checks,
+    "beacon_declared_root_authority_hash",
+    index.signal.declared_root_authority_hash,
+    authorityHash,
+    "Beacon declared root authority hash"
+  );
+  addOptionalDeclaredHashCheck(
+    checks,
+    "beacon_declared_statement_hash",
+    index.signal.declared_statement_hash,
+    statementHash,
+    "Beacon declared statement hash"
+  );
   addCheck(
     checks,
     "statement_authority_binding",
@@ -201,6 +232,7 @@ export async function verifyUrlTarget(
   const hasWarnings = checks.some((check) => check.status === "WARN");
   const valueStatus = valueContinuity.status;
   const overallStatus = hasFailures ? "FAIL" : hasWarnings || valueStatus !== "PASS" ? "WARN" : "PASS";
+  const conformanceStatus = conformanceStatusFromVerification(identityStatus, overallStatus, valueStatus);
   const policyRoute = buildPolicyRoute({
     identityStatus,
     overallStatus,
@@ -217,7 +249,9 @@ export async function verifyUrlTarget(
     overall_status: overallStatus,
     identity_status: identityStatus,
     value_status: valueStatus,
+    conformance_status: conformanceStatus,
     trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR",
+    discovery_signal: index.signal,
     organization: statement.organization,
     identity: {
       statement_hash: statementHash,
@@ -247,6 +281,7 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
     overall_status: result.overall_status,
     identity_status: result.identity_status,
     value_status: result.value_status,
+    conformance_status: result.conformance_status,
     trust_decision: result.trust_decision,
     organization: compactOrganization(organization),
     root_authority_hash: String(result.identity.root_authority_hash ?? ""),
@@ -369,31 +404,75 @@ const identityCheckIds = new Set([
   "statement_hash",
   "signature_hash",
   "authority_hash",
+  "beacon_declared_root_authority_hash",
+  "beacon_declared_statement_hash",
   "statement_authority_binding",
   "statement_signature_threshold"
 ]);
 
 const DEFAULT_TIMEOUT_MS = 15000;
 
-async function discoverIndex(target: string, timeoutMs: number): Promise<{ url: URL; value: JsonValue }> {
+async function discoverIndex(target: string, timeoutMs: number): Promise<{
+  url: URL;
+  value: JsonValue;
+  signal: AgentDiscoverySignal;
+}> {
   const targetUrl = normalizeTargetUrl(target);
   const candidates = indexCandidates(targetUrl);
   const failures: string[] = [];
 
   for (const candidate of candidates) {
-    const response = await fetchWithTimeout(candidate, timeoutMs);
-    if (!response.ok) {
-      failures.push(`${candidate.toString()} returned ${response.status}`);
-      continue;
+    try {
+      const response = await fetchWithTimeout(candidate, timeoutMs);
+      if (!response.ok) {
+        failures.push(`${candidate.toString()} returned ${response.status}`);
+        continue;
+      }
+      const value = parseStrictJson(await response.text(), candidate.toString());
+      const object = optionalRecord(value);
+      if (object.type === "OrgAnchorVerifyIndex") {
+        return {
+          url: candidate,
+          value,
+          signal: {
+            kind: "verify_index",
+            url: candidate.toString(),
+            verify_index_url: candidate.toString(),
+            declared_root_authority_hash: null,
+            declared_statement_hash: null
+          }
+        };
+      }
+      if (object.type === "OrgAnchorBeacon") {
+        const verifyIndexUrl = resolveBeaconVerifyIndexUrl(object, candidate);
+        const indexValue = await fetchJson(verifyIndexUrl, "OrgAnchor verify index", timeoutMs);
+        return {
+          url: verifyIndexUrl,
+          value: indexValue,
+          signal: {
+            kind: "beacon",
+            url: candidate.toString(),
+            verify_index_url: verifyIndexUrl.toString(),
+            declared_root_authority_hash: stringValue(object.root_authority_hash) || null,
+            declared_statement_hash: stringValue(object.statement_hash) || null
+          }
+        };
+      }
+      failures.push(`${candidate.toString()} is not an OrgAnchor verify index or Beacon`);
+    } catch (error) {
+      failures.push(`${candidate.toString()} failed: ${error instanceof Error ? error.message : String(error)}`);
     }
-    const text = await response.text();
-    return {
-      url: candidate,
-      value: parseStrictJson(text, candidate.toString())
-    };
   }
 
   throw new Error(`Could not discover OrgAnchor index. Tried: ${failures.join("; ")}`);
+}
+
+function resolveBeaconVerifyIndexUrl(beacon: Record<string, JsonValue>, beaconUrl: URL): URL {
+  const explicitIndex = stringValue(beacon.verify_index_url);
+  if (explicitIndex) return new URL(explicitIndex, beaconUrl);
+  const verifyUrl = stringValue(beacon.verify_url);
+  if (verifyUrl) return new URL("organchor.json", ensureDirectoryUrl(new URL(verifyUrl, beaconUrl)));
+  throw new Error("OrgAnchor Beacon must include verify_index_url or verify_url");
 }
 
 function indexCandidates(targetUrl: URL): URL[] {
@@ -649,6 +728,37 @@ function addHashCheck(
     expectedString === actual ? "PASS" : "FAIL",
     expectedString === actual ? `${label} matches ${actual}.` : `${label} mismatch: expected ${expectedString}, got ${actual}.`
   );
+}
+
+function addOptionalDeclaredHashCheck(
+  checks: AgentCheck[],
+  id: string,
+  expected: string | null,
+  actual: string,
+  label: string
+): void {
+  if (!expected) {
+    addCheck(checks, id, "NOT_INCLUDED", `${label} was not declared by the discovery signal.`);
+    return;
+  }
+  addCheck(
+    checks,
+    id,
+    expected === actual ? "PASS" : "FAIL",
+    expected === actual ? `${label} matches ${actual}.` : `${label} mismatch: expected ${expected}, got ${actual}.`
+  );
+}
+
+function conformanceStatusFromVerification(
+  identityStatus: AgentVerificationResult["identity_status"],
+  overallStatus: AgentVerificationResult["overall_status"],
+  valueStatus: AgentVerificationResult["value_status"]
+): AgentConformanceStatus {
+  if (identityStatus !== "PASS") return "FAILED";
+  if (valueStatus === "PASS" && overallStatus === "PASS") return "FULL_COMPATIBLE";
+  if (valueStatus === "PASS") return "VALUE_VERIFY_PASS";
+  if (valueStatus === "WARN") return "PARTIAL";
+  return "IDENTITY_VERIFY_PASS";
 }
 
 function addCheck(checks: AgentCheck[], id: string, status: CheckStatus, detail: string): void {

@@ -108,6 +108,97 @@ The index should include:
 
 `directory_discovery`, when present, tells the agent where to find an optional Directory snapshot. The Directory is only a candidate-discovery surface. It is not the organization's identity root and does not replace direct origin verification.
 
+## Discovery Query Contract
+
+When an agent does not already know which organization to verify, it may build or receive a local Beacon index and query it before running direct origin verification.
+
+Recommended flow:
+
+```text
+collect seeds -> beacon sweep -> beacon index -> beacon query -> direct origin verification -> external policy
+```
+
+CLI shape:
+
+```bash
+organchor beacon sweep --seeds seeds.txt --out beacon-sweep.ndjson
+organchor beacon index --in beacon-sweep.ndjson --out beacon-index.json
+organchor beacon query --index beacon-index.json --need "identity continuity support" --capability identity-continuity --limit 10
+```
+
+`organchor beacon query` emits an `OrgAnchorBeaconQueryResult` object. This object is for candidate discovery and triage only. It must not be treated as a recommendation, ranking, certification, or final trust decision.
+
+Stable top-level fields:
+
+```json
+{
+  "type": "OrgAnchorBeaconQueryResult",
+  "version": "0.1",
+  "trust_boundary": {
+    "local_index_is_trust_root": false,
+    "final_trust_decision": "EXTERNAL_AGENT",
+    "records_must_verify_at_origin": true
+  },
+  "match_report": {
+    "type": "OrgAnchorBeaconNeedMatchReport",
+    "version": "0.1",
+    "boundary": {
+      "discovery_match_is_not_recommendation": true,
+      "no_paid_ranking": true,
+      "final_decision": "EXTERNAL_AGENT"
+    }
+  },
+  "candidates": []
+}
+```
+
+Each candidate should include:
+
+```text
+origin
+candidate_priority
+organization
+discovery
+verification_summary
+match_explanation
+need_match
+risk_gaps
+verification_plan
+next_step
+```
+
+`candidate_priority` is an execution hint, not a ranking promise:
+
+```text
+HIGH = strong discovery match with verified identity and value status in the local observation
+MEDIUM = usable discovery match, but less complete than HIGH
+REVIEW = relevant but requires value-layer or compatibility review
+LOW = signal exists but is incomplete or weak
+REJECT = failed or unsafe local observation; recheck only if the origin has been repaired
+```
+
+`need_match.status` is also non-binding:
+
+```text
+STRONG_DISCOVERY_MATCH
+POSSIBLE_DISCOVERY_MATCH
+NEEDS_IDENTITY_VERIFICATION
+NEEDS_VALUE_REVIEW
+REJECT_OR_RECHECK
+```
+
+The required rule is:
+
+```text
+No candidate from beacon query is trusted until direct origin verification passes.
+```
+
+The next command for a selected candidate should usually be:
+
+```bash
+organchor verify url <origin> --compact
+```
+
 ## Required Identity Checks
 
 An agent verifying an organization should check at least:

@@ -3,9 +3,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import {
-  copyFileSync,
   existsSync,
-  mkdirSync,
   mkdtempSync,
   readFile,
   readFileSync,
@@ -25,14 +23,18 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
   try {
     createAgentFixture(workspace);
     await withStaticServer(join(workspace, "public"), async (origin) => {
+      rewriteBeaconOrigin(workspace, origin);
       const verify = await runAsync(workspace, ["verify", "url", origin]);
       const result = JSON.parse(verify.stdout);
       assert.equal(result.type, "OrgAnchorAgentVerificationResult");
       assert.equal(result.overall_status, "PASS");
       assert.equal(result.identity_status, "PASS");
       assert.equal(result.value_status, "PASS");
+      assert.equal(result.conformance_status, "FULL_COMPATIBLE");
       assert.equal(result.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
-      assert.equal(result.index_url, `${origin}/.well-known/organchor.json`);
+      assert.equal(result.index_url, `${origin}/verify/organchor.json`);
+      assert.equal(result.discovery_signal.kind, "beacon");
+      assert.equal(result.discovery_signal.url, `${origin}/.well-known/organchor.json`);
       assert.equal(result.artifact_base_url, `${origin}/verify/`);
       assert.equal(result.identity.threshold_required, 1);
       assert.equal(result.value_continuity.summary.evidence_linked_claims, 1);
@@ -53,6 +55,7 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(compact.overall_status, "PASS");
       assert.equal(compact.identity_status, "PASS");
       assert.equal(compact.value_status, "PASS");
+      assert.equal(compact.conformance_status, "FULL_COMPATIBLE");
       assert.equal(compact.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
       assert.equal(compact.evidence_summary.claims, "PASS");
       assert.equal(compact.evidence_summary.evidence, "PASS");
@@ -73,12 +76,14 @@ test("verify url fails when public statement content is changed after signing", 
   const workspace = mkdtempSync(join(tmpdir(), "organchor-agent-tamper-"));
   try {
     createAgentFixture(workspace);
+    rewriteBeaconOrigin(workspace, "http://127.0.0.1");
     const statementPath = join(workspace, "public", "verify", "official-endpoints.json");
     const statement = JSON.parse(readFileSync(statementPath, "utf8"));
     statement.official_endpoints.website = "https://attacker.example";
     writeFileSync(statementPath, `${JSON.stringify(statement, null, 2)}\n`, "utf8");
 
     await withStaticServer(join(workspace, "public"), async (origin) => {
+      rewriteBeaconOrigin(workspace, origin);
       const verify = await runAsync(workspace, ["verify", "url", origin], 1);
       const result = JSON.parse(verify.stdout);
       assert.equal(result.overall_status, "FAIL");
@@ -90,6 +95,7 @@ test("verify url fails when public statement content is changed after signing", 
       const compact = JSON.parse(compactVerify.stdout);
       assert.equal(compact.overall_status, "FAIL");
       assert.equal(compact.identity_status, "FAIL");
+      assert.equal(compact.conformance_status, "FAILED");
       assert.equal(compact.policy_route.route, "STOP_IDENTITY_FAILURE");
       assert.equal(compact.policy_route.reasons.includes("identity_verification_failed"), true);
       assert.equal(
@@ -175,11 +181,18 @@ function createAgentFixture(workspace: string): void {
     "--out",
     "public/verify"
   ]);
-  mkdirSync(join(workspace, "public", ".well-known"), { recursive: true });
-  copyFileSync(
-    join(workspace, "public", "verify", "organchor.json"),
-    join(workspace, "public", ".well-known", "organchor.json")
-  );
+}
+
+function rewriteBeaconOrigin(workspace: string, origin: string): void {
+  const beaconPath = join(workspace, "public", ".well-known", "organchor.json");
+  const beacon = JSON.parse(readFileSync(beaconPath, "utf8"));
+  beacon.origin = origin;
+  beacon.verify_url = `${origin}/verify/`;
+  beacon.well_known_url = `${origin}/.well-known/organchor.json`;
+  beacon.verify_index_url = `${origin}/verify/organchor.json`;
+  beacon.agent_flow.first_pass = `organchor verify url ${origin} --compact`;
+  beacon.agent_flow.deep_verify = `organchor verify url ${origin}`;
+  writeFileSync(beaconPath, `${JSON.stringify(beacon, null, 2)}\n`, "utf8");
 }
 
 function hasCheck(result: { checks: Array<{ id: string; status: string }> }, id: string, status: string): boolean {

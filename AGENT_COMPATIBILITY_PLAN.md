@@ -62,6 +62,26 @@ next_step
 
 The compact result is not a trust badge. It is a routing object that helps an agent decide whether to stop, fetch the full result, request manual review, or continue transaction evaluation.
 
+### Beacon Need-Match Result
+
+`organchor beacon query --index <beacon-index.json> --need <text>` is the preferred first pass when an agent starts with a need rather than a known origin.
+
+It should stay deterministic, explainable, and explicitly non-authoritative:
+
+```text
+match_report
+trust_boundary
+candidates[]
+candidate_priority
+match_explanation
+need_match
+risk_gaps
+verification_plan
+next_step
+```
+
+The Beacon query result is not a recommendation or ranking. It is a discovery object that helps an agent decide which origins to verify next.
+
 ### Explainable Full Result
 
 `organchor verify url <origin>` emits the full `OrgAnchorAgentVerificationResult`.
@@ -138,6 +158,8 @@ migration history present
 
 The compact result should be covered separately because it is the object most external agents will likely consume first.
 
+The Beacon query result should be covered separately because it is the object many external agents will consume before they know which origin to verify.
+
 ## Release Gate
 
 Before promoting an agent-facing change, run:
@@ -155,6 +177,7 @@ The integration guide and compact example should also remain valid:
 ```text
 AGENT_INTEGRATION_GUIDE.md
 examples/agent-verification/organchor-compact-result.json
+examples/agent-verification/organchor-beacon-query-result.json
 ```
 
 ## Feedback Loop

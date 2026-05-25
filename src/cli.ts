@@ -6,7 +6,13 @@ import { arweaveUploadCommand } from "./commands/arweave-upload.ts";
 import { arweaveVerifyCommand } from "./commands/arweave-verify.ts";
 import { authorityChangePlanCommand } from "./commands/authority-change-plan.ts";
 import { authorityCreateCommand } from "./commands/authority-create.ts";
+import { beaconGenerateCommand } from "./commands/beacon-generate.ts";
+import { beaconIndexCommand } from "./commands/beacon-index.ts";
 import { beaconInspectCommand } from "./commands/beacon-inspect.ts";
+import { beaconQueryCommand } from "./commands/beacon-query.ts";
+import { beaconReportCommand } from "./commands/beacon-report.ts";
+import { beaconSweepCommand } from "./commands/beacon-sweep.ts";
+import { beaconVerifyCommand } from "./commands/beacon-verify.ts";
 import { claimsCreateCommand } from "./commands/claims-create.ts";
 import { claimsSignCommand } from "./commands/claims-sign.ts";
 import { claimsVerifyCommand } from "./commands/claims-verify.ts";
@@ -57,7 +63,13 @@ const commands: Record<string, CommandHandler> = {
   "archive arweave upload": arweaveUploadCommand,
   "archive arweave verify": arweaveVerifyCommand,
   "authority change-plan": authorityChangePlanCommand,
+  "beacon generate": beaconGenerateCommand,
+  "beacon index": beaconIndexCommand,
   "beacon inspect": beaconInspectCommand,
+  "beacon query": beaconQueryCommand,
+  "beacon report": beaconReportCommand,
+  "beacon sweep": beaconSweepCommand,
+  "beacon verify": beaconVerifyCommand,
   "claims create": claimsCreateCommand,
   "claims sign": claimsSignCommand,
   "claims verify": claimsVerifyCommand,
@@ -172,7 +184,17 @@ Usage:
   organchor authority create --key keys/root-2026.private.json
   organchor authority create --keys keys/root-a.private.json,keys/root-b.private.json,keys/root-c.private.json --threshold 2
   organchor authority verify --authority root-authority.json
+  organchor beacon generate --verify-dir public/verify --origin https://example.org
+  organchor beacon index --in beacon-sweep.ndjson --out beacon-index.json
+  organchor beacon index --previous beacon-index.json --in beacon-sweep-latest.ndjson --out beacon-index.json
   organchor beacon inspect https://example.org
+  organchor beacon query --index beacon-index.json --need "identity continuity support" --capability identity-continuity --conformance FULL_COMPATIBLE --limit 10
+  organchor beacon report --sweeps beacon-sweep-a.ndjson,beacon-sweep-b.ndjson --out beacon-discovery-report.json
+  organchor beacon sweep --seeds seeds.txt --out beacon-sweep.ndjson --concurrency 4 --timeout-ms 10000
+  organchor beacon sweep --directory-snapshot public/directory/directory-snapshot.json --out beacon-sweep.ndjson
+  organchor beacon sweep --sitemap https://example.org/sitemap.xml --out beacon-sweep.ndjson
+  organchor beacon sweep --crawl https://example.org --crawl-max-pages 25 --crawl-max-depth 1 --out beacon-sweep.ndjson
+  organchor beacon verify --in beacon-sweep.ndjson
   organchor mirror ipfs publish --dir public/verify --dry-run
   organchor mirror ipfs publish --dir public/verify --api http://127.0.0.1:5001
   organchor mirror ipfs publish --dir public/verify --allow-large

@@ -1,10 +1,10 @@
 import { parseStrictJson, type JsonValue } from "../core/json.ts";
 import { verifyUrlTarget, type AgentVerificationResult } from "./verify-url.ts";
 
-type BeaconInspectStatus = "PASS" | "WARN" | "FAIL";
-type BeaconCheckStatus = "PASS" | "WARN" | "FAIL" | "NOT_INCLUDED";
+export type BeaconInspectStatus = "PASS" | "WARN" | "FAIL";
+export type BeaconCheckStatus = "PASS" | "WARN" | "FAIL" | "NOT_INCLUDED";
 
-type BeaconConformanceStatus =
+export type BeaconConformanceStatus =
   | "CLAIMED_SIGNAL"
   | "BEACON_SHAPE_PASS"
   | "IDENTITY_VERIFY_PASS"
@@ -13,20 +13,20 @@ type BeaconConformanceStatus =
   | "PARTIAL"
   | "FAILED";
 
-interface BeaconInspectCheck {
+export interface BeaconInspectCheck {
   id: string;
   status: BeaconCheckStatus;
   detail: string;
 }
 
-interface BeaconRiskGap {
+export interface BeaconRiskGap {
   code: string;
   severity: "INFO" | "WARN" | "FAIL";
   detail: string;
   next_action: string;
 }
 
-interface BeaconInspectResult {
+export interface BeaconInspectResult {
   type: "OrgAnchorBeaconInspectResult";
   version: "0.1";
   target: string;
@@ -39,6 +39,32 @@ interface BeaconInspectResult {
     declared_type: string | null;
     declared_version: string | null;
     ignored_unknown_fields: string[];
+    http: {
+      status_code: number | null;
+      content_type: string | null;
+      cache_control: string | null;
+      etag: string | null;
+      last_modified: string | null;
+      body_size_bytes: number | null;
+    };
+  };
+  hints: {
+    organization: {
+      name: string | null;
+      display_name: string | null;
+    };
+    discovery: {
+      categories: string[];
+      capabilities: string[];
+      regions: string[];
+      languages: string[];
+    };
+    summary_status: {
+      identity_status: string | null;
+      value_status: string | null;
+      policy_route: string | null;
+      updated_at: string | null;
+    };
   };
   verification: {
     attempted: boolean;
@@ -90,8 +116,10 @@ export async function inspectBeaconTarget(target: string, timeoutMs = DEFAULT_TI
     url: null,
     declared_type: null,
     declared_version: null,
-    ignored_unknown_fields: []
+    ignored_unknown_fields: [],
+    http: emptySignalHttp()
   };
+  let hints = emptyHints();
   let verification: BeaconInspectResult["verification"] = emptyVerification();
   let conformance: BeaconConformanceStatus = "FAILED";
 
@@ -107,8 +135,10 @@ export async function inspectBeaconTarget(target: string, timeoutMs = DEFAULT_TI
       url: discovered.url.toString(),
       declared_type: declaredType || null,
       declared_version: declaredVersion || null,
-      ignored_unknown_fields: kind === "beacon" ? unknownBeaconFields(signalObject) : []
+      ignored_unknown_fields: kind === "beacon" ? unknownBeaconFields(signalObject) : [],
+      http: discovered.http
     };
+    hints = hintsFromSignal(signalObject);
 
     addCheck(
       checks,
@@ -121,10 +151,11 @@ export async function inspectBeaconTarget(target: string, timeoutMs = DEFAULT_TI
 
     if (!signal.claimed) {
       addRisk(riskGaps, "NO_ORGANCHOR_SIGNAL", "FAIL", "No OrgAnchor-compatible signal was found.", "Do not treat this origin as an OrgAnchor adopter.");
-      return finalize(target, "FAILED", signal, verification, checks, riskGaps);
+      return finalize(target, "FAILED", signal, hints, verification, checks, riskGaps);
     }
 
     conformance = "CLAIMED_SIGNAL";
+    inspectSignalHttp(discovered.http, checks, riskGaps);
     let verificationTarget: string | null = null;
     if (kind === "beacon") {
       verificationTarget = inspectBeaconShape(signalObject, checks, riskGaps);
@@ -156,18 +187,18 @@ export async function inspectBeaconTarget(target: string, timeoutMs = DEFAULT_TI
         "The signal uses OrgAnchor-like naming but is not a supported Beacon or verify index.",
         "Treat it as a claim only; request a valid OrgAnchor verify package."
       );
-      return finalize(target, conformance, signal, verification, checks, riskGaps);
+      return finalize(target, conformance, signal, hints, verification, checks, riskGaps);
     }
 
     if (!verificationTarget) {
       addCheck(checks, "strict_verification", "NOT_INCLUDED", "No strict verification target could be derived from the signal.");
-      return finalize(target, conformance, signal, verification, checks, riskGaps);
+      return finalize(target, conformance, signal, hints, verification, checks, riskGaps);
     }
 
     const strict = await runStrictVerification(verificationTarget, timeoutMs, checks, riskGaps);
     verification = strict.verification;
     conformance = conformanceFromVerification(strict.result, signalObject, kind, checks, riskGaps);
-    return finalize(target, conformance, signal, verification, checks, riskGaps);
+    return finalize(target, conformance, signal, hints, verification, checks, riskGaps);
   } catch (error) {
     addCheck(checks, "beacon_inspect", "FAIL", error instanceof Error ? error.message : String(error));
     addRisk(
@@ -177,7 +208,7 @@ export async function inspectBeaconTarget(target: string, timeoutMs = DEFAULT_TI
       "Beacon inspection could not complete.",
       "Do not treat this origin as a verified OrgAnchor adopter until inspection succeeds."
     );
-    return finalize(target, "FAILED", signal, verification, checks, riskGaps);
+    return finalize(target, "FAILED", signal, hints, verification, checks, riskGaps);
   }
 }
 
@@ -424,7 +455,11 @@ function unknownBeaconFields(signalObject: Record<string, JsonValue>): string[] 
   return Object.keys(signalObject).filter((key) => !BEACON_ALLOWED_KEYS.has(key));
 }
 
-async function discoverSignal(target: string, timeoutMs: number): Promise<{ url: URL; value: JsonValue }> {
+async function discoverSignal(target: string, timeoutMs: number): Promise<{
+  url: URL;
+  value: JsonValue;
+  http: BeaconInspectResult["signal"]["http"];
+}> {
   const targetUrl = normalizeTargetUrl(target);
   const candidates = signalCandidates(targetUrl);
   const failures: string[] = [];
@@ -439,12 +474,83 @@ async function discoverSignal(target: string, timeoutMs: number): Promise<{ url:
       failures.push(`${candidate.toString()} returned ${response.status}`);
       continue;
     }
+    const body = await response.text();
     return {
       url: candidate,
-      value: parseStrictJson(await response.text(), candidate.toString())
+      value: parseStrictJson(body, candidate.toString()),
+      http: {
+        status_code: response.status,
+        content_type: response.headers.get("content-type"),
+        cache_control: response.headers.get("cache-control"),
+        etag: response.headers.get("etag"),
+        last_modified: response.headers.get("last-modified"),
+        body_size_bytes: Buffer.byteLength(body, "utf8")
+      }
     };
   }
   throw new Error(`Could not discover OrgAnchor Beacon signal. Tried: ${failures.join("; ")}`);
+}
+
+function inspectSignalHttp(
+  http: BeaconInspectResult["signal"]["http"],
+  checks: BeaconInspectCheck[],
+  riskGaps: BeaconRiskGap[]
+): void {
+  const contentType = http.content_type?.toLowerCase() ?? "";
+  const jsonLike = contentType.includes("json") || contentType.includes("text/plain");
+  addCheck(
+    checks,
+    "beacon_content_type",
+    jsonLike ? "PASS" : "WARN",
+    jsonLike
+      ? `Beacon content type is ${http.content_type ?? "(not provided)"}.`
+      : `Beacon content type is ${http.content_type ?? "(not provided)"}; application/json is preferred.`
+  );
+  const size = http.body_size_bytes ?? 0;
+  addCheck(
+    checks,
+    "beacon_size",
+    size <= 64 * 1024 ? "PASS" : "WARN",
+    size <= 64 * 1024
+      ? `Beacon response is ${size} bytes.`
+      : `Beacon response is ${size} bytes; keep first-pass discovery signals small.`
+  );
+  const hasCacheHint = Boolean(http.cache_control || http.etag || http.last_modified);
+  addCheck(
+    checks,
+    "beacon_cache_hint",
+    hasCacheHint ? "PASS" : "WARN",
+    hasCacheHint
+      ? "Beacon response includes cache validators or cache-control metadata."
+      : "Beacon response does not include cache hints; static or cache-friendly hosting is preferred."
+  );
+  if (!jsonLike) {
+    addRisk(
+      riskGaps,
+      "BEACON_CONTENT_TYPE_NOT_JSON",
+      "WARN",
+      "The Beacon response is not served with a JSON-like content type.",
+      "Serve /.well-known/organchor.json and /verify/organchor.json as application/json where possible."
+    );
+  }
+  if (size > 64 * 1024) {
+    addRisk(
+      riskGaps,
+      "BEACON_RESPONSE_TOO_LARGE",
+      "WARN",
+      "The Beacon response is larger than the recommended first-pass discovery size.",
+      "Keep Beacon files small and move large evidence artifacts behind hashed manifest references."
+    );
+  }
+  if (!hasCacheHint) {
+    addRisk(
+      riskGaps,
+      "BEACON_CACHE_HINT_MISSING",
+      "WARN",
+      "The Beacon response lacks cache hints.",
+      "Use static hosting, ETag, Last-Modified, or Cache-Control headers to reduce repeated crawler cost."
+    );
+  }
 }
 
 function signalCandidates(targetUrl: URL): URL[] {
@@ -463,6 +569,7 @@ function finalize(
   target: string,
   conformance: BeaconConformanceStatus,
   signal: BeaconInspectResult["signal"],
+  hints: BeaconInspectResult["hints"],
   verification: BeaconInspectResult["verification"],
   checks: BeaconInspectCheck[],
   riskGaps: BeaconRiskGap[]
@@ -479,6 +586,7 @@ function finalize(
     status,
     conformance_status: conformance,
     signal,
+    hints,
     verification,
     checks,
     risk_gaps: riskGaps,
@@ -511,6 +619,51 @@ function nextSteps(
   return ["Reject this as verified OrgAnchor adoption until the failing checks are resolved."];
 }
 
+function hintsFromSignal(signalObject: Record<string, JsonValue>): BeaconInspectResult["hints"] {
+  const organization = asRecord(signalObject.organization);
+  const discovery = asRecord(signalObject.discovery);
+  const summaryStatus = asRecord(signalObject.summary_status);
+  return {
+    organization: {
+      name: stringValue(organization.name) || null,
+      display_name: stringValue(organization.display_name) || stringValue(organization.name) || null
+    },
+    discovery: {
+      categories: stringArray(discovery.categories),
+      capabilities: stringArray(discovery.capabilities),
+      regions: stringArray(discovery.regions),
+      languages: stringArray(discovery.languages)
+    },
+    summary_status: {
+      identity_status: stringValue(summaryStatus.identity_status) || null,
+      value_status: stringValue(summaryStatus.value_status) || null,
+      policy_route: stringValue(summaryStatus.policy_route) || null,
+      updated_at: stringValue(summaryStatus.updated_at) || null
+    }
+  };
+}
+
+function emptyHints(): BeaconInspectResult["hints"] {
+  return {
+    organization: {
+      name: null,
+      display_name: null
+    },
+    discovery: {
+      categories: [],
+      capabilities: [],
+      regions: [],
+      languages: []
+    },
+    summary_status: {
+      identity_status: null,
+      value_status: null,
+      policy_route: null,
+      updated_at: null
+    }
+  };
+}
+
 function emptyVerification(): BeaconInspectResult["verification"] {
   return {
     attempted: false,
@@ -521,6 +674,17 @@ function emptyVerification(): BeaconInspectResult["verification"] {
     root_authority_hash: null,
     statement_hash: null,
     policy_route: null
+  };
+}
+
+function emptySignalHttp(): BeaconInspectResult["signal"]["http"] {
+  return {
+    status_code: null,
+    content_type: null,
+    cache_control: null,
+    etag: null,
+    last_modified: null,
+    body_size_bytes: null
   };
 }
 
@@ -597,4 +761,9 @@ function asRecord(value: JsonValue | undefined): Record<string, JsonValue> {
 
 function stringValue(value: JsonValue | undefined): string {
   return typeof value === "string" ? value : "";
+}
+
+function stringArray(value: JsonValue | undefined): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === "string");
 }

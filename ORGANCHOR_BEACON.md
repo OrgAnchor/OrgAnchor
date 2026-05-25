@@ -1,6 +1,6 @@
 # OrgAnchor Beacon Layer
 
-Status: Accepted product direction; partially implemented through existing `/.well-known/organchor.json`, `/verify/organchor.json`, and static verify-page generation.
+Status: Accepted product direction; implemented across static Beacon surfaces, single-origin inspection, seed/sitemap/Directory/bounded-crawl sweeping, and local sweep indexing.
 
 ## Purpose
 
@@ -343,6 +343,35 @@ store origin, hashes, statuses, capabilities, evidence summary, and freshness in
 revisit periodically
 ```
 
+The first implementation is intentionally bounded and source-driven:
+
+```bash
+organchor beacon sweep --seeds seeds.txt --out beacon-sweep.ndjson --concurrency 4 --timeout-ms 10000
+organchor beacon sweep --directory-snapshot public/directory/directory-snapshot.json --out beacon-sweep.ndjson
+organchor beacon sweep --sitemap https://example.org/sitemap.xml --out beacon-sweep.ndjson
+organchor beacon sweep --crawl https://example.org --crawl-max-pages 25 --crawl-max-depth 1 --out beacon-sweep.ndjson
+```
+
+`seeds.txt` is a newline-delimited list of origins or explicit OrgAnchor JSON URLs. Blank lines and lines beginning with `#` are ignored. Duplicate entries are removed before scanning.
+
+`--directory-snapshot` reads an OrgAnchor Directory snapshot and uses its record origins as candidates. `--sitemap` reads local or HTTP sitemap XML and uses the origins of `<loc>` entries as candidates. `--crawl` starts from a known HTTP(S) page, follows same-origin HTML links up to bounded page/depth limits, and extracts explicit OrgAnchor signal URLs. These sources can be combined; candidates are deduplicated before scanning.
+
+`--crawl` is not a global search engine. It is a polite discovery helper for known starting points. Broad crawlers, search engines, Common Crawl processors, procurement agents, and third-party Directories should feed their discovered origins into the same sweep/index/query contract.
+
+The output is NDJSON, one `OrgAnchorBeaconSweepRecord` per target, so independent crawlers, Directories, and AI agents can append, merge, filter, and deduplicate results without needing a central database.
+
+Repeated sweeps can be merged into a local index:
+
+```bash
+organchor beacon index --in beacon-sweep.ndjson --out beacon-index.json
+organchor beacon index --previous beacon-index.json --in beacon-sweep-latest.ndjson --out beacon-index.json
+organchor beacon query --index beacon-index.json --need "identity continuity support" --capability identity-continuity --conformance FULL_COMPATIBLE --limit 10
+```
+
+The local index output is an `OrgAnchorBeaconLocalIndex`. It keeps the latest known state per origin, preserves `first_seen_at`, updates `last_checked_at`, increments `seen_count`, and carries compact triage fields such as conformance status, identity/value status, hashes, risk gaps, and the recommended next verification step.
+
+`beacon query` turns that local index into an agent-facing need-match report. The report includes the request, explicit filters, boundary reminders, strongest candidate origins, recommended actions, and per-candidate explanations. Each candidate includes why it matched, which filters were satisfied, what risk gaps remain, and the next verification commands. This index is still a cache of public observations, not a trust root. Agents should use it to reduce discovery cost, then run direct origin verification before making any trust or transaction decision.
+
 This makes OrgAnchor useful even if no Directory has listed a new adopter yet.
 
 ## Audit Checklist
@@ -438,20 +467,21 @@ The Beacon must not:
 - depend on a paid platform
 - hide gaps behind a polished badge
 
-## Future CLI Shape
+## Current And Future CLI Shape
 
-Possible commands:
+Implemented commands:
 
 ```bash
-organchor beacon generate
+organchor beacon generate --verify-dir public/verify --origin https://example.org
 organchor beacon inspect https://example.org
 organchor beacon sweep --seeds seeds.txt --out discovered-organchor.ndjson
+organchor beacon index --in discovered-organchor.ndjson --out beacon-index.json
+organchor beacon query --index beacon-index.json --need "identity continuity support" --category software --capability identity-continuity
+organchor beacon report --sweeps sweep-a.ndjson,sweep-b.ndjson --out beacon-discovery-report.json
 organchor beacon verify --in discovered-organchor.ndjson
 ```
 
-Near-term implementation should first extend `page generate` so every verify package emits the best possible Beacon surfaces by default.
-
-After that, a simple `beacon inspect` command can validate a single origin. A broader `beacon sweep` command can come later.
+`page generate` emits the default Beacon surfaces when rebuilding the full verify page. `beacon generate` regenerates only the discovery surfaces from an existing verify package, and it refuses to emit PASS Beacon surfaces unless the local verify index, statement, signature, and root authority hashes verify first.
 
 ## Acceptance Criteria
 
@@ -478,6 +508,10 @@ stale_beacon_rate
 directory_independence_rate
 third_party_sweep_reproducibility
 ```
+
+`beacon report` computes the implemented local versions of these metrics from one or more sweep artifacts. It intentionally reports local discovery quality only. It does not claim global web coverage, supplier quality, recommendation rank, or final trust.
+
+`beacon inspect` also reports first-pass HTTP publishing hints for the discovered Beacon, including content type, response size, and cache metadata. These hints help publishers keep Beacon signals cheap for polite crawlers.
 
 Preferred direction:
 

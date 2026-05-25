@@ -42,7 +42,7 @@ It does:
 - runs `npm pack --dry-run`;
 - publishes with `npm publish --tag alpha`.
 
-For the current `0.1.0-alpha.2` release, use manual dispatch because `v0.1.0-alpha.2` was created before the workflow existed.
+For the current `0.1.0-alpha.3` release, use manual dispatch so the workflow, package version, Git tag, GitHub release, and npm package can be aligned on the same source state.
 
 ## NPM Website Configuration
 
@@ -65,7 +65,7 @@ Important details:
 - The workflow must exist in `.github/workflows/` on GitHub before the npm configuration is saved.
 - Use GitHub-hosted runners; npm trusted publishing does not support self-hosted runners for this path.
 
-## Alpha.2 Publish Command
+## Alpha.3 Publish Command
 
 After npm Trusted Publishing is configured, trigger:
 
@@ -73,7 +73,7 @@ After npm Trusted Publishing is configured, trigger:
 gh workflow run publish-npm.yml \
   --repo OrgAnchor/OrgAnchor \
   --ref main \
-  -f expected_version=0.1.0-alpha.2 \
+  -f expected_version=0.1.0-alpha.3 \
   -f publish_tag=alpha
 ```
 

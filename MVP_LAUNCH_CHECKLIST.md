@@ -1,6 +1,6 @@
 # OrgAnchor MVP Launch Checklist
 
-Status: Active checklist for the `0.1.0-alpha.2` MVP launch candidate.
+Status: Active checklist for the `0.1.0-alpha.3` MVP launch candidate.
 
 ## Purpose
 
@@ -18,7 +18,7 @@ It does not mean stable v1, legal certification, product-quality certification, 
 
 ```text
 package: organchor
-candidate version: 0.1.0-alpha.2
+candidate version: 0.1.0-alpha.3
 publish tag: alpha
 stable v1: not yet
 ```
@@ -26,8 +26,8 @@ stable v1: not yet
 ## Must Be True Before Publishing
 
 - [x] `main` contains the merged discovery, Beacon, Directory, adoption-status, and release-state baseline.
-- [x] `package.json` version is set to `0.1.0-alpha.2`.
-- [x] `CHANGELOG.md` has `0.1.0-alpha.2` release notes.
+- [x] `package.json` version is set to `0.1.0-alpha.3`.
+- [x] `CHANGELOG.md` has `0.1.0-alpha.3` release notes.
 - [x] Public self-pilot status is recorded in `RELEASE_STATE_2026-05-25.md`.
 - [x] Public `https://organchor.org` doctor check is `READY`.
 - [x] Release integrity self-reference limits are documented.
@@ -36,9 +36,9 @@ stable v1: not yet
 - [x] `npm publish --dry-run --tag alpha` passes.
 - [x] No private keys, provider tokens, wallets, payment data, or local self-pilot secrets are in the package file list.
 - [x] GitHub Actions trusted publishing workflow is prepared in `.github/workflows/publish-npm.yml`.
-- [ ] npm package trusted publisher is configured on npmjs.com for `OrgAnchor/OrgAnchor` and `publish-npm.yml`.
-- [ ] GitHub Actions trusted-publishing run publishes `organchor@0.1.0-alpha.2` with the `alpha` dist-tag.
-- [x] Git tag `v0.1.0-alpha.2` is created only after the candidate source is frozen.
+- [x] npm package trusted publisher is configured on npmjs.com for `OrgAnchor/OrgAnchor` and `publish-npm.yml`.
+- [ ] GitHub Actions trusted-publishing run publishes `organchor@0.1.0-alpha.3` with the `alpha` dist-tag.
+- [ ] Git tag `v0.1.0-alpha.3` is created only after the candidate source is frozen.
 - [x] GitHub prerelease notes are drafted from `CHANGELOG.md`.
 - [ ] Real `npm publish --tag alpha` through Trusted Publishing is approved by the operator and completed.
 - [ ] Fresh install from npm can run `organchor --help`.
@@ -54,11 +54,11 @@ stable v1: not yet
 
 ## Immediate MVP Launch Sequence
 
-1. Freeze the `0.1.0-alpha.2` candidate.
+1. Freeze the `0.1.0-alpha.3` candidate.
 2. Run `node --run release:check`.
 3. Run `npm pack --dry-run` and inspect package contents.
 4. Run `npm publish --dry-run --tag alpha`.
-5. Tag `v0.1.0-alpha.2`.
+5. Tag `v0.1.0-alpha.3`.
 6. Draft GitHub prerelease.
 7. Publish to npm under `alpha` after operator approval and 2FA.
 8. Install from npm and verify `https://organchor.org`.

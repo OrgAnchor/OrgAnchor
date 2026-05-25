@@ -1,6 +1,6 @@
 {
   "name": "organchor",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "description": "Signed organizational identity continuity toolchain.",
   "type": "module",
   "main": "dist/cli.js",

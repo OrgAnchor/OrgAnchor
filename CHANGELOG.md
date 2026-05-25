@@ -8,6 +8,18 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 
 No unreleased changes yet.
 
+## 0.1.0-alpha.3 - 2026-05-25
+
+Release alignment candidate for npm Trusted Publishing.
+
+### Changed
+
+- Bumps the MVP launch candidate from `0.1.0-alpha.2` to `0.1.0-alpha.3` so the package version, Git tag, GitHub release, and npm publish run can describe the same source state after adding the trusted publishing workflow.
+
+### Notes
+
+- `0.1.0-alpha.2` remains a superseded candidate because its tag was created before the npm Trusted Publishing workflow existed.
+
 ## 0.1.0-alpha.2 - 2026-05-25
 
 MVP launch candidate for AI-agent-facing verification, Beacon-first discovery, open Directory experiments, adoption status reporting, and release-state alignment.

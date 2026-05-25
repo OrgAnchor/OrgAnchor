@@ -2,7 +2,7 @@
 
 Status: active alpha implementation snapshot
 
-Last updated: 2026-05-24
+Last updated: 2026-05-25
 
 This document records what is already implemented, what remains external or future work, and what OrgAnchor intentionally does not do. It exists to keep development aligned with the project north star: lower the cost for third-party AI agents, organizations, and people to discover, verify, understand, and compare organization-controlled identity and value evidence without turning OrgAnchor into a central trust authority.
 
@@ -69,6 +69,18 @@ Release hygiene:
 - Package smoke.
 - Install smoke.
 - Package inclusion checks that reject private keys, local credentials, wallets, Cloudflare notes, and self-pilot private artifacts.
+- Alpha-line release-state matrix and checklist alignment merged into `main`.
+- Public self-pilot release-state hashes and carrier receipts recorded in `RELEASE_STATE_2026-05-25.md`.
+
+## Current MVP Launch Focus
+
+The shortest useful launch path is:
+
+1. Keep `main` green and installable.
+2. Keep `https://organchor.org` publicly verifiable as the reference self-pilot.
+3. Publish the next alpha only under a new release id, not as a stable v1 claim.
+4. Run the first low-risk external pilot using `EXTERNAL_PILOT_RUNBOOK.md`.
+5. Feed pilot lessons back into onboarding, evidence, and agent-facing verification outputs.
 
 ## Not Yet Complete
 

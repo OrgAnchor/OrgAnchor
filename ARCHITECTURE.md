@@ -24,10 +24,16 @@ flowchart TD
   A --> C["Signed claims manifest"]
   A --> D["Signed evidence manifest"]
   A --> E["Root migration statements"]
+  A --> R["Delegated product/service key statements"]
+  R --> S["Product/service credentials"]
+  S --> T["Observation/challenge/correction records"]
   B --> F["Verify package"]
   C --> F
   D --> F
   E --> F
+  R --> F
+  S --> F
+  T --> F
   F --> G["/.well-known/organchor.json Beacon"]
   F --> H["/verify static page and index"]
   F --> I["IPFS mirror"]
@@ -78,6 +84,14 @@ signed claims manifest + signed evidence manifest + value audit report + externa
 
 OrgAnchor records who made a claim, what evidence was linked, whether hashes and signatures verify, and which gaps remain. It does not automatically prove product efficacy.
 
+Real-world feedback attribution should come from:
+
+```text
+root authority -> delegated product/service key -> model/batch/unit or service-delivery credential -> observation/challenge/correction record
+```
+
+The root remains the identity anchor, while scoped delegated keys keep high-frequency product and service signing away from the root private key.
+
 ## Discovery Model
 
 OrgAnchor uses two discovery modes at the same time.
@@ -113,6 +127,9 @@ An adopting organization can publish:
 /verify/claims/product-claims.json.sig
 /verify/evidence/evidence-manifest.json
 /verify/evidence/evidence-manifest.json.sig
+/verify/credentials/delegated-keys.json
+/verify/credentials/product-service-credentials.json
+/verify/observations/observation-records.json
 /verify/reports/value-continuity-report.json
 /verify/reports/value-continuity-report.md
 /robots.txt
@@ -191,6 +208,7 @@ The layer records:
 
 - claims made by the organization,
 - evidence items linked to those claims,
+- product or service credentials that bind observations to the organization authority chain,
 - artifact hashes and locations,
 - provenance and reproducibility metadata,
 - third-party references where available,
@@ -215,7 +233,7 @@ The official project may run a Directory or showcase, but the protocol must rema
 The architecture intentionally leaves room to improve:
 
 - post-quantum signature algorithms,
-- delegated signing keys,
+- delegated signing keys for root authority, product/service credentials, and bounded operational scopes,
 - richer evidence profiles by industry,
 - outcome and correction manifests,
 - additional archive/timestamp carriers,

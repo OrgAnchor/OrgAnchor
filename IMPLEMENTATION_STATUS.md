@@ -2,7 +2,7 @@
 
 Status: active alpha implementation snapshot
 
-Last updated: 2026-05-25
+Last updated: 2026-05-26
 
 This document records what is already implemented, what remains external or future work, and what OrgAnchor intentionally does not do. It exists to keep development aligned with the project north star: lower the cost for third-party AI agents, organizations, and people to discover, verify, understand, and compare organization-controlled identity and value evidence without turning OrgAnchor into a central trust authority.
 
@@ -38,6 +38,7 @@ Value evidence layer:
 - Real-world profile gap validators for physical product, service delivery, SaaS/API, certification/compliance, and dataset/research claims.
 - Policy-route hints for external AI agents.
 - Claims/evidence protocol baseline for claim support levels, reproducible methods, third-party attestations, challenges, and low-cost AI-agent evaluation.
+- Product/service credential layer documented as an accepted design direction for delegated operational keys and attribution of observations, complaints, tests, and corrections to the organization root authority chain.
 
 Carriers and auxiliary surfaces:
 
@@ -93,6 +94,7 @@ These are not considered done:
 
 - Broad external organization pilot.
 - Dedicated method, attestation, and challenge manifests from `CLAIMS_EVIDENCE_PROTOCOL.md`.
+- Delegated product/service key statements, product model passports, batch commitments, unit credentials, service delivery credentials, and observation binding checks from `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`.
 - Live ENS resolver reads through a chosen Ethereum RPC/provider path.
 - Real Onion disaster-recovery address registration.
 - Broad internet-scale crawling or search infrastructure.

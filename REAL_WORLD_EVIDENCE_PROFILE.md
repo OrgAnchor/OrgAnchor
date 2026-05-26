@@ -10,6 +10,7 @@ This profile defines the minimum useful package for real organizations with real
 
 ```text
 one scoped claim
+one product/service identity binding when the claim concerns a concrete product, batch, unit, delivery, or project
 one hash-bound evidence item
 one concrete recheck method
 one limitation statement
@@ -61,6 +62,7 @@ Minimum claim fields:
 - `id`
 - `claim_text`
 - `product_id` or service subject
+- credential reference when the claim concerns a concrete model, batch, unit, service delivery, or project
 - `claim_scope`
 - `claim_category`
 - `evidence_refs`
@@ -157,6 +159,7 @@ For real-world products and services, `L3_REPRODUCIBLE_METHOD` is the first leve
 Minimum package:
 
 - product model or batch claim;
+- product model passport, batch commitment, or unit credential when available;
 - inspection or test report evidence;
 - method describing how to verify report hash, batch identifier, standard, and pass/fail field;
 - limitation stating whether this proves only one batch, one sample, or one standard.
@@ -166,6 +169,7 @@ Minimum package:
 Minimum package:
 
 - narrow delivery claim;
+- service delivery credential or customer/project reference hash when available;
 - acceptance record, invoice record, or customer confirmation artifact;
 - method describing how to verify dates, scope, and acceptance status;
 - limitation covering confidentiality and whether the record proves quality or only delivery.
@@ -209,6 +213,7 @@ Rules:
 - missing public retrieval creates a risk gap;
 - stale evidence creates a warning;
 - challenged, corrected, or withdrawn claims stay visible in history;
+- positive and negative observations should bind to product or service credentials before being treated as attributable feedback;
 - OrgAnchor never upgrades a claim to final trust by itself.
 
 The practical effect is that honest small organizations can start with one narrow claim and one hash-bound evidence artifact, while deceptive organizations cannot cheaply turn marketing material into high-support evidence.
@@ -231,6 +236,9 @@ Not yet implemented:
 
 - signed third-party attestation manifests;
 - challenge/correction manifests;
+- delegated product/service key statements;
+- product model passports, batch commitments, unit credentials, and service delivery credentials;
+- observation binding checks that attach feedback to concrete product or service credentials;
 - automatic method execution;
 - deeper industry-specific validators beyond the five generic profile categories;
 - UI workflow for non-technical operators.
@@ -246,6 +254,7 @@ Can I fetch and hash-check the artifact?
 How do I recheck what the artifact is supposed to prove?
 Who produced the artifact?
 Is there independent support?
+Is the observed product or service actually linked to the organization's authority chain?
 What remains unproven?
 What should I ask for next?
 ```

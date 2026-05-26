@@ -44,6 +44,15 @@ The alpha value layer verifies evidence structure and support signals.
 It does not prove product truth, service quality, or claim sufficiency.
 ```
 
+Accepted but not yet implemented:
+
+- delegated product/service key statements;
+- product model passports;
+- batch commitments;
+- unit credentials;
+- service delivery credentials;
+- observation, complaint, challenge, and correction records bound to those credentials.
+
 ## First Implementation Slice
 
 The first practical protocol slice is claim-level AI-agent support output inside the existing value audit report. This slice is implemented in the current alpha line.
@@ -75,7 +84,13 @@ Next CLI/schema work should add:
    - Bind challenges to exact claims or evidence items.
    - Preserve older claims while making supersession visible.
 
-3. Low-burden templates
+3. Product/service credential layer
+   - Add delegated key statements scoped to brand, product line, model family, factory, region, service line, or batch.
+   - Add product model, batch, and unit credential schemas.
+   - Add service delivery credential schemas with optional customer co-signature.
+   - Bind positive and negative observations to product or service credentials before treating them as claim support.
+
+4. Low-burden templates
    - Provide starter templates for software, API uptime, professional service, physical product, and dataset claims.
    - Keep the minimum useful path to one narrow claim plus one hash-bound evidence item.
 
@@ -88,6 +103,7 @@ Later versions may add:
 - richer JSON Schema files for methods, attestations, and challenges;
 - optional W3C Verifiable Credentials or C2PA compatibility;
 - claim-category-specific validation profiles;
+- Merkle-friendly batch commitment and selective-disclosure unit membership proofs;
 - cross-directory claim-support comparison.
 
 ## Acceptance Rule
@@ -101,6 +117,7 @@ What does the support fail to prove?
 Who else attests to it?
 Can it be cheaply rechecked?
 What should I ask for next?
+Is the observed product or service actually linked to the organization's authority chain?
 ```
 
 It must not turn OrgAnchor into a centralized rating authority.

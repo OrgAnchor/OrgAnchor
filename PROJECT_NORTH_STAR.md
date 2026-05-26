@@ -68,6 +68,7 @@ Questions answered:
 ```text
 What does the organization claim to provide?
 What evidence supports, qualifies, or limits the claim?
+Can the observed product, batch, unit, service delivery, or project be linked back to the organization's authority chain?
 Is the evidence first-party, third-party, reproducible, stale, missing, or manual-check-only?
 What was corrected, superseded, or withdrawn?
 ```
@@ -76,6 +77,7 @@ Current artifacts:
 
 - `claims/product-claims.json`
 - `evidence/evidence-manifest.json`
+- future `credentials/*` and `observations/*` artifacts for product/service attribution
 - `reports/value-continuity-report.json`
 - `reports/value-continuity-report.md`
 

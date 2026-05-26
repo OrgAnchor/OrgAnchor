@@ -22,6 +22,29 @@ The goal is low verification cost, not centralized certification.
 
 OrgAnchor still does not decide whether an organization, product, vendor, or service is good. It exposes what is claimed, what supports it, how it can be rechecked, what remains weak, and where an external agent's policy must take over.
 
+## Sufficiency Over Completeness
+
+Real-world evidence profiles must not create a paperwork arms race.
+
+The profile should separate:
+
+```text
+Core = fields required for the claim or evidence item to be valid and understandable
+Extensions = additional context that may help stricter buyers, agents, or risk scenarios
+```
+
+Rules:
+
+```text
+missing Core = invalid or unsupported
+missing Extension = not provided
+partially filled Extension = expose gap, do not invalidate Core
+```
+
+The goal is not to make every organization fill every possible field. The goal is to show whether a claim is sufficiently supported for its intended purpose.
+
+See `EVIDENCE_SUFFICIENCY_MODEL.md`.
+
 ## Why Photos, Videos, And Marketing Are Not Enough
 
 AI-generated images, videos, screenshots, testimonials, and polished presentations are cheap to create and edit.

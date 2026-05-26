@@ -48,6 +48,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `PURPOSE_AND_VALUES.md`: project purpose and misuse boundaries.
 - `CLAIMS_EVIDENCE_PROTOCOL.md`: protocol baseline for structured claims, evidence, methods, third-party attestations, challenges, and AI-agent claim-support output.
 - `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`: implementation map showing what is already alpha-ready and what remains for method, attestation, challenge, and agent-output work.
+- `EVIDENCE_SUFFICIENCY_MODEL.md`: accepted design principle that OrgAnchor should judge evidence by purpose-fit sufficiency, not raw field count, completeness scores, or paperwork volume.
 - `REAL_WORLD_EVIDENCE_PROFILE.md`: minimum evidence profile for real products and services, including scoped claims, hash-bound evidence, recheck methods, limitations, and anti-gaming rules.
 - `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`: accepted design direction for delegated product/service signing keys, model/batch/unit credentials, service delivery credentials, feedback attribution to the organization root authority chain, and the five-class observation source ladder.
 - `VALUE_CONTINUITY_MODEL.md`: claims, evidence, outcomes, corrections, and value audit model.

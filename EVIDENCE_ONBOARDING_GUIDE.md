@@ -25,6 +25,29 @@ What are the limitations?
 
 OrgAnchor does not prove that a product claim is objectively true. It makes claims, evidence, publication, integrity, and traceability easier to verify.
 
+## Sufficiency First
+
+OrgAnchor onboarding should start with the organization's intended purpose, not with the largest possible form.
+
+The operating rule is:
+
+```text
+enough for the intended purpose, not complete for every possible purpose
+```
+
+For a low-risk discovery claim, a narrow signed claim and a small evidence package may be enough. For high-value procurement, safety-critical use, or regulatory review, external agents may ask for stronger evidence.
+
+Do not treat optional context as a failure.
+
+Use:
+
+```text
+Core fields = required to make the claim valid and understandable
+Extension fields = useful only when the organization wants or needs stronger support
+```
+
+Missing extension fields should be reported as `not provided`, not as proof that the organization is weak.
+
 ## Why Evidence Matters
 
 As AI-generated text, images, video, and websites become cheaper, human-only visual trust becomes weaker.

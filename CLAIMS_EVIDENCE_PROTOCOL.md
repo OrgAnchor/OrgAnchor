@@ -313,6 +313,39 @@ Safety agent: require regulator or lab evidence.
 Directory agent: index but do not rank unsupported claims highly.
 ```
 
+## Sufficiency Over Completeness
+
+OrgAnchor should evaluate evidence by purpose-fit sufficiency, not by raw field count.
+
+The protocol must distinguish:
+
+```text
+required_for_validity
+optional_for_context
+required_by_external_policy
+```
+
+Missing optional context is not a protocol failure. It should be reported as `NOT_PROVIDED` or `MAY_REQUEST_IF_POLICY_REQUIRES`, not as `FAIL`.
+
+Agent-facing outputs should prefer:
+
+```text
+fit_for
+not_enough_for
+missing_optional_context
+policy_note
+```
+
+They should avoid:
+
+```text
+universal completeness score
+field-count ranking
+trust badge based on paperwork volume
+```
+
+If an organization makes a narrow claim, OrgAnchor should not pressure it to prove claims it did not make. If it makes a stronger claim or targets a stricter use case, the evidence requirements rise with that purpose.
+
 ## Low-Cost Default Profile
 
 The protocol should not require a small organization to build a compliance department.

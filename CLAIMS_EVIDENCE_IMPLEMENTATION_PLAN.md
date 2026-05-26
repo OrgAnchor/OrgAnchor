@@ -44,6 +44,10 @@ The alpha value layer verifies evidence structure and support signals.
 It does not prove product truth, service quality, or claim sufficiency.
 ```
 
+Accepted design principle:
+
+- `EVIDENCE_SUFFICIENCY_MODEL.md` defines purpose-fit sufficiency over raw completeness, so validators and agent outputs should avoid field-count ranking and hidden mandatory extension fields.
+
 Accepted but not yet implemented:
 
 - delegated product/service key statements;
@@ -95,6 +99,8 @@ Next CLI/schema work should add:
 4. Low-burden templates
    - Provide starter templates for software, API uptime, professional service, physical product, and dataset claims.
    - Keep the minimum useful path to one narrow claim plus one hash-bound evidence item.
+   - Separate Core fields from Extensions so missing optional context does not invalidate a narrow valid claim.
+   - Add purpose-fit outputs such as `fit_for`, `not_enough_for`, and `missing_optional_context` instead of universal completeness scores.
 
 ## Later Work
 
@@ -120,6 +126,7 @@ Who else attests to it?
 Can it be cheaply rechecked?
 What should I ask for next?
 Is the observed product or service actually linked to the organization's authority chain?
+Is the evidence package sufficient for this purpose without rewarding unnecessary field volume?
 ```
 
 It must not turn OrgAnchor into a centralized rating authority.

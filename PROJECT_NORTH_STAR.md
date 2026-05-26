@@ -129,6 +129,7 @@ Before adding or expanding a major feature, answer these questions:
 6. Does it avoid creating a closed marketplace, paid trust badge, or central gatekeeper?
 7. Can the result be exported, mirrored, verified, or reproduced by others?
 8. Is the operational burden reasonable for a serious small organization?
+9. Does it prefer purpose-fit sufficiency over raw completeness or field-count competition?
 
 If the answer is mostly no, the feature should be rejected, postponed, or treated as an experiment.
 
@@ -142,6 +143,7 @@ OrgAnchor should optimize for:
 - signed claims and evidence
 - transparent gaps and corrections
 - repeatable adoption by small and serious organizations
+- purpose-fit sufficiency instead of paperwork volume
 - portable public artifacts
 - native adopter discoverability through origin-owned Beacon signals
 - open discovery that can be mirrored or forked
@@ -159,6 +161,8 @@ OrgAnchor should not optimize for:
 - becoming a social network
 - maximizing paid placement
 - locking discovery into one official index
+- rewarding organizations for filling the most optional fields
+- turning optional context into hidden mandatory paperwork
 - replacing legal, scientific, financial, or safety review
 
 Those may look adjacent, but they pull the project away from the core loop.

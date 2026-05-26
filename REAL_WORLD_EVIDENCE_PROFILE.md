@@ -152,6 +152,24 @@ For real-world products and services, `L3_REPRODUCIBLE_METHOD` is the first leve
 
 `L4_INDEPENDENT_ATTESTATION` is stronger, but OrgAnchor still does not decide whether the attester is reliable. That remains external policy.
 
+## Observation Source Ladder
+
+For real-world products and services, support should also expose the source class behind each evidence item or observation:
+
+```text
+S1_FIRST_PARTY_MATERIALS = self-published specifications, production notes, internal tests, manuals, or logs
+S2_THIRD_PARTY_DOCUMENTS = lab, auditor, certifier, customer, platform, or regulator records, with sample source and relationship disclosed
+S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING = market, warehouse, distributor, or customer-site samples not selected by the organization
+S4_FIELD_USE_OBSERVATION = real-use records from customers, repairers, distributors, sensors, warranty, returns, support, or telemetry
+S5_PUBLIC_CHALLENGE_AND_NEGATIVE_EVIDENCE = counterexamples, failed samples, complaints, failed retests, corrections, withdrawals, or unresolved disputes
+```
+
+The main anti-gaming value is in S3, S4, and S5.
+
+S1 and S2 can be useful, but they are easy to curate. S3 addresses hand-picked sample risk. S4 captures normal operational reality. S5 prevents the evidence layer from becoming a positive-only showcase.
+
+When a concrete product, batch, unit, service delivery, or project is involved, S3-S5 observations should bind to product/service credentials as described in `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`.
+
 ## Entity Organization Templates
 
 ### Physical Product

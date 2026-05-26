@@ -212,6 +212,7 @@ The layer records:
 - artifact hashes and locations,
 - provenance and reproducibility metadata,
 - third-party references where available,
+- observation source classes, including first-party materials, third-party documents, random purchase or random sampling, field-use observation, and public challenge or negative evidence,
 - stale, unsupported, failed, or manual-check gaps.
 
 The output is not a score. It is a structured evidence trail that external agents can evaluate according to their own policies.

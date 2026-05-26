@@ -51,6 +51,7 @@ Accepted but not yet implemented:
 - batch commitments;
 - unit credentials;
 - service delivery credentials;
+- observation source classification for first-party materials, third-party documents, random purchase/sampling, field-use observation, and public challenge or negative evidence;
 - observation, complaint, challenge, and correction records bound to those credentials.
 
 ## First Implementation Slice
@@ -88,6 +89,7 @@ Next CLI/schema work should add:
    - Add delegated key statements scoped to brand, product line, model family, factory, region, service line, or batch.
    - Add product model, batch, and unit credential schemas.
    - Add service delivery credential schemas with optional customer co-signature.
+   - Classify observations as first-party, third-party, random purchase/sampling, field-use, or public challenge/negative evidence.
    - Bind positive and negative observations to product or service credentials before treating them as claim support.
 
 4. Low-burden templates

@@ -38,7 +38,7 @@ Value evidence layer:
 - Real-world profile gap validators for physical product, service delivery, SaaS/API, certification/compliance, and dataset/research claims.
 - Policy-route hints for external AI agents.
 - Claims/evidence protocol baseline for claim support levels, reproducible methods, third-party attestations, challenges, and low-cost AI-agent evaluation.
-- Product/service credential layer documented as an accepted design direction for delegated operational keys and attribution of observations, complaints, tests, and corrections to the organization root authority chain.
+- Product/service credential layer documented as an accepted design direction for delegated operational keys, five-class observation sources, and attribution of observations, complaints, tests, and corrections to the organization root authority chain.
 
 Carriers and auxiliary surfaces:
 

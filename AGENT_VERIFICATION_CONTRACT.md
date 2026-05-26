@@ -315,6 +315,30 @@ The result separates:
 
 External agents should treat this result as input, not as the final answer.
 
+## Future Purpose/Evidence/Challenge Fields
+
+Future compact and full results should follow `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
+
+The direction is to expose:
+
+```text
+purpose_profile
+purpose_status
+fit_for
+not_enough_for
+missing_for_purpose
+missing_optional_context
+source_classes_present
+credential_binding_status
+challenge_state
+organization_response_status
+remaining_policy_questions
+next_best_actions
+not_a_trust_decision
+```
+
+These fields are routing and sufficiency signals. They are not a ranking, recommendation, trust score, or purchase decision.
+
 ## Policy Route Values
 
 `policy_route.route` is a low-friction routing hint. It does not certify the organization.

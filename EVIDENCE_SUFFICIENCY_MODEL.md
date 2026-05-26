@@ -16,6 +16,8 @@ Sufficiency over completeness.
 
 OrgAnchor should report whether a claim's evidence is sufficient for a stated purpose, not whether the organization has filled the largest possible data package.
 
+The purpose profiles, observation source classes, and challenge/correction lifecycle that make "stated purpose" concrete are defined in `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
+
 ## Core Rule
 
 OrgAnchor does not reward volume.

@@ -130,7 +130,7 @@ Evidence may be:
 - third-party reports;
 - incident or correction records.
 
-OrgAnchor should also classify evidence and observations by source class:
+OrgAnchor should also classify evidence and observations by source class, following `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`:
 
 ```text
 S1_FIRST_PARTY_MATERIALS = specifications, manuals, internal tests, production descriptions, or self-issued logs
@@ -143,6 +143,8 @@ S5_PUBLIC_CHALLENGE_AND_NEGATIVE_EVIDENCE = counterexamples, failed samples, com
 This ladder is not a score. It is a provenance and observation model. A consuming agent can prefer stronger or more relevant classes according to its own policy.
 
 For product and service claims, S3, S4, and S5 are especially important because they reduce dependence on supplier-selected proof material.
+
+Purpose profiles and challenge/correction lifecycle are defined in `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`. Public challenge review is not a sixth ascending purpose profile; it is a horizontal lifecycle mode that can apply to any purpose.
 
 Required evidence fields:
 

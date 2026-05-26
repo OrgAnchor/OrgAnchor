@@ -45,6 +45,8 @@ The goal is not to make every organization fill every possible field. The goal i
 
 See `EVIDENCE_SUFFICIENCY_MODEL.md`.
 
+The broader integration of purpose profiles, observation source classes, and challenge/correction lifecycle is defined in `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
+
 ## Why Photos, Videos, And Marketing Are Not Enough
 
 AI-generated images, videos, screenshots, testimonials, and polished presentations are cheap to create and edit.
@@ -177,7 +179,7 @@ For real-world products and services, `L3_REPRODUCIBLE_METHOD` is the first leve
 
 ## Observation Source Ladder
 
-For real-world products and services, support should also expose the source class behind each evidence item or observation:
+For real-world products and services, support should also expose the source class behind each evidence item or observation, following `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`:
 
 ```text
 S1_FIRST_PARTY_MATERIALS = self-published specifications, production notes, internal tests, manuals, or logs

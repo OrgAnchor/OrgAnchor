@@ -46,6 +46,7 @@ It does not prove product truth, service quality, or claim sufficiency.
 
 Accepted design principle:
 
+- `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md` defines the three-axis model: P1-P5 purpose profiles, S1-S5 observation source classes, and challenge/correction lifecycle states.
 - `EVIDENCE_SUFFICIENCY_MODEL.md` defines purpose-fit sufficiency over raw completeness, so validators and agent outputs should avoid field-count ranking and hidden mandatory extension fields.
 
 Accepted but not yet implemented:
@@ -102,6 +103,12 @@ Next CLI/schema work should add:
    - Separate Core fields from Extensions so missing optional context does not invalidate a narrow valid claim.
    - Add purpose-fit outputs such as `fit_for`, `not_enough_for`, and `missing_optional_context` instead of universal completeness scores.
 
+5. Purpose/evidence/challenge model outputs
+   - Add P1-P5 purpose-profile validators.
+   - Add S1-S5 observation source-class fields.
+   - Add challenge/correction lifecycle states across all purpose profiles.
+   - Treat public challenge review as a horizontal lifecycle mode, not as a sixth ascending purpose profile.
+
 ## Later Work
 
 Later versions may add:
@@ -127,6 +134,7 @@ Can it be cheaply rechecked?
 What should I ask for next?
 Is the observed product or service actually linked to the organization's authority chain?
 Is the evidence package sufficient for this purpose without rewarding unnecessary field volume?
+What source classes and challenge/correction states apply?
 ```
 
 It must not turn OrgAnchor into a centralized rating authority.

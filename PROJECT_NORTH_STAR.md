@@ -116,6 +116,7 @@ Current design records:
 - `DISCOVERY_STRATEGY.md`
 - `ORGANCHOR_BEACON.md`
 - `DIRECTORY_MODEL.md`
+- `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`
 
 ## Alignment Questions
 
@@ -144,6 +145,7 @@ OrgAnchor should optimize for:
 - transparent gaps and corrections
 - repeatable adoption by small and serious organizations
 - purpose-fit sufficiency instead of paperwork volume
+- explicit separation of purpose profiles, evidence source classes, and challenge/correction lifecycle
 - portable public artifacts
 - native adopter discoverability through origin-owned Beacon signals
 - open discovery that can be mirrored or forked

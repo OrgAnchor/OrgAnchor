@@ -6,6 +6,8 @@ Status: Accepted design direction, not yet implemented.
 
 The product and service credential layer binds real-world products, service deliveries, observations, complaints, tests, and corrections back to the adopting organization's root authority without using the root private key for high-frequency operational signing.
 
+This layer is part of the broader P/S/C model in `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`: purpose profiles define intended use, observation source classes describe evidence origin, and challenge/correction lifecycle records disputes and updates over time.
+
 It exists to close a critical gap in value evidence:
 
 ```text

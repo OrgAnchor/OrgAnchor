@@ -18,6 +18,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `MVP_LAUNCH_CHECKLIST.md`: alpha MVP launch gate for package publication and first external pilot readiness.
 - `CHANGELOG.md`: release-facing change history.
 - `RELEASE_INTEGRITY.md`: release consistency gate for source, package, public `/verify`, carrier receipts, and notes.
+- `RELEASE_PUBLISHING_PLAN.md`: operator publishing plan for npm, GitHub tags, GitHub releases, and trusted publishing.
 - `NPM_TRUSTED_PUBLISHING.md`: GitHub Actions OIDC publishing setup so npm releases do not rely on repeated local login or long-lived publish tokens.
 
 ## Core Design Documents
@@ -51,7 +52,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`: canonical three-axis model for purpose profiles, observation source classes, and challenge/correction lifecycle.
 - `EVIDENCE_SUFFICIENCY_MODEL.md`: accepted design principle that OrgAnchor should judge evidence by purpose-fit sufficiency, not raw field count, completeness scores, or paperwork volume.
 - `REAL_WORLD_EVIDENCE_PROFILE.md`: minimum evidence profile for real products and services, including scoped claims, hash-bound evidence, recheck methods, limitations, and anti-gaming rules.
-- `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`: accepted design direction for delegated product/service signing keys, model/batch/unit credentials, service delivery credentials, feedback attribution to the organization root authority chain, and the five-class observation source ladder.
+- `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`: accepted design direction for delegated product/service signing keys, model/batch/unit credentials, service delivery credentials, and feedback attribution to the organization root authority chain.
 - `VALUE_CONTINUITY_MODEL.md`: claims, evidence, outcomes, corrections, and value audit model.
 - `EVIDENCE_MODEL.md`: evidence and claims data model.
 - `EVIDENCE_ONBOARDING_GUIDE.md`: practical evidence onboarding guide.
@@ -104,9 +105,9 @@ npm run agent:demo
 - `examples/directory/directory-origins.json`: static Directory build input example.
 - `templates/self-pilot/`: templates for creating a separate OrgAnchor self-pilot workspace.
 
-## Historical Or Local Notes
+## Source-Only Historical Or Local Notes
 
-The source repository may also contain milestone review or ignored local notes such as `ACCEPTANCE_REVIEW_*.md`, `RELEASE_STATE_*.md`, `CHANGESET_PLAN_*.md`, `DIFF_REVIEW_*.md`, `SELF_PILOT_*.md`, `CLOUDFLARE_*.md`, and `DOMAIN_CANDIDATE_REPORT.md`. These record decisions, review snapshots, release-state snapshots, commit planning, and provider-specific experience from OrgAnchor's own self-pilot, but they are not package-facing operator instructions.
+The source repository may also contain milestone review, release hygiene, pilot decision, or ignored local notes such as `PILOT_PLAN.md`, `V1_RELEASE_CHECKLIST.md`, `ACCEPTANCE_REVIEW_*.md`, `RELEASE_STATE_*.md`, `CHANGESET_PLAN_*.md`, `DIFF_REVIEW_*.md`, `SELF_PILOT_*.md`, `CLOUDFLARE_*.md`, and `DOMAIN_CANDIDATE_REPORT.md`. These record decisions, review snapshots, release-state snapshots, commit planning, and provider-specific experience from OrgAnchor's own self-pilot, but they are not package-facing operator instructions.
 
 The current operational self-pilot fact source lives outside this source repository:
 

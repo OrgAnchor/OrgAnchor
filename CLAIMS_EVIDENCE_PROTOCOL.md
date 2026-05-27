@@ -130,17 +130,9 @@ Evidence may be:
 - third-party reports;
 - incident or correction records.
 
-OrgAnchor should also classify evidence and observations by source class, following `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`:
+OrgAnchor should also classify evidence and observations by source class, following the canonical S1-S5 definitions in `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
 
-```text
-S1_FIRST_PARTY_MATERIALS = specifications, manuals, internal tests, production descriptions, or self-issued logs
-S2_THIRD_PARTY_DOCUMENTS = lab reports, inspections, certifications, audits, customer confirmations, or platform records
-S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING = tests or observations over market-bought, warehouse-sampled, distributor-held, or customer-site samples not selected by the organization
-S4_FIELD_USE_OBSERVATION = customer, repair, distributor, sensor, warranty, return, support, or telemetry records from real use
-S5_PUBLIC_CHALLENGE_AND_NEGATIVE_EVIDENCE = counterexamples, failed samples, complaints, failed retests, contradictions, corrections, withdrawals, or unresolved disputes
-```
-
-This ladder is not a score. It is a provenance and observation model. A consuming agent can prefer stronger or more relevant classes according to its own policy.
+This source-class axis is not a score. It is a provenance and observation model. A consuming agent can prefer stronger or more relevant classes according to its own policy.
 
 For product and service claims, S3, S4, and S5 are especially important because they reduce dependence on supplier-selected proof material.
 

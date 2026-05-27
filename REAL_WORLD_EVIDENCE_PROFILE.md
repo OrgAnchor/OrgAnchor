@@ -179,15 +179,7 @@ For real-world products and services, `L3_REPRODUCIBLE_METHOD` is the first leve
 
 ## Observation Source Ladder
 
-For real-world products and services, support should also expose the source class behind each evidence item or observation, following `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`:
-
-```text
-S1_FIRST_PARTY_MATERIALS = self-published specifications, production notes, internal tests, manuals, or logs
-S2_THIRD_PARTY_DOCUMENTS = lab, auditor, certifier, customer, platform, or regulator records, with sample source and relationship disclosed
-S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING = market, warehouse, distributor, or customer-site samples not selected by the organization
-S4_FIELD_USE_OBSERVATION = real-use records from customers, repairers, distributors, sensors, warranty, returns, support, or telemetry
-S5_PUBLIC_CHALLENGE_AND_NEGATIVE_EVIDENCE = counterexamples, failed samples, complaints, failed retests, corrections, withdrawals, or unresolved disputes
-```
+For real-world products and services, support should expose the source class behind each evidence item or observation, using the canonical S1-S5 definitions in `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
 
 The main anti-gaming value is in S3, S4, and S5.
 

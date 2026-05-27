@@ -174,6 +174,10 @@ If a richer search service is added later, it should be an optional convenience 
 
 ## Anti-Capture Rules
 
+An official OrgAnchor Directory, if one exists, is a reference Directory node. It has no protocol privilege.
+
+OrgAnchor does not issue organization IDs, grant OrgAnchor status, or make official Directory inclusion a condition of adoption. A complete adopter can publish an origin-owned Beacon and verifiable package without asking the OrgAnchor project for approval.
+
 The official OrgAnchor Directory, if built, should follow these rules:
 
 1. Export all public records in machine-readable form.
@@ -186,6 +190,8 @@ The official OrgAnchor Directory, if built, should follow these rules:
 8. Let external agents apply their own policy.
 
 These rules are meant to prevent the discovery layer from capturing the value of the verification layer.
+
+Third-party Directory nodes may use the same OrgAnchor data formats while applying their own explicit inclusion, exclusion, filtering, update-frequency, category, region, health, payment, and display rules. This is normal. A Directory policy only explains how that Directory produced its records; it does not define whether an organization is a valid OrgAnchor adopter.
 
 ## Relationship To AI Agents
 

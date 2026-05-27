@@ -106,6 +106,8 @@ Next CLI/schema work should add:
 5. Purpose/evidence/challenge model outputs
    - Add P1-P5 purpose-profile validators.
    - Add S1-S5 observation source-class fields.
+   - Add S2 effective-level extraction so unanchored external-looking material is exposed as `UNVERIFIED_EXTERNAL_MATERIAL`, not effective S2.
+   - Add bounded S2 verified-route checks for `VR-S2-001 ISSUER_ORIGIN_CONFIRMATION` and `VR-S2-002 PUBLIC_REGISTRY_CONFIRMATION`.
    - Add challenge/correction lifecycle states across all purpose profiles.
    - Treat public challenge review as a horizontal lifecycle mode, not as a sixth ascending purpose profile.
 
@@ -135,6 +137,7 @@ What should I ask for next?
 Is the observed product or service actually linked to the organization's authority chain?
 Is the evidence package sufficient for this purpose without rewarding unnecessary field volume?
 What source classes and challenge/correction states apply?
+Which S2 materials have external recheck anchors, and which are only unverified external material?
 ```
 
 It must not turn OrgAnchor into a centralized rating authority.

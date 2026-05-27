@@ -140,6 +140,8 @@ Core package:
 minimum fields needed to make the claim or third-party document understandable, signed or attributable, and hash-bound
 ```
 
+For S2, Core also requires an external recheck anchor. A third-party-looking PDF, scan, screenshot, logo, or organization-hosted copy without such an anchor is not effective S2; it should be exposed as `UNVERIFIED_EXTERNAL_MATERIAL`.
+
 Extension package:
 
 ```text

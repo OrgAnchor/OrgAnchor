@@ -268,6 +268,10 @@ limitations
 These records must still expose:
 
 ```text
+S2 effective level
+verification route
+external recheck anchor
+organization claimed support
 sample source
 who selected the sample
 commercial relationship or conflict of interest
@@ -277,6 +281,8 @@ limitations
 ```
 
 Third-party status alone is not enough. A paid report over a supplier-selected sample is weaker than an independent record over a randomly obtained product.
+
+Third-party-looking material without an external recheck anchor should be exposed as `UNVERIFIED_EXTERNAL_MATERIAL`, not as effective S2.
 
 ### S3 Random Purchase Or Random Sampling
 

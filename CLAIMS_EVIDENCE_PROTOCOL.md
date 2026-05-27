@@ -134,6 +134,8 @@ OrgAnchor should also classify evidence and observations by source class, follow
 
 This source-class axis is not a score. It is a provenance and observation model. A consuming agent can prefer stronger or more relevant classes according to its own policy.
 
+S2 third-party material must follow the S2 boundary in `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`: organization-submitted external-looking material without an external recheck anchor is `UNVERIFIED_EXTERNAL_MATERIAL`, not effective S2.
+
 For product and service claims, S3, S4, and S5 are especially important because they reduce dependence on supplier-selected proof material.
 
 Purpose profiles and challenge/correction lifecycle are defined in `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`. Public challenge review is not a sixth ascending purpose profile; it is a horizontal lifecycle mode that can apply to any purpose.

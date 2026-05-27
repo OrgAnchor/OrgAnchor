@@ -247,6 +247,77 @@ S1 and S2 can support lower-friction discovery and screening.
 
 S3, S4, and S5 provide the main anti-gaming value for higher-risk or higher-value purposes.
 
+### S2 Third-Party Document Boundary
+
+S2 is intentionally narrower than "a file that looks like it came from a third party."
+
+In the default low-friction path, the submitting party for S2 is the organization itself. The organization publishes the third-party material metadata, claims which claim or product/service scope it supports, and accepts accountability for that linkage.
+
+OrgAnchor records that claimed linkage and performs bounded mechanical checks. OrgAnchor does not infer complex legal, technical, regulatory, or scientific scope support unless a specific verified route adapter or issuer-backed signature explicitly supports that stronger check.
+
+Minimum valid S2 requires at least one external recheck anchor:
+
+```text
+issuer origin URL
+public registry record
+report or certificate lookup path
+platform public record
+issuer digital signature
+issuer-backed OrgAnchor signature
+```
+
+Material that only contains a PDF, scan, screenshot, logo, or organization-hosted copy without an external recheck anchor is not valid S2. It should be classified as:
+
+```text
+UNVERIFIED_EXTERNAL_MATERIAL
+```
+
+That material can remain visible as a lead or pending attachment, but it must not count as effective third-party evidence for P3, P4, or P5.
+
+Recommended third-party material states:
+
+| Level | Name | Meaning |
+| --- | --- | --- |
+| `CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL` | Unverified external material | Organization submitted material that appears external but lacks an external recheck anchor; not valid S2 |
+| `S2_1_GENERIC_ROUTE_PROVIDED` | Generic route provided | Organization provided a standard generic route template with a recheck anchor, identifiers, scope, dates, and limitations |
+| `S2_2_VERIFIED_ROUTE_CHECKED` | Verified route checked | OrgAnchor or a route adapter performed bounded mechanical checks against a predefined route |
+| `S2_3_ISSUER_BACKED` | Issuer backed | The issuer signed, hosted, or OrgAnchor-backed the material or the claimed linkage |
+
+Initial route families:
+
+```text
+VR-S2-001 ISSUER_ORIGIN_CONFIRMATION
+VR-S2-002 PUBLIC_REGISTRY_CONFIRMATION
+```
+
+These routes answer narrow questions:
+
+```text
+Can the material or record be located from the issuer's own origin?
+Can the material or record be located from a public registry or public platform record?
+```
+
+They do not answer:
+
+```text
+Is the issuer authoritative?
+Is the test method sufficient?
+Does the certificate legally cover every intended use?
+Is the organization a good supplier?
+```
+
+Agent-facing S2 outputs should distinguish:
+
+```text
+organization_claimed_support
+mechanical_checks
+verification_route
+s2_effective_level
+external_recheck_anchor_present
+scope_review_required
+not_a_trust_decision
+```
+
 ## C-Axis: Challenge And Correction Lifecycle
 
 Challenge and correction states describe time, dispute, and revision status.
@@ -378,7 +449,7 @@ Recommended submission boundary:
 
 ```text
 S1 = organization-submitted
-S2 = organization, issuer, registry, hub, or crawler-submitted with issuer/source disclosure
+S2 = organization-submitted third-party material with an external recheck anchor; issuer-backed signatures are an optional strengthening path
 S3 = external sampler, buyer, lab, platform, channel, or hub-submitted
 S4 = customer, repairer, channel, platform, system, or hub-submitted; organization-controlled sources must be labeled
 S5 = externally submitter-open but structurally validated and graded by identity, credential binding, artifact hashes, and response state

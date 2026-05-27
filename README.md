@@ -25,7 +25,7 @@ OrgAnchor is not only a tool for keeping an organizational name alive. Its purpo
 
 OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
 
-See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `IMPLEMENTATION_STATUS.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, real-world evidence profile, product/service credential direction, implementation map, and document map.
+See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `IMPLEMENTATION_STATUS.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `PACKAGE_HEALTH_LAYER.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, package health model, real-world evidence profile, product/service credential direction, implementation map, and document map.
 
 The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DISCOVERY_TAXONOMY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
 
@@ -34,6 +34,8 @@ The accepted but not yet implemented `PRODUCT_SERVICE_CREDENTIAL_LAYER.md` defin
 The accepted `EVIDENCE_SUFFICIENCY_MODEL.md` prevents the evidence layer from becoming a paperwork race: OrgAnchor should report whether evidence is sufficient for a stated purpose, not reward raw field count.
 
 The accepted but not yet implemented `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md` defines the three-axis model for purpose profiles, observation source classes, and challenge/correction lifecycle. Public challenge review is a horizontal lifecycle mode, not a sixth ascending purpose profile.
+
+The accepted but not yet implemented `PACKAGE_HEALTH_LAYER.md` defines how organizations and external observers should expose freshness, broken links, expired evidence, withdrawn claims, maintenance policy, and low-cost agent fetch recommendations without turning health into a trust score.
 
 ## Current Status
 

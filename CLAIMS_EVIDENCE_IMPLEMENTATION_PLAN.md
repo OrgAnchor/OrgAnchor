@@ -111,6 +111,12 @@ Next CLI/schema work should add:
    - Add challenge/correction lifecycle states across all purpose profiles.
    - Treat public challenge review as a horizontal lifecycle mode, not as a sixth ascending purpose profile.
 
+6. Package health layer
+   - Add self-declared package health summaries from local package state.
+   - Add observed health reports for direct origin inspection by external agents, crawlers, or directories.
+   - Add Beacon-level health summaries and agent fetch recommendations.
+   - Keep package health separate from trust scoring or supplier ranking.
+
 ## Later Work
 
 Later versions may add:
@@ -138,6 +144,7 @@ Is the observed product or service actually linked to the organization's authori
 Is the evidence package sufficient for this purpose without rewarding unnecessary field volume?
 What source classes and challenge/correction states apply?
 Which S2 materials have external recheck anchors, and which are only unverified external material?
+Is the package fresh, reachable, and worth fetching further?
 ```
 
 It must not turn OrgAnchor into a centralized rating authority.

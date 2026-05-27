@@ -12,11 +12,12 @@ Observation Source Classes
 Challenge and Correction Lifecycle
 Evidence Sufficiency
 Product and Service Credential Binding
+Package Health
 ```
 
 It exists to prevent concept drift.
 
-OrgAnchor should not treat "more fields" as "more trust." It should expose whether an organization's public package is sufficient for a stated purpose, what kinds of evidence or observations support it, and whether the relevant claims have been challenged, corrected, withdrawn, or superseded.
+OrgAnchor should not treat "more fields" as "more trust." It should expose whether an organization's public package is sufficient for a stated purpose, what kinds of evidence or observations support it, whether the relevant claims have been challenged, corrected, withdrawn, or superseded, and whether the package is fresh enough for an external agent to fetch efficiently.
 
 ## Core Rule
 
@@ -318,6 +319,8 @@ scope_review_required
 not_a_trust_decision
 ```
 
+Package health outputs are defined in `PACKAGE_HEALTH_LAYER.md`. Health is a usability and maintenance signal, not a trust score.
+
 ## C-Axis: Challenge And Correction Lifecycle
 
 Challenge and correction states describe time, dispute, and revision status.
@@ -469,7 +472,8 @@ Future implementation should add:
 4. Purpose-fit compact agent output.
 5. Value audit integration for P/S/C axes.
 6. Directory and Beacon outputs that expose purpose fit without ranking by field count.
-7. Templates that ask the target purpose first and generate only the minimum relevant core fields.
+7. Package health summaries and observed health reports that protect external agents from stale, broken, or expired packages.
+8. Templates that ask the target purpose first and generate only the minimum relevant core fields.
 
 ## Acceptance Rule
 
@@ -482,6 +486,7 @@ Are the relevant claims or credentials challenged, corrected, withdrawn, superse
 Is a concrete product or service observation bound to the organization authority chain?
 What remains a policy question for the consuming party?
 What should be requested next, only if the target purpose requires it?
+Is the package fresh and reachable enough to fetch further?
 ```
 
 It fails if OrgAnchor becomes:

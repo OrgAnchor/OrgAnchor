@@ -51,6 +51,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`: implementation map showing what is already alpha-ready and what remains for method, attestation, challenge, and agent-output work.
 - `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`: canonical three-axis model for purpose profiles, observation source classes, and challenge/correction lifecycle.
 - `EVIDENCE_SUFFICIENCY_MODEL.md`: accepted design principle that OrgAnchor should judge evidence by purpose-fit sufficiency, not raw field count, completeness scores, or paperwork volume.
+- `PACKAGE_HEALTH_LAYER.md`: accepted design model for self-declared and observed package health, maintenance responsibility, stale/broken/expired evidence visibility, and low-cost agent fetch decisions.
 - `REAL_WORLD_EVIDENCE_PROFILE.md`: minimum evidence profile for real products and services, including scoped claims, hash-bound evidence, recheck methods, limitations, and anti-gaming rules.
 - `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`: accepted design direction for delegated product/service signing keys, model/batch/unit credentials, service delivery credentials, and feedback attribution to the organization root authority chain.
 - `VALUE_CONTINUITY_MODEL.md`: claims, evidence, outcomes, corrections, and value audit model.

@@ -112,9 +112,10 @@ Next CLI/schema work should add:
    - Treat public challenge review as a horizontal lifecycle mode, not as a sixth ascending purpose profile.
 
 6. Package health layer
-   - Add self-declared package health summaries from local package state.
-   - Add observed health reports for direct origin inspection by external agents, crawlers, or directories.
-   - Add Beacon-level health summaries and agent fetch recommendations.
+   - Add `organchor health inspect <origin>` so a third-party agent can produce an observed health report without becoming an OrgAnchor adopter.
+   - Add `organchor observation lookup <origin> --directory <snapshot-or-url>` so agents can cheaply read existing Directory health summaries before fetching full packages.
+   - Add Directory `observed_health_summary` fields and optional `health-observations.ndjson` exports.
+   - Add self-declared package health summaries and Beacon-level fetch recommendations after the observed-health read path exists.
    - Keep package health separate from trust scoring or supplier ranking.
 
 ## Later Work

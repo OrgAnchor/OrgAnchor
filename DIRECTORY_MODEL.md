@@ -153,6 +153,7 @@ Recommended roles:
 - `directory-snapshot.json`: current aggregated view.
 - `directory-policy.json`: crawl, inclusion, exclusion, ranking, and payment policy.
 - `directory-signature.json`: signature over the exported snapshot or feed hash.
+- `health-observations.ndjson`: optional structured package-health observations produced by Directory sweeps or accepted external observations.
 
 Large evidence files remain at the organization's own locations. The Directory records links, hashes, and verification summaries.
 
@@ -214,6 +215,15 @@ Agents that distrust all Directory nodes should still be able to run their own B
 
 Directory nodes should record verifier-derived `conformance_status` values. They must not promote an origin from `CLAIMED_SIGNAL` or `BEACON_SHAPE_PASS` to full adoption based on self-declared Beacon fields.
 
+Directory nodes that publish health observations should treat them as operational findings, not trust judgments. A Directory may expose broken links, expired evidence, hash mismatches, stale packages, reproduction status, and observation state counts. It should also publish how often it sweeps, which checks it performs, whether it accepts external observations, and whether it reproduces observations before marking them confirmed.
+
+Demand-side agents should not need to implement this from scratch. The planned low-friction path is:
+
+```bash
+organchor observation lookup https://example.org --directory directory-snapshot.json
+organchor health inspect https://example.org --out health-observation.json
+```
+
 ## Current And Future CLI Shape
 
 Implemented commands:
@@ -236,6 +246,13 @@ organchor beacon sweep --seeds seeds.txt --out discovered-organchor.ndjson
 Generated Directory policy files explicitly record inclusion, exclusion, ranking, payment, stale-record, and mirroring rules. The important rule is stable: Directory inclusion helps discovery, but it never replaces direct origin verification and never becomes proof that a supplier is best.
 
 The first implementation prefers static files over a hosted service.
+
+Planned package-health commands:
+
+```bash
+organchor health inspect https://example.org --out health-observation.json
+organchor observation lookup https://example.org --directory directory-snapshot.json
+```
 
 ## Roadmap
 

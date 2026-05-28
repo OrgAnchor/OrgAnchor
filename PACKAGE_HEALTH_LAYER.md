@@ -144,6 +144,136 @@ organization-cited external report
 
 It does not need to be stored in the organization's official package, and it must not become a central trust root.
 
+## Directory Health Observation Layer
+
+Observed health should not become a separate discovery network.
+
+It should reuse the Directory and Beacon model:
+
+```text
+Beacon = organization self-declared health and package pointers
+Directory = shared sweep result, observed health aggregation, and low-cost lookup
+Agent = final verifier and policy decision maker
+```
+
+A Directory that lists organizations should publish its own health observation policy:
+
+```text
+sweep_interval_days
+last_sweep_at
+health_checks_performed
+s2_anchor_check_policy
+broken_link_threshold
+expired_evidence_policy
+external_observation_intake_policy
+correction_response_policy
+```
+
+The Directory is not required to catch every problem. It is required to be explicit about what it checks, how often it checks, and how it treats external observations.
+
+## Third-Party Agent Tooling
+
+Demand-side agents should not be expected to read the full OrgAnchor specification and hand-build observation logic.
+
+OrgAnchor should provide a standard client path:
+
+```bash
+organchor observation lookup https://supplier.example --directory directory-snapshot.json
+organchor health inspect https://supplier.example --out health-observation.json
+```
+
+Optional later submission:
+
+```bash
+organchor observation submit --directory https://directory.example --in health-observation.json
+```
+
+Equivalent library functions should expose the same behavior:
+
+```text
+observation.lookup(origin, directory)
+health.inspect(origin)
+observation.submit(directory, observation)
+```
+
+The first two are the minimum useful surface. Submission and intake are later work.
+
+## Agent Incentive Model
+
+A demand-side agent does not need to be an OrgAnchor adopter.
+
+Its first incentive is self-interest:
+
+```text
+I inspected this origin once.
+I want a reusable local cache so I do not spend future requests, tokens, or time on the same broken package.
+```
+
+Therefore health inspection should always produce a local observation record that is useful even if it is never submitted publicly.
+
+Public submission is optional. A Directory may encourage submission by returning:
+
+```text
+observation receipt
+duplicate detection
+reproduction status
+inclusion in a later snapshot
+correction or response notification
+API quota or operational benefit
+```
+
+These incentives are implementation choices. They must not turn observation submission into paid trust, supplier ranking, or official punishment.
+
+## Observation State Model
+
+External observations should be graded by verification state, not treated as immediate truth.
+
+Recommended states:
+
+```text
+LEAD
+SIGNED_OBSERVATION
+REPRODUCED_BY_DIRECTORY
+MULTI_OBSERVER_CONFIRMED
+DISPUTED
+CORRECTED
+WITHDRAWN
+```
+
+Meanings:
+
+| State | Meaning |
+| --- | --- |
+| `LEAD` | A structured but unreproduced report or local observation |
+| `SIGNED_OBSERVATION` | The observer signed the observation record |
+| `REPRODUCED_BY_DIRECTORY` | A Directory independently reproduced the mechanical finding |
+| `MULTI_OBSERVER_CONFIRMED` | Multiple independent observers reported compatible findings |
+| `DISPUTED` | The target organization or another observer disputes the finding |
+| `CORRECTED` | The target organization corrected or superseded the affected material |
+| `WITHDRAWN` | The observer withdrew the observation |
+
+Accepted findings should be narrow facts:
+
+```text
+broken reference
+expired evidence
+hash mismatch
+registry record not found
+signature verification failed
+package claims fresh while evidence is expired
+```
+
+They should not be subjective conclusions:
+
+```text
+bad organization
+fraud
+untrustworthy supplier
+bad product
+```
+
+Subjective policy decisions remain with the consuming agent.
+
 ## External Agent Source Order
 
 A third-party AI agent should prefer this order:
@@ -219,15 +349,58 @@ observed_fetch_recommendation
 
 These are operational health diagnostics, not certification, ranking, or supplier recommendation.
 
+Directory snapshots may include an observed health summary per record:
+
+```json
+{
+  "observed_health_summary": {
+    "last_observed_at": "2026-05-28T00:00:00Z",
+    "status": "FRESH",
+    "finding_counts": {
+      "broken_reference": 0,
+      "expired_evidence": 0,
+      "hash_mismatch": 0
+    },
+    "observation_state_counts": {
+      "LEAD": 0,
+      "REPRODUCED_BY_DIRECTORY": 0,
+      "MULTI_OBSERVER_CONFIRMED": 0,
+      "DISPUTED": 0
+    },
+    "agent_fetch_recommendation": "FETCH"
+  }
+}
+```
+
+The summary is a cost-reduction signal. It is still not a trust decision.
+
 ## Implementation Direction
 
-Future implementation should add:
+Minimum implementation slice:
+
+1. `organchor health inspect <origin>` to produce observed health reports from direct origin inspection.
+2. `organchor observation lookup <origin> --directory <snapshot-or-url>` to let agents read existing observed health summaries without hand-building Directory parsing.
+3. Directory snapshot fields for `observed_health_summary`.
+4. Local observation files that agents can use as their own cache.
+
+Next implementation slice:
 
 1. `organchor health self` to generate signed self-declared health summaries from local package state.
-2. `organchor health inspect <origin>` to produce observed health reports from direct origin inspection.
-3. Beacon fields for package health status, evidence health summary, and fetch recommendation.
-4. Directory and crawler support for health observations without turning them into trust scores.
+2. Beacon fields for package health status, evidence health summary, and fetch recommendation.
+3. Directory and crawler support for health observation state counts without turning them into trust scores.
+4. Optional `organchor observation submit` and Directory intake discovery.
 5. Value audit integration so stale, broken, expired, withdrawn, and superseded evidence affects purpose-fit output.
+
+Postponed complexity:
+
+```text
+global transparency logs
+observer reputation systems
+reward markets
+account systems
+automatic dispute arbitration
+central blacklists
+```
 
 ## Acceptance Rule
 

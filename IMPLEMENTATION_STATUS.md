@@ -100,7 +100,7 @@ These are not considered done:
 - Delegated product/service key statements, product model passports, batch commitments, unit credentials, service delivery credentials, and observation binding checks from `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`.
 - Purpose-fit evidence outputs such as `fit_for`, `not_enough_for`, and `missing_optional_context` from `EVIDENCE_SUFFICIENCY_MODEL.md`.
 - P1-P5 purpose-profile validators, S1-S5 source-class fields, S2 effective-level and verified-route checks, and challenge/correction lifecycle extraction from `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
-- Package health commands, Beacon health summaries, observed health reports, and agent fetch recommendations from `PACKAGE_HEALTH_LAYER.md`.
+- Package health commands, observed health lookup, Beacon health summaries, Directory health observation summaries, observed health reports, and agent fetch recommendations from `PACKAGE_HEALTH_LAYER.md`.
 - Live ENS resolver reads through a chosen Ethereum RPC/provider path.
 - Real Onion disaster-recovery address registration.
 - Broad internet-scale crawling or search infrastructure.

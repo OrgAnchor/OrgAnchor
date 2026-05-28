@@ -1,0 +1,76 @@
+{
+  "schema": "https://organchor.org/schemas/evidence-manifest.v1.json",
+  "type": "OrgAnchorEvidenceManifest",
+  "version": "1.0",
+  "manifest_id": "example-s3-evidence-2026-001",
+  "issued_at": "2026-05-28T00:00:00Z",
+  "organization_ref": {
+    "root_authority_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "official_endpoints_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "evidence": [
+    {
+      "id": "evidence-sample-001",
+      "title": "Random market purchase sample report",
+      "issuer_type": "third_party",
+      "media_type": "text/markdown",
+      "reproducibility": "not_specified",
+      "evidence_strength": "not_assessed",
+      "size": 12345,
+      "hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "locations": [
+        {
+          "type": "https",
+          "uri": "https://example.org/evidence/random-sample-report.md"
+        }
+      ],
+      "relations": [
+        {
+          "type": "supports_claim",
+          "claim_id": "claim-001"
+        }
+      ],
+      "s_class": "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING",
+      "s3": {
+        "state": "S3_1_SAMPLING_ROUTE_PROVIDED",
+        "sample_type": "market_purchase",
+        "sampler": {
+          "type": "buyer",
+          "name": "Example Buyer"
+        },
+        "sample_identity": {
+          "subject_type": "product_model",
+          "subject_id": "model-x1",
+          "batch_id": "batch-2026-05"
+        },
+        "sampling_event": {
+          "acquired_at": "2026-05-28T00:00:00.000Z",
+          "acquisition_channel": "retail_market",
+          "sample_source": "retail_market",
+          "selected_by": "buyer",
+          "organization_provided_sample": false,
+          "sampling_method": "random_purchase",
+          "sample_size": 1
+        },
+        "custody": {
+          "custody_documented": false,
+          "custody_notes": "Describe custody handoff, packaging state, and who held the sample before testing."
+        },
+        "organization_claimed_support": {
+          "support_type": "supports_claim",
+          "claim_refs": [
+            "claim-001"
+          ],
+          "scope_text": "Random market purchase sample supports claim-001 for model-x1.",
+          "limitations": [
+            "One market sample does not prove all batches, regions, or future production."
+          ]
+        },
+        "health": {
+          "last_checked_at": "2026-05-28T00:00:00.000Z",
+          "maintenance_status": "FRESH"
+        }
+      }
+    }
+  ]
+}

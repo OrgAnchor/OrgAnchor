@@ -323,6 +323,49 @@ The implementation-facing S2 field model, Core/Extension boundary, mechanical ch
 
 Package health outputs are defined in `PACKAGE_HEALTH_LAYER.md`. Health is a usability and maintenance signal, not a trust score.
 
+### S3 Random Purchase And Sampling Boundary
+
+S3 is intentionally narrower than "someone tested a sample."
+
+The minimum S3 question is:
+
+```text
+Was the sample selected and acquired outside organization control, and is it bound to a concrete product, service, model, batch, or unit?
+```
+
+S3 can be published through an organization package, an external sampler, a customer, a channel partner, a Directory/health hub, or a future observation package. The publication path is not the source of S3 strength. The source of S3 strength is the disclosed sampling route.
+
+Material that uses organization-selected, organization-provided, unknown-source, or unbound samples should be classified as:
+
+```text
+CANDIDATE_UNVERIFIED_SAMPLING
+```
+
+Recommended S3 states:
+
+| Level | Name | Meaning |
+| --- | --- | --- |
+| `CANDIDATE_UNVERIFIED_SAMPLING` | Candidate sampling | Sampling-looking evidence that lacks sample identity, route disclosure, claim linkage, or independence from organization control |
+| `S3_1_SAMPLING_ROUTE_PROVIDED` | Sampling route provided | Sample identity, acquisition route, source, selector, scope, and limitations are declared, and the sample does not appear organization-selected or organization-provided |
+| `S3_2_CUSTODY_DOCUMENTED` | Custody documented | S3_1 plus custody handoff, handling, and sample-control details have been documented and reviewed |
+| `S3_3_INDEPENDENT_TEST_RECORDED` | Independent test recorded | S3_2 plus an independent test or observation record is present and reviewable through a bounded route |
+
+Agent-facing S3 outputs should distinguish:
+
+```text
+sample_identity
+sample_source
+selected_by
+organization_provided_sample
+organization_selected_sample
+custody_documented
+s3_effective_level
+scope_review_required
+not_a_trust_decision
+```
+
+The implementation-facing S3 field model, Core/Extension boundary, sample-control checks, and compact agent summary are defined in `S3_RANDOM_SAMPLING_MODEL.md`.
+
 ## C-Axis: Challenge And Correction Lifecycle
 
 Challenge and correction states describe time, dispute, and revision status.
@@ -455,7 +498,7 @@ Recommended submission boundary:
 ```text
 S1 = organization-submitted
 S2 = organization-submitted third-party material with an external recheck anchor; issuer-backed signatures are an optional strengthening path
-S3 = external sampler, buyer, lab, platform, channel, or hub-submitted
+S3 = externally sourced sample route; record may be published by the organization package, sampler, customer, channel, platform, or hub, but organization-selected/provided samples must be labeled and downgraded
 S4 = customer, repairer, channel, platform, system, or hub-submitted; organization-controlled sources must be labeled
 S5 = externally submitter-open but structurally validated and graded by identity, credential binding, artifact hashes, and response state
 ```
@@ -469,7 +512,7 @@ Organization control does not mean external records vanish.
 Future implementation should add:
 
 1. Purpose-profile validators for P1-P5.
-2. Source-class fields and validation for S1-S5.
+2. Remaining source-class fields and validation for S1/S4/S5, plus S2/S3 route adapters.
 3. Challenge/correction lifecycle manifests and status extraction.
 4. Purpose-fit compact agent output.
 5. Value audit integration for P/S/C axes.

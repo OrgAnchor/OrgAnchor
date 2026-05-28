@@ -52,6 +52,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`: canonical three-axis model for purpose profiles, observation source classes, and challenge/correction lifecycle.
 - `EVIDENCE_SUFFICIENCY_MODEL.md`: accepted design principle that OrgAnchor should judge evidence by purpose-fit sufficiency, not raw field count, completeness scores, or paperwork volume.
 - `S2_THIRD_PARTY_MATERIAL_MODEL.md`: implementation-facing S2 model for third-party material fields, Core/Extension boundaries, mechanical checks, and agent summaries.
+- `S3_RANDOM_SAMPLING_MODEL.md`: implementation-facing S3 model for random purchase and sampling fields, Core/Extension boundaries, sample-control checks, and agent summaries.
 - `PACKAGE_HEALTH_LAYER.md`: accepted design model for self-declared and observed package health, maintenance responsibility, stale/broken/expired evidence visibility, and low-cost agent fetch decisions.
 - `REAL_WORLD_EVIDENCE_PROFILE.md`: minimum evidence profile for real products and services, including scoped claims, hash-bound evidence, recheck methods, limitations, and anti-gaming rules.
 - `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`: accepted design direction for delegated product/service signing keys, model/batch/unit credentials, service delivery credentials, and feedback attribution to the organization root authority chain.
@@ -103,6 +104,7 @@ npm run agent:demo
 
 - `examples/complete/`: public minimal example artifacts. These are test/example artifacts, not a real organization identity.
 - `examples/s2-third-party-material/`: S2 third-party material example showing the template and attach workflow for certification-style evidence.
+- `examples/s3-random-sampling/`: S3 random purchase / sampling example showing the template and attach workflow for anti-hand-picked-sample evidence.
 - `examples/agent-discovery-loop/`: local AI-agent discovery loop example, backed by `npm run agent:demo`.
 - `examples/directory/directory-snapshot.json`: static Directory snapshot example for AI-agent discovery tests.
 - `examples/directory/directory-origins.json`: static Directory build input example.
@@ -124,7 +126,7 @@ That workspace may contain private keys, provider credentials, wallets, local re
 
 - No broad external organization pilot has completed yet.
 - The claims/evidence protocol is stronger than the current alpha implementation: signed claims, signed evidence, value audit, and `/verify` publication exist, while dedicated method, attestation, and challenge manifests remain future work.
-- The purpose/evidence/challenge model is documented as the canonical design. Local S2 third-party material checks are implemented, but P1-P5 purpose-profile validators, broader S1/S3/S4/S5 source-class fields, S2 network route adapters, issuer-backed S2 signatures, and challenge/correction lifecycle extraction are not implemented yet.
+- The purpose/evidence/challenge model is documented as the canonical design. Local S2 third-party material checks and local S3 random purchase / sampling checks are implemented, but P1-P5 purpose-profile validators, broader S1/S4/S5 source-class fields, S2 network route adapters, issuer-backed S2 signatures, S3 custody/independent-test route adapters, and challenge/correction lifecycle extraction are not implemented yet.
 - The product/service credential layer is documented as an accepted direction, but delegated key statements, model/batch/unit credentials, service delivery credentials, and observation binding are not implemented yet.
 - ENS live resolver reads still require choosing an Ethereum RPC/provider path.
 - No real Onion disaster-recovery address has been registered.

@@ -76,6 +76,47 @@ export interface S2Summary {
   not_a_trust_decision: true;
 }
 
+export type S3SamplingState =
+  | "NOT_S3"
+  | "CANDIDATE_UNVERIFIED_SAMPLING"
+  | "S3_1_SAMPLING_ROUTE_PROVIDED"
+  | "S3_2_CUSTODY_DOCUMENTED"
+  | "S3_3_INDEPENDENT_TEST_RECORDED";
+
+export interface S3EvidenceAudit {
+  declared_state: string;
+  state: S3SamplingState;
+  effective: boolean;
+  claim_refs: string[];
+  unresolved_claim_refs: string[];
+  sample_type: string;
+  sampler_type: string;
+  sample_source: string;
+  selected_by: string;
+  sample_size: number;
+  organization_selected_sample: boolean;
+  organization_provided_sample: boolean;
+  sample_identity_present: boolean;
+  acquired_at_present: boolean;
+  custody_documented: boolean;
+  gaps: string[];
+  checks: ValueAuditCheck[];
+}
+
+export interface S3Summary {
+  effective_s3_count: number;
+  candidate_unverified_sampling_count: number;
+  s3_state_counts: Record<"S3_1_SAMPLING_ROUTE_PROVIDED" | "S3_2_CUSTODY_DOCUMENTED" | "S3_3_INDEPENDENT_TEST_RECORDED", number>;
+  organization_selected_sample_count: number;
+  organization_provided_sample_count: number;
+  missing_sample_identity_count: number;
+  missing_custody_count: number;
+  manual_check_s3_count: number;
+  top_s3_gaps: string[];
+  next_actions: string[];
+  not_a_trust_decision: true;
+}
+
 export interface ClaimProfileReview {
   profile: RealWorldEvidenceProfile | "not_declared";
   status: ClaimProfileReviewStatus;
@@ -138,6 +179,7 @@ export interface EvidenceValueAudit {
   is_stale: boolean;
   s_class: string;
   s2: S2EvidenceAudit;
+  s3: S3EvidenceAudit;
   findings: string[];
 }
 
@@ -165,6 +207,7 @@ export interface ValueContinuityReport {
     profile_gap_claims: number;
   };
   s2_summary: S2Summary;
+  s3_summary: S3Summary;
   checks: ValueAuditCheck[];
   claims: ClaimValueAudit[];
   evidence: EvidenceValueAudit[];
@@ -235,6 +278,7 @@ export async function auditValueContinuity(
     evidence_path: evidencePath,
     summary: summarize(checks, claimAudits, evidenceAudits),
     s2_summary: summarizeS2(evidenceAudits),
+    s3_summary: summarizeS3(evidenceAudits),
     checks,
     claims: claimAudits,
     evidence: evidenceAudits
@@ -260,7 +304,7 @@ export function renderValueContinuityMarkdown(report: ValueContinuityReport): st
   const evidence = report.evidence
     .map(
       (item) =>
-        `| ${item.status} | ${escapeMarkdown(item.id)} | ${escapeMarkdown(item.issuer_type)} | ${escapeMarkdown(item.reproducibility)} | ${item.has_external_location ? "yes" : "no"} | ${item.s2.state} | ${item.s2.effective ? "yes" : "no"} |`
+        `| ${item.status} | ${escapeMarkdown(item.id)} | ${escapeMarkdown(item.issuer_type)} | ${escapeMarkdown(item.reproducibility)} | ${item.has_external_location ? "yes" : "no"} | ${item.s2.state} | ${item.s2.effective ? "yes" : "no"} | ${item.s3.state} | ${item.s3.effective ? "yes" : "no"} |`
     )
     .join("\n");
 
@@ -313,6 +357,21 @@ Evidence: \`${report.evidence_path}\`
 | Broken S2 anchor URLs | ${report.s2_summary.broken_s2_anchor_count} |
 | S2 manual checks | ${report.s2_summary.manual_check_s2_count} |
 
+## S3 Random Purchase / Sampling Metrics
+
+| Metric | Count |
+| --- | ---: |
+| Effective S3 items | ${report.s3_summary.effective_s3_count} |
+| Candidate unverified sampling items | ${report.s3_summary.candidate_unverified_sampling_count} |
+| S3 sampling-route items | ${report.s3_summary.s3_state_counts.S3_1_SAMPLING_ROUTE_PROVIDED} |
+| S3 custody-documented items | ${report.s3_summary.s3_state_counts.S3_2_CUSTODY_DOCUMENTED} |
+| S3 independent-test items | ${report.s3_summary.s3_state_counts.S3_3_INDEPENDENT_TEST_RECORDED} |
+| Organization-selected samples | ${report.s3_summary.organization_selected_sample_count} |
+| Organization-provided samples | ${report.s3_summary.organization_provided_sample_count} |
+| Missing sample identity | ${report.s3_summary.missing_sample_identity_count} |
+| Missing custody documentation | ${report.s3_summary.missing_custody_count} |
+| S3 manual checks | ${report.s3_summary.manual_check_s3_count} |
+
 ## Checks
 
 | Status | Check | Summary |
@@ -327,8 +386,8 @@ ${claims}
 
 ## Evidence
 
-| Status | Evidence | Issuer | Reproducibility | External location | S2 state | Effective S2 |
-| --- | --- | --- | --- | --- | --- | --- |
+| Status | Evidence | Issuer | Reproducibility | External location | S2 state | Effective S2 | S3 state | Effective S3 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 ${evidence}
 `;
 }
@@ -366,12 +425,13 @@ async function auditEvidenceItem(
   const isStale = isEvidenceStale(item, now);
   if (isStale) findings.push("Evidence is past its valid_until date.");
   const s2 = auditS2Material(item, now, claimIds);
+  const s3 = auditS3Sampling(item, claimIds);
 
   if (checkFiles) {
     await checkLocalLocations(item, locations, findings);
   }
 
-  const status = worstStatus(statusFromFindings(findings, false), s2.checks.map((check) => check.status));
+  const status = worstStatus(statusFromFindings(findings, false), [...s2.checks, ...s3.checks].map((check) => check.status));
   return {
     id,
     status,
@@ -388,6 +448,7 @@ async function auditEvidenceItem(
     is_stale: isStale,
     s_class: sClass,
     s2,
+    s3,
     findings
   };
 }
@@ -627,6 +688,239 @@ function emptyS2Audit(): S2EvidenceAudit {
   };
 }
 
+function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>): S3EvidenceAudit {
+  const id = stringValue(item.id);
+  const sClass = stringValue(item.s_class);
+  const s3 = asRecord(item.s3);
+  const isDeclaredS3 = sClass === "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING" || Object.keys(s3).length > 0;
+  if (!isDeclaredS3) return emptyS3Audit();
+
+  const support = asRecord(s3.organization_claimed_support);
+  const sampler = asRecord(s3.sampler);
+  const identity = asRecord(s3.sample_identity);
+  const event = asRecord(s3.sampling_event);
+  const custody = asRecord(s3.custody);
+  const checks: ValueAuditCheck[] = [];
+  const gaps: string[] = [];
+  const declaredState = stringValue(s3.state);
+  let state: S3SamplingState = isS3SamplingState(declaredState) ? declaredState : "CANDIDATE_UNVERIFIED_SAMPLING";
+  const sampleType = stringValue(s3.sample_type);
+  const samplerType = stringValue(sampler.type);
+  const samplerName = stringValue(sampler.name);
+  const claimRefs = uniqueStrings([...arrayStrings(support.claim_refs), ...relationClaimRefs(item)]);
+  const unresolvedClaimRefs = claimRefs.filter((ref) => !claimIds.has(ref));
+  const scopeText = stringValue(support.scope_text);
+  const limitations = arrayStrings(support.limitations);
+  const sampleSource = stringValue(event.sample_source);
+  const selectedBy = stringValue(event.selected_by);
+  const organizationProvidedDeclared = event.organization_provided_sample !== undefined;
+  const organizationProvidedSample = booleanValue(event.organization_provided_sample) || isOrganizationControlledSample(sampleSource);
+  const organizationSelectedSample = isOrganizationControlledSample(selectedBy) || isOrganizationControlledSample(samplerType);
+  const subjectType = stringValue(identity.subject_type);
+  const subjectId = stringValue(identity.subject_id);
+  const sampleIdentityPresent = Boolean(subjectType && subjectId);
+  const acquiredAt = stringValue(event.acquired_at);
+  const acquiredAtPresent = Boolean(acquiredAt && Number.isFinite(Date.parse(acquiredAt)));
+  const sampleSize = positiveIntegerValue(event.sample_size);
+  const custodyDocumented = booleanValue(custody.custody_documented);
+
+  addS3Check(
+    checks,
+    gaps,
+    sClass === "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING" ? "PASS" : "WARN",
+    id,
+    "S3_CORE_FIELDS_PRESENT",
+    sClass === "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING" ? "S3 class is declared." : "S3 metadata is present but s_class is not S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    state === "CANDIDATE_UNVERIFIED_SAMPLING" ? "WARN" : "PASS",
+    id,
+    "S3_STATE_DECLARED",
+    state === "CANDIDATE_UNVERIFIED_SAMPLING" ? "S3 state is missing, unsupported, or explicitly candidate-only." : `S3 state is ${state}.`
+  );
+  addS3Check(checks, gaps, sampleType ? "PASS" : "WARN", id, "S3_SAMPLE_TYPE_DECLARED", sampleType ? `S3 sample type is ${sampleType}.` : "S3 sample_type is missing.");
+  addS3Check(
+    checks,
+    gaps,
+    samplerType ? "PASS" : "WARN",
+    id,
+    "S3_SAMPLER_DECLARED",
+    samplerType ? `S3 sampler type is ${samplerType}${samplerName ? ` (${samplerName})` : ""}.` : "S3 sampler.type is missing."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    claimRefs.length === 0 ? "WARN" : unresolvedClaimRefs.length > 0 ? "FAIL" : "PASS",
+    id,
+    "S3_CLAIM_REFS_RESOLVE",
+    claimRefs.length === 0
+      ? "S3 sampling evidence does not declare which claim it supports."
+      : unresolvedClaimRefs.length > 0
+        ? `S3 sampling evidence references unknown claim(s): ${unresolvedClaimRefs.join(", ")}.`
+        : "S3 claim references resolve."
+  );
+  addS3Check(checks, gaps, scopeText ? "PASS" : "MANUAL_CHECK_REQUIRED", id, "S3_SCOPE_DECLARED", scopeText ? "S3 claimed support scope is declared." : "S3 scope_text is missing; scope review is required.");
+  addS3Check(checks, gaps, limitations.length > 0 ? "PASS" : "MANUAL_CHECK_REQUIRED", id, "S3_LIMITATIONS_DECLARED", limitations.length > 0 ? "S3 limitations are declared." : "S3 limitations are missing.");
+  addS3Check(
+    checks,
+    gaps,
+    sampleIdentityPresent ? "PASS" : "WARN",
+    id,
+    "S3_SAMPLE_IDENTITY_DECLARED",
+    sampleIdentityPresent ? `S3 sample binds to ${subjectType}:${subjectId}.` : "S3 sample_identity.subject_type and sample_identity.subject_id are required."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    acquiredAtPresent ? "PASS" : "WARN",
+    id,
+    "S3_ACQUIRED_AT_DECLARED",
+    acquiredAtPresent ? "S3 acquired_at is declared." : "S3 sampling_event.acquired_at is missing or invalid."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    sampleSize > 0 ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S3_SAMPLE_SIZE_DECLARED",
+    sampleSize > 0 ? `S3 sample size is ${sampleSize}.` : "S3 sampling_event.sample_size is missing or invalid."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    isUnknownOrMissing(sampleSource) ? "MANUAL_CHECK_REQUIRED" : "PASS",
+    id,
+    "S3_SAMPLE_SOURCE_DISCLOSED",
+    isUnknownOrMissing(sampleSource) ? "S3 sampling_event.sample_source is missing or unknown." : `S3 sample source is ${sampleSource}.`
+  );
+  addS3Check(
+    checks,
+    gaps,
+    isUnknownOrMissing(selectedBy) ? "MANUAL_CHECK_REQUIRED" : "PASS",
+    id,
+    "S3_SELECTED_BY_DISCLOSED",
+    isUnknownOrMissing(selectedBy) ? "S3 sampling_event.selected_by is missing or unknown." : `S3 selected_by is ${selectedBy}.`
+  );
+  addS3Check(
+    checks,
+    gaps,
+    organizationProvidedDeclared ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S3_ORGANIZATION_PROVIDED_DECLARED",
+    organizationProvidedDeclared ? "S3 organization_provided_sample is declared." : "S3 organization_provided_sample is not declared."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    organizationSelectedSample ? "WARN" : "PASS",
+    id,
+    "S3_ORGANIZATION_NOT_SELECTOR",
+    organizationSelectedSample ? "S3 sample appears selected by the organization or first party." : "S3 sample selector is not organization-controlled."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    organizationProvidedSample ? "WARN" : "PASS",
+    id,
+    "S3_ORGANIZATION_NOT_PROVIDER",
+    organizationProvidedSample ? "S3 sample appears provided by the organization or first party." : "S3 sample source is not organization-provided."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    custodyDocumented ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S3_CUSTODY_DOCUMENTED",
+    custodyDocumented ? "S3 custody is documented." : "S3 custody is not documented; acceptable for S3_1 but weak for higher-assurance review."
+  );
+  if (state === "S3_2_CUSTODY_DOCUMENTED") {
+    addS3Check(
+      checks,
+      gaps,
+      "MANUAL_CHECK_REQUIRED",
+      id,
+      "S3_CUSTODY_ROUTE_CHECKED",
+      "S3_2 requires custody route review. Local audit records this as S3_1 until custody route adapters are implemented."
+    );
+  }
+  if (state === "S3_3_INDEPENDENT_TEST_RECORDED") {
+    addS3Check(
+      checks,
+      gaps,
+      "MANUAL_CHECK_REQUIRED",
+      id,
+      "S3_INDEPENDENT_TEST_RECORDED",
+      "S3_3 requires independent test record review. Local audit records this as S3_1 until independent test route adapters are implemented."
+    );
+  }
+
+  const hasRequiredCore =
+    sClass === "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING" &&
+    state !== "CANDIDATE_UNVERIFIED_SAMPLING" &&
+    Boolean(sampleType) &&
+    Boolean(samplerType) &&
+    claimRefs.length > 0 &&
+    unresolvedClaimRefs.length === 0 &&
+    Boolean(scopeText) &&
+    limitations.length > 0 &&
+    sampleIdentityPresent &&
+    acquiredAtPresent &&
+    sampleSize > 0 &&
+    !isUnknownOrMissing(sampleSource) &&
+    !isUnknownOrMissing(selectedBy) &&
+    organizationProvidedDeclared &&
+    !organizationSelectedSample &&
+    !organizationProvidedSample;
+
+  if (!hasRequiredCore) state = "CANDIDATE_UNVERIFIED_SAMPLING";
+  if (state === "S3_2_CUSTODY_DOCUMENTED" || state === "S3_3_INDEPENDENT_TEST_RECORDED") state = "S3_1_SAMPLING_ROUTE_PROVIDED";
+  const effective = S3_EFFECTIVE_STATES.has(state);
+
+  return {
+    declared_state: declaredState,
+    state,
+    effective,
+    claim_refs: claimRefs,
+    unresolved_claim_refs: unresolvedClaimRefs,
+    sample_type: sampleType,
+    sampler_type: samplerType,
+    sample_source: sampleSource,
+    selected_by: selectedBy,
+    sample_size: sampleSize,
+    organization_selected_sample: organizationSelectedSample,
+    organization_provided_sample: organizationProvidedSample,
+    sample_identity_present: sampleIdentityPresent,
+    acquired_at_present: acquiredAtPresent,
+    custody_documented: custodyDocumented,
+    gaps: uniqueStrings(gaps),
+    checks
+  };
+}
+
+function emptyS3Audit(): S3EvidenceAudit {
+  return {
+    declared_state: "",
+    state: "NOT_S3",
+    effective: false,
+    claim_refs: [],
+    unresolved_claim_refs: [],
+    sample_type: "",
+    sampler_type: "",
+    sample_source: "",
+    selected_by: "",
+    sample_size: 0,
+    organization_selected_sample: false,
+    organization_provided_sample: false,
+    sample_identity_present: false,
+    acquired_at_present: false,
+    custody_documented: false,
+    gaps: [],
+    checks: []
+  };
+}
+
 function auditClaim(
   claim: Record<string, JsonValue>,
   evidenceById: Map<string, Record<string, JsonValue>>,
@@ -730,7 +1024,7 @@ function evidenceChecks(audit: EvidenceValueAudit): ValueAuditCheck[] {
       )
     );
   }
-  checks.push(...audit.s2.checks);
+  checks.push(...audit.s2.checks, ...audit.s3.checks);
   return checks;
 }
 
@@ -1283,6 +1577,34 @@ function summarizeS2(evidence: EvidenceValueAudit[]): S2Summary {
   return summary;
 }
 
+function summarizeS3(evidence: EvidenceValueAudit[]): S3Summary {
+  const s3Items = evidence.filter((item) => item.s3.state !== "NOT_S3");
+  const effectiveItems = s3Items.filter((item) => item.s3.effective);
+  const manualCheckCount = s3Items.reduce(
+    (count, item) => count + item.s3.checks.filter((check) => check.status === "MANUAL_CHECK_REQUIRED").length,
+    0
+  );
+  const summary: S3Summary = {
+    effective_s3_count: effectiveItems.length,
+    candidate_unverified_sampling_count: s3Items.filter((item) => item.s3.state === "CANDIDATE_UNVERIFIED_SAMPLING").length,
+    s3_state_counts: {
+      S3_1_SAMPLING_ROUTE_PROVIDED: s3Items.filter((item) => item.s3.state === "S3_1_SAMPLING_ROUTE_PROVIDED").length,
+      S3_2_CUSTODY_DOCUMENTED: s3Items.filter((item) => item.s3.state === "S3_2_CUSTODY_DOCUMENTED").length,
+      S3_3_INDEPENDENT_TEST_RECORDED: s3Items.filter((item) => item.s3.state === "S3_3_INDEPENDENT_TEST_RECORDED").length
+    },
+    organization_selected_sample_count: s3Items.filter((item) => item.s3.organization_selected_sample).length,
+    organization_provided_sample_count: s3Items.filter((item) => item.s3.organization_provided_sample).length,
+    missing_sample_identity_count: s3Items.filter((item) => !item.s3.sample_identity_present).length,
+    missing_custody_count: s3Items.filter((item) => !item.s3.custody_documented).length,
+    manual_check_s3_count: manualCheckCount,
+    top_s3_gaps: uniqueStrings(s3Items.flatMap((item) => item.s3.gaps)).slice(0, 5),
+    next_actions: [],
+    not_a_trust_decision: true
+  };
+  summary.next_actions = s3NextActions(summary);
+  return summary;
+}
+
 function s2NextActions(summary: S2Summary): string[] {
   const actions: string[] = [];
   if (summary.candidate_unverified_external_material_count > 0) {
@@ -1297,6 +1619,29 @@ function s2NextActions(summary: S2Summary): string[] {
     actions.push("Review S2 scope and limitations against the consuming agent's own policy; OrgAnchor does not assign final trust.");
   }
   if (actions.length === 0) actions.push("No S2 material is declared; request S2 only if the target purpose requires external support.");
+  return actions;
+}
+
+function s3NextActions(summary: S3Summary): string[] {
+  const actions: string[] = [];
+  if (summary.candidate_unverified_sampling_count > 0) {
+    actions.push("Disclose sample identity, acquisition time, sample source, selector, claim linkage, scope, and limitations before treating candidate sampling as effective S3.");
+  }
+  if (summary.organization_selected_sample_count > 0 || summary.organization_provided_sample_count > 0) {
+    actions.push("Use samples selected and acquired outside organization control, such as market purchase, distributor inventory, warehouse sampling, or customer-site sampling.");
+  }
+  if (summary.missing_sample_identity_count > 0) {
+    actions.push("Bind each S3 sample to a product model, service id, batch, lot, serial range, or unit credential.");
+  }
+  if (summary.missing_custody_count > 0) {
+    actions.push("Add custody notes when the purpose requires higher assurance; S3_1 can remain usable but custody gaps should be visible.");
+  }
+  if (actions.length === 0 && summary.effective_s3_count > 0) {
+    actions.push("Review S3 sampling scope and limitations against the consuming agent's own policy; OrgAnchor does not assign final trust.");
+  }
+  if (actions.length === 0) {
+    actions.push("No S3 sampling evidence is declared; request S3 only if the target purpose requires random sampling or anti-hand-picked-sample support.");
+  }
   return actions;
 }
 
@@ -1320,6 +1665,16 @@ const S2_ROUTE_KINDS = new Set(["ISSUER_ORIGIN_CONFIRMATION", "PUBLIC_REGISTRY_C
 
 function isS2MaterialState(value: string): value is S2MaterialState {
   return value === "CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL" || S2_EFFECTIVE_STATES.has(value as S2MaterialState);
+}
+
+const S3_EFFECTIVE_STATES = new Set<S3SamplingState>([
+  "S3_1_SAMPLING_ROUTE_PROVIDED",
+  "S3_2_CUSTODY_DOCUMENTED",
+  "S3_3_INDEPENDENT_TEST_RECORDED"
+]);
+
+function isS3SamplingState(value: string): value is S3SamplingState {
+  return value === "CANDIDATE_UNVERIFIED_SAMPLING" || S3_EFFECTIVE_STATES.has(value as S3SamplingState);
 }
 
 function addS2Check(
@@ -1352,6 +1707,18 @@ function addDisclosureCheck(
   );
 }
 
+function addS3Check(
+  checks: ValueAuditCheck[],
+  gaps: string[],
+  status: AuditStatus,
+  evidenceId: string,
+  id: string,
+  summary: string
+): void {
+  checks.push(buildCheck(`evidence:${evidenceId}:s3:${id}`, `Evidence ${evidenceId} ${id}`, status, summary));
+  if (status !== "PASS") gaps.push(summary);
+}
+
 function relationClaimRefs(item: Record<string, JsonValue>): string[] {
   return arrayObjects(item.relations)
     .map((relation) => stringValue(relation.claim_id))
@@ -1376,6 +1743,30 @@ function isUnknownOrMissing(value: JsonValue | undefined): boolean {
   if (typeof value !== "string") return true;
   const normalized = value.trim().toLowerCase();
   return normalized.length === 0 || normalized === "unknown" || normalized === "not_disclosed";
+}
+
+function isOrganizationControlledSample(value: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  return [
+    "organization",
+    "first_party",
+    "manufacturer",
+    "supplier",
+    "seller",
+    "vendor",
+    "organization_selected",
+    "organization_provided",
+    "company",
+    "self"
+  ].includes(normalized);
+}
+
+function booleanValue(value: JsonValue | undefined): boolean {
+  return value === true || (typeof value === "string" && value.toLowerCase() === "true");
+}
+
+function positiveIntegerValue(value: JsonValue | undefined): number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value > 0 ? value : 0;
 }
 
 function worstStatus(base: AuditStatus, statuses: AuditStatus[]): AuditStatus {

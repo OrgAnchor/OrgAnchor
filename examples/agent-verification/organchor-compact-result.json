@@ -60,6 +60,25 @@
         "No S2 material is declared; request S2 only if the target purpose requires external support."
       ],
       "not_a_trust_decision": true
+    },
+    "s3_summary": {
+      "effective_s3_count": 0,
+      "candidate_unverified_sampling_count": 0,
+      "s3_state_counts": {
+        "S3_1_SAMPLING_ROUTE_PROVIDED": 0,
+        "S3_2_CUSTODY_DOCUMENTED": 0,
+        "S3_3_INDEPENDENT_TEST_RECORDED": 0
+      },
+      "organization_selected_sample_count": 0,
+      "organization_provided_sample_count": 0,
+      "missing_sample_identity_count": 0,
+      "missing_custody_count": 0,
+      "manual_check_s3_count": 0,
+      "top_s3_gaps": [],
+      "next_actions": [
+        "No S3 sampling evidence is declared; request S3 only if the target purpose requires random sampling or anti-hand-picked-sample support."
+      ],
+      "not_a_trust_decision": true
     }
   },
   "policy_route": {

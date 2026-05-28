@@ -82,6 +82,7 @@ Implemented so far:
 - Evidence recheck method objects through `organchor evidence method add`, linking signed evidence to concrete steps, expected results, tools, verification cost, and limitations.
 - Real-world profile validators for physical product, service delivery, SaaS/API, certification/compliance, and dataset/research claims.
 - S2 third-party material template and attach commands plus local checks for candidate versus effective S2, external recheck anchors, claim linkage, scope, limitations, expiry, disclosures, and compact `s2_summary`.
+- S3 random purchase / sampling template and attach commands plus local checks for candidate versus effective S3, sample identity, sample source, selector, organization-provided samples, custody gaps, and compact `s3_summary`.
 - Domain security audit reports with `PASS`, `WARN`, `FAIL`, and `MANUAL_CHECK_REQUIRED`.
 - HTTPS, certificate expiration, DNSSEC, SPF, DMARC, MX, CAA, security.txt, `/verify`, statement, and signature checks.
 - Onion v3 address validation and Tor Hidden Service config guidance.
@@ -174,6 +175,8 @@ organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.m
 organchor evidence method add --id method-001 --evidence-id evidence-001 --steps "Fetch artifact;Compute SHA-256;Compare with signed manifest" --expected-results "Hash matches"
 organchor evidence s2 template --template certification_record
 organchor evidence s2 attach --evidence-id evidence-001 --template certification_record --issuer-name "Example Certification Body" --anchor-url https://registry.example/records/ABC-123 --scope "Certificate supports claim-001 for model-x1"
+organchor evidence s3 template --template market_purchase
+organchor evidence s3 attach --evidence-id evidence-001 --template market_purchase --sampler-type buyer --acquired-at 2026-05-28T00:00:00Z --subject-type product_model --subject-id model-x1 --scope "Random market purchase sample supports claim-001 for model-x1"
 organchor evidence sign --key keys/root-2026.private.json --authority root-authority.json
 organchor value audit --claims claims/product-claims.json --evidence evidence/evidence-manifest.json --check-files
 organchor beacon index --in beacon-sweep.ndjson --out beacon-index.json

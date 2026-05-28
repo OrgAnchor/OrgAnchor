@@ -90,6 +90,19 @@ export interface AgentVerificationCompactResult {
       next_actions: string[];
       not_a_trust_decision: boolean;
     };
+    s3_summary: {
+      effective_s3_count: number;
+      candidate_unverified_sampling_count: number;
+      s3_state_counts: Record<string, number>;
+      organization_selected_sample_count: number;
+      organization_provided_sample_count: number;
+      missing_sample_identity_count: number;
+      missing_custody_count: number;
+      manual_check_s3_count: number;
+      top_s3_gaps: string[];
+      next_actions: string[];
+      not_a_trust_decision: boolean;
+    };
   };
   policy_route: AgentPolicyRoute;
   failures: string[];
@@ -296,6 +309,7 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
   const claimSupportSummary = optionalRecord(valueContinuity.claim_support_summary);
   const claimSupportLevels = optionalRecord(claimSupportSummary.support_levels);
   const s2Summary = optionalRecord(valueContinuity.s2_summary);
+  const s3Summary = optionalRecord(valueContinuity.s3_summary);
 
   return {
     type: "OrgAnchorAgentVerificationCompactResult",
@@ -325,7 +339,8 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
       risk_gaps: numberValue(claimSupportSummary.risk_gap_count),
       top_risk_gaps: arrayStrings(claimSupportSummary.top_risk_gaps),
       next_best_actions: arrayStrings(claimSupportSummary.next_best_actions),
-      s2_summary: compactS2Summary(s2Summary)
+      s2_summary: compactS2Summary(s2Summary),
+      s3_summary: compactS3Summary(s3Summary)
     },
     policy_route: result.policy_route,
     failures: result.checks
@@ -709,7 +724,8 @@ async function verifyValueContinuity(options: {
       hash: reportHash,
       summary,
       claim_support_summary: summarizeClaimSupport(reportObject),
-      s2_summary: optionalRecord(reportObject.s2_summary)
+      s2_summary: optionalRecord(reportObject.s2_summary),
+      s3_summary: optionalRecord(reportObject.s3_summary)
     }
   };
 }
@@ -757,6 +773,27 @@ function compactS2Summary(value: Record<string, JsonValue>): AgentVerificationCo
     unknown_sample_source_count: numberValue(value.unknown_sample_source_count),
     unknown_relationship_count: numberValue(value.unknown_relationship_count),
     top_s2_gaps: arrayStrings(value.top_s2_gaps),
+    next_actions: arrayStrings(value.next_actions),
+    not_a_trust_decision: value.not_a_trust_decision === true
+  };
+}
+
+function compactS3Summary(value: Record<string, JsonValue>): AgentVerificationCompactResult["evidence_summary"]["s3_summary"] {
+  const stateCounts = optionalRecord(value.s3_state_counts);
+  return {
+    effective_s3_count: numberValue(value.effective_s3_count),
+    candidate_unverified_sampling_count: numberValue(value.candidate_unverified_sampling_count),
+    s3_state_counts: {
+      S3_1_SAMPLING_ROUTE_PROVIDED: numberValue(stateCounts.S3_1_SAMPLING_ROUTE_PROVIDED),
+      S3_2_CUSTODY_DOCUMENTED: numberValue(stateCounts.S3_2_CUSTODY_DOCUMENTED),
+      S3_3_INDEPENDENT_TEST_RECORDED: numberValue(stateCounts.S3_3_INDEPENDENT_TEST_RECORDED)
+    },
+    organization_selected_sample_count: numberValue(value.organization_selected_sample_count),
+    organization_provided_sample_count: numberValue(value.organization_provided_sample_count),
+    missing_sample_identity_count: numberValue(value.missing_sample_identity_count),
+    missing_custody_count: numberValue(value.missing_custody_count),
+    manual_check_s3_count: numberValue(value.manual_check_s3_count),
+    top_s3_gaps: arrayStrings(value.top_s3_gaps),
     next_actions: arrayStrings(value.next_actions),
     not_a_trust_decision: value.not_a_trust_decision === true
   };

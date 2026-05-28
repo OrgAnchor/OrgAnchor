@@ -279,6 +279,86 @@ test("value audit classifies S2 third-party material and exposes low-friction ga
   }
 });
 
+test("value audit classifies S3 random purchase sampling and exposes sample-control gaps", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-value-audit-s3-"));
+  try {
+    createAuthority(workspace);
+    writeFileSync(join(workspace, "random-sample-report.md"), "# Random sample report\n\nMarket purchase sample result.\n", "utf8");
+    run(workspace, ["claims", "create", "--config", "organchor.config.json"]);
+    run(workspace, ["evidence", "create", "--config", "organchor.config.json"]);
+    run(workspace, [
+      "evidence",
+      "add",
+      "--file",
+      "random-sample-report.md",
+      "--id",
+      "evidence-001",
+      "--issuer-type",
+      "third_party",
+      "--uri",
+      "https://example.org/evidence/random-sample-report.md",
+      "--location-type",
+      "https",
+      "--limitations",
+      "Single market purchase sample"
+    ]);
+    const template = run(workspace, ["evidence", "s3", "template", "--template", "market_purchase"]);
+    assert.equal(JSON.parse(template.stdout).s3.sample_type, "market_purchase");
+    const attach = run(workspace, [
+      "evidence",
+      "s3",
+      "attach",
+      "--evidence-id",
+      "evidence-001",
+      "--template",
+      "market_purchase",
+      "--sampler-type",
+      "buyer",
+      "--sampler-name",
+      "Example Buyer",
+      "--acquired-at",
+      "2026-05-19T00:00:00Z",
+      "--subject-type",
+      "product_model",
+      "--subject-id",
+      "model-x1",
+      "--batch-id",
+      "batch-2026-05",
+      "--scope",
+      "Random market purchase sample supports claim-001 for model-x1."
+    ]);
+    assert.match(attach.stdout, /Attached S3 metadata to evidence: evidence-001/);
+
+    run(workspace, [
+      "value",
+      "audit",
+      "--claims",
+      "claims/product-claims.json",
+      "--evidence",
+      "evidence/evidence-manifest.json",
+      "--check-files",
+      "--now",
+      "2026-05-19T00:00:00Z"
+    ]);
+
+    const report = readReport(workspace);
+    assert.equal(report.s3_summary.effective_s3_count, 1);
+    assert.equal(report.s3_summary.candidate_unverified_sampling_count, 0);
+    assert.equal(report.s3_summary.s3_state_counts.S3_1_SAMPLING_ROUTE_PROVIDED, 1);
+    assert.equal(report.s3_summary.organization_selected_sample_count, 0);
+    assert.equal(report.s3_summary.organization_provided_sample_count, 0);
+    assert.equal(report.s3_summary.missing_sample_identity_count, 0);
+    assert.equal(report.s3_summary.missing_custody_count, 1);
+    assert.equal(report.evidence[0]?.s3.state, "S3_1_SAMPLING_ROUTE_PROVIDED");
+    assert.equal(report.evidence[0]?.s3.effective, true);
+    assert.equal(report.evidence[0]?.s3.organization_selected_sample, false);
+    assert.equal(report.evidence[0]?.s3.organization_provided_sample, false);
+    assert.deepEqual(report.evidence[0]?.s3.unresolved_claim_refs, []);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
 test("value audit reports profile gaps for underspecified physical product claims", () => {
   const workspace = mkdtempSync(join(tmpdir(), "organchor-value-audit-profile-gap-"));
   try {
@@ -416,6 +496,15 @@ function readReport(workspace: string): {
     unknown_relationship_count: number;
     manual_check_s2_count: number;
   };
+  s3_summary: {
+    effective_s3_count: number;
+    candidate_unverified_sampling_count: number;
+    s3_state_counts: Record<string, number>;
+    organization_selected_sample_count: number;
+    organization_provided_sample_count: number;
+    missing_sample_identity_count: number;
+    missing_custody_count: number;
+  };
   claims: Array<{
     status: string;
     level: string;
@@ -444,6 +533,13 @@ function readReport(workspace: string): {
     s2: {
       state: string;
       effective: boolean;
+      unresolved_claim_refs: string[];
+    };
+    s3: {
+      state: string;
+      effective: boolean;
+      organization_selected_sample: boolean;
+      organization_provided_sample: boolean;
       unresolved_claim_refs: string[];
     };
   }>;

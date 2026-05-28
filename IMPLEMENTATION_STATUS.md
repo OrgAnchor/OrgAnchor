@@ -40,6 +40,7 @@ Value evidence layer:
 - Claims/evidence protocol baseline for claim support levels, reproducible methods, third-party attestations, challenges, and low-cost AI-agent evaluation.
 - Purpose/evidence/challenge model documented as the accepted three-axis direction for P1-P5 purpose profiles, S1-S5 observation source classes, S2 effective third-party material boundaries, and challenge/correction lifecycle states.
 - S2 third-party material basic usability implemented: optional `s_class`/`s2` metadata, `evidence s2 template`, `evidence s2 attach`, candidate versus effective S2 classification, local Core checks, S2 gap extraction, value-audit `s2_summary`, and compact agent `s2_summary`.
+- S3 random purchase / sampling basic usability implemented: optional `s_class`/`s3` metadata, `evidence s3 template`, `evidence s3 attach`, candidate versus effective S3 classification, sample identity/source/selector checks, organization-selected/provided sample exposure, custody gap extraction, value-audit `s3_summary`, and compact agent `s3_summary`.
 - Package health layer documented as the accepted direction for self-declared and observed package health, maintenance responsibility, stale/broken/expired evidence visibility, and low-cost agent fetch recommendations.
 - Product/service credential layer documented as an accepted design direction for delegated operational keys, five-class observation sources, and attribution of observations, complaints, tests, and corrections to the organization root authority chain.
 - Evidence sufficiency model documented as an accepted design principle so OrgAnchor can avoid field-count competition and report purpose-fit support instead of universal completeness scores.
@@ -100,7 +101,7 @@ These are not considered done:
 - Dedicated method, attestation, and challenge manifests from `CLAIMS_EVIDENCE_PROTOCOL.md`.
 - Delegated product/service key statements, product model passports, batch commitments, unit credentials, service delivery credentials, and observation binding checks from `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`.
 - Purpose-fit evidence outputs such as `fit_for`, `not_enough_for`, and `missing_optional_context` from `EVIDENCE_SUFFICIENCY_MODEL.md`.
-- P1-P5 purpose-profile validators, broader S1/S3/S4/S5 source-class fields, S2 network verified-route adapters, issuer-backed S2 signatures from `S2_THIRD_PARTY_MATERIAL_MODEL.md`, and challenge/correction lifecycle extraction from `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
+- P1-P5 purpose-profile validators, broader S1/S4/S5 source-class fields, S2 network verified-route adapters, issuer-backed S2 signatures from `S2_THIRD_PARTY_MATERIAL_MODEL.md`, S3 custody/independent-test route adapters from `S3_RANDOM_SAMPLING_MODEL.md`, and challenge/correction lifecycle extraction from `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
 - Package health commands, observed health lookup, Beacon health summaries, Directory health observation summaries, observed health reports, and agent fetch recommendations from `PACKAGE_HEALTH_LAYER.md`.
 - Live ENS resolver reads through a chosen Ethereum RPC/provider path.
 - Real Onion disaster-recovery address registration.
@@ -146,4 +147,6 @@ organchor directory compare --snapshots a.json,b.json
 organchor adoption status --verify-dir public/verify --origin https://example.org --level 3
 organchor evidence s2 template --template certification_record
 organchor evidence s2 attach --evidence-id evidence-001 --template certification_record --issuer-name "Example Certification Body" --anchor-url https://registry.example/records/ABC-123 --scope "Certificate supports claim-001 for model-x1"
+organchor evidence s3 template --template market_purchase
+organchor evidence s3 attach --evidence-id evidence-001 --template market_purchase --sampler-type buyer --acquired-at 2026-05-28T00:00:00Z --subject-type product_model --subject-id model-x1 --scope "Random market purchase sample supports claim-001 for model-x1"
 ```

@@ -29,6 +29,7 @@ import { evidenceAddCommand } from "./commands/evidence-add.ts";
 import { evidenceCreateCommand } from "./commands/evidence-create.ts";
 import { evidenceHashCommand } from "./commands/evidence-hash.ts";
 import { evidenceMethodAddCommand } from "./commands/evidence-method-add.ts";
+import { evidenceS2AttachCommand, evidenceS2TemplateCommand } from "./commands/evidence-s2.ts";
 import { evidenceSignCommand } from "./commands/evidence-sign.ts";
 import { evidenceVerifyCommand } from "./commands/evidence-verify.ts";
 import { domainAuditCommand } from "./commands/domain-audit.ts";
@@ -96,6 +97,8 @@ const commands: Record<string, CommandHandler> = {
   "evidence create": evidenceCreateCommand,
   "evidence hash": evidenceHashCommand,
   "evidence method add": evidenceMethodAddCommand,
+  "evidence s2 attach": evidenceS2AttachCommand,
+  "evidence s2 template": evidenceS2TemplateCommand,
   "evidence sign": evidenceSignCommand,
   "evidence verify": evidenceVerifyCommand,
   "init": initCommand,
@@ -250,6 +253,8 @@ Usage:
   organchor evidence add --file README.md
   organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.mp4 --location-type https
   organchor evidence method add --id method-001 --evidence-id evidence-001 --steps "Fetch the public artifact;Compare the SHA-256 hash" --expected-results "The artifact hash matches the signed manifest"
+  organchor evidence s2 template --template certification_record
+  organchor evidence s2 attach --evidence-id evidence-001 --template certification_record --issuer-name "Example Certification Body" --anchor-url https://registry.example/records/ABC-123 --scope "Certificate supports claim-001 for model-x1"
   organchor evidence hash --file README.md
   organchor evidence sign --key keys/root-2026.private.json --authority root-authority.json
   organchor evidence sign --key keys/root-b.private.json --authority root-authority.json --append

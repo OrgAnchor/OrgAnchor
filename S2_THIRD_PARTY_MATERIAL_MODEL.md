@@ -1,6 +1,6 @@
 # S2 Third-Party Material Model
 
-Status: Accepted implementation-facing design model. Local S2 Core checks, candidate/effective classification, value-audit summary, and compact agent summary are implemented. Network route adapters and issuer-backed signatures remain future work.
+Status: Accepted implementation-facing design model. S2 basic usability is implemented: template generation, attach command, local Core checks, candidate/effective classification, value-audit summary, and compact agent summary. Network route adapters and issuer-backed signatures remain future work.
 
 ## Purpose
 
@@ -38,6 +38,42 @@ Adding S2 metadata there is lower-burden than introducing a new package type fir
 ```
 
 Future versions may add dedicated attestation or issuer-backed manifests, but the first implementation should not require them.
+
+## Low-Friction CLI
+
+Organizations should not have to hand-write S2 JSON.
+
+Generate a fillable S2 snippet:
+
+```bash
+organchor evidence s2 template --template certification_record
+```
+
+Attach S2 metadata to an existing evidence item:
+
+```bash
+organchor evidence s2 attach \
+  --evidence-id evidence-001 \
+  --template certification_record \
+  --issuer-name "Example Certification Body" \
+  --anchor-url https://registry.example/records/ABC-123 \
+  --anchor-record-id ABC-123 \
+  --scope "Certificate supports claim-001 for model-x1." \
+  --covered-subject-type product_model \
+  --covered-subject-id model-x1 \
+  --valid-until 2027-05-28T00:00:00Z
+```
+
+Supported starter templates:
+
+```text
+certification_record
+laboratory_report
+platform_public_record
+customer_confirmation
+```
+
+The attach command defaults unknown fields to explicit `unknown` values instead of hiding them. That keeps the path low-friction while still exposing gaps to external agents.
 
 ## Submission And Storage Boundary
 
@@ -361,13 +397,15 @@ remaining_policy_questions
 
 ## First Implementation Slice
 
-The first code slice implements:
+The implemented basic-usable S2 slice includes:
 
 1. Accept optional `s_class` and `s2` metadata in evidence items.
-2. Add S2 Core checks to `organchor value audit`.
-3. Downgrade unanchored third-party-looking material to `CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL`.
-4. Add `s2_summary` to value audit JSON and compact `verify url` output.
-5. Treat URL and registry route checking as bounded optional checks, not required for the first local-only pass.
+2. Generate template snippets with `organchor evidence s2 template`.
+3. Attach S2 metadata with `organchor evidence s2 attach`.
+4. Add S2 Core checks to `organchor value audit`.
+5. Downgrade unanchored third-party-looking material to `CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL`.
+6. Add `s2_summary` to value audit JSON and compact `verify url` output.
+7. Treat URL and registry route checking as bounded optional checks, not required for the first local-only pass.
 
 Not implemented in the first slice:
 

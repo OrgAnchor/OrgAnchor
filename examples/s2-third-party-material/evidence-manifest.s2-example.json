@@ -1,0 +1,75 @@
+{
+  "schema": "https://organchor.org/schemas/evidence-manifest.v1.json",
+  "type": "OrgAnchorEvidenceManifest",
+  "version": "1.0",
+  "manifest_id": "example-s2-evidence-2026-001",
+  "issued_at": "2026-05-28T00:00:00Z",
+  "organization_ref": {
+    "root_authority_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "official_endpoints_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "evidence": [
+    {
+      "id": "evidence-cert-001",
+      "title": "Example certification record",
+      "issuer_type": "third_party",
+      "media_type": "application/pdf",
+      "reproducibility": "not_specified",
+      "evidence_strength": "not_assessed",
+      "size": 123456,
+      "hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "locations": [
+        {
+          "type": "https",
+          "uri": "https://example.org/evidence/certificate.pdf"
+        }
+      ],
+      "relations": [
+        {
+          "type": "supports_claim",
+          "claim_id": "claim-001"
+        }
+      ],
+      "s_class": "S2_THIRD_PARTY_DOCUMENTS",
+      "s2": {
+        "state": "S2_1_GENERIC_ROUTE_PROVIDED",
+        "material_type": "certification_record",
+        "issuer_name": "Example Certification Body",
+        "organization_claimed_support": {
+          "support_type": "supports_claim",
+          "claim_refs": [
+            "claim-001"
+          ],
+          "covered_subject_type": "product_model",
+          "covered_subject_id": "model-x1",
+          "scope_text": "Certificate supports claim-001 for model-x1.",
+          "limitations": [
+            "Certificate scope and legal sufficiency require external policy review."
+          ]
+        },
+        "verification_route": {
+          "route_id": "VR-S2-002",
+          "route_kind": "PUBLIC_REGISTRY_CONFIRMATION",
+          "route_template": "public_registry_record",
+          "verification_mode": "manual_check"
+        },
+        "external_recheck_anchor": {
+          "anchor_type": "public_registry_record",
+          "url": "https://registry.example/records/ABC-123",
+          "record_id": "ABC-123",
+          "checked_at": "2026-05-28T00:00:00.000Z"
+        },
+        "health": {
+          "last_checked_at": "2026-05-28T00:00:00.000Z",
+          "maintenance_status": "FRESH",
+          "valid_until": "2027-05-28T00:00:00.000Z"
+        },
+        "disclosures": {
+          "sample_source": "unknown",
+          "selected_by": "unknown",
+          "relationship_to_organization": "paid_certification"
+        }
+      }
+    }
+  ]
+}

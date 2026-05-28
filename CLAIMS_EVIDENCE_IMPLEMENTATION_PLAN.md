@@ -32,6 +32,7 @@ Already implemented:
 - broad marketing-language warnings;
 - correction policy presence check;
 - local S2 third-party material classification and checks;
+- `evidence s2 template` and `evidence s2 attach` for low-friction S2 metadata creation;
 - value-audit and compact-verification `s2_summary`;
 - value continuity report JSON and Markdown outputs;
 - value continuity summary copied into `/verify/organchor.json`;

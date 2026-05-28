@@ -102,6 +102,7 @@ npm run agent:demo
 ## Examples And Templates
 
 - `examples/complete/`: public minimal example artifacts. These are test/example artifacts, not a real organization identity.
+- `examples/s2-third-party-material/`: S2 third-party material example showing the template and attach workflow for certification-style evidence.
 - `examples/agent-discovery-loop/`: local AI-agent discovery loop example, backed by `npm run agent:demo`.
 - `examples/directory/directory-snapshot.json`: static Directory snapshot example for AI-agent discovery tests.
 - `examples/directory/directory-origins.json`: static Directory build input example.

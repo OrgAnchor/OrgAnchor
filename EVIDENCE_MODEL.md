@@ -659,6 +659,8 @@ organchor claims verify
 
 organchor evidence create
 organchor evidence add
+organchor evidence s2 template
+organchor evidence s2 attach
 organchor evidence sign
 organchor evidence verify
 organchor evidence hash

@@ -223,43 +223,34 @@ test("value audit classifies S2 third-party material and exposes low-friction ga
       "--limitations",
       "Certificate scope still requires buyer policy review"
     ]);
-    patchEvidence(workspace, {
-      s_class: "S2_THIRD_PARTY_DOCUMENTS",
-      s2: {
-        state: "S2_1_GENERIC_ROUTE_PROVIDED",
-        material_type: "certification_record",
-        issuer_name: "Example Certification Body",
-        organization_claimed_support: {
-          support_type: "supports_claim",
-          claim_refs: ["claim-001"],
-          covered_subject_type: "product_model",
-          covered_subject_id: "model-x1",
-          scope_text: "Organization claims this certificate supports claim-001 for model-x1.",
-          limitations: ["Scope and legal sufficiency require external policy review."]
-        },
-        verification_route: {
-          route_id: "VR-S2-002",
-          route_kind: "PUBLIC_REGISTRY_CONFIRMATION",
-          verification_mode: "manual_check"
-        },
-        external_recheck_anchor: {
-          anchor_type: "public_registry_record",
-          url: "https://registry.example/records/ABC-123",
-          record_id: "ABC-123",
-          checked_at: "2026-05-19T00:00:00Z"
-        },
-        health: {
-          valid_until: "2027-05-19T00:00:00Z",
-          last_checked_at: "2026-05-19T00:00:00Z",
-          maintenance_status: "FRESH"
-        },
-        disclosures: {
-          sample_source: "unknown",
-          selected_by: "unknown",
-          relationship_to_organization: "paid_certification"
-        }
-      }
-    });
+    const template = run(workspace, ["evidence", "s2", "template", "--template", "certification_record"]);
+    assert.equal(JSON.parse(template.stdout).s2.material_type, "certification_record");
+    const attach = run(workspace, [
+      "evidence",
+      "s2",
+      "attach",
+      "--evidence-id",
+      "evidence-001",
+      "--template",
+      "certification_record",
+      "--issuer-name",
+      "Example Certification Body",
+      "--anchor-url",
+      "https://registry.example/records/ABC-123",
+      "--anchor-record-id",
+      "ABC-123",
+      "--scope",
+      "Organization claims this certificate supports claim-001 for model-x1.",
+      "--covered-subject-type",
+      "product_model",
+      "--covered-subject-id",
+      "model-x1",
+      "--checked-at",
+      "2026-05-19T00:00:00Z",
+      "--valid-until",
+      "2027-05-19T00:00:00Z"
+    ]);
+    assert.match(attach.stdout, /Attached S2 metadata to evidence: evidence-001/);
 
     run(workspace, [
       "value",
@@ -489,13 +480,6 @@ function addMethod(workspace: string): void {
     "--limitations",
     "This verifies artifact integrity, not final product quality"
   ]);
-}
-
-function patchEvidence(workspace: string, patch: Record<string, unknown>): void {
-  const evidencePath = join(workspace, "evidence", "evidence-manifest.json");
-  const evidence = JSON.parse(readFileSync(evidencePath, "utf8"));
-  Object.assign(evidence.evidence[0], patch);
-  writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
 }
 
 function run(workspace: string, args: string[], expectedStatus = 0): { stdout: string; stderr: string } {

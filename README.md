@@ -81,7 +81,7 @@ Implemented so far:
 - Signed evidence manifests with local artifact hash checks and appended threshold signatures.
 - Evidence recheck method objects through `organchor evidence method add`, linking signed evidence to concrete steps, expected results, tools, verification cost, and limitations.
 - Real-world profile validators for physical product, service delivery, SaaS/API, certification/compliance, and dataset/research claims.
-- S2 third-party material local checks for candidate versus effective S2, external recheck anchors, claim linkage, scope, limitations, expiry, disclosures, and compact `s2_summary`.
+- S2 third-party material template and attach commands plus local checks for candidate versus effective S2, external recheck anchors, claim linkage, scope, limitations, expiry, disclosures, and compact `s2_summary`.
 - Domain security audit reports with `PASS`, `WARN`, `FAIL`, and `MANUAL_CHECK_REQUIRED`.
 - HTTPS, certificate expiration, DNSSEC, SPF, DMARC, MX, CAA, security.txt, `/verify`, statement, and signature checks.
 - Onion v3 address validation and Tor Hidden Service config guidance.
@@ -172,6 +172,8 @@ organchor evidence create --config organchor.config.json
 organchor evidence add --file README.md
 organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.mp4 --location-type https
 organchor evidence method add --id method-001 --evidence-id evidence-001 --steps "Fetch artifact;Compute SHA-256;Compare with signed manifest" --expected-results "Hash matches"
+organchor evidence s2 template --template certification_record
+organchor evidence s2 attach --evidence-id evidence-001 --template certification_record --issuer-name "Example Certification Body" --anchor-url https://registry.example/records/ABC-123 --scope "Certificate supports claim-001 for model-x1"
 organchor evidence sign --key keys/root-2026.private.json --authority root-authority.json
 organchor value audit --claims claims/product-claims.json --evidence evidence/evidence-manifest.json --check-files
 organchor beacon index --in beacon-sweep.ndjson --out beacon-index.json

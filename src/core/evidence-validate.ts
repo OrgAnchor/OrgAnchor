@@ -42,6 +42,7 @@ export function validateEvidenceManifest(value: JsonValue): JsonValue {
     requireString(itemObject, "issuer_type", "evidence item");
     requireString(itemObject, "media_type", "evidence item");
     requireSha256Digest(itemObject, "hash", "evidence item");
+    validateOptionalSClass(itemObject);
     if (typeof itemObject.size !== "number" || itemObject.size < 0) {
       fail("VALIDATION_ERROR", "evidence item.size must be a non-negative number");
     }
@@ -55,6 +56,18 @@ export function validateEvidenceManifest(value: JsonValue): JsonValue {
     }
   }
   return value;
+}
+
+function validateOptionalSClass(itemObject: Record<string, JsonValue>): void {
+  if (itemObject.s_class !== undefined && typeof itemObject.s_class !== "string") {
+    fail("VALIDATION_ERROR", "evidence item.s_class must be a string");
+  }
+  if (itemObject.s2 !== undefined && (!itemObject.s2 || typeof itemObject.s2 !== "object" || Array.isArray(itemObject.s2))) {
+    fail("VALIDATION_ERROR", "evidence item.s2 must be an object");
+  }
+  if (itemObject.s_class === "S2_THIRD_PARTY_DOCUMENTS" && itemObject.s2 === undefined) {
+    fail("VALIDATION_ERROR", "S2 evidence item requires s2 metadata");
+  }
 }
 
 function validateMethods(object: Record<string, JsonValue>): Set<string> {

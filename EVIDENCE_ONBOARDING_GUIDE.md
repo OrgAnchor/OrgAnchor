@@ -249,7 +249,30 @@ organchor evidence add \
 
 The local file is used to compute the hash. The URI is recorded as a retrieval location.
 
-### 5. Sign Claims
+### 5. Attach S2 Third-Party Metadata When Relevant
+
+If the evidence is a third-party material such as a certificate, lab report, platform public record, or customer confirmation, attach S2 metadata instead of hand-editing JSON:
+
+```bash
+organchor evidence s2 template --template certification_record
+```
+
+```bash
+organchor evidence s2 attach \
+  --evidence-id evidence-001 \
+  --template certification_record \
+  --issuer-name "Example Certification Body" \
+  --anchor-url https://registry.example/records/ABC-123 \
+  --anchor-record-id ABC-123 \
+  --scope "Certificate supports claim-001 for model-x1." \
+  --covered-subject-type product_model \
+  --covered-subject-id model-x1 \
+  --valid-until 2027-05-28T00:00:00Z
+```
+
+S2 does not mean OrgAnchor trusts the issuer or proves the claim. It means the third-party-looking material is hash-bound, claim-linked, scoped, limited, and has an external recheck anchor visible to an external agent.
+
+### 6. Sign Claims
 
 ```bash
 organchor claims sign \
@@ -266,7 +289,7 @@ organchor claims sign \
   --append
 ```
 
-### 6. Sign Evidence
+### 7. Sign Evidence
 
 ```bash
 organchor evidence sign \
@@ -274,7 +297,7 @@ organchor evidence sign \
   --authority root-authority.json
 ```
 
-### 7. Verify
+### 8. Verify
 
 ```bash
 organchor claims verify \

@@ -39,7 +39,7 @@ Value evidence layer:
 - Policy-route hints for external AI agents.
 - Claims/evidence protocol baseline for claim support levels, reproducible methods, third-party attestations, challenges, and low-cost AI-agent evaluation.
 - Purpose/evidence/challenge model documented as the accepted three-axis direction for P1-P5 purpose profiles, S1-S5 observation source classes, S2 effective third-party material boundaries, and challenge/correction lifecycle states.
-- S2 third-party material model documented and partially implemented: optional `s_class`/`s2` metadata, candidate versus effective S2 classification, local Core checks, S2 gap extraction, value-audit `s2_summary`, and compact agent `s2_summary`.
+- S2 third-party material basic usability implemented: optional `s_class`/`s2` metadata, `evidence s2 template`, `evidence s2 attach`, candidate versus effective S2 classification, local Core checks, S2 gap extraction, value-audit `s2_summary`, and compact agent `s2_summary`.
 - Package health layer documented as the accepted direction for self-declared and observed package health, maintenance responsibility, stale/broken/expired evidence visibility, and low-cost agent fetch recommendations.
 - Product/service credential layer documented as an accepted design direction for delegated operational keys, five-class observation sources, and attribution of observations, complaints, tests, and corrections to the organization root authority chain.
 - Evidence sufficiency model documented as an accepted design principle so OrgAnchor can avoid field-count competition and report purpose-fit support instead of universal completeness scores.
@@ -144,4 +144,6 @@ organchor directory add --origins directory-origins.json --origin https://exampl
 organchor directory build --origins directory-origins.json --out public/directory --verify-origins
 organchor directory compare --snapshots a.json,b.json
 organchor adoption status --verify-dir public/verify --origin https://example.org --level 3
+organchor evidence s2 template --template certification_record
+organchor evidence s2 attach --evidence-id evidence-001 --template certification_record --issuer-name "Example Certification Body" --anchor-url https://registry.example/records/ABC-123 --scope "Certificate supports claim-001 for model-x1"
 ```

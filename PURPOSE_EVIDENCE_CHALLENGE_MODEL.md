@@ -270,7 +270,7 @@ issuer-backed OrgAnchor signature
 Material that only contains a PDF, scan, screenshot, logo, or organization-hosted copy without an external recheck anchor is not valid S2. It should be classified as:
 
 ```text
-UNVERIFIED_EXTERNAL_MATERIAL
+CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL
 ```
 
 That material can remain visible as a lead or pending attachment, but it must not count as effective third-party evidence for P3, P4, or P5.
@@ -318,6 +318,8 @@ external_recheck_anchor_present
 scope_review_required
 not_a_trust_decision
 ```
+
+The implementation-facing S2 field model, Core/Extension boundary, mechanical checks, and compact agent summary are defined in `S2_THIRD_PARTY_MATERIAL_MODEL.md`.
 
 Package health outputs are defined in `PACKAGE_HEALTH_LAYER.md`. Health is a usability and maintenance signal, not a trust score.
 

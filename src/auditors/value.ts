@@ -37,6 +37,45 @@ export type RealWorldEvidenceProfile =
 
 export type ClaimProfileReviewStatus = "PASS" | "WARN" | "NOT_DECLARED";
 
+export type S2MaterialState =
+  | "NOT_S2"
+  | "CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL"
+  | "S2_1_GENERIC_ROUTE_PROVIDED"
+  | "S2_2_VERIFIED_ROUTE_CHECKED"
+  | "S2_3_ISSUER_BACKED";
+
+export interface S2EvidenceAudit {
+  declared_state: string;
+  state: S2MaterialState;
+  effective: boolean;
+  claim_refs: string[];
+  unresolved_claim_refs: string[];
+  route_id: string;
+  route_kind: string;
+  external_recheck_anchor_present: boolean;
+  anchor_url_valid: boolean;
+  expired: boolean;
+  sample_source_unknown: boolean;
+  selected_by_unknown: boolean;
+  relationship_unknown: boolean;
+  gaps: string[];
+  checks: ValueAuditCheck[];
+}
+
+export interface S2Summary {
+  effective_s2_count: number;
+  candidate_unverified_external_material_count: number;
+  s2_state_counts: Record<"S2_1_GENERIC_ROUTE_PROVIDED" | "S2_2_VERIFIED_ROUTE_CHECKED" | "S2_3_ISSUER_BACKED", number>;
+  expired_s2_count: number;
+  broken_s2_anchor_count: number;
+  manual_check_s2_count: number;
+  unknown_sample_source_count: number;
+  unknown_relationship_count: number;
+  top_s2_gaps: string[];
+  next_actions: string[];
+  not_a_trust_decision: true;
+}
+
 export interface ClaimProfileReview {
   profile: RealWorldEvidenceProfile | "not_declared";
   status: ClaimProfileReviewStatus;
@@ -97,6 +136,8 @@ export interface EvidenceValueAudit {
   has_low_cost_recheck_method: boolean;
   has_external_location: boolean;
   is_stale: boolean;
+  s_class: string;
+  s2: S2EvidenceAudit;
   findings: string[];
 }
 
@@ -123,6 +164,7 @@ export interface ValueContinuityReport {
     profile_pass_claims: number;
     profile_gap_claims: number;
   };
+  s2_summary: S2Summary;
   checks: ValueAuditCheck[];
   claims: ClaimValueAudit[];
   evidence: EvidenceValueAudit[];
@@ -159,6 +201,8 @@ export async function auditValueContinuity(
   }
 
   const evidenceItems = arrayObjects(evidenceManifest.evidence);
+  const claims = arrayObjects(claimsManifest.claims);
+  const claimIds = new Set(claims.map((claim) => stringValue(claim.id)).filter(Boolean));
   const methodsById = new Map<string, Record<string, JsonValue>>();
   for (const method of arrayObjects(evidenceManifest.methods)) {
     methodsById.set(stringValue(method.id), method);
@@ -170,13 +214,12 @@ export async function auditValueContinuity(
 
   const evidenceAudits: EvidenceValueAudit[] = [];
   for (const item of evidenceItems) {
-    const audit = await auditEvidenceItem(item, now, Boolean(options.checkFiles), methodsById);
+    const audit = await auditEvidenceItem(item, now, Boolean(options.checkFiles), methodsById, claimIds);
     evidenceAudits.push(audit);
     checks.push(...evidenceChecks(audit));
   }
 
   const claimAudits: ClaimValueAudit[] = [];
-  const claims = arrayObjects(claimsManifest.claims);
   for (const claim of claims) {
     const audit = auditClaim(claim, evidenceById, evidenceAudits);
     claimAudits.push(audit);
@@ -191,6 +234,7 @@ export async function auditValueContinuity(
     claims_path: claimsPath,
     evidence_path: evidencePath,
     summary: summarize(checks, claimAudits, evidenceAudits),
+    s2_summary: summarizeS2(evidenceAudits),
     checks,
     claims: claimAudits,
     evidence: evidenceAudits
@@ -214,7 +258,10 @@ export function renderValueContinuityMarkdown(report: ValueContinuityReport): st
     )
     .join("\n");
   const evidence = report.evidence
-    .map((item) => `| ${item.status} | ${escapeMarkdown(item.id)} | ${escapeMarkdown(item.issuer_type)} | ${escapeMarkdown(item.reproducibility)} | ${item.has_external_location ? "yes" : "no"} |`)
+    .map(
+      (item) =>
+        `| ${item.status} | ${escapeMarkdown(item.id)} | ${escapeMarkdown(item.issuer_type)} | ${escapeMarkdown(item.reproducibility)} | ${item.has_external_location ? "yes" : "no"} | ${item.s2.state} | ${item.s2.effective ? "yes" : "no"} |`
+    )
     .join("\n");
 
   return `# Value Continuity Report
@@ -253,6 +300,19 @@ Evidence: \`${report.evidence_path}\`
 | Profile PASS claims | ${report.summary.profile_pass_claims} |
 | Profile gap claims | ${report.summary.profile_gap_claims} |
 
+## S2 Third-Party Material Metrics
+
+| Metric | Count |
+| --- | ---: |
+| Effective S2 items | ${report.s2_summary.effective_s2_count} |
+| Candidate unverified external materials | ${report.s2_summary.candidate_unverified_external_material_count} |
+| S2 generic-route items | ${report.s2_summary.s2_state_counts.S2_1_GENERIC_ROUTE_PROVIDED} |
+| S2 verified-route items | ${report.s2_summary.s2_state_counts.S2_2_VERIFIED_ROUTE_CHECKED} |
+| S2 issuer-backed items | ${report.s2_summary.s2_state_counts.S2_3_ISSUER_BACKED} |
+| Expired S2 items | ${report.s2_summary.expired_s2_count} |
+| Broken S2 anchor URLs | ${report.s2_summary.broken_s2_anchor_count} |
+| S2 manual checks | ${report.s2_summary.manual_check_s2_count} |
+
 ## Checks
 
 | Status | Check | Summary |
@@ -267,8 +327,8 @@ ${claims}
 
 ## Evidence
 
-| Status | Evidence | Issuer | Reproducibility | External location |
-| --- | --- | --- | --- | --- |
+| Status | Evidence | Issuer | Reproducibility | External location | S2 state | Effective S2 |
+| --- | --- | --- | --- | --- | --- | --- |
 ${evidence}
 `;
 }
@@ -277,11 +337,13 @@ async function auditEvidenceItem(
   item: Record<string, JsonValue>,
   now: Date,
   checkFiles: boolean,
-  methodsById: Map<string, Record<string, JsonValue>>
+  methodsById: Map<string, Record<string, JsonValue>>,
+  claimIds: Set<string>
 ): Promise<EvidenceValueAudit> {
   const id = stringValue(item.id);
   const evidenceType = stringValue(item.evidence_type) || "not_specified";
   const issuerType = stringValue(item.issuer_type) || "unknown";
+  const sClass = stringValue(item.s_class);
   const reproducibility = stringValue(item.reproducibility) || stringValue(asRecord(item.quality).reproducibility) || "not_specified";
   const locations = arrayObjects(item.locations);
   const methodRefs = arrayStrings(item.method_refs);
@@ -303,14 +365,16 @@ async function auditEvidenceItem(
   if (methodRefs.length > 0 && !hasRecheckMethod) findings.push("Evidence method does not include actionable steps and expected results.");
   const isStale = isEvidenceStale(item, now);
   if (isStale) findings.push("Evidence is past its valid_until date.");
+  const s2 = auditS2Material(item, now, claimIds);
 
   if (checkFiles) {
     await checkLocalLocations(item, locations, findings);
   }
 
+  const status = worstStatus(statusFromFindings(findings, false), s2.checks.map((check) => check.status));
   return {
     id,
-    status: statusFromFindings(findings, false),
+    status,
     evidence_type: evidenceType,
     issuer_type: issuerType,
     reproducibility,
@@ -322,7 +386,244 @@ async function auditEvidenceItem(
     has_low_cost_recheck_method: hasLowCostRecheckMethod,
     has_external_location: hasExternalLocation,
     is_stale: isStale,
+    s_class: sClass,
+    s2,
     findings
+  };
+}
+
+function auditS2Material(item: Record<string, JsonValue>, now: Date, claimIds: Set<string>): S2EvidenceAudit {
+  const id = stringValue(item.id);
+  const sClass = stringValue(item.s_class);
+  const s2 = asRecord(item.s2);
+  const isDeclaredS2 = sClass === "S2_THIRD_PARTY_DOCUMENTS" || Object.keys(s2).length > 0;
+  if (!isDeclaredS2) {
+    return emptyS2Audit();
+  }
+
+  const support = asRecord(s2.organization_claimed_support);
+  const route = asRecord(s2.verification_route);
+  const anchor = asRecord(s2.external_recheck_anchor);
+  const health = asRecord(s2.health);
+  const disclosures = asRecord(s2.disclosures);
+  const checks: ValueAuditCheck[] = [];
+  const gaps: string[] = [];
+  const declaredState = stringValue(s2.state);
+  let state: S2MaterialState = isS2MaterialState(declaredState) ? declaredState : "CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL";
+  const materialType = stringValue(s2.material_type);
+  const issuerName = stringValue(s2.issuer_name);
+  const claimRefs = uniqueStrings([...arrayStrings(support.claim_refs), ...relationClaimRefs(item)]);
+  const unresolvedClaimRefs = claimRefs.filter((ref) => !claimIds.has(ref));
+  const scopeText = stringValue(support.scope_text);
+  const limitations = arrayStrings(support.limitations);
+  const routeId = stringValue(route.route_id);
+  const routeKind = stringValue(route.route_kind);
+  const routeKnown = S2_ROUTE_IDS.has(routeId) || S2_ROUTE_KINDS.has(routeKind);
+  const anchorPresent = Object.keys(anchor).length > 0;
+  const anchorUrl = stringValue(anchor.url);
+  const anchorUrlValid = !anchorUrl || isHttpUrl(anchorUrl);
+  const anchorCheckedAt = stringValue(anchor.checked_at) || stringValue(anchor.issued_at);
+  const validUntil = stringValue(health.valid_until) || stringValue(item.valid_until);
+  const expired = validUntil ? isPastTimestamp(validUntil, now) : false;
+  const sampleSourceUnknown = isUnknownOrMissing(disclosures.sample_source);
+  const selectedByUnknown = isUnknownOrMissing(disclosures.selected_by);
+  const relationshipUnknown = isUnknownOrMissing(disclosures.relationship_to_organization);
+
+  addS2Check(
+    checks,
+    gaps,
+    sClass === "S2_THIRD_PARTY_DOCUMENTS" ? "PASS" : "WARN",
+    id,
+    "S2_CORE_FIELDS_PRESENT",
+    sClass === "S2_THIRD_PARTY_DOCUMENTS" ? "S2 class is declared." : "S2 metadata is present but s_class is not S2_THIRD_PARTY_DOCUMENTS."
+  );
+  addS2Check(
+    checks,
+    gaps,
+    state === "CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL" ? "WARN" : "PASS",
+    id,
+    "S2_STATE_DECLARED",
+    state === "CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL"
+      ? "S2 state is missing, unsupported, or explicitly candidate-only."
+      : `S2 state is ${state}.`
+  );
+  addS2Check(
+    checks,
+    gaps,
+    materialType ? "PASS" : "WARN",
+    id,
+    "S2_MATERIAL_TYPE_DECLARED",
+    materialType ? `S2 material type is ${materialType}.` : "S2 material_type is missing."
+  );
+  addS2Check(
+    checks,
+    gaps,
+    issuerName ? "PASS" : "WARN",
+    id,
+    "S2_ISSUER_NAME_DECLARED",
+    issuerName ? `S2 issuer is ${issuerName}.` : "S2 issuer_name is missing."
+  );
+  addS2Check(
+    checks,
+    gaps,
+    claimRefs.length === 0 ? "WARN" : unresolvedClaimRefs.length > 0 ? "FAIL" : "PASS",
+    id,
+    "S2_CLAIM_REFS_RESOLVE",
+    claimRefs.length === 0
+      ? "S2 material does not declare which claim it supports."
+      : unresolvedClaimRefs.length > 0
+        ? `S2 material references unknown claim(s): ${unresolvedClaimRefs.join(", ")}.`
+        : "S2 claim references resolve."
+  );
+  addS2Check(
+    checks,
+    gaps,
+    scopeText ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S2_SCOPE_DECLARED",
+    scopeText ? "S2 claimed support scope is declared." : "S2 scope_text is missing; scope review is required."
+  );
+  addS2Check(
+    checks,
+    gaps,
+    limitations.length > 0 ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S2_LIMITATIONS_DECLARED",
+    limitations.length > 0 ? "S2 limitations are declared." : "S2 limitations are missing."
+  );
+  addS2Check(
+    checks,
+    gaps,
+    Object.keys(route).length === 0 ? "WARN" : routeKnown ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S2_ROUTE_KNOWN",
+    Object.keys(route).length === 0
+      ? "S2 verification_route is missing."
+      : routeKnown
+        ? `S2 route is ${routeId || routeKind}.`
+        : "S2 route is custom or not recognized; manual route review is required."
+  );
+  addS2Check(
+    checks,
+    gaps,
+    anchorPresent ? "PASS" : "WARN",
+    id,
+    "S2_EXTERNAL_RECHECK_ANCHOR_PRESENT",
+    anchorPresent ? "S2 external recheck anchor is present." : "S2 external_recheck_anchor is missing; this is not effective S2."
+  );
+  addS2Check(
+    checks,
+    gaps,
+    anchorPresent && anchorCheckedAt ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S2_ANCHOR_TIME_DECLARED",
+    anchorPresent && anchorCheckedAt ? "S2 anchor check time is declared." : "S2 anchor checked_at or issued_at is missing."
+  );
+  if (anchorUrl) {
+    addS2Check(
+      checks,
+      gaps,
+      anchorUrlValid ? "PASS" : "WARN",
+      id,
+      "S2_ANCHOR_URL_WELL_FORMED",
+      anchorUrlValid ? "S2 anchor URL is well formed." : "S2 anchor URL is not a valid http(s) URL."
+    );
+  }
+  if (state === "S2_2_VERIFIED_ROUTE_CHECKED") {
+    addS2Check(
+      checks,
+      gaps,
+      "MANUAL_CHECK_REQUIRED",
+      id,
+      "S2_VERIFIED_ROUTE_CHECKED",
+      "S2_2 requires a bounded route adapter check. Local audit records this as S2_1 until route adapters are implemented."
+    );
+  }
+  if (state === "S2_3_ISSUER_BACKED") {
+    addS2Check(
+      checks,
+      gaps,
+      "MANUAL_CHECK_REQUIRED",
+      id,
+      "S2_ISSUER_BACKING_PRESENT",
+      "S2_3 requires issuer-backed signature or issuer-hosted verification. Local audit records this as S2_1 until issuer-backed workflows are implemented."
+    );
+  }
+  addS2Check(
+    checks,
+    gaps,
+    stringValue(health.maintenance_status) ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S2_HEALTH_DECLARED",
+    stringValue(health.maintenance_status) ? `S2 health is ${stringValue(health.maintenance_status)}.` : "S2 health.maintenance_status is missing."
+  );
+  if (validUntil) {
+    addS2Check(
+      checks,
+      gaps,
+      expired ? "WARN" : "PASS",
+      id,
+      "S2_VALID_UNTIL_NOT_EXPIRED",
+      expired ? "S2 material is past valid_until." : "S2 material is not past valid_until."
+    );
+  }
+  addDisclosureCheck(checks, gaps, id, "S2_SAMPLE_SOURCE_DISCLOSED", "sample_source", sampleSourceUnknown);
+  addDisclosureCheck(checks, gaps, id, "S2_SELECTED_BY_DISCLOSED", "selected_by", selectedByUnknown);
+  addDisclosureCheck(checks, gaps, id, "S2_RELATIONSHIP_DISCLOSED", "relationship_to_organization", relationshipUnknown);
+
+  const hasRequiredCore =
+    sClass === "S2_THIRD_PARTY_DOCUMENTS" &&
+    state !== "CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL" &&
+    Boolean(materialType) &&
+    Boolean(issuerName) &&
+    claimRefs.length > 0 &&
+    unresolvedClaimRefs.length === 0 &&
+    Boolean(scopeText) &&
+    limitations.length > 0 &&
+    Object.keys(route).length > 0 &&
+    anchorPresent &&
+    Boolean(anchorCheckedAt);
+
+  if (!hasRequiredCore) state = "CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL";
+  if (state === "S2_2_VERIFIED_ROUTE_CHECKED" || state === "S2_3_ISSUER_BACKED") state = "S2_1_GENERIC_ROUTE_PROVIDED";
+  const effective = S2_EFFECTIVE_STATES.has(state);
+
+  return {
+    declared_state: declaredState,
+    state,
+    effective,
+    claim_refs: claimRefs,
+    unresolved_claim_refs: unresolvedClaimRefs,
+    route_id: routeId,
+    route_kind: routeKind,
+    external_recheck_anchor_present: anchorPresent,
+    anchor_url_valid: anchorUrlValid,
+    expired,
+    sample_source_unknown: sampleSourceUnknown,
+    selected_by_unknown: selectedByUnknown,
+    relationship_unknown: relationshipUnknown,
+    gaps: uniqueStrings(gaps),
+    checks
+  };
+}
+
+function emptyS2Audit(): S2EvidenceAudit {
+  return {
+    declared_state: "",
+    state: "NOT_S2",
+    effective: false,
+    claim_refs: [],
+    unresolved_claim_refs: [],
+    route_id: "",
+    route_kind: "",
+    external_recheck_anchor_present: false,
+    anchor_url_valid: true,
+    expired: false,
+    sample_source_unknown: false,
+    selected_by_unknown: false,
+    relationship_unknown: false,
+    gaps: [],
+    checks: []
   };
 }
 
@@ -429,6 +730,7 @@ function evidenceChecks(audit: EvidenceValueAudit): ValueAuditCheck[] {
       )
     );
   }
+  checks.push(...audit.s2.checks);
   return checks;
 }
 
@@ -953,12 +1255,134 @@ function summarize(
   };
 }
 
+function summarizeS2(evidence: EvidenceValueAudit[]): S2Summary {
+  const s2Items = evidence.filter((item) => item.s2.state !== "NOT_S2");
+  const effectiveItems = s2Items.filter((item) => item.s2.effective);
+  const manualCheckCount = s2Items.reduce(
+    (count, item) => count + item.s2.checks.filter((check) => check.status === "MANUAL_CHECK_REQUIRED").length,
+    0
+  );
+  const summary: S2Summary = {
+    effective_s2_count: effectiveItems.length,
+    candidate_unverified_external_material_count: s2Items.filter((item) => item.s2.state === "CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL").length,
+    s2_state_counts: {
+      S2_1_GENERIC_ROUTE_PROVIDED: s2Items.filter((item) => item.s2.state === "S2_1_GENERIC_ROUTE_PROVIDED").length,
+      S2_2_VERIFIED_ROUTE_CHECKED: s2Items.filter((item) => item.s2.state === "S2_2_VERIFIED_ROUTE_CHECKED").length,
+      S2_3_ISSUER_BACKED: s2Items.filter((item) => item.s2.state === "S2_3_ISSUER_BACKED").length
+    },
+    expired_s2_count: s2Items.filter((item) => item.s2.expired).length,
+    broken_s2_anchor_count: s2Items.filter((item) => !item.s2.anchor_url_valid).length,
+    manual_check_s2_count: manualCheckCount,
+    unknown_sample_source_count: s2Items.filter((item) => item.s2.sample_source_unknown).length,
+    unknown_relationship_count: s2Items.filter((item) => item.s2.relationship_unknown).length,
+    top_s2_gaps: uniqueStrings(s2Items.flatMap((item) => item.s2.gaps)).slice(0, 5),
+    next_actions: [],
+    not_a_trust_decision: true
+  };
+  summary.next_actions = s2NextActions(summary);
+  return summary;
+}
+
+function s2NextActions(summary: S2Summary): string[] {
+  const actions: string[] = [];
+  if (summary.candidate_unverified_external_material_count > 0) {
+    actions.push("Add external recheck anchors, claim linkage, scope, limitations, and route metadata before treating candidate materials as effective S2.");
+  }
+  if (summary.expired_s2_count > 0) actions.push("Refresh expired S2 material or mark the related claim as expired, superseded, or withdrawn.");
+  if (summary.broken_s2_anchor_count > 0) actions.push("Fix malformed S2 anchor URLs or replace them with valid issuer or public registry anchors.");
+  if (summary.unknown_sample_source_count > 0 || summary.unknown_relationship_count > 0) {
+    actions.push("Disclose sample source, selected_by, and relationship fields before using S2 for high-value or safety-critical review.");
+  }
+  if (actions.length === 0 && summary.effective_s2_count > 0) {
+    actions.push("Review S2 scope and limitations against the consuming agent's own policy; OrgAnchor does not assign final trust.");
+  }
+  if (actions.length === 0) actions.push("No S2 material is declared; request S2 only if the target purpose requires external support.");
+  return actions;
+}
+
 function statusFromFindings(findings: string[], hasHardFailure: boolean): AuditStatus {
   if (hasHardFailure) return "FAIL";
   if (findings.some((finding) => /missing evidence|hash mismatch|cannot be read|past its valid_until/i.test(finding))) {
     return "WARN";
   }
   if (findings.length > 0) return "MANUAL_CHECK_REQUIRED";
+  return "PASS";
+}
+
+const S2_EFFECTIVE_STATES = new Set<S2MaterialState>([
+  "S2_1_GENERIC_ROUTE_PROVIDED",
+  "S2_2_VERIFIED_ROUTE_CHECKED",
+  "S2_3_ISSUER_BACKED"
+]);
+
+const S2_ROUTE_IDS = new Set(["VR-S2-001", "VR-S2-002"]);
+const S2_ROUTE_KINDS = new Set(["ISSUER_ORIGIN_CONFIRMATION", "PUBLIC_REGISTRY_CONFIRMATION"]);
+
+function isS2MaterialState(value: string): value is S2MaterialState {
+  return value === "CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL" || S2_EFFECTIVE_STATES.has(value as S2MaterialState);
+}
+
+function addS2Check(
+  checks: ValueAuditCheck[],
+  gaps: string[],
+  status: AuditStatus,
+  evidenceId: string,
+  id: string,
+  summary: string
+): void {
+  checks.push(buildCheck(`evidence:${evidenceId}:s2:${id}`, `Evidence ${evidenceId} ${id}`, status, summary));
+  if (status !== "PASS") gaps.push(summary);
+}
+
+function addDisclosureCheck(
+  checks: ValueAuditCheck[],
+  gaps: string[],
+  evidenceId: string,
+  id: string,
+  field: string,
+  unknown: boolean
+): void {
+  addS2Check(
+    checks,
+    gaps,
+    unknown ? "MANUAL_CHECK_REQUIRED" : "PASS",
+    evidenceId,
+    id,
+    unknown ? `S2 disclosure ${field} is missing or unknown.` : `S2 disclosure ${field} is declared.`
+  );
+}
+
+function relationClaimRefs(item: Record<string, JsonValue>): string[] {
+  return arrayObjects(item.relations)
+    .map((relation) => stringValue(relation.claim_id))
+    .filter(Boolean);
+}
+
+function isHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+function isPastTimestamp(value: string, now: Date): boolean {
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) && parsed < now.getTime();
+}
+
+function isUnknownOrMissing(value: JsonValue | undefined): boolean {
+  if (typeof value !== "string") return true;
+  const normalized = value.trim().toLowerCase();
+  return normalized.length === 0 || normalized === "unknown" || normalized === "not_disclosed";
+}
+
+function worstStatus(base: AuditStatus, statuses: AuditStatus[]): AuditStatus {
+  const all = [base, ...statuses];
+  if (all.includes("FAIL")) return "FAIL";
+  if (all.includes("WARN")) return "WARN";
+  if (all.includes("MANUAL_CHECK_REQUIRED")) return "MANUAL_CHECK_REQUIRED";
   return "PASS";
 }
 

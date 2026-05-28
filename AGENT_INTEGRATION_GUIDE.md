@@ -254,7 +254,26 @@ Example:
     "next_best_actions": [
       "Add an independent attestation or external evidence source for the exact claim.",
       "Add a concrete recheck method with steps, expected results, tools, cost, and limitations."
-    ]
+    ],
+    "s2_summary": {
+      "effective_s2_count": 0,
+      "candidate_unverified_external_material_count": 0,
+      "s2_state_counts": {
+        "S2_1_GENERIC_ROUTE_PROVIDED": 0,
+        "S2_2_VERIFIED_ROUTE_CHECKED": 0,
+        "S2_3_ISSUER_BACKED": 0
+      },
+      "expired_s2_count": 0,
+      "broken_s2_anchor_count": 0,
+      "manual_check_s2_count": 0,
+      "unknown_sample_source_count": 0,
+      "unknown_relationship_count": 0,
+      "top_s2_gaps": [],
+      "next_actions": [
+        "No S2 material is declared; request S2 only if the target purpose requires external support."
+      ],
+      "not_a_trust_decision": true
+    }
   },
   "policy_route": {
     "route": "EXTERNAL_POLICY_REVIEW",

@@ -77,6 +77,19 @@ export interface AgentVerificationCompactResult {
     risk_gaps: number;
     top_risk_gaps: string[];
     next_best_actions: string[];
+    s2_summary: {
+      effective_s2_count: number;
+      candidate_unverified_external_material_count: number;
+      s2_state_counts: Record<string, number>;
+      expired_s2_count: number;
+      broken_s2_anchor_count: number;
+      manual_check_s2_count: number;
+      unknown_sample_source_count: number;
+      unknown_relationship_count: number;
+      top_s2_gaps: string[];
+      next_actions: string[];
+      not_a_trust_decision: boolean;
+    };
   };
   policy_route: AgentPolicyRoute;
   failures: string[];
@@ -282,6 +295,7 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
   const summary = optionalRecord(valueContinuity.summary);
   const claimSupportSummary = optionalRecord(valueContinuity.claim_support_summary);
   const claimSupportLevels = optionalRecord(claimSupportSummary.support_levels);
+  const s2Summary = optionalRecord(valueContinuity.s2_summary);
 
   return {
     type: "OrgAnchorAgentVerificationCompactResult",
@@ -310,7 +324,8 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
       claim_support_levels: compactClaimSupportLevels(claimSupportLevels),
       risk_gaps: numberValue(claimSupportSummary.risk_gap_count),
       top_risk_gaps: arrayStrings(claimSupportSummary.top_risk_gaps),
-      next_best_actions: arrayStrings(claimSupportSummary.next_best_actions)
+      next_best_actions: arrayStrings(claimSupportSummary.next_best_actions),
+      s2_summary: compactS2Summary(s2Summary)
     },
     policy_route: result.policy_route,
     failures: result.checks
@@ -693,7 +708,8 @@ async function verifyValueContinuity(options: {
       path,
       hash: reportHash,
       summary,
-      claim_support_summary: summarizeClaimSupport(reportObject)
+      claim_support_summary: summarizeClaimSupport(reportObject),
+      s2_summary: optionalRecord(reportObject.s2_summary)
     }
   };
 }
@@ -723,6 +739,27 @@ function compactClaimSupportLevels(value: Record<string, JsonValue>): Record<str
     result[level] = numberValue(value[level]);
   }
   return result;
+}
+
+function compactS2Summary(value: Record<string, JsonValue>): AgentVerificationCompactResult["evidence_summary"]["s2_summary"] {
+  const stateCounts = optionalRecord(value.s2_state_counts);
+  return {
+    effective_s2_count: numberValue(value.effective_s2_count),
+    candidate_unverified_external_material_count: numberValue(value.candidate_unverified_external_material_count),
+    s2_state_counts: {
+      S2_1_GENERIC_ROUTE_PROVIDED: numberValue(stateCounts.S2_1_GENERIC_ROUTE_PROVIDED),
+      S2_2_VERIFIED_ROUTE_CHECKED: numberValue(stateCounts.S2_2_VERIFIED_ROUTE_CHECKED),
+      S2_3_ISSUER_BACKED: numberValue(stateCounts.S2_3_ISSUER_BACKED)
+    },
+    expired_s2_count: numberValue(value.expired_s2_count),
+    broken_s2_anchor_count: numberValue(value.broken_s2_anchor_count),
+    manual_check_s2_count: numberValue(value.manual_check_s2_count),
+    unknown_sample_source_count: numberValue(value.unknown_sample_source_count),
+    unknown_relationship_count: numberValue(value.unknown_relationship_count),
+    top_s2_gaps: arrayStrings(value.top_s2_gaps),
+    next_actions: arrayStrings(value.next_actions),
+    not_a_trust_decision: value.not_a_trust_decision === true
+  };
 }
 
 function emptyClaimSupportLevels(): Record<string, number> {

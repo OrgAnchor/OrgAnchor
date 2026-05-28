@@ -198,6 +198,96 @@ test("value audit treats explicit recheck methods as reproducible support", () =
   }
 });
 
+test("value audit classifies S2 third-party material and exposes low-friction gaps", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-value-audit-s2-"));
+  try {
+    createAuthority(workspace);
+    writeFileSync(join(workspace, "certificate.pdf"), "example certificate bytes\n", "utf8");
+    run(workspace, ["claims", "create", "--config", "organchor.config.json"]);
+    run(workspace, ["evidence", "create", "--config", "organchor.config.json"]);
+    run(workspace, [
+      "evidence",
+      "add",
+      "--file",
+      "certificate.pdf",
+      "--id",
+      "evidence-001",
+      "--issuer-type",
+      "third_party",
+      "--media-type",
+      "application/pdf",
+      "--uri",
+      "https://example.org/evidence/certificate.pdf",
+      "--location-type",
+      "https",
+      "--limitations",
+      "Certificate scope still requires buyer policy review"
+    ]);
+    patchEvidence(workspace, {
+      s_class: "S2_THIRD_PARTY_DOCUMENTS",
+      s2: {
+        state: "S2_1_GENERIC_ROUTE_PROVIDED",
+        material_type: "certification_record",
+        issuer_name: "Example Certification Body",
+        organization_claimed_support: {
+          support_type: "supports_claim",
+          claim_refs: ["claim-001"],
+          covered_subject_type: "product_model",
+          covered_subject_id: "model-x1",
+          scope_text: "Organization claims this certificate supports claim-001 for model-x1.",
+          limitations: ["Scope and legal sufficiency require external policy review."]
+        },
+        verification_route: {
+          route_id: "VR-S2-002",
+          route_kind: "PUBLIC_REGISTRY_CONFIRMATION",
+          verification_mode: "manual_check"
+        },
+        external_recheck_anchor: {
+          anchor_type: "public_registry_record",
+          url: "https://registry.example/records/ABC-123",
+          record_id: "ABC-123",
+          checked_at: "2026-05-19T00:00:00Z"
+        },
+        health: {
+          valid_until: "2027-05-19T00:00:00Z",
+          last_checked_at: "2026-05-19T00:00:00Z",
+          maintenance_status: "FRESH"
+        },
+        disclosures: {
+          sample_source: "unknown",
+          selected_by: "unknown",
+          relationship_to_organization: "paid_certification"
+        }
+      }
+    });
+
+    run(workspace, [
+      "value",
+      "audit",
+      "--claims",
+      "claims/product-claims.json",
+      "--evidence",
+      "evidence/evidence-manifest.json",
+      "--check-files",
+      "--now",
+      "2026-05-19T00:00:00Z"
+    ]);
+
+    const report = readReport(workspace);
+    assert.equal(report.s2_summary.effective_s2_count, 1);
+    assert.equal(report.s2_summary.candidate_unverified_external_material_count, 0);
+    assert.equal(report.s2_summary.s2_state_counts.S2_1_GENERIC_ROUTE_PROVIDED, 1);
+    assert.equal(report.s2_summary.unknown_sample_source_count, 1);
+    assert.equal(report.s2_summary.unknown_relationship_count, 0);
+    assert.equal(report.s2_summary.manual_check_s2_count, 2);
+    assert.equal(report.evidence[0]?.s2.state, "S2_1_GENERIC_ROUTE_PROVIDED");
+    assert.equal(report.evidence[0]?.s2.effective, true);
+    assert.deepEqual(report.evidence[0]?.s2.unresolved_claim_refs, []);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
 test("value audit reports profile gaps for underspecified physical product claims", () => {
   const workspace = mkdtempSync(join(tmpdir(), "organchor-value-audit-profile-gap-"));
   try {
@@ -327,6 +417,14 @@ function createAuthority(workspace: string): void {
 
 function readReport(workspace: string): {
   summary: Record<string, number>;
+  s2_summary: {
+    effective_s2_count: number;
+    candidate_unverified_external_material_count: number;
+    s2_state_counts: Record<string, number>;
+    unknown_sample_source_count: number;
+    unknown_relationship_count: number;
+    manual_check_s2_count: number;
+  };
   claims: Array<{
     status: string;
     level: string;
@@ -352,6 +450,11 @@ function readReport(workspace: string): {
     method_kinds: string[];
     has_recheck_method: boolean;
     has_low_cost_recheck_method: boolean;
+    s2: {
+      state: string;
+      effective: boolean;
+      unresolved_claim_refs: string[];
+    };
   }>;
 } {
   return JSON.parse(readFileSync(join(workspace, "reports", "value-continuity-report.json"), "utf8"));
@@ -386,6 +489,13 @@ function addMethod(workspace: string): void {
     "--limitations",
     "This verifies artifact integrity, not final product quality"
   ]);
+}
+
+function patchEvidence(workspace: string, patch: Record<string, unknown>): void {
+  const evidencePath = join(workspace, "evidence", "evidence-manifest.json");
+  const evidence = JSON.parse(readFileSync(evidencePath, "utf8"));
+  Object.assign(evidence.evidence[0], patch);
+  writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
 }
 
 function run(workspace: string, args: string[], expectedStatus = 0): { stdout: string; stderr: string } {

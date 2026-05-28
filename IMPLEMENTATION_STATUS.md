@@ -2,7 +2,7 @@
 
 Status: active alpha implementation snapshot
 
-Last updated: 2026-05-26
+Last updated: 2026-05-28
 
 This document records what is already implemented, what remains external or future work, and what OrgAnchor intentionally does not do. It exists to keep development aligned with the project north star: lower the cost for third-party AI agents, organizations, and people to discover, verify, understand, and compare organization-controlled identity and value evidence without turning OrgAnchor into a central trust authority.
 
@@ -39,6 +39,7 @@ Value evidence layer:
 - Policy-route hints for external AI agents.
 - Claims/evidence protocol baseline for claim support levels, reproducible methods, third-party attestations, challenges, and low-cost AI-agent evaluation.
 - Purpose/evidence/challenge model documented as the accepted three-axis direction for P1-P5 purpose profiles, S1-S5 observation source classes, S2 effective third-party material boundaries, and challenge/correction lifecycle states.
+- S2 third-party material model documented and partially implemented: optional `s_class`/`s2` metadata, candidate versus effective S2 classification, local Core checks, S2 gap extraction, value-audit `s2_summary`, and compact agent `s2_summary`.
 - Package health layer documented as the accepted direction for self-declared and observed package health, maintenance responsibility, stale/broken/expired evidence visibility, and low-cost agent fetch recommendations.
 - Product/service credential layer documented as an accepted design direction for delegated operational keys, five-class observation sources, and attribution of observations, complaints, tests, and corrections to the organization root authority chain.
 - Evidence sufficiency model documented as an accepted design principle so OrgAnchor can avoid field-count competition and report purpose-fit support instead of universal completeness scores.
@@ -99,7 +100,7 @@ These are not considered done:
 - Dedicated method, attestation, and challenge manifests from `CLAIMS_EVIDENCE_PROTOCOL.md`.
 - Delegated product/service key statements, product model passports, batch commitments, unit credentials, service delivery credentials, and observation binding checks from `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`.
 - Purpose-fit evidence outputs such as `fit_for`, `not_enough_for`, and `missing_optional_context` from `EVIDENCE_SUFFICIENCY_MODEL.md`.
-- P1-P5 purpose-profile validators, S1-S5 source-class fields, S2 effective-level and verified-route checks, and challenge/correction lifecycle extraction from `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
+- P1-P5 purpose-profile validators, broader S1/S3/S4/S5 source-class fields, S2 network verified-route adapters, issuer-backed S2 signatures from `S2_THIRD_PARTY_MATERIAL_MODEL.md`, and challenge/correction lifecycle extraction from `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
 - Package health commands, observed health lookup, Beacon health summaries, Directory health observation summaries, observed health reports, and agent fetch recommendations from `PACKAGE_HEALTH_LAYER.md`.
 - Live ENS resolver reads through a chosen Ethereum RPC/provider path.
 - Real Onion disaster-recovery address registration.

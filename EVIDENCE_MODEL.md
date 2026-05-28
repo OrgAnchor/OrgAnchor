@@ -296,6 +296,8 @@ Evidence should distinguish:
 
 AI agents should not treat these categories as equally trustworthy.
 
+For third-party-looking materials, `S2_THIRD_PARTY_MATERIAL_MODEL.md` defines the stricter boundary. A PDF, screenshot, logo, or organization-hosted copy is not effective S2 unless it has an external recheck anchor and an explicit organization-claimed linkage to claims, products, services, or credentials.
+
 ## Claim Relations
 
 Evidence can relate to a claim in different ways:

@@ -31,6 +31,8 @@ Already implemented:
 - scope checks;
 - broad marketing-language warnings;
 - correction policy presence check;
+- local S2 third-party material classification and checks;
+- value-audit and compact-verification `s2_summary`;
 - value continuity report JSON and Markdown outputs;
 - value continuity summary copied into `/verify/organchor.json`;
 - `organchor verify url --compact` summary fields for unsupported, third-party, reproducible, manual-check, claim-support-level, risk-gap counts, top risk gaps, and next actions.
@@ -48,6 +50,7 @@ Accepted design principle:
 
 - `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md` defines the three-axis model: P1-P5 purpose profiles, S1-S5 observation source classes, and challenge/correction lifecycle states.
 - `EVIDENCE_SUFFICIENCY_MODEL.md` defines purpose-fit sufficiency over raw completeness, so validators and agent outputs should avoid field-count ranking and hidden mandatory extension fields.
+- `S2_THIRD_PARTY_MATERIAL_MODEL.md` defines the implementation-facing S2 fields, Core/Extension boundary, mechanical checks, and compact agent summary.
 
 Accepted but not yet implemented:
 
@@ -106,8 +109,8 @@ Next CLI/schema work should add:
 5. Purpose/evidence/challenge model outputs
    - Add P1-P5 purpose-profile validators.
    - Add S1-S5 observation source-class fields.
-   - Add S2 effective-level extraction so unanchored external-looking material is exposed as `UNVERIFIED_EXTERNAL_MATERIAL`, not effective S2.
-   - Add bounded S2 verified-route checks for `VR-S2-001 ISSUER_ORIGIN_CONFIRMATION` and `VR-S2-002 PUBLIC_REGISTRY_CONFIRMATION`.
+   - Extend the implemented local S2 checks into bounded network verified-route adapters for `VR-S2-001 ISSUER_ORIGIN_CONFIRMATION` and `VR-S2-002 PUBLIC_REGISTRY_CONFIRMATION`.
+   - Add issuer-backed S2 signatures for institutions that adopt OrgAnchor or host compatible signed records.
    - Add challenge/correction lifecycle states across all purpose profiles.
    - Treat public challenge review as a horizontal lifecycle mode, not as a sixth ascending purpose profile.
 

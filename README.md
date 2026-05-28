@@ -25,7 +25,7 @@ OrgAnchor is not only a tool for keeping an organizational name alive. Its purpo
 
 OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
 
-See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `IMPLEMENTATION_STATUS.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `PACKAGE_HEALTH_LAYER.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, package health model, real-world evidence profile, product/service credential direction, implementation map, and document map.
+See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `IMPLEMENTATION_STATUS.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `S2_THIRD_PARTY_MATERIAL_MODEL.md`, `PACKAGE_HEALTH_LAYER.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, S2 third-party material model, package health model, real-world evidence profile, product/service credential direction, implementation map, and document map.
 
 The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DISCOVERY_TAXONOMY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
 
@@ -81,6 +81,7 @@ Implemented so far:
 - Signed evidence manifests with local artifact hash checks and appended threshold signatures.
 - Evidence recheck method objects through `organchor evidence method add`, linking signed evidence to concrete steps, expected results, tools, verification cost, and limitations.
 - Real-world profile validators for physical product, service delivery, SaaS/API, certification/compliance, and dataset/research claims.
+- S2 third-party material local checks for candidate versus effective S2, external recheck anchors, claim linkage, scope, limitations, expiry, disclosures, and compact `s2_summary`.
 - Domain security audit reports with `PASS`, `WARN`, `FAIL`, and `MANUAL_CHECK_REQUIRED`.
 - HTTPS, certificate expiration, DNSSEC, SPF, DMARC, MX, CAA, security.txt, `/verify`, statement, and signature checks.
 - Onion v3 address validation and Tor Hidden Service config guidance.

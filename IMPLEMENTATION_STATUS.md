@@ -69,6 +69,7 @@ Discovery and anti-capture:
 - Static Directory snapshot build, verify, inspect, fetch, compare, and export.
 - Directory snapshots can be built from live origin verification or a local Beacon index.
 - Directory policy files explicitly record inclusion, exclusion, ranking, payment, stale-record, and mirroring boundaries.
+- Discovery Unit model documented as the accepted direction for default AI-agent discovery granularity, coverage previews, exact/family/capability match classes, and avoiding both organization-only search and SKU-level marketplace explosion.
 - Local agent discovery demo covering seed -> sweep -> report -> index -> query -> Directory -> direct verify.
 
 Release hygiene:
@@ -101,6 +102,7 @@ These are not considered done:
 - Dedicated method, attestation, and challenge manifests from `CLAIMS_EVIDENCE_PROTOCOL.md`.
 - Delegated product/service key statements, product model passports, batch commitments, unit credentials, service delivery credentials, and observation binding checks from `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`.
 - Purpose-fit evidence outputs such as `fit_for`, `not_enough_for`, and `missing_optional_context` from `EVIDENCE_SUFFICIENCY_MODEL.md`.
+- Discovery Unit schemas, validators, Beacon fields, Directory fields, and coverage-preview query behavior from `DISCOVERY_UNIT_MODEL.md`.
 - P1-P5 purpose-profile validators, broader S1/S4/S5 source-class fields, S2 network verified-route adapters, issuer-backed S2 signatures from `S2_THIRD_PARTY_MATERIAL_MODEL.md`, S3 custody/independent-test route adapters from `S3_RANDOM_SAMPLING_MODEL.md`, and challenge/correction lifecycle extraction from `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
 - Package health commands, observed health lookup, Beacon health summaries, Directory health observation summaries, observed health reports, and agent fetch recommendations from `PACKAGE_HEALTH_LAYER.md`.
 - Live ENS resolver reads through a chosen Ethereum RPC/provider path.

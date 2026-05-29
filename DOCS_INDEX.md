@@ -66,6 +66,7 @@ OrgAnchor does not certify that an organization is good or truthful. It makes si
 ## Discovery, Beacon, And Directory
 
 - `DISCOVERY_STRATEGY.md`: post-v1 discovery strategy explaining why OrgAnchor needs both verification and discoverability to reduce real transaction cost between organizations and agents.
+- `DISCOVERY_UNIT_MODEL.md`: accepted design model for default AI-agent discovery granularity, product/service-family Discovery Units, coverage previews, and anti-SKU-marketplace boundaries.
 - `ORGANCHOR_BEACON.md`: Beacon-first discoverability model so every adopter can emit origin-owned machine-readable signals before any Directory includes it.
 - `DISCOVERY_TAXONOMY.md`: controlled-but-extensible category, capability, region, and language vocabulary for low-cost candidate discovery.
 - `DIRECTORY_MODEL.md`: proposed post-v1 open discovery index model for helping people and AI agents find OrgAnchor-enabled organizations without creating a monopoly trust platform.

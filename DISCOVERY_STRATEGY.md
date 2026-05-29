@@ -185,6 +185,35 @@ last verified time
 
 The first version should stay conservative. It should prefer broad categories and evidence summaries over overfitted ranking fields.
 
+## Discovery Units
+
+OrgAnchor should not force a universal product granularity, but it should recommend a default discovery granularity for AI-agent matching.
+
+That default object is the Discovery Unit:
+
+```text
+organization
+  -> capability
+    -> Discovery Unit
+      -> model / plan
+        -> variant / batch / unit / service delivery
+```
+
+Discovery Units are usually product or service families. They are specific enough for candidate discovery and broad enough to avoid Directory indexes becoming SKU marketplaces.
+
+Discovery Units must expose coverage previews so agents can avoid wasted drilldown:
+
+```text
+match granularity
+included models or services
+excluded scope
+exact match availability
+catalog mode
+whether model/variant/batch drilldown is required
+```
+
+See `DISCOVERY_UNIT_MODEL.md`.
+
 ## Demand-Side Agent Flow
 
 A demand-side agent should follow this pattern:

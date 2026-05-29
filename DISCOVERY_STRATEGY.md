@@ -201,7 +201,17 @@ organization
 
 Discovery Units are usually product or service families. They are specific enough for candidate discovery and broad enough to avoid Directory indexes becoming SKU marketplaces.
 
-Discovery Units must expose coverage previews so agents can avoid wasted drilldown:
+Discovery Units should use the three-layer discovery structure:
+
+```text
+Discovery Unit
+Featured Sellable Units
+Coverage / Availability Profile
+```
+
+Featured Sellable Units let an organization expose the concrete products, models, service plans, or packages it most wants to be found for. Coverage Profiles prevent agents from treating non-featured items as automatically unavailable.
+
+Discovery Units must expose coverage previews and disclosure maturity so agents can avoid wasted drilldown:
 
 ```text
 match granularity
@@ -210,6 +220,7 @@ excluded scope
 exact match availability
 catalog mode
 whether model/variant/batch drilldown is required
+M1 discoverable / M2 claim-backed / M3 evidence-backed
 ```
 
 See `DISCOVERY_UNIT_MODEL.md`.

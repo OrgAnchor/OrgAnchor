@@ -69,7 +69,7 @@ Discovery and anti-capture:
 - Static Directory snapshot build, verify, inspect, fetch, compare, and export.
 - Directory snapshots can be built from live origin verification or a local Beacon index.
 - Directory policy files explicitly record inclusion, exclusion, ranking, payment, stale-record, and mirroring boundaries.
-- Discovery Unit model documented as the accepted direction for default AI-agent discovery granularity, coverage previews, exact/family/capability match classes, and avoiding both organization-only search and SKU-level marketplace explosion.
+- Discovery Unit model documented as the accepted direction for default AI-agent discovery granularity, featured sellable units, coverage profiles, disclosure maturity, coverage previews, exact/family/capability match classes, and avoiding both organization-only search and SKU-level marketplace explosion.
 - Local agent discovery demo covering seed -> sweep -> report -> index -> query -> Directory -> direct verify.
 
 Release hygiene:

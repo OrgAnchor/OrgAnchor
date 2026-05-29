@@ -48,10 +48,9 @@ Recommended default hierarchy:
 organization
   -> capability
     -> Discovery Unit
-      -> model / plan
-        -> variant
-          -> batch / lot / deployment / service delivery
-            -> unit
+      -> Featured Sellable Unit
+      -> Coverage / Availability Profile
+      -> model / plan / variant / batch / lot / deployment / service delivery / unit drilldown
 ```
 
 Recommended default Discovery Unit level:
@@ -90,6 +89,128 @@ stable enough to maintain;
 distinct enough to match different buyer needs;
 backed by at least minimal claims and evidence;
 not merely a full dump of every SKU, configuration, or marketing page.
+```
+
+## Three-Layer Discovery Structure
+
+The recommended discovery structure has three layers.
+
+```text
+Discovery Unit
+  = product/service-family-level discovery object
+
+Featured Sellable Unit
+  = the concrete product model, service plan, package, or offering the organization most wants to be found for
+
+Coverage / Availability Profile
+  = a lightweight description of what else the Discovery Unit may cover, without dumping every SKU into Directory records
+```
+
+Reason:
+
+```text
+Discovery Unit alone may be too broad.
+Featured Sellable Units alone may miss real matches that are not currently featured.
+Coverage Profile prevents both over-drilldown and false negatives.
+```
+
+Recommended structure:
+
+```json
+{
+  "unit_id": "needle-bearing-nk-series",
+  "name": "NK series needle roller bearings",
+  "featured_units": [
+    {
+      "featured_unit_id": "nk12-16",
+      "subject_type": "product_model",
+      "subject_id": "NK12/16",
+      "name": "NK12/16 needle roller bearing",
+      "featured_reason": "organization_featured",
+      "disclosure_maturity": "M2_CLAIM_BACKED"
+    }
+  ],
+  "coverage_profile": {
+    "coverage_mode": "parametric_range",
+    "parameters": {
+      "inner_diameter_mm": { "min": 10, "max": 60 },
+      "outer_diameter_mm": { "min": 14, "max": 80 },
+      "material": ["GCr15", "stainless_steel"],
+      "temperature_class": ["standard", "high_temperature"]
+    },
+    "catalog_url": "https://example.org/catalog/nk-series.json",
+    "catalog_hash": "sha256:<hash>"
+  }
+}
+```
+
+### Featured Sellable Units
+
+A Featured Sellable Unit is a concrete offer window.
+
+It is where the organization says:
+
+```text
+This is one of the specific products or services we most want agents to notice now.
+```
+
+It may be:
+
+```text
+product model
+variant
+service plan
+API package
+standard project package
+dataset product
+batch or unit for high-value goods
+```
+
+Recommended default:
+
+```text
+1 to 5 Featured Sellable Units per Discovery Unit
+3 to 15 Featured Sellable Units per organization
+```
+
+This is guidance, not a protocol limit.
+
+Avoid ambiguous labels:
+
+```text
+organization_featured = selected by the organization as a current focus
+best_selling_claimed = organization claims it is a best seller
+best_selling_evidence_backed = best-selling status has evidence support
+strategic_focus = organization says this is a strategic offer
+new_release = organization says this is newly released
+```
+
+OrgAnchor should not treat `organization_featured` as a quality claim.
+
+### Coverage / Availability Profile
+
+Coverage Profile prevents "not featured" from meaning "not offered."
+
+Recommended coverage modes:
+
+```text
+closed_catalog = fixed known list of models/services
+partial_catalog = common or representative items only
+dynamic_catalog = catalog changes and should be fetched from a signed or hashed catalog
+parametric_range = match by dimensions, rating, material, region, protocol, performance band, or other parameters
+custom_configured = supplier can configure or build for a stated requirement
+project_based = service or product is delivered per project
+not_catalogued = no useful coverage profile is exposed yet
+```
+
+Agent interpretation:
+
+```text
+featured hit = strong discovery candidate
+coverage hit but not featured = possible candidate; drill down only if worth the cost
+Discovery Unit hit only = weak candidate
+explicit exclusion = likely no match
+unknown coverage = low-priority candidate unless other evidence is strong
 ```
 
 ## Required Shape
@@ -135,6 +256,113 @@ Recommended minimal Discovery Unit fields:
     "Exact procurement requires model, variant, and batch-level review."
   ]
 }
+```
+
+## Disclosure Maturity
+
+The three-layer structure increases maintenance work. OrgAnchor must not require every organization to prove every product and service on day one.
+
+Therefore each Discovery Unit and Featured Sellable Unit should declare disclosure maturity.
+
+Recommended levels:
+
+```text
+M1_DISCOVERABLE
+M2_CLAIM_BACKED
+M3_EVIDENCE_BACKED
+```
+
+### M1 Discoverable
+
+Meaning:
+
+```text
+The unit is visible to agents.
+The organization says it offers or may offer this product/service family or featured unit.
+Claims and evidence may be absent or minimal.
+```
+
+Minimum:
+
+```text
+unit id
+name
+subject type
+capability tags
+basic coverage or featured status
+verification entry
+limitations
+not_a_trust_decision
+```
+
+Agent interpretation:
+
+```text
+candidate only
+do not treat as claim support
+request claims/evidence before procurement or high-risk use
+```
+
+### M2 Claim-Backed
+
+Meaning:
+
+```text
+The unit has explicit claims, scopes, applicability, and limitations.
+Evidence may still be first-party, incomplete, or weak.
+```
+
+Minimum:
+
+```text
+M1 fields
+claim_refs
+claim_scope
+limitations
+applicability
+excluded scope where known
+```
+
+Agent interpretation:
+
+```text
+the organization is clear about what it claims;
+the agent still needs evidence strength before relying on the claim.
+```
+
+### M3 Evidence-Backed
+
+Meaning:
+
+```text
+The unit has claims linked to evidence and audit summaries.
+Evidence may include S1/S2/S3/S4/S5 records depending on purpose.
+```
+
+Minimum:
+
+```text
+M2 fields
+evidence_refs
+evidence_summary
+value audit status
+health status
+known gaps
+```
+
+Agent interpretation:
+
+```text
+ready for external policy review;
+not automatically trusted;
+fetch full claims/evidence for material decisions.
+```
+
+Critical rule:
+
+```text
+M1 must not look like M3.
+Discovery visibility must not be presented as proof.
 ```
 
 ## Coverage Preview

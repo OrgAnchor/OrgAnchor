@@ -73,7 +73,7 @@ A directory record is a small index entry about an OrgAnchor package.
 
 It stores summary facts and pointers. It does not store the full evidence body by default.
 
-Directory records should eventually expose Discovery Units: product/service-family-level discovery objects with coverage previews. This avoids two bad extremes:
+Directory records should eventually expose Discovery Units: product/service-family-level discovery objects with featured sellable units, coverage profiles, disclosure maturity, and coverage previews. This avoids two bad extremes:
 
 ```text
 organization-only discovery = too broad
@@ -125,6 +125,22 @@ Minimal record shape:
       "unit_id": "signed-endpoint-verification-api",
       "name": "Signed endpoint verification API",
       "capability_tags": ["identity-continuity", "agent-verification"],
+      "disclosure_maturity": "M2_CLAIM_BACKED",
+      "featured_units": [
+        {
+          "featured_unit_id": "open-source-cli",
+          "subject_type": "service_plan",
+          "subject_id": "open-source-cli",
+          "name": "Open-source CLI",
+          "featured_reason": "organization_featured",
+          "disclosure_maturity": "M3_EVIDENCE_BACKED"
+        }
+      ],
+      "coverage_profile": {
+        "coverage_mode": "partial_catalog",
+        "catalog_url": "https://example.org/verify/discovery-units.json",
+        "catalog_hash": "sha256:<hash>"
+      },
       "coverage_preview": {
         "match_granularity": "service_family",
         "coverage_level": "family_broad",

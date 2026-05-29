@@ -187,6 +187,8 @@ S1 and S2 can be useful, but they are easy to curate. S3 addresses hand-picked s
 
 When a concrete product, batch, unit, service delivery, or project is involved, S3-S5 observations should bind to product/service credentials as described in `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`.
 
+All real-world claims and evidence should follow `SUBJECT_BINDING_MODEL.md`: discovery, claims, and evidence can use different granularities, but the evidence must not be widened beyond its declared subject.
+
 ## Entity Organization Templates
 
 ### Physical Product

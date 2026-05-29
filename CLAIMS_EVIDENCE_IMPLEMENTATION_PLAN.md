@@ -56,6 +56,7 @@ Accepted design principle:
 - `EVIDENCE_SUFFICIENCY_MODEL.md` defines purpose-fit sufficiency over raw completeness, so validators and agent outputs should avoid field-count ranking and hidden mandatory extension fields.
 - `S2_THIRD_PARTY_MATERIAL_MODEL.md` defines the implementation-facing S2 fields, Core/Extension boundary, mechanical checks, and compact agent summary.
 - `S3_RANDOM_SAMPLING_MODEL.md` defines the implementation-facing S3 fields, Core/Extension boundary, sample-control checks, and compact agent summary.
+- `SUBJECT_BINDING_MODEL.md` defines the rule that discovery matches, claims, evidence, samples, observations, credentials, and challenges must declare their covered subject and must not silently widen coverage.
 
 Accepted but not yet implemented:
 
@@ -64,6 +65,7 @@ Accepted but not yet implemented:
 - batch commitments;
 - unit credentials;
 - service delivery credentials;
+- common subject binding helpers and claim/evidence subject-coverage checks;
 - observation source classification for first-party materials, field-use observation, and public challenge or negative evidence;
 - observation, complaint, challenge, and correction records bound to those credentials.
 

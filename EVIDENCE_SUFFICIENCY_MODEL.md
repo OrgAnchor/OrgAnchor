@@ -134,6 +134,8 @@ Core package
 Extension package
 ```
 
+Both must also follow the subject binding rule in `SUBJECT_BINDING_MODEL.md`: a record can support only the subject and scope it actually declares. Broad organization or family material should not be silently upgraded into exact model, batch, unit, service delivery, or project support.
+
 Core package:
 
 ```text

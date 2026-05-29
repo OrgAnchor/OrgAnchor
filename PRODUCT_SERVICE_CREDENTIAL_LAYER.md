@@ -31,6 +31,8 @@ Root authority
 
 The root signs low-frequency authority statements. Delegated keys sign scoped operational credentials.
 
+Subject binding for claims, evidence, observations, credentials, and Discovery Units is defined in `SUBJECT_BINDING_MODEL.md`. This document focuses on the credential layer that can make those subject references verifiable over time.
+
 ## Delegated Keys
 
 A delegated key is a scoped signing key authorized by the organization root authority.

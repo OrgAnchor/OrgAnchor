@@ -494,6 +494,8 @@ one batch inspection -> cannot support all future batches automatically
 one customer deployment record -> cannot prove all deployments
 ```
 
+The canonical subject binding model is defined in `SUBJECT_BINDING_MODEL.md`.
+
 ## Examples
 
 Robotics:

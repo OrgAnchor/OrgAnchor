@@ -51,6 +51,8 @@ Boundary examples:
 
 Therefore `customer_site_sampling` in the CLI means customer-site sample acquisition. It does not mean broad customer-site performance observation.
 
+S3 subject binding follows `SUBJECT_BINDING_MODEL.md`. An effective S3 record must identify the sampled subject through `sample_identity`. Without sample identity, the record is only candidate sampling because external agents cannot know which product, model, batch, unit, service, deployment, or dataset the sample represents.
+
 ## Placement
 
 S3 extends the existing signed evidence manifest:

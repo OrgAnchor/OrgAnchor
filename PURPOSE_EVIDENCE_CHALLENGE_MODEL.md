@@ -550,6 +550,8 @@ What should be requested next, only if the target purpose requires it?
 Is the package fresh and reachable enough to fetch further?
 ```
 
+Subject binding between discovery objects, claims, evidence, samples, observations, credentials, and challenges is defined in `SUBJECT_BINDING_MODEL.md`.
+
 It fails if OrgAnchor becomes:
 
 ```text

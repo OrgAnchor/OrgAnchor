@@ -199,6 +199,8 @@ Recommended evidence item shape:
 
 The current alpha evidence item already has `id`, `title`, `issuer_type`, `media_type`, `hash`, `size`, `locations`, and `relations`. The S2 model adds `s_class` and `s2`.
 
+S2 subject binding follows `SUBJECT_BINDING_MODEL.md`. If S2 is used to support a concrete product, model, batch, unit, service, project, deployment, or dataset claim, `covered_subject_type`, `covered_subject_id`, and `scope_text` must make that coverage explicit. Otherwise the material may remain useful as broad S2, but it should not be treated as exact support for the concrete subject.
+
 ## Core Fields
 
 Core fields are required for effective S2.

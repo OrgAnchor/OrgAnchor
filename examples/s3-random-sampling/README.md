@@ -24,3 +24,5 @@ organchor evidence s3 attach \
 ```
 
 S3 is not a trust badge. It makes the sample route visible and lets external agents see whether the sample appears selected or provided by the organization.
+
+Boundary note: customer-site sampling means taking or inspecting a specific sample from a customer site. Long-term customer usage, repair, warranty, support, telemetry, or return records belong to S4 field-use observation.

@@ -49,13 +49,13 @@ const S3_TEMPLATES: Record<S3TemplateId, S3Template> = {
   },
   customer_site_sampling: {
     id: "customer_site_sampling",
-    sampleType: "customer_site_observation",
+    sampleType: "customer_site_sample_acquisition",
     samplerType: "customer",
     acquisitionChannel: "customer_site",
     sampleSource: "customer_site",
     selectedBy: "customer_or_auditor",
-    samplingMethod: "field_sample_or_observation",
-    defaultLimitations: ["Customer-site observations may reflect local configuration, usage, and maintenance conditions."]
+    samplingMethod: "customer_site_sample_acquisition",
+    defaultLimitations: ["Customer-site sample acquisition does not by itself prove long-term field performance, maintenance quality, or all usage conditions."]
   }
 };
 

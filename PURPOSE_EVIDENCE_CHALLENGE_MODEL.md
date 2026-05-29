@@ -333,6 +333,22 @@ The minimum S3 question is:
 Was the sample selected and acquired outside organization control, and is it bound to a concrete product, service, model, batch, or unit?
 ```
 
+S3 is also narrower than field-use observation.
+
+```text
+S3 = how a specific sample was acquired for inspection, testing, or review.
+S4 = what happened during real customer, repair, support, warranty, telemetry, return, or long-term operational use.
+```
+
+Examples:
+
+```text
+customer-site sample acquisition = S3
+customer-site long-term performance records = S4
+market purchase followed by a test = S3
+many deployed units' failure history = S4
+```
+
 S3 can be published through an organization package, an external sampler, a customer, a channel partner, a Directory/health hub, or a future observation package. The publication path is not the source of S3 strength. The source of S3 strength is the disclosed sampling route.
 
 Material that uses organization-selected, organization-provided, unknown-source, or unbound samples should be classified as:

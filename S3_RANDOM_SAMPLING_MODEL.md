@@ -21,6 +21,36 @@ the acquisition route, selector, source, scope, and limitations are visible;
 OrgAnchor can expose whether the sample appears organization-selected or organization-provided.
 ```
 
+## Boundary With S4
+
+S3 and S4 must stay separate.
+
+S3 is about sample acquisition:
+
+```text
+A concrete sample was obtained from market, distributor inventory, warehouse inventory, or a customer site.
+The record explains who selected it, where it came from, when it was acquired, and whether the organization provided it.
+```
+
+S4 is about real-use observation:
+
+```text
+Customer usage records, repair history, warranty claims, returns, sensor telemetry, support tickets, field failure rates, and long-term operational feedback.
+```
+
+Boundary examples:
+
+| Scenario | Class |
+| --- | --- |
+| A buyer purchases one unit from open market and sends it for testing | S3 |
+| An auditor randomly selects units from distributor inventory | S3 |
+| A customer allows one installed unit to be sampled for inspection | S3 |
+| A customer reports 18 months of uptime, failures, repairs, and maintenance history | S4 |
+| Warranty return statistics across many customers | S4 |
+| Sensor telemetry from deployed equipment | S4 |
+
+Therefore `customer_site_sampling` in the CLI means customer-site sample acquisition. It does not mean broad customer-site performance observation.
+
 ## Placement
 
 S3 extends the existing signed evidence manifest:

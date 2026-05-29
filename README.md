@@ -171,7 +171,7 @@ organchor claims create --config organchor.config.json
 organchor claims sign --key keys/root-2026.private.json --authority root-authority.json
 organchor evidence create --config organchor.config.json
 organchor evidence add --file README.md
-organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.mp4 --location-type https
+organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.mp4 --location-type https --subject-type product --subject-id primary-product
 organchor evidence method add --id method-001 --evidence-id evidence-001 --steps "Fetch artifact;Compute SHA-256;Compare with signed manifest" --expected-results "Hash matches"
 organchor evidence s2 template --template certification_record
 organchor evidence s2 attach --evidence-id evidence-001 --template certification_record --issuer-name "Example Certification Body" --anchor-url https://registry.example/records/ABC-123 --scope "Certificate supports claim-001 for model-x1"

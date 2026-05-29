@@ -37,6 +37,40 @@ export type RealWorldEvidenceProfile =
 
 export type ClaimProfileReviewStatus = "PASS" | "WARN" | "NOT_DECLARED";
 
+export type SubjectCoverageRelation =
+  | "EXACT_SUBJECT_MATCH"
+  | "SUBJECT_ID_MISMATCH"
+  | "EVIDENCE_BROADER_THAN_CLAIM"
+  | "EVIDENCE_NARROWER_THAN_CLAIM"
+  | "FAMILY_TO_MODEL_REVIEW_REQUIRED"
+  | "BATCH_TO_FUTURE_BATCH_UNSUPPORTED"
+  | "ORGANIZATION_TO_PRODUCT_UNSUPPORTED"
+  | "SUBJECT_UNKNOWN";
+
+export interface SubjectRef {
+  subject_type: string;
+  subject_id: string;
+  source: string;
+  scope_text?: string;
+}
+
+export interface EvidenceSubjectCoverage {
+  evidence_id: string;
+  subject: SubjectRef;
+  relation: SubjectCoverageRelation;
+  summary: string;
+}
+
+export interface SubjectCoverageReview {
+  status: AuditStatus;
+  claim_subject: SubjectRef;
+  evidence_subjects: EvidenceSubjectCoverage[];
+  relations: Record<SubjectCoverageRelation, number>;
+  gaps: string[];
+  next_best_actions: string[];
+  not_a_trust_decision: true;
+}
+
 export type S2MaterialState =
   | "NOT_S2"
   | "CANDIDATE_UNVERIFIED_EXTERNAL_MATERIAL"
@@ -50,6 +84,9 @@ export interface S2EvidenceAudit {
   effective: boolean;
   claim_refs: string[];
   unresolved_claim_refs: string[];
+  covered_subject_type: string;
+  covered_subject_id: string;
+  scope_text: string;
   route_id: string;
   route_kind: string;
   external_recheck_anchor_present: boolean;
@@ -94,6 +131,10 @@ export interface S3EvidenceAudit {
   sample_source: string;
   selected_by: string;
   sample_size: number;
+  subject_type: string;
+  subject_id: string;
+  batch_id: string;
+  serial_or_unit_id: string;
   organization_selected_sample: boolean;
   organization_provided_sample: boolean;
   sample_identity_present: boolean;
@@ -155,6 +196,7 @@ export interface ClaimValueAudit {
   organchor_trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
   policy_route: ClaimPolicyRoute;
   profile_review: ClaimProfileReview;
+  subject_coverage: SubjectCoverageReview;
   has_third_party_evidence: boolean;
   has_reproducible_evidence: boolean;
   evidence_refs: string[];
@@ -178,6 +220,7 @@ export interface EvidenceValueAudit {
   has_external_location: boolean;
   is_stale: boolean;
   s_class: string;
+  subject: SubjectRef;
   s2: S2EvidenceAudit;
   s3: S3EvidenceAudit;
   findings: string[];
@@ -298,13 +341,13 @@ export function renderValueContinuityMarkdown(report: ValueContinuityReport): st
   const claims = report.claims
     .map(
       (claim) =>
-        `| ${claim.status} | ${escapeMarkdown(claim.id)} | ${claim.level} | ${claim.protocol_support_level} | ${claim.policy_route} | ${claim.profile_review.profile} | ${claim.risk_gaps.length} | ${claim.resolved_evidence_refs.length} | ${claim.missing_evidence_refs.length} |`
+        `| ${claim.status} | ${escapeMarkdown(claim.id)} | ${claim.level} | ${claim.protocol_support_level} | ${claim.policy_route} | ${claim.profile_review.profile} | ${claim.subject_coverage.status} | ${claim.risk_gaps.length} | ${claim.resolved_evidence_refs.length} | ${claim.missing_evidence_refs.length} |`
     )
     .join("\n");
   const evidence = report.evidence
     .map(
       (item) =>
-        `| ${item.status} | ${escapeMarkdown(item.id)} | ${escapeMarkdown(item.issuer_type)} | ${escapeMarkdown(item.reproducibility)} | ${item.has_external_location ? "yes" : "no"} | ${item.s2.state} | ${item.s2.effective ? "yes" : "no"} | ${item.s3.state} | ${item.s3.effective ? "yes" : "no"} |`
+        `| ${item.status} | ${escapeMarkdown(item.id)} | ${escapeMarkdown(subjectLabel(item.subject))} | ${escapeMarkdown(item.issuer_type)} | ${escapeMarkdown(item.reproducibility)} | ${item.has_external_location ? "yes" : "no"} | ${item.s2.state} | ${item.s2.effective ? "yes" : "no"} | ${item.s3.state} | ${item.s3.effective ? "yes" : "no"} |`
     )
     .join("\n");
 
@@ -380,14 +423,14 @@ ${checks}
 
 ## Claims
 
-| Status | Claim | Legacy level | Protocol support | Policy route | Profile | Risk gaps | Resolved evidence | Missing evidence |
-| --- | --- | --- | --- | --- | --- | ---: | ---: | ---: |
+| Status | Claim | Legacy level | Protocol support | Policy route | Profile | Subject coverage | Risk gaps | Resolved evidence | Missing evidence |
+| --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: |
 ${claims}
 
 ## Evidence
 
-| Status | Evidence | Issuer | Reproducibility | External location | S2 state | Effective S2 | S3 state | Effective S3 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Status | Evidence | Subject | Issuer | Reproducibility | External location | S2 state | Effective S2 | S3 state | Effective S3 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 ${evidence}
 `;
 }
@@ -426,6 +469,7 @@ async function auditEvidenceItem(
   if (isStale) findings.push("Evidence is past its valid_until date.");
   const s2 = auditS2Material(item, now, claimIds);
   const s3 = auditS3Sampling(item, claimIds);
+  const subject = evidenceSubject(item, s2, s3);
 
   if (checkFiles) {
     await checkLocalLocations(item, locations, findings);
@@ -447,6 +491,7 @@ async function auditEvidenceItem(
     has_external_location: hasExternalLocation,
     is_stale: isStale,
     s_class: sClass,
+    subject,
     s2,
     s3,
     findings
@@ -476,6 +521,8 @@ function auditS2Material(item: Record<string, JsonValue>, now: Date, claimIds: S
   const claimRefs = uniqueStrings([...arrayStrings(support.claim_refs), ...relationClaimRefs(item)]);
   const unresolvedClaimRefs = claimRefs.filter((ref) => !claimIds.has(ref));
   const scopeText = stringValue(support.scope_text);
+  const coveredSubjectType = stringValue(support.covered_subject_type);
+  const coveredSubjectId = stringValue(support.covered_subject_id);
   const limitations = arrayStrings(support.limitations);
   const routeId = stringValue(route.route_id);
   const routeKind = stringValue(route.route_kind);
@@ -655,6 +702,9 @@ function auditS2Material(item: Record<string, JsonValue>, now: Date, claimIds: S
     effective,
     claim_refs: claimRefs,
     unresolved_claim_refs: unresolvedClaimRefs,
+    covered_subject_type: coveredSubjectType,
+    covered_subject_id: coveredSubjectId,
+    scope_text: scopeText,
     route_id: routeId,
     route_kind: routeKind,
     external_recheck_anchor_present: anchorPresent,
@@ -675,6 +725,9 @@ function emptyS2Audit(): S2EvidenceAudit {
     effective: false,
     claim_refs: [],
     unresolved_claim_refs: [],
+    covered_subject_type: "",
+    covered_subject_id: "",
+    scope_text: "",
     route_id: "",
     route_kind: "",
     external_recheck_anchor_present: false,
@@ -718,6 +771,8 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
   const organizationSelectedSample = isOrganizationControlledSample(selectedBy) || isOrganizationControlledSample(samplerType);
   const subjectType = stringValue(identity.subject_type);
   const subjectId = stringValue(identity.subject_id);
+  const batchId = stringValue(identity.batch_id);
+  const serialOrUnitId = stringValue(identity.serial_or_unit_id);
   const sampleIdentityPresent = Boolean(subjectType && subjectId);
   const acquiredAt = stringValue(event.acquired_at);
   const acquiredAtPresent = Boolean(acquiredAt && Number.isFinite(Date.parse(acquiredAt)));
@@ -889,6 +944,10 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
     sample_source: sampleSource,
     selected_by: selectedBy,
     sample_size: sampleSize,
+    subject_type: subjectType,
+    subject_id: subjectId,
+    batch_id: batchId,
+    serial_or_unit_id: serialOrUnitId,
     organization_selected_sample: organizationSelectedSample,
     organization_provided_sample: organizationProvidedSample,
     sample_identity_present: sampleIdentityPresent,
@@ -911,6 +970,10 @@ function emptyS3Audit(): S3EvidenceAudit {
     sample_source: "",
     selected_by: "",
     sample_size: 0,
+    subject_type: "",
+    subject_id: "",
+    batch_id: "",
+    serial_or_unit_id: "",
     organization_selected_sample: false,
     organization_provided_sample: false,
     sample_identity_present: false,
@@ -946,13 +1009,19 @@ function auditClaim(
   const level = claimLevel(claim, referencedEvidence);
   const supportAxes = claimSupportAxes(claim, referencedEvidence);
   const profileReview = reviewClaimProfile(claim, referencedEvidence);
-  const riskGaps = [...claimRiskGaps(claim, refs, missing, referencedEvidence, supportAxes), ...profileReview.risk_gaps];
+  const subjectCoverage = reviewSubjectCoverage(claim, referencedEvidence);
+  const riskGaps = [
+    ...claimRiskGaps(claim, refs, missing, referencedEvidence, supportAxes),
+    ...profileReview.risk_gaps,
+    ...subjectCoverage.gaps
+  ];
   const hasHardFailure = missing.length > 0;
   const status = hasHardFailure
     ? statusFromFindings(findings, true)
-    : profileReview.status === "WARN"
-      ? "WARN"
-      : statusFromFindings(findings, false);
+    : worstStatus(statusFromFindings(findings, false), [
+        profileReview.status === "WARN" ? "WARN" : "PASS",
+        subjectCoverage.status
+      ]);
   return {
     id,
     status,
@@ -960,10 +1029,15 @@ function auditClaim(
     protocol_support_level: protocolSupportLevel(claim, refs, missing, referencedEvidence),
     support_axes: supportAxes,
     risk_gaps: riskGaps,
-    next_best_actions: uniqueStrings([...claimNextBestActions(riskGaps), ...profileReview.next_best_actions]),
+    next_best_actions: uniqueStrings([
+      ...claimNextBestActions(riskGaps),
+      ...profileReview.next_best_actions,
+      ...subjectCoverage.next_best_actions
+    ]),
     organchor_trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR",
     policy_route: claimPolicyRoute(refs, missing, riskGaps, referencedEvidence),
     profile_review: profileReview,
+    subject_coverage: subjectCoverage,
     has_third_party_evidence: hasThirdPartyEvidence,
     has_reproducible_evidence: hasReproducibleEvidence,
     evidence_refs: refs,
@@ -1085,7 +1159,282 @@ function claimChecks(claim: Record<string, JsonValue>, audit: ClaimValueAudit): 
       )
     );
   }
+  checks.push(
+    buildCheck(
+      `claim:${audit.id}:subject_coverage`,
+      `Claim ${audit.id} subject coverage`,
+      audit.subject_coverage.status,
+      subjectCoverageSummary(audit.subject_coverage),
+      {
+        claim_subject: audit.subject_coverage.claim_subject,
+        relations: audit.subject_coverage.relations,
+        gaps: audit.subject_coverage.gaps,
+        not_a_trust_decision: true
+      }
+    )
+  );
   return checks;
+}
+
+function reviewSubjectCoverage(claim: Record<string, JsonValue>, evidence: EvidenceValueAudit[]): SubjectCoverageReview {
+  const claimSubject = extractClaimSubject(claim);
+  const relations = emptySubjectRelations();
+  const evidenceSubjects: EvidenceSubjectCoverage[] = evidence.map((item) => {
+    const relation = subjectCoverageRelation(claimSubject, item.subject);
+    relations[relation] += 1;
+    return {
+      evidence_id: item.id,
+      subject: item.subject,
+      relation,
+      summary: subjectRelationSummary(claimSubject, item.subject, relation)
+    };
+  });
+
+  const gaps: string[] = [];
+  const nextBestActions: string[] = [];
+  if (evidence.length > 0 && !isKnownSubject(claimSubject)) {
+    gaps.push("Claim subject is unknown, so evidence coverage cannot be mechanically checked.");
+    nextBestActions.push("Declare claim.subject or a specific product_id, service_id, batch_id, deployment_id, or dataset version.");
+  }
+  for (const item of evidenceSubjects) {
+    if (item.relation === "EXACT_SUBJECT_MATCH") continue;
+    gaps.push(item.summary);
+  }
+  if (relations.SUBJECT_UNKNOWN > 0) {
+    nextBestActions.push("Bind every evidence item to the exact subject it supports, or mark it as broad organization material.");
+  }
+  if (relations.SUBJECT_ID_MISMATCH > 0) {
+    nextBestActions.push("Align evidence subject_id with the claim subject_id, or split the claim by product/service/model.");
+  }
+  if (relations.EVIDENCE_BROADER_THAN_CLAIM > 0 || relations.FAMILY_TO_MODEL_REVIEW_REQUIRED > 0 || relations.ORGANIZATION_TO_PRODUCT_UNSUPPORTED > 0) {
+    nextBestActions.push("Add scope text proving the broader material explicitly covers the narrower claim subject.");
+  }
+  if (relations.EVIDENCE_NARROWER_THAN_CLAIM > 0 || relations.BATCH_TO_FUTURE_BATCH_UNSUPPORTED > 0) {
+    nextBestActions.push("Narrow the claim or add additional evidence that covers the broader product/service range.");
+  }
+
+  const uniqueGaps = uniqueStrings(gaps);
+  return {
+    status: subjectCoverageStatus(relations, evidence.length, uniqueGaps),
+    claim_subject: claimSubject,
+    evidence_subjects: evidenceSubjects,
+    relations,
+    gaps: uniqueGaps,
+    next_best_actions: uniqueStrings(nextBestActions),
+    not_a_trust_decision: true
+  };
+}
+
+function subjectCoverageStatus(
+  relations: Record<SubjectCoverageRelation, number>,
+  evidenceCount: number,
+  gaps: string[]
+): AuditStatus {
+  if (evidenceCount === 0 || gaps.length === 0) return "PASS";
+  if (relations.SUBJECT_UNKNOWN > 0) return "MANUAL_CHECK_REQUIRED";
+  return "WARN";
+}
+
+function subjectCoverageSummary(review: SubjectCoverageReview): string {
+  if (review.evidence_subjects.length === 0) return "No resolved evidence is available for subject coverage review.";
+  if (review.status === "PASS") return `All resolved evidence subject bindings match ${subjectLabel(review.claim_subject)}.`;
+  return `${review.gaps.length} subject coverage gap(s) found for ${subjectLabel(review.claim_subject)}.`;
+}
+
+function subjectCoverageRelation(claimSubject: SubjectRef, evidenceSubject: SubjectRef): SubjectCoverageRelation {
+  if (!isKnownSubject(claimSubject) || !isKnownSubject(evidenceSubject)) return "SUBJECT_UNKNOWN";
+  const claimType = normalizeSubjectType(claimSubject.subject_type);
+  const evidenceType = normalizeSubjectType(evidenceSubject.subject_type);
+  const claimId = normalizeSubjectId(claimSubject.subject_id);
+  const evidenceId = normalizeSubjectId(evidenceSubject.subject_id);
+  if (claimType === evidenceType) return claimId === evidenceId ? "EXACT_SUBJECT_MATCH" : "SUBJECT_ID_MISMATCH";
+  if (evidenceType === "organization" && claimType !== "organization") return "ORGANIZATION_TO_PRODUCT_UNSUPPORTED";
+  if (isFamilyType(evidenceType) && isModelOrLowerType(claimType)) return "FAMILY_TO_MODEL_REVIEW_REQUIRED";
+  if (isBatchOrLowerType(evidenceType) && !isBatchOrLowerType(claimType)) return "BATCH_TO_FUTURE_BATCH_UNSUPPORTED";
+
+  const claimRank = subjectSpecificityRank(claimType);
+  const evidenceRank = subjectSpecificityRank(evidenceType);
+  if (evidenceRank < claimRank) return "EVIDENCE_BROADER_THAN_CLAIM";
+  if (evidenceRank > claimRank) return "EVIDENCE_NARROWER_THAN_CLAIM";
+  return "SUBJECT_UNKNOWN";
+}
+
+function subjectRelationSummary(claimSubject: SubjectRef, evidenceSubject: SubjectRef, relation: SubjectCoverageRelation): string {
+  const claim = subjectLabel(claimSubject);
+  const evidence = subjectLabel(evidenceSubject);
+  switch (relation) {
+    case "EXACT_SUBJECT_MATCH":
+      return `Evidence subject ${evidence} exactly matches claim subject ${claim}.`;
+    case "SUBJECT_ID_MISMATCH":
+      return `Evidence subject ${evidence} has the same subject type as claim subject ${claim}, but the subject_id differs.`;
+    case "EVIDENCE_BROADER_THAN_CLAIM":
+      return `Evidence subject ${evidence} is broader than claim subject ${claim}; scope review is required.`;
+    case "EVIDENCE_NARROWER_THAN_CLAIM":
+      return `Evidence subject ${evidence} is narrower than claim subject ${claim}; it must not be used to prove the broader claim by itself.`;
+    case "FAMILY_TO_MODEL_REVIEW_REQUIRED":
+      return `Evidence subject ${evidence} is family-level while claim subject ${claim} is model-level or lower; explicit scope coverage is required.`;
+    case "BATCH_TO_FUTURE_BATCH_UNSUPPORTED":
+      return `Evidence subject ${evidence} is batch/lot/unit-level while claim subject ${claim} is broader; it does not support future or broader production by itself.`;
+    case "ORGANIZATION_TO_PRODUCT_UNSUPPORTED":
+      return `Evidence subject ${evidence} is organization-level while claim subject ${claim} is product/service-specific; exact coverage is not established.`;
+    case "SUBJECT_UNKNOWN":
+      return `Claim subject ${claim} or evidence subject ${evidence} is unknown; mechanical coverage review is not possible.`;
+  }
+}
+
+function extractClaimSubject(claim: Record<string, JsonValue>): SubjectRef {
+  const direct = subjectFromRecord(asRecord(claim.subject), "claim.subject");
+  if (isKnownSubject(direct)) return direct;
+
+  const scope = asRecord(claim.claim_scope);
+  const scoped = subjectFromRecord(scope, "claim.claim_scope");
+  if (isKnownSubject(scoped)) return scoped;
+
+  const scopeCandidates: Array<[string, string, string]> = [
+    ["unit", "unit_id", "claim.claim_scope.unit_id"],
+    ["unit", "serial_or_unit_id", "claim.claim_scope.serial_or_unit_id"],
+    ["batch", "batch_id", "claim.claim_scope.batch_id"],
+    ["lot", "lot_id", "claim.claim_scope.lot_id"],
+    ["product_model", "model_id", "claim.claim_scope.model_id"],
+    ["product_model", "product_model", "claim.claim_scope.product_model"],
+    ["product", "product_id", "claim.claim_scope.product_id"],
+    ["service_delivery", "delivery_id", "claim.claim_scope.delivery_id"],
+    ["service_plan", "service_plan_id", "claim.claim_scope.service_plan_id"],
+    ["service", "service_id", "claim.claim_scope.service_id"],
+    ["deployment", "deployment_id", "claim.claim_scope.deployment_id"],
+    ["project", "project_id", "claim.claim_scope.project_id"],
+    ["dataset", "dataset_version", "claim.claim_scope.dataset_version"],
+    ["api", "api_id", "claim.claim_scope.api_id"]
+  ];
+  for (const [subjectType, field, source] of scopeCandidates) {
+    const value = stringValue(scope[field]);
+    if (value) return buildSubject(subjectType, value, source, stringValue(scope.scope_text) || stringValue(scope.scope));
+  }
+
+  const productId = stringValue(claim.product_id);
+  if (productId) return buildSubject("product", productId, "claim.product_id");
+  const serviceId = stringValue(claim.service_id);
+  if (serviceId) return buildSubject("service", serviceId, "claim.service_id");
+  return unknownSubject("claim");
+}
+
+function evidenceSubject(item: Record<string, JsonValue>, s2: S2EvidenceAudit, s3: S3EvidenceAudit): SubjectRef {
+  if (s3.subject_type && s3.subject_id) {
+    return buildSubject(s3.subject_type, s3.subject_id, "evidence.s3.sample_identity");
+  }
+  if (s2.covered_subject_type && s2.covered_subject_id) {
+    return buildSubject(s2.covered_subject_type, s2.covered_subject_id, "evidence.s2.organization_claimed_support", s2.scope_text);
+  }
+  const direct = subjectFromRecord(asRecord(item.subject), "evidence.subject");
+  if (isKnownSubject(direct)) return direct;
+  return unknownSubject("evidence");
+}
+
+function subjectFromRecord(record: Record<string, JsonValue>, source: string): SubjectRef {
+  const subjectType = stringValue(record.subject_type) || stringValue(record.type) || stringValue(record.covered_subject_type);
+  const subjectId = stringValue(record.subject_id) || stringValue(record.id) || stringValue(record.covered_subject_id);
+  const scopeText = stringValue(record.scope_text) || stringValue(record.scope);
+  if (subjectType && subjectId) return buildSubject(subjectType, subjectId, source, scopeText);
+  return unknownSubject(source);
+}
+
+function buildSubject(subjectType: string, subjectId: string, source: string, scopeText = ""): SubjectRef {
+  const subject: SubjectRef = {
+    subject_type: normalizeSubjectType(subjectType),
+    subject_id: subjectId,
+    source
+  };
+  if (scopeText) subject.scope_text = scopeText;
+  return subject;
+}
+
+function unknownSubject(source: string): SubjectRef {
+  return {
+    subject_type: "unknown",
+    subject_id: "unknown",
+    source
+  };
+}
+
+function isKnownSubject(subject: SubjectRef): boolean {
+  return Boolean(subject.subject_type && subject.subject_id && subject.subject_type !== "unknown" && subject.subject_id !== "unknown");
+}
+
+function subjectLabel(subject: SubjectRef): string {
+  return isKnownSubject(subject) ? `${subject.subject_type}:${subject.subject_id}` : `unknown (${subject.source})`;
+}
+
+function emptySubjectRelations(): Record<SubjectCoverageRelation, number> {
+  return {
+    EXACT_SUBJECT_MATCH: 0,
+    SUBJECT_ID_MISMATCH: 0,
+    EVIDENCE_BROADER_THAN_CLAIM: 0,
+    EVIDENCE_NARROWER_THAN_CLAIM: 0,
+    FAMILY_TO_MODEL_REVIEW_REQUIRED: 0,
+    BATCH_TO_FUTURE_BATCH_UNSUPPORTED: 0,
+    ORGANIZATION_TO_PRODUCT_UNSUPPORTED: 0,
+    SUBJECT_UNKNOWN: 0
+  };
+}
+
+function normalizeSubjectType(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[-\s]/g, "_");
+}
+
+function normalizeSubjectId(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function subjectSpecificityRank(type: string): number {
+  switch (type) {
+    case "organization":
+      return 0;
+    case "brand":
+    case "capability":
+    case "discovery_unit":
+      return 1;
+    case "product_line":
+    case "service_line":
+      return 2;
+    case "product_family":
+    case "service_plan":
+      return 3;
+    case "product":
+    case "product_model":
+    case "service":
+    case "api":
+    case "dataset":
+      return 4;
+    case "variant":
+    case "deployment":
+    case "project":
+    case "service_delivery":
+      return 5;
+    case "batch":
+    case "lot":
+    case "region":
+    case "time_window":
+      return 6;
+    case "unit":
+      return 7;
+    default:
+      return 4;
+  }
+}
+
+function isFamilyType(type: string): boolean {
+  return ["product_family", "product_line", "service_line", "service_plan", "discovery_unit"].includes(type);
+}
+
+function isModelOrLowerType(type: string): boolean {
+  return subjectSpecificityRank(type) >= subjectSpecificityRank("product_model");
+}
+
+function isBatchOrLowerType(type: string): boolean {
+  return ["batch", "lot", "unit"].includes(type);
 }
 
 async function checkLocalLocations(

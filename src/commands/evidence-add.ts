@@ -21,6 +21,12 @@ export async function evidenceAddCommand(options: Record<string, string | boolea
   const locationType = typeof options["location-type"] === "string" ? options["location-type"] : inferLocationType(uri);
   const reproducibility = typeof options.reproducibility === "string" ? options.reproducibility : "not_specified";
   const evidenceStrength = typeof options["evidence-strength"] === "string" ? options["evidence-strength"] : "not_assessed";
+  const subjectType = typeof options["subject-type"] === "string" ? options["subject-type"] : "";
+  const subjectId = typeof options["subject-id"] === "string" ? options["subject-id"] : "";
+  const subjectScope = typeof options["subject-scope"] === "string" ? options["subject-scope"] : "";
+  if ((subjectType && !subjectId) || (!subjectType && subjectId)) {
+    throw new Error("--subject-type and --subject-id must be provided together");
+  }
   const validUntil = typeof options["valid-until"] === "string" ? options["valid-until"] : null;
   if (validUntil && Number.isNaN(Date.parse(validUntil))) {
     throw new Error("--valid-until must be a valid date or ISO timestamp");
@@ -61,6 +67,15 @@ export async function evidenceAddCommand(options: Record<string, string | boolea
       }
     ]
   };
+  if (subjectType && subjectId) {
+    item.subject = {
+      subject_type: subjectType,
+      subject_id: subjectId
+    };
+    if (subjectScope) {
+      (item.subject as Record<string, JsonValue>).scope_text = subjectScope;
+    }
+  }
   if (validUntil) item.valid_until = new Date(validUntil).toISOString();
   if (limitations.length > 0) item.limitations = limitations;
   evidence.push(item);

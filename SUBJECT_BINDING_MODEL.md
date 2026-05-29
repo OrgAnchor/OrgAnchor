@@ -1,6 +1,6 @@
 # Subject Binding Model
 
-Status: Accepted design model. Partially implemented through claim scopes, S2 covered subjects, and S3 sample identity. Full schema and validator coverage remain future work.
+Status: Accepted design model. Partially implemented through claim scopes, S1 evidence subjects, S2 covered subjects, S3 sample identity, and value-audit subject coverage checks. Full schema and validator coverage remain future work.
 
 ## Purpose
 
@@ -46,12 +46,14 @@ capability
 discovery_unit
 product_line
 product_family
+product
 product_model
 variant
 batch
 lot
 unit
 service_line
+service
 service_plan
 service_delivery
 project
@@ -248,6 +250,7 @@ Recommended coverage relation values:
 
 ```text
 EXACT_SUBJECT_MATCH
+SUBJECT_ID_MISMATCH
 EVIDENCE_BROADER_THAN_CLAIM
 EVIDENCE_NARROWER_THAN_CLAIM
 FAMILY_TO_MODEL_REVIEW_REQUIRED
@@ -255,6 +258,8 @@ BATCH_TO_FUTURE_BATCH_UNSUPPORTED
 ORGANIZATION_TO_PRODUCT_UNSUPPORTED
 SUBJECT_UNKNOWN
 ```
+
+`SUBJECT_ID_MISMATCH` means the claim and evidence use the same subject type but point to different subject ids, for example `product_model:model-x1` versus `product_model:model-y1`. This is not a trust judgment, but it must be surfaced because the evidence is not mechanically tied to the claimed object.
 
 ## Low-Burden Path
 
@@ -274,13 +279,22 @@ This keeps the start small while preventing vague organization-level material fr
 
 ## Implementation Direction
 
-Future implementation should add:
+Implementation should continue with:
 
 1. A common subject object helper for claims, evidence, S2, S3, and future S4/S5.
-2. Value-audit checks for evidence subject versus claim subject relation.
+2. More complete schema validation for subject objects and recognized subject types.
 3. Directory/Beacon Discovery Unit fields that link featured units to claim/evidence subject ids.
 4. Compact agent output for subject coverage gaps.
 5. Migration guidance for early alpha files that used `claim_scope`, `covered_subject_*`, or `sample_identity` fields before a common subject helper existed.
+
+Current implementation:
+
+```text
+value audit extracts claim subjects from claim.subject, claim_scope, product_id, or service_id;
+value audit extracts evidence subjects from S3 sample_identity, S2 covered_subject fields, or evidence.subject;
+value audit reports subject_coverage for each claim;
+evidence add supports optional --subject-type and --subject-id for low-burden S1 subject binding.
+```
 
 ## Success Criteria
 

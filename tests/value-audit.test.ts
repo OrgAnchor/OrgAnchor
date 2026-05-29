@@ -62,6 +62,10 @@ test("value audit recognizes external reproducible evidence and local hash check
       "benchmark.md",
       "--id",
       "evidence-001",
+      "--subject-type",
+      "product",
+      "--subject-id",
+      "primary-product",
       "--issuer-type",
       "third_party",
       "--uri",
@@ -135,6 +139,10 @@ test("value audit treats explicit recheck methods as reproducible support", () =
       "inspection-report.md",
       "--id",
       "evidence-001",
+      "--subject-type",
+      "product",
+      "--subject-id",
+      "primary-product",
       "--issuer-type",
       "third_party",
       "--uri",
@@ -212,6 +220,10 @@ test("value audit classifies S2 third-party material and exposes low-friction ga
       "certificate.pdf",
       "--id",
       "evidence-001",
+      "--subject-type",
+      "product",
+      "--subject-id",
+      "primary-product",
       "--issuer-type",
       "third_party",
       "--media-type",
@@ -293,6 +305,10 @@ test("value audit classifies S3 random purchase sampling and exposes sample-cont
       "random-sample-report.md",
       "--id",
       "evidence-001",
+      "--subject-type",
+      "product",
+      "--subject-id",
+      "primary-product",
       "--issuer-type",
       "third_party",
       "--uri",
@@ -379,6 +395,10 @@ test("value audit reports profile gaps for underspecified physical product claim
       "inspection-report.md",
       "--id",
       "evidence-001",
+      "--subject-type",
+      "product",
+      "--subject-id",
+      "primary-product",
       "--issuer-type",
       "third_party",
       "--uri",
@@ -442,6 +462,10 @@ test("value audit passes a complete SaaS API profile without turning it into a t
       "uptime-report.json",
       "--id",
       "evidence-001",
+      "--subject-type",
+      "product",
+      "--subject-id",
+      "primary-product",
       "--issuer-type",
       "third_party",
       "--uri",
@@ -475,6 +499,66 @@ test("value audit passes a complete SaaS API profile without turning it into a t
     assert.equal(claim.profile_review.status, "PASS");
     assert.deepEqual(claim.profile_review.missing_fields, []);
     assert.equal(claim.organchor_trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test("value audit exposes evidence subject mismatch against the claim subject", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-value-audit-subject-mismatch-"));
+  try {
+    createAuthority(workspace);
+    writeFileSync(join(workspace, "model-y-report.md"), "# Model Y report\n\nDoes not cover model X.\n", "utf8");
+    run(workspace, ["claims", "create", "--config", "organchor.config.json"]);
+    updateClaim(workspace, {
+      subject: {
+        subject_type: "product_model",
+        subject_id: "model-x1"
+      }
+    });
+    run(workspace, ["evidence", "create", "--config", "organchor.config.json"]);
+    run(workspace, [
+      "evidence",
+      "add",
+      "--file",
+      "model-y-report.md",
+      "--id",
+      "evidence-001",
+      "--subject-type",
+      "product_model",
+      "--subject-id",
+      "model-y1",
+      "--issuer-type",
+      "third_party",
+      "--uri",
+      "https://example.org/evidence/model-y-report.md",
+      "--location-type",
+      "https",
+      "--reproducibility",
+      "independently_reproducible",
+      "--limitations",
+      "Report covers only model-y1"
+    ]);
+
+    run(workspace, [
+      "value",
+      "audit",
+      "--claims",
+      "claims/product-claims.json",
+      "--evidence",
+      "evidence/evidence-manifest.json",
+      "--check-files",
+      "--now",
+      "2026-05-19T00:00:00Z"
+    ]);
+
+    const report = readReport(workspace);
+    const claim = report.claims[0];
+    assert.ok(claim);
+    assert.equal(claim.status, "WARN");
+    assert.equal(claim.subject_coverage.status, "WARN");
+    assert.equal(claim.subject_coverage.relations.SUBJECT_ID_MISMATCH, 1);
+    assert.ok(claim.risk_gaps.some((gap) => gap.includes("subject_id differs")));
   } finally {
     rmSync(workspace, { recursive: true, force: true });
   }
@@ -520,6 +604,13 @@ function readReport(workspace: string): {
       missing_fields: string[];
       risk_gaps: string[];
       next_best_actions: string[];
+    };
+    subject_coverage: {
+      status: string;
+      claim_subject: Record<string, string>;
+      evidence_subjects: Array<Record<string, unknown>>;
+      relations: Record<string, number>;
+      gaps: string[];
     };
     missing_evidence_refs: string[];
   }>;

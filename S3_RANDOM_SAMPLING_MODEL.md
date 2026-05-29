@@ -53,6 +53,239 @@ Therefore `customer_site_sampling` in the CLI means customer-site sample acquisi
 
 S3 subject binding follows `SUBJECT_BINDING_MODEL.md`. An effective S3 record must identify the sampled subject through `sample_identity`. Without sample identity, the record is only candidate sampling because external agents cannot know which product, model, batch, unit, service, deployment, or dataset the sample represents.
 
+## Not A Review System
+
+S3 must not become a star-rating, comment, review, or promotion system.
+
+Traditional review systems degrade when:
+
+```text
+reviewer identity is unclear;
+sample source is unclear;
+purchase or usage is not verifiable;
+positive feedback is incentivized;
+negative feedback is suppressed;
+large counts hide low information density;
+ranking becomes paid promotion.
+```
+
+S3 records structured sample facts instead:
+
+```text
+what subject was sampled;
+where the sample came from;
+who selected and acquired it;
+whether the organization provided it;
+what method was used;
+what result was observed;
+where the raw evidence bundle is or was held;
+which hash, signature, and timestamp bind the record.
+```
+
+OrgAnchor does not aggregate "good reviews." It exposes verifiable sample observations and their limits.
+
+## Who Submits
+
+Effective S3 should be submitted or co-signed by a party that controlled the sample outside the evaluated organization's control.
+
+Recommended submitter classes:
+
+| Submitter | S3 meaning |
+| --- | --- |
+| Buyer or buyer agent | A demand-side party acquired a real market sample for its own decision. |
+| Directory operator | A directory maintains sample evidence for organizations it recommends or lists. |
+| Independent sampler or auditor | A sampling party acquired samples under a declared route. |
+| Distributor, warehouse, or customer-site controller | A sample came from inventory or field deployment outside direct organization selection. |
+| Organization | May fund, initiate, cite, respond, or sign acknowledgements, but cannot by itself make the sample strong S3. |
+
+Responsibility rule:
+
+```text
+Who benefits from being discovered, recommended, or trusted should carry the matching evidence cost.
+```
+
+For organizations:
+
+```text
+S1 and S2 can be organization-managed.
+S3 should be organization-funded or organization-supported only under blind or externally controlled sample selection.
+The organization should publish whether it accepts random sampling, funds blind sampling, responds to negative samples, and permits evidence vault retention.
+```
+
+For directories:
+
+```text
+A directory that profits from recommendation, ranking, screening, or procurement support should maintain evidence health for the organizations it covers.
+It should not merely list claims; it should preserve S3 receipts, sample-set summaries, raw bundle hashes, availability status, and dispute state for its own recommendation set.
+```
+
+## Incentive Model
+
+S3 cannot rely on strangers doing free work.
+
+Practical sources of S3 are:
+
+```text
+demand-side procurement checks;
+directory-funded sampling for better directory quality;
+organization-funded blind sampling where the organization cannot choose the sample;
+buyer incentives for complete verifiable sample receipts;
+challenge rewards for confirmed negative samples or contradictions.
+```
+
+Incentives should reward record completeness and verifiability, not positive results.
+
+Bad incentive:
+
+```text
+submit a good review and receive a reward
+```
+
+Acceptable incentive:
+
+```text
+submit a complete sample receipt, raw bundle hash, acquisition proof, and method result; reward is independent of outcome
+```
+
+## Storage And Raw Evidence Vaults
+
+S3 raw data is too heavy to place entirely in the organization package, OrgAnchor official infrastructure, Arweave, IPFS, or any single universal store.
+
+S3 therefore separates:
+
+| Layer | Content | Storage burden |
+| --- | --- | --- |
+| Public receipt | Sample identity, source, selector, method, result summary, bundle hash, vault pointers | Small |
+| Sample-set summary | Aggregated sample count, channels, time window, result distribution, sufficiency note | Small to medium |
+| Raw evidence bundle | Invoices, photos, videos, test reports, logs, telemetry export, custody notes | Heavy |
+| Anchor | Hashes of receipts, summaries, and bundle manifests | Very small |
+
+Raw evidence should be held by one or more Evidence Vaults.
+
+An Evidence Vault is a storage and custody operator for raw S3 bundles. It may be run by:
+
+```text
+a directory operator;
+a buyer or procurement network;
+an independent sampler;
+an industry association;
+a testing lab;
+a regulated archive;
+the organization only as an additional mirror, not as the sole strong vault.
+```
+
+S3 public records should state:
+
+```text
+bundle_hash
+bundle_manifest_hash
+vault_operator
+vault_independence
+raw_availability_status
+raw_retention_until
+access_policy
+last_availability_check
+```
+
+Recommended availability states:
+
+```text
+AVAILABLE
+REQUEST_REQUIRED
+RESTRICTED
+EXPIRED_SUMMARY_ONLY
+WITHDRAWN
+LOST
+DISPUTED
+```
+
+The organization package may cite S3 receipts and summaries, but it should not be the only place where negative or externally controlled raw evidence survives.
+
+## Event, Sample Set, And Sufficiency
+
+A single S3 event is valuable as a fact, but usually weak as product-wide support.
+
+S3 should distinguish:
+
+```text
+S3_EVENT = one sample acquisition or observation event
+S3_SAMPLE_SET = a bounded set of S3 events for one subject, window, method, channel, or sampling plan
+S3_STRATIFIED_SAMPLE_SET = a sample set intentionally covering strata such as batch, region, channel, or time window
+```
+
+S3 does not use a "more is always better" rule.
+
+The correct rule is:
+
+```text
+Enough valid samples for the declared purpose, subject, time window, and risk level.
+```
+
+Examples:
+
+| Purpose | More useful S3 window |
+| --- | --- |
+| Consumer product screening | Recent 30-90 day market samples |
+| Industrial component purchase | Current batch, lot, or recent production window |
+| SaaS/API sample test | Recent version and region-specific check window |
+| Safety-critical product | Current batch plus stronger sampling plan and independent method review |
+
+S3 should expose a sufficiency note rather than pretend to calculate universal truth:
+
+```text
+sample_count
+sample_window
+sampling_method
+coverage_dimensions
+known_biases
+confidence_note
+not_a_statistical_certification
+```
+
+## Historical Retention
+
+Historical S3 should not require raw evidence to be preserved forever.
+
+Recommended retention policy:
+
+```text
+current effective window = raw evidence should be available;
+ordinary positive history = signed summary, hashes, and who verified while raw evidence was available;
+major negative event, safety issue, legal dispute, recall, or unresolved challenge = raw evidence should be retained longer;
+expired raw bundles = may become summary-only and must be downgraded for current decisions.
+```
+
+Important boundary:
+
+```text
+Historical summary and hash do not re-prove the old fact once raw evidence is gone.
+They prove that a signed summary existed, was not silently altered, and was vouched for by specified parties at that time.
+```
+
+Historical value comes from:
+
+```text
+who verified the raw bundle while it was available;
+who signed the summary;
+whether a vault attested custody;
+whether a directory or buyer agent reviewed it;
+whether it was timestamped;
+whether it passed a public challenge window;
+whether disputes or corrections were recorded.
+```
+
+Recommended historical levels:
+
+| Level | Meaning |
+| --- | --- |
+| H0 | Organization-only historical summary; weak signal. |
+| H1 | Vault signed that it held a raw bundle matching the hash. |
+| H2 | Directory, buyer, sampler, or auditor signed that it reviewed the raw bundle. |
+| H3 | Multi-party signatures plus timestamp anchor and challenge window. |
+| H4 | Significant incident or dispute with longer raw retention. |
+
+Historical S3 supports trend and accountability. It must not be treated as current sample sufficiency unless the current window still has valid evidence.
+
 ## Placement
 
 S3 extends the existing signed evidence manifest:

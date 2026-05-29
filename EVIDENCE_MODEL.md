@@ -298,6 +298,10 @@ AI agents should not treat these categories as equally trustworthy.
 
 For third-party-looking materials, `S2_THIRD_PARTY_MATERIAL_MODEL.md` defines the stricter boundary. A PDF, screenshot, logo, or organization-hosted copy is not effective S2 unless it has an external recheck anchor and an explicit organization-claimed linkage to claims, products, services, or credentials.
 
+For real market or customer-site sample acquisition, `S3_RANDOM_SAMPLING_MODEL.md` defines the stricter S3 boundary. S3 is for externally controlled sample facts, not reviews or broad delivery-performance claims.
+
+For real delivery, real use, supply continuity, support, repair, monitoring, and field-operation observations, `S4_REAL_WORLD_OBSERVATION_MODEL.md` defines the S4 boundary. S4 should remain separate from S3 so a sample test is not misread as long-term supply continuity, and ordinary delivery observations are not misread as product sample tests.
+
 ## Claim Relations
 
 Evidence can relate to a claim in different ways:

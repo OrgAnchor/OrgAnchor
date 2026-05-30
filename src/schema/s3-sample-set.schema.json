@@ -1,0 +1,186 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://organchor.org/schemas/s3-sample-set.v1.json",
+  "title": "OrgAnchor S3 Sample Set",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema",
+    "type",
+    "version",
+    "sample_set_id",
+    "created_at",
+    "purpose",
+    "subject",
+    "time_window",
+    "sample_events",
+    "sample_count",
+    "sampling_method",
+    "coverage",
+    "result_summary",
+    "sufficiency",
+    "raw_evidence",
+    "limitations",
+    "not_a_trust_decision"
+  ],
+  "properties": {
+    "schema": { "const": "https://organchor.org/schemas/s3-sample-set.v1.json" },
+    "type": { "const": "OrgAnchorS3SampleSet" },
+    "version": { "const": "1.0" },
+    "sample_set_id": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "purpose": { "$ref": "#/definitions/purpose" },
+    "subject": { "$ref": "#/definitions/subject" },
+    "time_window": { "$ref": "#/definitions/time_window" },
+    "sample_events": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/sample_event_ref" }
+    },
+    "sample_count": { "type": "integer", "minimum": 1 },
+    "sampling_method": { "$ref": "#/definitions/sampling_method" },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "result_summary": { "$ref": "#/definitions/result_summary" },
+    "sufficiency": { "$ref": "#/definitions/sufficiency" },
+    "raw_evidence": { "$ref": "#/definitions/raw_evidence" },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "not_a_trust_decision": { "const": true }
+  },
+  "definitions": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "purpose": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["purpose_id"],
+      "properties": {
+        "purpose_id": { "type": "string", "minLength": 1 },
+        "risk_level": { "type": "string" },
+        "decision_context": { "type": "string" }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["subject_type", "subject_id"],
+      "properties": {
+        "subject_type": { "type": "string", "minLength": 1 },
+        "subject_id": { "type": "string", "minLength": 1 },
+        "scope_text": { "type": "string" }
+      }
+    },
+    "time_window": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["from", "to"],
+      "properties": {
+        "from": { "type": "string", "format": "date-time" },
+        "to": { "type": "string", "format": "date-time" }
+      }
+    },
+    "sample_event_ref": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["sample_event_id", "event_hash"],
+      "properties": {
+        "sample_event_id": { "type": "string", "minLength": 1 },
+        "event_hash": { "$ref": "#/definitions/sha256" },
+        "event_url": { "type": "string" }
+      }
+    },
+    "sampling_method": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["method_type", "selected_by", "organization_selected_sample"],
+      "properties": {
+        "method_type": { "type": "string", "minLength": 1 },
+        "selected_by": { "type": "string", "minLength": 1 },
+        "organization_selected_sample": { "type": "boolean" },
+        "organization_funded_sampling": { "type": "boolean" },
+        "funding_independence_note": { "type": "string" }
+      }
+    },
+    "result_summary": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["summary"],
+      "properties": {
+        "pass_count": { "type": "integer", "minimum": 0 },
+        "fail_count": { "type": "integer", "minimum": 0 },
+        "inconclusive_count": { "type": "integer", "minimum": 0 },
+        "summary": { "type": "string", "minLength": 1 }
+      }
+    },
+    "sufficiency": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "enum": ["INSUFFICIENT", "PARTIAL", "PURPOSE_SUFFICIENT", "OVERDUE_FOR_REFRESH", "NOT_ASSESSED"]
+        },
+        "threshold_basis": { "type": "string" },
+        "confidence_note": { "type": "string" }
+      }
+    },
+    "raw_evidence": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["sample_set_manifest_hash"],
+      "properties": {
+        "sample_set_manifest_hash": { "$ref": "#/definitions/sha256" },
+        "event_receipt_manifest_hash": { "$ref": "#/definitions/sha256" },
+        "raw_availability_status": {
+          "enum": [
+            "AVAILABLE",
+            "REQUEST_REQUIRED",
+            "RESTRICTED",
+            "MIXED",
+            "EXPIRED_SUMMARY_ONLY",
+            "WITHDRAWN",
+            "LOST",
+            "DISPUTED"
+          ]
+        },
+        "vaults": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/vault" }
+        }
+      }
+    },
+    "vault": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["vault_operator", "raw_availability_status", "access_policy"],
+      "properties": {
+        "vault_operator": { "type": "string", "minLength": 1 },
+        "vault_origin": { "type": "string" },
+        "vault_independence": { "type": "string" },
+        "raw_availability_status": {
+          "enum": [
+            "AVAILABLE",
+            "REQUEST_REQUIRED",
+            "RESTRICTED",
+            "MIXED",
+            "EXPIRED_SUMMARY_ONLY",
+            "WITHDRAWN",
+            "LOST",
+            "DISPUTED"
+          ]
+        },
+        "access_policy": { "type": "string", "minLength": 1 },
+        "raw_retention_until": { "type": "string", "format": "date-time" },
+        "last_availability_check": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

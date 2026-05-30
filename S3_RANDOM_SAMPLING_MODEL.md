@@ -242,6 +242,13 @@ confidence_note
 not_a_statistical_certification
 ```
 
+The standalone record shape is defined in `S3_SAMPLE_RECORD_SPEC.md`:
+
+```text
+S3_EVENT = one concrete sample acquisition and observation event
+S3_SAMPLE_SET = a bounded sample-set summary for a subject, window, purpose, method, and coverage pattern
+```
+
 ## Historical Retention
 
 Historical S3 should not require raw evidence to be preserved forever.

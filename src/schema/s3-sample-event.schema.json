@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://organchor.org/schemas/s3-sample-event.v1.json",
+  "title": "OrgAnchor S3 Sample Event",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema",
+    "type",
+    "version",
+    "sample_event_id",
+    "created_at",
+    "subject",
+    "submitter",
+    "acquisition",
+    "result",
+    "raw_evidence",
+    "limitations",
+    "not_a_trust_decision"
+  ],
+  "properties": {
+    "schema": { "const": "https://organchor.org/schemas/s3-sample-event.v1.json" },
+    "type": { "const": "OrgAnchorS3SampleEvent" },
+    "version": { "const": "1.0" },
+    "sample_event_id": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "subject": { "$ref": "#/definitions/subject" },
+    "submitter": { "$ref": "#/definitions/submitter" },
+    "acquisition": { "$ref": "#/definitions/acquisition" },
+    "method": { "$ref": "#/definitions/method" },
+    "result": { "$ref": "#/definitions/result" },
+    "raw_evidence": { "$ref": "#/definitions/raw_evidence" },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "not_a_trust_decision": { "const": true }
+  },
+  "definitions": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["subject_type", "subject_id"],
+      "properties": {
+        "subject_type": { "type": "string", "minLength": 1 },
+        "subject_id": { "type": "string", "minLength": 1 },
+        "batch_id": { "type": "string" },
+        "lot_id": { "type": "string" },
+        "serial_or_unit_id": { "type": "string" },
+        "scope_text": { "type": "string" }
+      }
+    },
+    "submitter": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["submitter_type"],
+      "properties": {
+        "submitter_type": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "origin": { "type": "string" },
+        "root_authority_hash": { "$ref": "#/definitions/sha256" },
+        "credential_ref": { "type": "string" }
+      }
+    },
+    "acquisition": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "sample_type",
+        "acquired_at",
+        "sample_source",
+        "selected_by",
+        "organization_provided_sample",
+        "sample_size"
+      ],
+      "properties": {
+        "sample_type": { "type": "string", "minLength": 1 },
+        "acquired_at": { "type": "string", "format": "date-time" },
+        "sample_source": { "type": "string", "minLength": 1 },
+        "selected_by": { "type": "string", "minLength": 1 },
+        "organization_provided_sample": { "type": "boolean" },
+        "sample_size": { "type": "integer", "minimum": 1 },
+        "acquisition_channel": { "type": "string" },
+        "sampling_method": { "type": "string" },
+        "region": { "type": "string" },
+        "channel": { "type": "string" }
+      }
+    },
+    "method": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "method_ref": { "type": "string" },
+        "method_summary": { "type": "string" },
+        "standard_ref": { "type": "string" }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["outcome", "summary"],
+      "properties": {
+        "outcome": {
+          "enum": ["PASS", "FAIL", "INCONCLUSIVE", "MIXED", "OBSERVED"]
+        },
+        "summary": { "type": "string", "minLength": 1 },
+        "observed_at": { "type": "string", "format": "date-time" },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "raw_evidence": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["bundle_hash", "vaults"],
+      "properties": {
+        "bundle_hash": { "$ref": "#/definitions/sha256" },
+        "bundle_manifest_hash": { "$ref": "#/definitions/sha256" },
+        "vaults": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/vault" }
+        }
+      }
+    },
+    "vault": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["vault_operator", "raw_availability_status", "access_policy"],
+      "properties": {
+        "vault_operator": { "type": "string", "minLength": 1 },
+        "vault_origin": { "type": "string" },
+        "vault_independence": { "type": "string" },
+        "raw_availability_status": {
+          "enum": [
+            "AVAILABLE",
+            "REQUEST_REQUIRED",
+            "RESTRICTED",
+            "MIXED",
+            "EXPIRED_SUMMARY_ONLY",
+            "WITHDRAWN",
+            "LOST",
+            "DISPUTED"
+          ]
+        },
+        "access_policy": { "type": "string", "minLength": 1 },
+        "raw_retention_until": { "type": "string", "format": "date-time" },
+        "last_availability_check": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

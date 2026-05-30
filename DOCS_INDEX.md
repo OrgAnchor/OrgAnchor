@@ -54,6 +54,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `SUBJECT_BINDING_MODEL.md`: accepted design model for binding discovery units, claims, evidence, samples, observations, credentials, and challenges to the exact subject they cover.
 - `S2_THIRD_PARTY_MATERIAL_MODEL.md`: implementation-facing S2 model for third-party material fields, Core/Extension boundaries, mechanical checks, and agent summaries.
 - `S3_RANDOM_SAMPLING_MODEL.md`: implementation-facing S3 model for real market/customer-site sample acquisition, sample-control checks, Evidence Vault storage, sample sufficiency, historical retention, and agent summaries.
+- `S3_SAMPLE_RECORD_SPEC.md`: protocol shape, JSON examples, and schema references for standalone S3 sample event and sample-set records.
 - `S4_REAL_WORLD_OBSERVATION_MODEL.md`: accepted S4 design model for real delivery, real use, supply continuity, support, repair, monitoring, and field-observation records, strictly separated from S3 sample testing.
 - `PACKAGE_HEALTH_LAYER.md`: accepted design model for self-declared and observed package health, maintenance responsibility, stale/broken/expired evidence visibility, and low-cost agent fetch decisions.
 - `REAL_WORLD_EVIDENCE_PROFILE.md`: minimum evidence profile for real products and services, including scoped claims, hash-bound evidence, recheck methods, limitations, and anti-gaming rules.
@@ -107,7 +108,7 @@ npm run agent:demo
 
 - `examples/complete/`: public minimal example artifacts. These are test/example artifacts, not a real organization identity.
 - `examples/s2-third-party-material/`: S2 third-party material example showing the template and attach workflow for certification-style evidence.
-- `examples/s3-random-sampling/`: S3 random purchase / sampling example showing the template and attach workflow for anti-hand-picked-sample evidence.
+- `examples/s3-random-sampling/`: S3 random purchase / sampling example showing the template and attach workflow for anti-hand-picked-sample evidence, plus standalone sample event and sample-set examples.
 - `examples/agent-discovery-loop/`: local AI-agent discovery loop example, backed by `npm run agent:demo`.
 - `examples/directory/directory-snapshot.json`: static Directory snapshot example for AI-agent discovery tests.
 - `examples/directory/directory-origins.json`: static Directory build input example.

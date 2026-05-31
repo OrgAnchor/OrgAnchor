@@ -1,6 +1,6 @@
 # S4 Real-World Delivery And Use Observation Model
 
-Status: Accepted design model. Not implemented in the alpha CLI yet. S4 is intentionally separated from S3 so random sample quality checks do not get confused with long-term delivery, usage, support, and supply-continuity observations.
+Status: Accepted design model. Basic S4 skeleton generation is available through `evidence observe template --route S4_RECOMMENDED`; S4 attach, audit, and compact agent summaries remain future work. S4 is intentionally separated from S3 so random sample quality checks do not get confused with long-term delivery, usage, support, and supply-continuity observations.
 
 ## Purpose
 
@@ -328,11 +328,10 @@ S4 should feed S5, but it should not replace S5.
 
 ## Implementation Direction
 
-Future implementation should add:
+Implementation should continue with:
 
-1. `evidence s4 template` for order delivery, SaaS/API monitoring, warranty/repair, and field-use observation.
-2. `evidence s4 attach` for adding S4 metadata to evidence items.
-3. Value-audit S4 summary fields:
+1. `evidence s4 attach` for adding S4 metadata to evidence items.
+2. Value-audit S4 summary fields:
    - effective_s4_count
    - candidate_unverified_observation_count
    - current_window_observation_count
@@ -341,8 +340,8 @@ Future implementation should add:
    - missing_subject_binding_count
    - top_s4_gaps
    - next_actions
-4. Agent compact output that separates S3 sample quality from S4 delivery/use continuity.
-5. Directory fields for current observation health and supply-continuity summaries.
+3. Agent compact output that separates S3 sample quality from S4 delivery/use continuity.
+4. Directory fields for current observation health and supply-continuity summaries.
 
 ## Success Criteria
 

@@ -1,6 +1,6 @@
 # Observation Routing Guide
 
-Status: Accepted guidance for S3/S4 routing. The first CLI route command is implemented; route-specific observation templates remain future work.
+Status: Accepted guidance for S3/S4 routing. CLI route and template generation commands are implemented; route-specific S4 attach and audit support remain future work.
 
 ## Purpose
 
@@ -259,12 +259,21 @@ template -> AI/user fill -> validate -> audit -> sign -> publish
 
 Manual JSON remains allowed because OrgAnchor is an open protocol, but manual records should still pass schema validation, hash binding, signature checks, and value audit before being treated as high-quality records.
 
-Future tools should route observations before asking users to pick S3 or S4:
+Tools should route observations before asking users to pick S3 or S4:
 
 ```bash
 organchor evidence observe route --text "..."
 organchor evidence observe template --route S3_RECOMMENDED
 organchor evidence observe template --route S4_RECOMMENDED
+```
+
+Current template generation is intentionally low-friction:
+
+```text
+S3_RECOMMENDED -> emits an S3 skeleton and points to the existing evidence s3 attach path.
+S4_RECOMMENDED -> emits an S4 observation skeleton, but S4 attach is not implemented yet.
+MIXED_S3_S4 -> emits both skeletons and tells the user to split the material.
+ROUTING_UNCLEAR -> emits clarification questions instead of a forced category.
 ```
 
 ## Success Criteria

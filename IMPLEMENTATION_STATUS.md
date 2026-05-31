@@ -85,15 +85,31 @@ Release hygiene:
 - `organchor@0.1.0-alpha.3` published through npm Trusted Publishing under the `alpha` dist-tag.
 - Public self-pilot release-state hashes and carrier receipts recorded in `RELEASE_STATE_2026-05-25.md`.
 
-## Current MVP Launch Focus
+## Current Fireseed Launch Focus
+
+The current launch path is Fireseed Alpha, defined in `FIRESEED_ALPHA_PLAN.md`.
+
+Fireseed Alpha is the minimum necessary public collaboration loop:
+
+```text
+identity continuity;
+public /verify;
+AI-agent-readable verification;
+signed claims/evidence;
+S1-S3 evidence baseline;
+S4/S5 design preview;
+clear invitation for external review and co-builders.
+```
 
 The shortest useful launch path is:
 
 1. Keep `main` green and installable.
 2. Keep `https://organchor.org` publicly verifiable as the reference self-pilot.
 3. Keep future alpha publishes under new release ids, not as stable v1 claims.
-4. Run the first low-risk external pilot using `EXTERNAL_PILOT_RUNBOOK.md`.
-5. Feed pilot lessons back into onboarding, evidence, and agent-facing verification outputs.
+4. Finish Fireseed Freeze work: S3 baseline clarity, S4/S5 design-preview wording, README/onboarding/contributor clarity, and visible known gaps.
+5. Invite early adopting organizations, technical reviewers, and evidence/governance critics.
+6. Run the first low-risk external pilot using `EXTERNAL_PILOT_RUNBOOK.md`.
+7. Feed pilot lessons back into onboarding, evidence, and agent-facing verification outputs.
 
 ## Not Yet Complete
 
@@ -106,6 +122,7 @@ These are not considered done:
 - Purpose-fit evidence outputs such as `fit_for`, `not_enough_for`, and `missing_optional_context` from `EVIDENCE_SUFFICIENCY_MODEL.md`.
 - Discovery Unit schemas, validators, Beacon fields, Directory fields, and coverage-preview query behavior from `DISCOVERY_UNIT_MODEL.md`.
 - P1-P5 purpose-profile validators, broader S1/S4/S5 source-class fields, S2 network verified-route adapters, issuer-backed S2 signatures from `S2_THIRD_PARTY_MATERIAL_MODEL.md`, S3 custody/independent-test route adapters from `S3_RANDOM_SAMPLING_MODEL.md`, and challenge/correction lifecycle extraction from `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
+- Fireseed Alpha intentionally treats S4 and S5 as Design Preview, not launch acceptance gates. Their concepts are documented, but mature observer networks, privacy handling, negative-evidence governance, public challenge abuse controls, and durable storage incentives remain future/co-builder work.
 - Package health commands, observed health lookup, Beacon health summaries, Directory health observation summaries, observed health reports, and agent fetch recommendations from `PACKAGE_HEALTH_LAYER.md`.
 - Live ENS resolver reads through a chosen Ethereum RPC/provider path.
 - Real Onion disaster-recovery address registration.

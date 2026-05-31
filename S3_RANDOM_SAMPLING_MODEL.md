@@ -484,8 +484,18 @@ organchor evidence s3 attach \
   --subject-type product_model \
   --subject-id model-x1 \
   --batch-id batch-2026-05 \
+  --claim-id claim-001 \
+  --claim-version 2026-05 \
+  --sample-pool-id s3-pool-claim-001-2026-05 \
+  --max-active-samples 24 \
+  --credential-hash sha256:<64-hex> \
+  --sample-nullifier sha256:<64-hex> \
+  --credential-verified-against-root \
+  --selector-control buyer \
   --scope "Random market purchase sample supports claim-001 for model-x1."
 ```
+
+If the bounded-pool and credential fields are missing, current tooling downgrades the record to candidate S3 and exposes the missing gates to agents.
 
 Supported starter templates:
 

@@ -31,6 +31,11 @@ test("observation template command creates an S3 fillable skeleton", () => {
   assert.match(first.suggested_attach_command, /evidence s3 attach/);
   assert.equal(first.evidence_item_patch.s_class, "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING");
   assert.equal(first.evidence_item_patch.s3.sample_identity.subject_id, "model-x1");
+  assert.equal(first.evidence_item_patch.s3.claim_binding.claim_id, "claim-001");
+  assert.equal(first.evidence_item_patch.s3.sample_policy.replacement_policy, "NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE");
+  assert.equal(first.evidence_item_patch.s3.sample_policy.uniqueness_basis, "sample_nullifier");
+  assert.equal(first.evidence_item_patch.s3.sampling_plan.organization_can_choose_samples, false);
+  assert.match(first.suggested_attach_command, /--sample-nullifier/);
 });
 
 test("observation template command creates an S4 continuity skeleton", () => {

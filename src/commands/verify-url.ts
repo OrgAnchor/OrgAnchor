@@ -97,6 +97,13 @@ export interface AgentVerificationCompactResult {
       organization_selected_sample_count: number;
       organization_provided_sample_count: number;
       missing_sample_identity_count: number;
+      missing_claim_binding_count: number;
+      missing_sample_pool_count: number;
+      missing_finite_policy_count: number;
+      missing_duplicate_control_count: number;
+      missing_credential_binding_count: number;
+      missing_sampling_plan_count: number;
+      organization_can_choose_samples_count: number;
       missing_custody_count: number;
       manual_check_s3_count: number;
       top_s3_gaps: string[];
@@ -807,6 +814,13 @@ function compactS3Summary(value: Record<string, JsonValue>): AgentVerificationCo
     organization_selected_sample_count: numberValue(value.organization_selected_sample_count),
     organization_provided_sample_count: numberValue(value.organization_provided_sample_count),
     missing_sample_identity_count: numberValue(value.missing_sample_identity_count),
+    missing_claim_binding_count: numberValue(value.missing_claim_binding_count),
+    missing_sample_pool_count: numberValue(value.missing_sample_pool_count),
+    missing_finite_policy_count: numberValue(value.missing_finite_policy_count),
+    missing_duplicate_control_count: numberValue(value.missing_duplicate_control_count),
+    missing_credential_binding_count: numberValue(value.missing_credential_binding_count),
+    missing_sampling_plan_count: numberValue(value.missing_sampling_plan_count),
+    organization_can_choose_samples_count: numberValue(value.organization_can_choose_samples_count),
     missing_custody_count: numberValue(value.missing_custody_count),
     manual_check_s3_count: numberValue(value.manual_check_s3_count),
     top_s3_gaps: arrayStrings(value.top_s3_gaps),

@@ -268,7 +268,7 @@ Usage:
   organchor evidence s2 template --template certification_record
   organchor evidence s2 attach --evidence-id evidence-001 --template certification_record --issuer-name "Example Certification Body" --anchor-url https://registry.example/records/ABC-123 --scope "Certificate supports claim-001 for model-x1"
   organchor evidence s3 template --template market_purchase
-  organchor evidence s3 attach --evidence-id evidence-001 --template market_purchase --sampler-type buyer --acquired-at 2026-05-28T00:00:00Z --subject-type product_model --subject-id model-x1 --scope "Random market purchase sample supports claim-001 for model-x1"
+  organchor evidence s3 attach --evidence-id evidence-001 --template market_purchase --sampler-type buyer --acquired-at 2026-05-28T00:00:00Z --subject-type product_model --subject-id model-x1 --claim-id claim-001 --claim-version 2026-05 --sample-pool-id s3-pool-claim-001-2026-05 --max-active-samples 24 --credential-hash sha256:... --sample-nullifier sha256:... --credential-verified-against-root --selector-control buyer --scope "Random market purchase sample supports claim-001 for model-x1"
   organchor evidence s4 template --template order_delivery
   organchor evidence s4 attach --evidence-id evidence-001 --template order_delivery --observer-id buyer.example --window-start 2026-05-01 --window-end 2026-05-31 --subject-type product_family --subject-id model-x1 --scope "Observed delivery performance supports claim-001 for model-x1" --raw-bundle-hash sha256:... --vault-uri https://vault.example/evidence/orders
   organchor evidence hash --file README.md

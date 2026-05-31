@@ -81,6 +81,10 @@ export async function evidenceS3AttachCommand(options: Record<string, string | b
   const sampleSize = positiveIntegerOption(options["sample-size"]) || 1;
   const limitations = parseList(options.limitations);
   const checkedAt = timestampOption(options["checked-at"]) || new Date().toISOString();
+  const claimVersion = stringOption(options["claim-version"]) || "current";
+  const samplePoolId = stringOption(options["sample-pool-id"]) || defaultSamplePoolId(resolvedClaimRefs[0] ?? "claim", claimVersion);
+  const maxActiveSamples = positiveIntegerOption(options["max-active-samples"]) || 24;
+  const selectedBy = stringOption(options["selected-by"]) || template.selectedBy;
 
   item.s_class = "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING";
   item.issuer_type = "third_party";
@@ -89,7 +93,7 @@ export async function evidenceS3AttachCommand(options: Record<string, string | b
     samplerType: stringOption(options["sampler-type"]) || template.samplerType,
     samplerName: stringOption(options["sampler-name"]),
     sampleSource: stringOption(options["sample-source"]) || template.sampleSource,
-    selectedBy: stringOption(options["selected-by"]) || template.selectedBy,
+    selectedBy,
     acquiredAt,
     sampleSize,
     subjectType,
@@ -100,6 +104,23 @@ export async function evidenceS3AttachCommand(options: Record<string, string | b
     custodyDocumented: options["custody-documented"] === true,
     custodyNotes: stringOption(options["custody-notes"]),
     claimRefs: resolvedClaimRefs,
+    claimVersion,
+    samplePoolId,
+    maxActiveSamples,
+    riskLevel: stringOption(options["risk-level"]) || "medium",
+    targetConfidenceNote: stringOption(options["target-confidence-note"]) || "Declared S3 pool limit for this claim and purpose.",
+    refreshRule: stringOption(options["refresh-rule"]) || "rolling_current_window",
+    credentialType: stringOption(options["credential-type"]),
+    credentialHash: stringOption(options["credential-hash"]),
+    credentialIssuerDelegatedKeyId: stringOption(options["credential-issuer-key-id"]),
+    credentialVerifiedAgainstRoot: options["credential-verified-against-root"] === true,
+    sampleNullifier: stringOption(options["sample-nullifier"]),
+    samplingPlanId: stringOption(options["sampling-plan-id"]),
+    eligibleChannels: parseList(options["eligible-channels"]),
+    eligibleRegions: parseList(options["eligible-regions"]),
+    selectorControl: stringOption(options["selector-control"]) || selectedBy,
+    organizationCanChooseSamples: options["organization-can-choose-samples"] === true,
+    knownBiases: parseList(options["known-biases"]),
     scopeText,
     limitations: limitations.length > 0 ? limitations : template.defaultLimitations,
     checkedAt
@@ -117,6 +138,10 @@ export async function evidenceS3AttachCommand(options: Record<string, string | b
 export async function evidenceS3TemplateCommand(options: Record<string, string | boolean>): Promise<void> {
   const template = templateFromOption(options.template);
   const claimRefs = parseList(options["claim-ids"] ?? options["claim-id"]);
+  const resolvedClaimRefs = claimRefs.length > 0 ? claimRefs : ["claim-001"];
+  const claimVersion = stringOption(options["claim-version"]) || "2026-05";
+  const samplePoolId = stringOption(options["sample-pool-id"]) || defaultSamplePoolId(resolvedClaimRefs[0] ?? "claim-001", claimVersion);
+  const selectedBy = stringOption(options["selected-by"]) || template.selectedBy;
   const sample = {
     s_class: "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING",
     s3: buildS3Metadata({
@@ -124,7 +149,7 @@ export async function evidenceS3TemplateCommand(options: Record<string, string |
       samplerType: stringOption(options["sampler-type"]) || template.samplerType,
       samplerName: stringOption(options["sampler-name"]) || "Example Buyer Or Auditor",
       sampleSource: stringOption(options["sample-source"]) || template.sampleSource,
-      selectedBy: stringOption(options["selected-by"]) || template.selectedBy,
+      selectedBy,
       acquiredAt: timestampOption(options["acquired-at"]) || "2026-05-28T00:00:00.000Z",
       sampleSize: positiveIntegerOption(options["sample-size"]) || 1,
       subjectType: stringOption(options["subject-type"]) || "product_model",
@@ -134,7 +159,26 @@ export async function evidenceS3TemplateCommand(options: Record<string, string |
       organizationProvidedSample: options["organization-provided-sample"] === true,
       custodyDocumented: options["custody-documented"] === true,
       custodyNotes: stringOption(options["custody-notes"]) || "Describe custody handoff, packaging state, and who held the sample before testing.",
-      claimRefs: claimRefs.length > 0 ? claimRefs : ["claim-001"],
+      claimRefs: resolvedClaimRefs,
+      claimVersion,
+      samplePoolId,
+      maxActiveSamples: positiveIntegerOption(options["max-active-samples"]) || 24,
+      riskLevel: stringOption(options["risk-level"]) || "medium",
+      targetConfidenceNote: stringOption(options["target-confidence-note"]) || "At most 24 active valid samples are counted for this claim and window.",
+      refreshRule: stringOption(options["refresh-rule"]) || "rolling_30_day_window",
+      credentialType: stringOption(options["credential-type"]) || "OrgAnchorProductUnitCredential",
+      credentialHash:
+        stringOption(options["credential-hash"]) || "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      credentialIssuerDelegatedKeyId: stringOption(options["credential-issuer-key-id"]) || "product-key-2026",
+      credentialVerifiedAgainstRoot: options["credential-verified-against-root"] === true,
+      sampleNullifier:
+        stringOption(options["sample-nullifier"]) || "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+      samplingPlanId: stringOption(options["sampling-plan-id"]) || "sampling-plan-claim-001-2026-05",
+      eligibleChannels: parseList(options["eligible-channels"]).length > 0 ? parseList(options["eligible-channels"]) : [template.acquisitionChannel],
+      eligibleRegions: parseList(options["eligible-regions"]).length > 0 ? parseList(options["eligible-regions"]) : ["region-or-market"],
+      selectorControl: stringOption(options["selector-control"]) || selectedBy,
+      organizationCanChooseSamples: options["organization-can-choose-samples"] === true,
+      knownBiases: parseList(options["known-biases"]).length > 0 ? parseList(options["known-biases"]) : ["Declare channels, regions, batches, or customers not covered by this pool."],
       scopeText: stringOption(options.scope) || "Describe exactly which claim this random purchase or sampling evidence supports.",
       limitations: parseList(options.limitations).length > 0 ? parseList(options.limitations) : template.defaultLimitations,
       checkedAt: timestampOption(options["checked-at"]) || "2026-05-28T00:00:00.000Z"
@@ -159,6 +203,23 @@ function buildS3Metadata(options: {
   custodyDocumented: boolean;
   custodyNotes: string;
   claimRefs: string[];
+  claimVersion: string;
+  samplePoolId: string;
+  maxActiveSamples: number;
+  riskLevel: string;
+  targetConfidenceNote: string;
+  refreshRule: string;
+  credentialType: string;
+  credentialHash: string;
+  credentialIssuerDelegatedKeyId: string;
+  credentialVerifiedAgainstRoot: boolean;
+  sampleNullifier: string;
+  samplingPlanId: string;
+  eligibleChannels: string[];
+  eligibleRegions: string[];
+  selectorControl: string;
+  organizationCanChooseSamples: boolean;
+  knownBiases: string[];
   scopeText: string;
   limitations: string[];
   checkedAt: string;
@@ -180,10 +241,15 @@ function buildS3Metadata(options: {
   };
   if (options.custodyNotes) custody.custody_notes = options.custodyNotes;
 
-  return {
+  const result: Record<string, JsonValue> = {
     state: "S3_1_SAMPLING_ROUTE_PROVIDED",
     sample_type: options.template.sampleType,
     sampler,
+    claim_binding: {
+      claim_id: options.claimRefs[0] ?? "claim-001",
+      claim_version: options.claimVersion,
+      sample_pool_id: options.samplePoolId
+    },
     sample_identity: sampleIdentity,
     sampling_event: {
       acquired_at: options.acquiredAt,
@@ -193,6 +259,24 @@ function buildS3Metadata(options: {
       organization_provided_sample: options.organizationProvidedSample,
       sampling_method: options.template.samplingMethod,
       sample_size: options.sampleSize
+    },
+    sample_policy: {
+      purpose_id: options.template.id,
+      risk_level: options.riskLevel,
+      target_confidence_note: options.targetConfidenceNote,
+      max_active_samples: options.maxActiveSamples,
+      replacement_policy: "NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE",
+      refresh_rule: options.refreshRule,
+      uniqueness_basis: "sample_nullifier",
+      limitations: options.limitations
+    },
+    sampling_plan: {
+      plan_id: options.samplingPlanId || `${options.samplePoolId}-plan`,
+      eligible_channels: options.eligibleChannels.length > 0 ? options.eligibleChannels : [options.template.acquisitionChannel],
+      eligible_regions: options.eligibleRegions.length > 0 ? options.eligibleRegions : ["not_disclosed"],
+      selector_control: options.selectorControl,
+      organization_can_choose_samples: options.organizationCanChooseSamples,
+      known_biases: options.knownBiases
     },
     custody,
     organization_claimed_support: {
@@ -206,6 +290,18 @@ function buildS3Metadata(options: {
       maintenance_status: "FRESH"
     }
   };
+
+  if (options.credentialHash || options.sampleNullifier || options.credentialIssuerDelegatedKeyId || options.credentialType) {
+    result.credential_binding = {
+      credential_type: options.credentialType || "OrgAnchorProductUnitCredential",
+      credential_hash: options.credentialHash,
+      issuer_delegated_key_id: options.credentialIssuerDelegatedKeyId,
+      credential_verified_against_root: options.credentialVerifiedAgainstRoot,
+      sample_nullifier: options.sampleNullifier
+    };
+  }
+
+  return result;
 }
 
 function templateFromOption(value: string | boolean | undefined): S3Template {
@@ -263,6 +359,18 @@ function parseList(value: string | boolean | undefined): string[] {
     .split(/[;,]/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function defaultSamplePoolId(claimId: string, claimVersion: string): string {
+  return `s3-pool-${safeIdPart(claimId)}-${safeIdPart(claimVersion)}`;
+}
+
+function safeIdPart(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "current";
 }
 
 function claimIdsFromEvidence(evidenceItem: Record<string, JsonValue>): string[] {

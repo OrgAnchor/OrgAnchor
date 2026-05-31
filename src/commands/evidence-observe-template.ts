@@ -41,6 +41,8 @@ function buildS3Template(options: Record<string, string | boolean>, generatedAt:
   const subjectType = stringOption(options["subject-type"]) || "product_model";
   const subjectId = stringOption(options["subject-id"]) || "model-or-service-id";
   const claimId = stringOption(options["claim-id"]) || "claim-001";
+  const claimVersion = stringOption(options["claim-version"]) || "current";
+  const samplePoolId = stringOption(options["sample-pool-id"]) || `s3-pool-${claimId}-${claimVersion}`;
   const observerType = stringOption(options["observer-type"]) || "buyer";
   const templateId = s3TemplateId(options.template);
   return {
@@ -50,10 +52,18 @@ function buildS3Template(options: Record<string, string | boolean>, generatedAt:
     implementation_status: "attach_command_available",
     suggested_attach_command:
       `organchor evidence s3 attach --evidence-id evidence-001 --template ${templateId} --sampler-type ${observerType} ` +
-      `--acquired-at ${generatedAt} --subject-type ${subjectType} --subject-id ${subjectId} --scope "Sample observation supports ${claimId} for ${subjectId}"`,
+      `--acquired-at ${generatedAt} --subject-type ${subjectType} --subject-id ${subjectId} --claim-id ${claimId} ` +
+      `--claim-version ${claimVersion} --sample-pool-id ${samplePoolId} --max-active-samples 24 ` +
+      `--credential-hash sha256:<64-hex> --sample-nullifier sha256:<64-hex> --credential-verified-against-root ` +
+      `--selector-control ${observerType} --scope "Sample observation supports ${claimId} for ${subjectId}"`,
     required_before_publish: [
       "evidence item id",
       "claim id",
+      "claim version and sample pool id",
+      "product/service credential hash",
+      "sample nullifier for duplicate control",
+      "finite sample policy",
+      "sampling plan controlled outside the organization",
       "sample source and selector",
       "acquisition timestamp",
       "sample identity",
@@ -76,6 +86,18 @@ function buildS3Template(options: Record<string, string | boolean>, generatedAt:
           type: observerType,
           name: "observer-or-sampler-name"
         },
+        claim_binding: {
+          claim_id: claimId,
+          claim_version: claimVersion,
+          sample_pool_id: samplePoolId
+        },
+        credential_binding: {
+          credential_type: "OrgAnchorProductUnitCredential",
+          credential_hash: "sha256:<product-or-service-credential-hash>",
+          issuer_delegated_key_id: "product-or-service-delegated-key-id",
+          credential_verified_against_root: false,
+          sample_nullifier: "sha256:<credential-plus-claim-pool-nullifier>"
+        },
         sample_identity: {
           subject_type: subjectType,
           subject_id: subjectId,
@@ -90,6 +112,24 @@ function buildS3Template(options: Record<string, string | boolean>, generatedAt:
           organization_provided_sample: false,
           sampling_method: samplingMethodForS3(templateId),
           sample_size: 1
+        },
+        sample_policy: {
+          purpose_id: templateId,
+          risk_level: "medium",
+          target_confidence_note: "Declare the active sample count needed for this claim and purpose.",
+          max_active_samples: 24,
+          replacement_policy: "NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE",
+          refresh_rule: "rolling_current_window",
+          uniqueness_basis: "sample_nullifier",
+          limitations: ["The active sample pool supports only the declared claim, version, subject, and time window."]
+        },
+        sampling_plan: {
+          plan_id: `${samplePoolId}-plan`,
+          eligible_channels: [acquisitionChannelForS3(templateId)],
+          eligible_regions: ["region-or-market"],
+          selector_control: observerType,
+          organization_can_choose_samples: false,
+          known_biases: ["Declare excluded channels, regions, batches, customer segments, or access limits."]
         },
         custody: {
           custody_documented: false,

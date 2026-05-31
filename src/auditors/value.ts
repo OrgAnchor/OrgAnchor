@@ -131,6 +131,15 @@ export interface S3EvidenceAudit {
   sample_source: string;
   selected_by: string;
   sample_size: number;
+  claim_binding_present: boolean;
+  sample_pool_id: string;
+  finite_sample_policy_present: boolean;
+  max_active_samples: number;
+  duplicate_control_present: boolean;
+  credential_binding_present: boolean;
+  credential_verified_against_root: boolean;
+  sampling_plan_present: boolean;
+  organization_can_choose_samples: boolean;
   subject_type: string;
   subject_id: string;
   batch_id: string;
@@ -151,6 +160,13 @@ export interface S3Summary {
   organization_selected_sample_count: number;
   organization_provided_sample_count: number;
   missing_sample_identity_count: number;
+  missing_claim_binding_count: number;
+  missing_sample_pool_count: number;
+  missing_finite_policy_count: number;
+  missing_duplicate_control_count: number;
+  missing_credential_binding_count: number;
+  missing_sampling_plan_count: number;
+  organization_can_choose_samples_count: number;
   missing_custody_count: number;
   manual_check_s3_count: number;
   top_s3_gaps: string[];
@@ -457,6 +473,13 @@ Evidence: \`${report.evidence_path}\`
 | Organization-selected samples | ${report.s3_summary.organization_selected_sample_count} |
 | Organization-provided samples | ${report.s3_summary.organization_provided_sample_count} |
 | Missing sample identity | ${report.s3_summary.missing_sample_identity_count} |
+| Missing claim binding | ${report.s3_summary.missing_claim_binding_count} |
+| Missing sample pool | ${report.s3_summary.missing_sample_pool_count} |
+| Missing finite sample policy | ${report.s3_summary.missing_finite_policy_count} |
+| Missing duplicate control | ${report.s3_summary.missing_duplicate_control_count} |
+| Missing credential binding | ${report.s3_summary.missing_credential_binding_count} |
+| Missing sampling plan | ${report.s3_summary.missing_sampling_plan_count} |
+| Organization can choose samples | ${report.s3_summary.organization_can_choose_samples_count} |
 | Missing custody documentation | ${report.s3_summary.missing_custody_count} |
 | S3 manual checks | ${report.s3_summary.manual_check_s3_count} |
 
@@ -812,8 +835,12 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
 
   const support = asRecord(s3.organization_claimed_support);
   const sampler = asRecord(s3.sampler);
+  const claimBinding = asRecord(s3.claim_binding);
+  const credentialBinding = asRecord(s3.credential_binding);
   const identity = asRecord(s3.sample_identity);
   const event = asRecord(s3.sampling_event);
+  const samplePolicy = asRecord(s3.sample_policy);
+  const samplingPlan = asRecord(s3.sampling_plan);
   const custody = asRecord(s3.custody);
   const checks: ValueAuditCheck[] = [];
   const gaps: string[] = [];
@@ -822,8 +849,32 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
   const sampleType = stringValue(s3.sample_type);
   const samplerType = stringValue(sampler.type);
   const samplerName = stringValue(sampler.name);
-  const claimRefs = uniqueStrings([...arrayStrings(support.claim_refs), ...relationClaimRefs(item)]);
+  const claimBindingClaimId = stringValue(claimBinding.claim_id);
+  const claimRefs = uniqueStrings([claimBindingClaimId, ...arrayStrings(support.claim_refs), ...relationClaimRefs(item)].filter(Boolean));
   const unresolvedClaimRefs = claimRefs.filter((ref) => !claimIds.has(ref));
+  const claimBindingPresent = Boolean(claimBindingClaimId && stringValue(claimBinding.claim_version));
+  const samplePoolId = stringValue(claimBinding.sample_pool_id);
+  const samplePoolPresent = Boolean(samplePoolId);
+  const maxActiveSamples = positiveIntegerValue(samplePolicy.max_active_samples);
+  const replacementPolicy = stringValue(samplePolicy.replacement_policy);
+  const uniquenessBasis = stringValue(samplePolicy.uniqueness_basis);
+  const finiteSamplePolicyPresent =
+    maxActiveSamples > 0 &&
+    replacementPolicy === "NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE" &&
+    uniquenessBasis === "sample_nullifier";
+  const credentialHash = stringValue(credentialBinding.credential_hash);
+  const sampleNullifier = stringValue(credentialBinding.sample_nullifier);
+  const duplicateControlPresent = Boolean(sampleNullifier);
+  const credentialBindingPresent = Boolean(credentialHash && sampleNullifier);
+  const credentialVerifiedAgainstRoot = booleanValue(credentialBinding.credential_verified_against_root);
+  const selectorControl = stringValue(samplingPlan.selector_control);
+  const organizationCanChooseSamplesDeclared = samplingPlan.organization_can_choose_samples !== undefined;
+  const organizationCanChooseSamples = booleanValue(samplingPlan.organization_can_choose_samples);
+  const samplingPlanPresent = Boolean(
+    selectorControl &&
+      organizationCanChooseSamplesDeclared &&
+      (Array.isArray(samplingPlan.eligible_channels) || Array.isArray(samplingPlan.eligible_regions) || stringValue(samplingPlan.plan_id))
+  );
   const scopeText = stringValue(support.scope_text);
   const limitations = arrayStrings(support.limitations);
   const sampleSource = stringValue(event.sample_source);
@@ -877,6 +928,76 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
       : unresolvedClaimRefs.length > 0
         ? `S3 sampling evidence references unknown claim(s): ${unresolvedClaimRefs.join(", ")}.`
         : "S3 claim references resolve."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    claimBindingPresent ? "PASS" : "WARN",
+    id,
+    "S3_CLAIM_BINDING_DECLARED",
+    claimBindingPresent ? `S3 claim binding is ${claimBindingClaimId}@${stringValue(claimBinding.claim_version)}.` : "S3 claim_binding.claim_id and claim_binding.claim_version are required for bounded claim-level sampling."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    samplePoolPresent ? "PASS" : "WARN",
+    id,
+    "S3_SAMPLE_POOL_DECLARED",
+    samplePoolPresent ? `S3 sample pool is ${samplePoolId}.` : "S3 claim_binding.sample_pool_id is missing; active sample-pool limits cannot be enforced."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    finiteSamplePolicyPresent ? "PASS" : "WARN",
+    id,
+    "S3_FINITE_SAMPLE_POLICY_DECLARED",
+    finiteSamplePolicyPresent
+      ? `S3 sample policy caps active samples at ${maxActiveSamples} and uses rolling replacement.`
+      : "S3 sample_policy must declare max_active_samples, NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE, and uniqueness_basis=sample_nullifier."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    credentialBindingPresent ? "PASS" : "WARN",
+    id,
+    "S3_CREDENTIAL_BINDING_DECLARED",
+    credentialBindingPresent ? "S3 credential_binding includes credential_hash and sample_nullifier." : "S3 credential_binding is missing credential_hash or sample_nullifier; the sample is not strongly bound to a product/service credential."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    duplicateControlPresent ? "PASS" : "WARN",
+    id,
+    "S3_DUPLICATE_CONTROL_DECLARED",
+    duplicateControlPresent ? "S3 sample_nullifier is declared for duplicate control." : "S3 sample_nullifier is missing; duplicate sample submissions cannot be detected."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    credentialVerifiedAgainstRoot ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S3_CREDENTIAL_ROOT_VERIFIED_DECLARED",
+    credentialVerifiedAgainstRoot ? "S3 credential binding is declared as verified against the organization root chain." : "S3 credential binding is not declared as verified against the organization root chain."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    samplingPlanPresent ? "PASS" : "WARN",
+    id,
+    "S3_SAMPLING_PLAN_DECLARED",
+    samplingPlanPresent ? "S3 sampling_plan is declared." : "S3 sampling_plan is missing or incomplete; random-selection meaning cannot be assessed."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    organizationCanChooseSamples ? "WARN" : organizationCanChooseSamplesDeclared ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S3_ORGANIZATION_CANNOT_CHOOSE_SAMPLES",
+    organizationCanChooseSamples
+      ? "S3 sampling_plan says the organization can choose samples; this is weak S3."
+      : organizationCanChooseSamplesDeclared
+        ? "S3 sampling_plan says the organization cannot choose samples."
+        : "S3 sampling_plan.organization_can_choose_samples is not declared."
   );
   addS3Check(checks, gaps, scopeText ? "PASS" : "MANUAL_CHECK_REQUIRED", id, "S3_SCOPE_DECLARED", scopeText ? "S3 claimed support scope is declared." : "S3 scope_text is missing; scope review is required.");
   addS3Check(checks, gaps, limitations.length > 0 ? "PASS" : "MANUAL_CHECK_REQUIRED", id, "S3_LIMITATIONS_DECLARED", limitations.length > 0 ? "S3 limitations are declared." : "S3 limitations are missing.");
@@ -980,6 +1101,14 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
     Boolean(samplerType) &&
     claimRefs.length > 0 &&
     unresolvedClaimRefs.length === 0 &&
+    claimBindingPresent &&
+    samplePoolPresent &&
+    finiteSamplePolicyPresent &&
+    credentialBindingPresent &&
+    duplicateControlPresent &&
+    credentialVerifiedAgainstRoot &&
+    samplingPlanPresent &&
+    !organizationCanChooseSamples &&
     Boolean(scopeText) &&
     limitations.length > 0 &&
     sampleIdentityPresent &&
@@ -1006,6 +1135,15 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
     sample_source: sampleSource,
     selected_by: selectedBy,
     sample_size: sampleSize,
+    claim_binding_present: claimBindingPresent,
+    sample_pool_id: samplePoolId,
+    finite_sample_policy_present: finiteSamplePolicyPresent,
+    max_active_samples: maxActiveSamples,
+    duplicate_control_present: duplicateControlPresent,
+    credential_binding_present: credentialBindingPresent,
+    credential_verified_against_root: credentialVerifiedAgainstRoot,
+    sampling_plan_present: samplingPlanPresent,
+    organization_can_choose_samples: organizationCanChooseSamples,
     subject_type: subjectType,
     subject_id: subjectId,
     batch_id: batchId,
@@ -1032,6 +1170,15 @@ function emptyS3Audit(): S3EvidenceAudit {
     sample_source: "",
     selected_by: "",
     sample_size: 0,
+    claim_binding_present: false,
+    sample_pool_id: "",
+    finite_sample_policy_present: false,
+    max_active_samples: 0,
+    duplicate_control_present: false,
+    credential_binding_present: false,
+    credential_verified_against_root: false,
+    sampling_plan_present: false,
+    organization_can_choose_samples: false,
     subject_type: "",
     subject_id: "",
     batch_id: "",
@@ -2209,6 +2356,13 @@ function summarizeS3(evidence: EvidenceValueAudit[]): S3Summary {
     organization_selected_sample_count: s3Items.filter((item) => item.s3.organization_selected_sample).length,
     organization_provided_sample_count: s3Items.filter((item) => item.s3.organization_provided_sample).length,
     missing_sample_identity_count: s3Items.filter((item) => !item.s3.sample_identity_present).length,
+    missing_claim_binding_count: s3Items.filter((item) => !item.s3.claim_binding_present).length,
+    missing_sample_pool_count: s3Items.filter((item) => !item.s3.sample_pool_id).length,
+    missing_finite_policy_count: s3Items.filter((item) => !item.s3.finite_sample_policy_present).length,
+    missing_duplicate_control_count: s3Items.filter((item) => !item.s3.duplicate_control_present).length,
+    missing_credential_binding_count: s3Items.filter((item) => !item.s3.credential_binding_present || !item.s3.credential_verified_against_root).length,
+    missing_sampling_plan_count: s3Items.filter((item) => !item.s3.sampling_plan_present).length,
+    organization_can_choose_samples_count: s3Items.filter((item) => item.s3.organization_can_choose_samples).length,
     missing_custody_count: s3Items.filter((item) => !item.s3.custody_documented).length,
     manual_check_s3_count: manualCheckCount,
     top_s3_gaps: uniqueStrings(s3Items.flatMap((item) => item.s3.gaps)).slice(0, 5),
@@ -2274,6 +2428,19 @@ function s3NextActions(summary: S3Summary): string[] {
   }
   if (summary.missing_sample_identity_count > 0) {
     actions.push("Bind each S3 sample to a product model, service id, batch, lot, serial range, or unit credential.");
+  }
+  if (
+    summary.missing_claim_binding_count > 0 ||
+    summary.missing_sample_pool_count > 0 ||
+    summary.missing_finite_policy_count > 0
+  ) {
+    actions.push("Add claim_binding and sample_policy so S3 is a bounded rolling sample pool rather than an unlimited upload channel.");
+  }
+  if (summary.missing_credential_binding_count > 0 || summary.missing_duplicate_control_count > 0) {
+    actions.push("Add product/service credential binding and sample_nullifier so duplicate or misattributed samples cannot inflate S3.");
+  }
+  if (summary.missing_sampling_plan_count > 0 || summary.organization_can_choose_samples_count > 0) {
+    actions.push("Add a sampling_plan controlled outside the organization; S3 cannot rely on organization-chosen samples.");
   }
   if (summary.missing_custody_count > 0) {
     actions.push("Add custody notes when the purpose requires higher assurance; S3_1 can remain usable but custody gaps should be visible.");

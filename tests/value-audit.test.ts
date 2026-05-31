@@ -319,7 +319,126 @@ test("value audit classifies S3 random purchase sampling and exposes sample-cont
       "Single market purchase sample"
     ]);
     const template = run(workspace, ["evidence", "s3", "template", "--template", "market_purchase"]);
-    assert.equal(JSON.parse(template.stdout).s3.sample_type, "market_purchase");
+    const templateJson = JSON.parse(template.stdout);
+    assert.equal(templateJson.s3.sample_type, "market_purchase");
+    assert.equal(templateJson.s3.claim_binding.sample_pool_id, "s3-pool-claim-001-2026-05");
+    assert.equal(templateJson.s3.sample_policy.replacement_policy, "NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE");
+    assert.equal(templateJson.s3.credential_binding.credential_verified_against_root, false);
+    assert.equal(templateJson.s3.sampling_plan.organization_can_choose_samples, false);
+    const attach = run(workspace, [
+      "evidence",
+      "s3",
+      "attach",
+      "--evidence-id",
+      "evidence-001",
+      "--template",
+      "market_purchase",
+      "--sampler-type",
+      "buyer",
+      "--sampler-name",
+      "Example Buyer",
+      "--acquired-at",
+      "2026-05-19T00:00:00Z",
+      "--subject-type",
+      "product_model",
+      "--subject-id",
+      "model-x1",
+      "--batch-id",
+      "batch-2026-05",
+      "--claim-version",
+      "2026-05",
+      "--sample-pool-id",
+      "s3-pool-claim-001-2026-05",
+      "--max-active-samples",
+      "24",
+      "--credential-hash",
+      "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "--sample-nullifier",
+      "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+      "--credential-issuer-key-id",
+      "product-key-2026",
+      "--credential-verified-against-root",
+      "--selector-control",
+      "buyer",
+      "--eligible-channels",
+      "retail_market",
+      "--eligible-regions",
+      "EU",
+      "--scope",
+      "Random market purchase sample supports claim-001 for model-x1."
+    ]);
+    assert.match(attach.stdout, /Attached S3 metadata to evidence: evidence-001/);
+
+    run(workspace, [
+      "value",
+      "audit",
+      "--claims",
+      "claims/product-claims.json",
+      "--evidence",
+      "evidence/evidence-manifest.json",
+      "--check-files",
+      "--now",
+      "2026-05-19T00:00:00Z"
+    ]);
+
+    const report = readReport(workspace);
+    assert.equal(report.s3_summary.effective_s3_count, 1);
+    assert.equal(report.s3_summary.candidate_unverified_sampling_count, 0);
+    assert.equal(report.s3_summary.s3_state_counts.S3_1_SAMPLING_ROUTE_PROVIDED, 1);
+    assert.equal(report.s3_summary.organization_selected_sample_count, 0);
+    assert.equal(report.s3_summary.organization_provided_sample_count, 0);
+    assert.equal(report.s3_summary.missing_sample_identity_count, 0);
+    assert.equal(report.s3_summary.missing_claim_binding_count, 0);
+    assert.equal(report.s3_summary.missing_sample_pool_count, 0);
+    assert.equal(report.s3_summary.missing_finite_policy_count, 0);
+    assert.equal(report.s3_summary.missing_duplicate_control_count, 0);
+    assert.equal(report.s3_summary.missing_credential_binding_count, 0);
+    assert.equal(report.s3_summary.missing_sampling_plan_count, 0);
+    assert.equal(report.s3_summary.organization_can_choose_samples_count, 0);
+    assert.equal(report.s3_summary.missing_custody_count, 1);
+    assert.equal(report.evidence[0]?.s3.state, "S3_1_SAMPLING_ROUTE_PROVIDED");
+    assert.equal(report.evidence[0]?.s3.effective, true);
+    assert.equal(report.evidence[0]?.s3.organization_selected_sample, false);
+    assert.equal(report.evidence[0]?.s3.organization_provided_sample, false);
+    assert.equal(report.evidence[0]?.s3.sample_pool_id, "s3-pool-claim-001-2026-05");
+    assert.equal(report.evidence[0]?.s3.max_active_samples, 24);
+    assert.equal(report.evidence[0]?.s3.duplicate_control_present, true);
+    assert.equal(report.evidence[0]?.s3.credential_binding_present, true);
+    assert.equal(report.evidence[0]?.s3.credential_verified_against_root, true);
+    assert.equal(report.evidence[0]?.s3.sampling_plan_present, true);
+    assert.deepEqual(report.evidence[0]?.s3.unresolved_claim_refs, []);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test("value audit downgrades S3 when bounded pool and credential gates are missing", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-value-audit-s3-gates-"));
+  try {
+    createAuthority(workspace);
+    writeFileSync(join(workspace, "random-sample-report.md"), "# Random sample report\n\nMarket purchase sample result.\n", "utf8");
+    run(workspace, ["claims", "create", "--config", "organchor.config.json"]);
+    run(workspace, ["evidence", "create", "--config", "organchor.config.json"]);
+    run(workspace, [
+      "evidence",
+      "add",
+      "--file",
+      "random-sample-report.md",
+      "--id",
+      "evidence-001",
+      "--subject-type",
+      "product",
+      "--subject-id",
+      "primary-product",
+      "--issuer-type",
+      "third_party",
+      "--uri",
+      "https://example.org/evidence/random-sample-report.md",
+      "--location-type",
+      "https",
+      "--limitations",
+      "Single market purchase sample"
+    ]);
     const attach = run(workspace, [
       "evidence",
       "s3",
@@ -358,18 +477,15 @@ test("value audit classifies S3 random purchase sampling and exposes sample-cont
     ]);
 
     const report = readReport(workspace);
-    assert.equal(report.s3_summary.effective_s3_count, 1);
-    assert.equal(report.s3_summary.candidate_unverified_sampling_count, 0);
-    assert.equal(report.s3_summary.s3_state_counts.S3_1_SAMPLING_ROUTE_PROVIDED, 1);
-    assert.equal(report.s3_summary.organization_selected_sample_count, 0);
-    assert.equal(report.s3_summary.organization_provided_sample_count, 0);
-    assert.equal(report.s3_summary.missing_sample_identity_count, 0);
-    assert.equal(report.s3_summary.missing_custody_count, 1);
-    assert.equal(report.evidence[0]?.s3.state, "S3_1_SAMPLING_ROUTE_PROVIDED");
-    assert.equal(report.evidence[0]?.s3.effective, true);
-    assert.equal(report.evidence[0]?.s3.organization_selected_sample, false);
-    assert.equal(report.evidence[0]?.s3.organization_provided_sample, false);
-    assert.deepEqual(report.evidence[0]?.s3.unresolved_claim_refs, []);
+    assert.equal(report.s3_summary.effective_s3_count, 0);
+    assert.equal(report.s3_summary.candidate_unverified_sampling_count, 1);
+    assert.equal(report.s3_summary.missing_credential_binding_count, 1);
+    assert.equal(report.s3_summary.missing_duplicate_control_count, 1);
+    assert.equal(report.evidence[0]?.s3.state, "CANDIDATE_UNVERIFIED_SAMPLING");
+    assert.equal(report.evidence[0]?.s3.effective, false);
+    assert.equal(report.evidence[0]?.s3.credential_binding_present, false);
+    assert.equal(report.evidence[0]?.s3.duplicate_control_present, false);
+    assert.ok(report.evidence[0]?.s3.gaps.some((gap) => gap.includes("credential_binding")));
   } finally {
     rmSync(workspace, { recursive: true, force: true });
   }
@@ -587,6 +703,13 @@ function readReport(workspace: string): {
     organization_selected_sample_count: number;
     organization_provided_sample_count: number;
     missing_sample_identity_count: number;
+    missing_claim_binding_count: number;
+    missing_sample_pool_count: number;
+    missing_finite_policy_count: number;
+    missing_duplicate_control_count: number;
+    missing_credential_binding_count: number;
+    missing_sampling_plan_count: number;
+    organization_can_choose_samples_count: number;
     missing_custody_count: number;
   };
   claims: Array<{
@@ -631,6 +754,13 @@ function readReport(workspace: string): {
       effective: boolean;
       organization_selected_sample: boolean;
       organization_provided_sample: boolean;
+      sample_pool_id: string;
+      max_active_samples: number;
+      duplicate_control_present: boolean;
+      credential_binding_present: boolean;
+      credential_verified_against_root: boolean;
+      sampling_plan_present: boolean;
+      gaps: string[];
       unresolved_claim_refs: string[];
     };
   }>;

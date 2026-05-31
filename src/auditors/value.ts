@@ -158,6 +158,48 @@ export interface S3Summary {
   not_a_trust_decision: true;
 }
 
+export type S4ObservationState =
+  | "NOT_S4"
+  | "CANDIDATE_UNVERIFIED_OBSERVATION"
+  | "S4_1_OBSERVATION_SUMMARY_PROVIDED"
+  | "S4_2_RAW_BUNDLE_AVAILABLE"
+  | "S4_3_OBSERVER_OR_DIRECTORY_REVIEWED";
+
+export interface S4EvidenceAudit {
+  declared_state: string;
+  state: S4ObservationState;
+  effective: boolean;
+  claim_refs: string[];
+  unresolved_claim_refs: string[];
+  observation_type: string;
+  observer_type: string;
+  observer_id_or_origin: string;
+  subject_type: string;
+  subject_id: string;
+  observation_window_present: boolean;
+  current_window: boolean;
+  metric_type: string;
+  metric_summary_present: boolean;
+  raw_bundle_hash_valid: boolean;
+  raw_bundle_location_present: boolean;
+  gaps: string[];
+  checks: ValueAuditCheck[];
+}
+
+export interface S4Summary {
+  effective_s4_count: number;
+  candidate_unverified_observation_count: number;
+  s4_state_counts: Record<"S4_1_OBSERVATION_SUMMARY_PROVIDED" | "S4_2_RAW_BUNDLE_AVAILABLE" | "S4_3_OBSERVER_OR_DIRECTORY_REVIEWED", number>;
+  current_window_observation_count: number;
+  historical_observation_count: number;
+  raw_bundle_available_count: number;
+  missing_subject_binding_count: number;
+  manual_check_s4_count: number;
+  top_s4_gaps: string[];
+  next_actions: string[];
+  not_a_trust_decision: true;
+}
+
 export interface ClaimProfileReview {
   profile: RealWorldEvidenceProfile | "not_declared";
   status: ClaimProfileReviewStatus;
@@ -223,6 +265,7 @@ export interface EvidenceValueAudit {
   subject: SubjectRef;
   s2: S2EvidenceAudit;
   s3: S3EvidenceAudit;
+  s4: S4EvidenceAudit;
   findings: string[];
 }
 
@@ -251,6 +294,7 @@ export interface ValueContinuityReport {
   };
   s2_summary: S2Summary;
   s3_summary: S3Summary;
+  s4_summary: S4Summary;
   checks: ValueAuditCheck[];
   claims: ClaimValueAudit[];
   evidence: EvidenceValueAudit[];
@@ -322,6 +366,7 @@ export async function auditValueContinuity(
     summary: summarize(checks, claimAudits, evidenceAudits),
     s2_summary: summarizeS2(evidenceAudits),
     s3_summary: summarizeS3(evidenceAudits),
+    s4_summary: summarizeS4(evidenceAudits),
     checks,
     claims: claimAudits,
     evidence: evidenceAudits
@@ -347,7 +392,7 @@ export function renderValueContinuityMarkdown(report: ValueContinuityReport): st
   const evidence = report.evidence
     .map(
       (item) =>
-        `| ${item.status} | ${escapeMarkdown(item.id)} | ${escapeMarkdown(subjectLabel(item.subject))} | ${escapeMarkdown(item.issuer_type)} | ${escapeMarkdown(item.reproducibility)} | ${item.has_external_location ? "yes" : "no"} | ${item.s2.state} | ${item.s2.effective ? "yes" : "no"} | ${item.s3.state} | ${item.s3.effective ? "yes" : "no"} |`
+        `| ${item.status} | ${escapeMarkdown(item.id)} | ${escapeMarkdown(subjectLabel(item.subject))} | ${escapeMarkdown(item.issuer_type)} | ${escapeMarkdown(item.reproducibility)} | ${item.has_external_location ? "yes" : "no"} | ${item.s2.state} | ${item.s2.effective ? "yes" : "no"} | ${item.s3.state} | ${item.s3.effective ? "yes" : "no"} | ${item.s4.state} | ${item.s4.effective ? "yes" : "no"} |`
     )
     .join("\n");
 
@@ -415,6 +460,21 @@ Evidence: \`${report.evidence_path}\`
 | Missing custody documentation | ${report.s3_summary.missing_custody_count} |
 | S3 manual checks | ${report.s3_summary.manual_check_s3_count} |
 
+## S4 Real-World Observation Metrics
+
+| Metric | Count |
+| --- | ---: |
+| Effective S4 items | ${report.s4_summary.effective_s4_count} |
+| Candidate unverified observation items | ${report.s4_summary.candidate_unverified_observation_count} |
+| S4 observation-summary items | ${report.s4_summary.s4_state_counts.S4_1_OBSERVATION_SUMMARY_PROVIDED} |
+| S4 raw-bundle-available items | ${report.s4_summary.s4_state_counts.S4_2_RAW_BUNDLE_AVAILABLE} |
+| S4 reviewed observation items | ${report.s4_summary.s4_state_counts.S4_3_OBSERVER_OR_DIRECTORY_REVIEWED} |
+| Current-window observations | ${report.s4_summary.current_window_observation_count} |
+| Historical observations | ${report.s4_summary.historical_observation_count} |
+| Raw bundle available | ${report.s4_summary.raw_bundle_available_count} |
+| Missing subject binding | ${report.s4_summary.missing_subject_binding_count} |
+| S4 manual checks | ${report.s4_summary.manual_check_s4_count} |
+
 ## Checks
 
 | Status | Check | Summary |
@@ -429,8 +489,8 @@ ${claims}
 
 ## Evidence
 
-| Status | Evidence | Subject | Issuer | Reproducibility | External location | S2 state | Effective S2 | S3 state | Effective S3 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Status | Evidence | Subject | Issuer | Reproducibility | External location | S2 state | Effective S2 | S3 state | Effective S3 | S4 state | Effective S4 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 ${evidence}
 `;
 }
@@ -469,13 +529,14 @@ async function auditEvidenceItem(
   if (isStale) findings.push("Evidence is past its valid_until date.");
   const s2 = auditS2Material(item, now, claimIds);
   const s3 = auditS3Sampling(item, claimIds);
-  const subject = evidenceSubject(item, s2, s3);
+  const s4 = auditS4Observation(item, now, claimIds, hasExternalLocation);
+  const subject = evidenceSubject(item, s2, s3, s4);
 
   if (checkFiles) {
     await checkLocalLocations(item, locations, findings);
   }
 
-  const status = worstStatus(statusFromFindings(findings, false), [...s2.checks, ...s3.checks].map((check) => check.status));
+  const status = worstStatus(statusFromFindings(findings, false), [...s2.checks, ...s3.checks, ...s4.checks].map((check) => check.status));
   return {
     id,
     status,
@@ -494,6 +555,7 @@ async function auditEvidenceItem(
     subject,
     s2,
     s3,
+    s4,
     findings
   };
 }
@@ -984,6 +1046,206 @@ function emptyS3Audit(): S3EvidenceAudit {
   };
 }
 
+function auditS4Observation(item: Record<string, JsonValue>, now: Date, claimIds: Set<string>, hasExternalLocation: boolean): S4EvidenceAudit {
+  const id = stringValue(item.id);
+  const sClass = stringValue(item.s_class);
+  const s4 = asRecord(item.s4);
+  const isDeclaredS4 = sClass === "S4_REAL_WORLD_OBSERVATION" || Object.keys(s4).length > 0;
+  if (!isDeclaredS4) return emptyS4Audit();
+
+  const support = asRecord(s4.organization_claimed_support);
+  const observer = asRecord(s4.observer);
+  const subject = asRecord(s4.subject);
+  const window = asRecord(s4.observation_window);
+  const metricSummary = asRecord(s4.metric_summary);
+  const rawEvidence = asRecord(s4.raw_evidence);
+  const health = asRecord(s4.health);
+  const checks: ValueAuditCheck[] = [];
+  const gaps: string[] = [];
+  const declaredState = stringValue(s4.state);
+  let state: S4ObservationState = isS4ObservationState(declaredState) ? declaredState : "CANDIDATE_UNVERIFIED_OBSERVATION";
+  const observationType = stringValue(s4.observation_type);
+  const observerType = stringValue(observer.type);
+  const observerIdOrOrigin = stringValue(observer.id_or_origin) || stringValue(observer.origin) || stringValue(observer.id);
+  const subjectType = stringValue(subject.subject_type);
+  const subjectId = stringValue(subject.subject_id);
+  const claimRefs = uniqueStrings([...arrayStrings(support.claim_refs), ...relationClaimRefs(item)]);
+  const unresolvedClaimRefs = claimRefs.filter((ref) => !claimIds.has(ref));
+  const scopeText = stringValue(support.scope_text);
+  const limitations = uniqueStrings([...arrayStrings(support.limitations), ...arrayStrings(s4.limitations)]);
+  const windowStart = stringValue(window.start);
+  const windowEnd = stringValue(window.end);
+  const observationWindowPresent = validTimestamp(windowStart) && validTimestamp(windowEnd) && Date.parse(windowEnd) >= Date.parse(windowStart);
+  const currentWindow = observationWindowPresent ? isCurrentObservationWindow(windowEnd, now) : false;
+  const metricType = stringValue(s4.metric_type);
+  const metricSummaryPresent = Object.keys(metricSummary).length > 0;
+  const rawBundleHash = stringValue(rawEvidence.bundle_hash) || stringValue(rawEvidence.bundle_manifest_hash);
+  const rawBundleHashValid = isSha256Digest(rawBundleHash);
+  const rawVaults = [...arrayObjects(rawEvidence.vaults), ...arrayObjects(rawEvidence.locations_or_vaults)];
+  const rawBundleLocationPresent = rawVaults.length > 0 || hasExternalLocation;
+
+  addS4Check(
+    checks,
+    gaps,
+    sClass === "S4_REAL_WORLD_OBSERVATION" ? "PASS" : "WARN",
+    id,
+    "S4_CORE_FIELDS_PRESENT",
+    sClass === "S4_REAL_WORLD_OBSERVATION" ? "S4 class is declared." : "S4 metadata is present but s_class is not S4_REAL_WORLD_OBSERVATION."
+  );
+  addS4Check(
+    checks,
+    gaps,
+    state === "CANDIDATE_UNVERIFIED_OBSERVATION" ? "WARN" : "PASS",
+    id,
+    "S4_STATE_DECLARED",
+    state === "CANDIDATE_UNVERIFIED_OBSERVATION" ? "S4 state is missing, unsupported, or explicitly candidate-only." : `S4 state is ${state}.`
+  );
+  addS4Check(checks, gaps, observationType ? "PASS" : "WARN", id, "S4_OBSERVATION_TYPE_DECLARED", observationType ? `S4 observation type is ${observationType}.` : "S4 observation_type is missing.");
+  addS4Check(
+    checks,
+    gaps,
+    observerType && observerIdOrOrigin ? "PASS" : "WARN",
+    id,
+    "S4_OBSERVER_DECLARED",
+    observerType && observerIdOrOrigin ? `S4 observer is ${observerType}:${observerIdOrOrigin}.` : "S4 observer.type and observer.id_or_origin are required."
+  );
+  addS4Check(
+    checks,
+    gaps,
+    claimRefs.length === 0 ? "WARN" : unresolvedClaimRefs.length > 0 ? "FAIL" : "PASS",
+    id,
+    "S4_CLAIM_REFS_RESOLVE",
+    claimRefs.length === 0
+      ? "S4 observation does not declare which claim it supports."
+      : unresolvedClaimRefs.length > 0
+        ? `S4 observation references unknown claim(s): ${unresolvedClaimRefs.join(", ")}.`
+        : "S4 claim references resolve."
+  );
+  addS4Check(checks, gaps, scopeText ? "PASS" : "MANUAL_CHECK_REQUIRED", id, "S4_SCOPE_DECLARED", scopeText ? "S4 claimed support scope is declared." : "S4 scope_text is missing; scope review is required.");
+  addS4Check(checks, gaps, limitations.length > 0 ? "PASS" : "MANUAL_CHECK_REQUIRED", id, "S4_LIMITATIONS_DECLARED", limitations.length > 0 ? "S4 limitations are declared." : "S4 limitations are missing.");
+  addS4Check(
+    checks,
+    gaps,
+    subjectType && subjectId ? "PASS" : "WARN",
+    id,
+    "S4_SUBJECT_DECLARED",
+    subjectType && subjectId ? `S4 observation binds to ${subjectType}:${subjectId}.` : "S4 subject.subject_type and subject.subject_id are required."
+  );
+  addS4Check(
+    checks,
+    gaps,
+    observationWindowPresent ? "PASS" : "WARN",
+    id,
+    "S4_OBSERVATION_WINDOW_DECLARED",
+    observationWindowPresent ? `S4 observation window is ${windowStart}/${windowEnd}.` : "S4 observation_window.start/end are missing, invalid, or reversed."
+  );
+  addS4Check(checks, gaps, metricType ? "PASS" : "WARN", id, "S4_METRIC_TYPE_DECLARED", metricType ? `S4 metric type is ${metricType}.` : "S4 metric_type is missing.");
+  addS4Check(
+    checks,
+    gaps,
+    metricSummaryPresent ? "PASS" : "WARN",
+    id,
+    "S4_METRIC_SUMMARY_DECLARED",
+    metricSummaryPresent ? "S4 metric_summary is present." : "S4 metric_summary is missing."
+  );
+  addS4Check(
+    checks,
+    gaps,
+    rawBundleHashValid ? "PASS" : "WARN",
+    id,
+    "S4_RAW_BUNDLE_HASH_DECLARED",
+    rawBundleHashValid ? "S4 raw bundle hash is declared." : "S4 raw_evidence.bundle_hash must be sha256:<64 hex chars>."
+  );
+  addS4Check(
+    checks,
+    gaps,
+    rawBundleLocationPresent ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S4_RAW_BUNDLE_LOCATION_DECLARED",
+    rawBundleLocationPresent ? "S4 raw bundle location or evidence location is present." : "S4 raw evidence vault/location is missing."
+  );
+  addS4Check(
+    checks,
+    gaps,
+    stringValue(health.maintenance_status) ? "PASS" : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S4_HEALTH_DECLARED",
+    stringValue(health.maintenance_status) ? `S4 health is ${stringValue(health.maintenance_status)}.` : "S4 health.maintenance_status is missing."
+  );
+  if (state === "S4_2_RAW_BUNDLE_AVAILABLE") {
+    addS4Check(checks, gaps, "MANUAL_CHECK_REQUIRED", id, "S4_RAW_BUNDLE_REVIEWED", "S4_2 requires raw-bundle availability review. Local audit records this as S4_1 until route adapters are implemented.");
+  }
+  if (state === "S4_3_OBSERVER_OR_DIRECTORY_REVIEWED") {
+    addS4Check(checks, gaps, "MANUAL_CHECK_REQUIRED", id, "S4_OBSERVER_OR_DIRECTORY_REVIEWED", "S4_3 requires observer signature or directory review. Local audit records this as S4_1 until review workflows are implemented.");
+  }
+
+  const hasRequiredCore =
+    sClass === "S4_REAL_WORLD_OBSERVATION" &&
+    state !== "CANDIDATE_UNVERIFIED_OBSERVATION" &&
+    Boolean(observationType) &&
+    Boolean(observerType) &&
+    Boolean(observerIdOrOrigin) &&
+    claimRefs.length > 0 &&
+    unresolvedClaimRefs.length === 0 &&
+    Boolean(scopeText) &&
+    limitations.length > 0 &&
+    Boolean(subjectType) &&
+    Boolean(subjectId) &&
+    observationWindowPresent &&
+    Boolean(metricType) &&
+    metricSummaryPresent &&
+    rawBundleHashValid &&
+    rawBundleLocationPresent;
+
+  if (!hasRequiredCore) state = "CANDIDATE_UNVERIFIED_OBSERVATION";
+  if (state === "S4_2_RAW_BUNDLE_AVAILABLE" || state === "S4_3_OBSERVER_OR_DIRECTORY_REVIEWED") state = "S4_1_OBSERVATION_SUMMARY_PROVIDED";
+  const effective = S4_EFFECTIVE_STATES.has(state);
+
+  return {
+    declared_state: declaredState,
+    state,
+    effective,
+    claim_refs: claimRefs,
+    unresolved_claim_refs: unresolvedClaimRefs,
+    observation_type: observationType,
+    observer_type: observerType,
+    observer_id_or_origin: observerIdOrOrigin,
+    subject_type: subjectType,
+    subject_id: subjectId,
+    observation_window_present: observationWindowPresent,
+    current_window: currentWindow,
+    metric_type: metricType,
+    metric_summary_present: metricSummaryPresent,
+    raw_bundle_hash_valid: rawBundleHashValid,
+    raw_bundle_location_present: rawBundleLocationPresent,
+    gaps: uniqueStrings(gaps),
+    checks
+  };
+}
+
+function emptyS4Audit(): S4EvidenceAudit {
+  return {
+    declared_state: "",
+    state: "NOT_S4",
+    effective: false,
+    claim_refs: [],
+    unresolved_claim_refs: [],
+    observation_type: "",
+    observer_type: "",
+    observer_id_or_origin: "",
+    subject_type: "",
+    subject_id: "",
+    observation_window_present: false,
+    current_window: false,
+    metric_type: "",
+    metric_summary_present: false,
+    raw_bundle_hash_valid: false,
+    raw_bundle_location_present: false,
+    gaps: [],
+    checks: []
+  };
+}
+
 function auditClaim(
   claim: Record<string, JsonValue>,
   evidenceById: Map<string, Record<string, JsonValue>>,
@@ -1098,7 +1360,7 @@ function evidenceChecks(audit: EvidenceValueAudit): ValueAuditCheck[] {
       )
     );
   }
-  checks.push(...audit.s2.checks, ...audit.s3.checks);
+  checks.push(...audit.s2.checks, ...audit.s3.checks, ...audit.s4.checks);
   return checks;
 }
 
@@ -1318,9 +1580,12 @@ function extractClaimSubject(claim: Record<string, JsonValue>): SubjectRef {
   return unknownSubject("claim");
 }
 
-function evidenceSubject(item: Record<string, JsonValue>, s2: S2EvidenceAudit, s3: S3EvidenceAudit): SubjectRef {
+function evidenceSubject(item: Record<string, JsonValue>, s2: S2EvidenceAudit, s3: S3EvidenceAudit, s4: S4EvidenceAudit): SubjectRef {
   if (s3.subject_type && s3.subject_id) {
     return buildSubject(s3.subject_type, s3.subject_id, "evidence.s3.sample_identity");
+  }
+  if (s4.subject_type && s4.subject_id) {
+    return buildSubject(s4.subject_type, s4.subject_id, "evidence.s4.subject");
   }
   if (s2.covered_subject_type && s2.covered_subject_id) {
     return buildSubject(s2.covered_subject_type, s2.covered_subject_id, "evidence.s2.organization_claimed_support", s2.scope_text);
@@ -1954,6 +2219,34 @@ function summarizeS3(evidence: EvidenceValueAudit[]): S3Summary {
   return summary;
 }
 
+function summarizeS4(evidence: EvidenceValueAudit[]): S4Summary {
+  const s4Items = evidence.filter((item) => item.s4.state !== "NOT_S4");
+  const effectiveItems = s4Items.filter((item) => item.s4.effective);
+  const manualCheckCount = s4Items.reduce(
+    (count, item) => count + item.s4.checks.filter((check) => check.status === "MANUAL_CHECK_REQUIRED").length,
+    0
+  );
+  const summary: S4Summary = {
+    effective_s4_count: effectiveItems.length,
+    candidate_unverified_observation_count: s4Items.filter((item) => item.s4.state === "CANDIDATE_UNVERIFIED_OBSERVATION").length,
+    s4_state_counts: {
+      S4_1_OBSERVATION_SUMMARY_PROVIDED: s4Items.filter((item) => item.s4.state === "S4_1_OBSERVATION_SUMMARY_PROVIDED").length,
+      S4_2_RAW_BUNDLE_AVAILABLE: s4Items.filter((item) => item.s4.state === "S4_2_RAW_BUNDLE_AVAILABLE").length,
+      S4_3_OBSERVER_OR_DIRECTORY_REVIEWED: s4Items.filter((item) => item.s4.state === "S4_3_OBSERVER_OR_DIRECTORY_REVIEWED").length
+    },
+    current_window_observation_count: s4Items.filter((item) => item.s4.current_window).length,
+    historical_observation_count: s4Items.filter((item) => item.s4.observation_window_present && !item.s4.current_window).length,
+    raw_bundle_available_count: s4Items.filter((item) => item.s4.raw_bundle_hash_valid && item.s4.raw_bundle_location_present).length,
+    missing_subject_binding_count: s4Items.filter((item) => !item.s4.subject_type || !item.s4.subject_id).length,
+    manual_check_s4_count: manualCheckCount,
+    top_s4_gaps: uniqueStrings(s4Items.flatMap((item) => item.s4.gaps)).slice(0, 5),
+    next_actions: [],
+    not_a_trust_decision: true
+  };
+  summary.next_actions = s4NextActions(summary);
+  return summary;
+}
+
 function s2NextActions(summary: S2Summary): string[] {
   const actions: string[] = [];
   if (summary.candidate_unverified_external_material_count > 0) {
@@ -1994,6 +2287,29 @@ function s3NextActions(summary: S3Summary): string[] {
   return actions;
 }
 
+function s4NextActions(summary: S4Summary): string[] {
+  const actions: string[] = [];
+  if (summary.candidate_unverified_observation_count > 0) {
+    actions.push("Disclose observer, subject binding, observation window, metrics, claim linkage, raw bundle hash, and vault/location before treating candidate observations as effective S4.");
+  }
+  if (summary.missing_subject_binding_count > 0) {
+    actions.push("Bind every S4 observation to the exact product family, product model, service, deployment, API, order set, or delivery context it covers.");
+  }
+  if (summary.raw_bundle_available_count < summary.effective_s4_count) {
+    actions.push("Add raw bundle hashes and evidence-vault or observer-controlled storage pointers for S4 observations.");
+  }
+  if (summary.historical_observation_count > 0 && summary.current_window_observation_count === 0) {
+    actions.push("Add recent S4 observations when current transaction screening depends on current delivery, support, uptime, or supply continuity.");
+  }
+  if (actions.length === 0 && summary.effective_s4_count > 0) {
+    actions.push("Review S4 observation scope, window, metrics, and limitations against the consuming agent's own policy; OrgAnchor does not assign final trust.");
+  }
+  if (actions.length === 0) {
+    actions.push("No S4 observation evidence is declared; request S4 only if the target purpose requires real delivery, use, support, uptime, or supply-continuity observation.");
+  }
+  return actions;
+}
+
 function statusFromFindings(findings: string[], hasHardFailure: boolean): AuditStatus {
   if (hasHardFailure) return "FAIL";
   if (findings.some((finding) => /missing evidence|hash mismatch|cannot be read|past its valid_until/i.test(finding))) {
@@ -2024,6 +2340,16 @@ const S3_EFFECTIVE_STATES = new Set<S3SamplingState>([
 
 function isS3SamplingState(value: string): value is S3SamplingState {
   return value === "CANDIDATE_UNVERIFIED_SAMPLING" || S3_EFFECTIVE_STATES.has(value as S3SamplingState);
+}
+
+const S4_EFFECTIVE_STATES = new Set<S4ObservationState>([
+  "S4_1_OBSERVATION_SUMMARY_PROVIDED",
+  "S4_2_RAW_BUNDLE_AVAILABLE",
+  "S4_3_OBSERVER_OR_DIRECTORY_REVIEWED"
+]);
+
+function isS4ObservationState(value: string): value is S4ObservationState {
+  return value === "CANDIDATE_UNVERIFIED_OBSERVATION" || S4_EFFECTIVE_STATES.has(value as S4ObservationState);
 }
 
 function addS2Check(
@@ -2068,6 +2394,18 @@ function addS3Check(
   if (status !== "PASS") gaps.push(summary);
 }
 
+function addS4Check(
+  checks: ValueAuditCheck[],
+  gaps: string[],
+  status: AuditStatus,
+  evidenceId: string,
+  id: string,
+  summary: string
+): void {
+  checks.push(buildCheck(`evidence:${evidenceId}:s4:${id}`, `Evidence ${evidenceId} ${id}`, status, summary));
+  if (status !== "PASS") gaps.push(summary);
+}
+
 function relationClaimRefs(item: Record<string, JsonValue>): string[] {
   return arrayObjects(item.relations)
     .map((relation) => stringValue(relation.claim_id))
@@ -2086,6 +2424,21 @@ function isHttpUrl(value: string): boolean {
 function isPastTimestamp(value: string, now: Date): boolean {
   const parsed = Date.parse(value);
   return Number.isFinite(parsed) && parsed < now.getTime();
+}
+
+function validTimestamp(value: string): boolean {
+  return value.length > 0 && Number.isFinite(Date.parse(value));
+}
+
+function isSha256Digest(value: string): boolean {
+  return /^sha256:[0-9a-f]{64}$/i.test(value);
+}
+
+function isCurrentObservationWindow(windowEnd: string, now: Date): boolean {
+  const parsed = Date.parse(windowEnd);
+  if (!Number.isFinite(parsed)) return false;
+  const maxCurrentAgeMs = 180 * 24 * 60 * 60 * 1000;
+  return parsed >= now.getTime() - maxCurrentAgeMs;
 }
 
 function isUnknownOrMissing(value: JsonValue | undefined): boolean {

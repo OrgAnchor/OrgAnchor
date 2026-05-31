@@ -1,6 +1,6 @@
 # S4 Real-World Delivery And Use Observation Model
 
-Status: Accepted design model. Basic S4 skeleton generation is available through `evidence observe template --route S4_RECOMMENDED`; S4 attach, audit, and compact agent summaries remain future work. S4 is intentionally separated from S3 so random sample quality checks do not get confused with long-term delivery, usage, support, and supply-continuity observations.
+Status: Accepted implementation-facing design model. Basic S4 usability is implemented: template generation, attach command, local Core checks, candidate/effective classification, value-audit summary, and compact agent summary. Higher-assurance observer signatures, raw-bundle availability adapters, directory review, and S5 challenge integration remain future work. S4 is intentionally separated from S3 so random sample quality checks do not get confused with long-term delivery, usage, support, and supply-continuity observations.
 
 ## Purpose
 
@@ -328,10 +328,27 @@ S4 should feed S5, but it should not replace S5.
 
 ## Implementation Direction
 
+Current CLI support:
+
+```bash
+organchor evidence s4 template --template order_delivery
+organchor evidence s4 attach \
+  --evidence-id evidence-001 \
+  --template order_delivery \
+  --observer-id buyer.example \
+  --window-start 2026-05-01 \
+  --window-end 2026-05-31 \
+  --subject-type product_family \
+  --subject-id model-x1 \
+  --scope "Observed delivery performance supports claim-001 for model-x1." \
+  --raw-bundle-hash sha256:<64-hex> \
+  --vault-uri https://vault.example/evidence/orders
+```
+
 Implementation should continue with:
 
-1. `evidence s4 attach` for adding S4 metadata to evidence items.
-2. Value-audit S4 summary fields:
+1. Higher-assurance observer signatures, raw-bundle availability adapters, and directory review states.
+2. Value-audit S4 summary refinements:
    - effective_s4_count
    - candidate_unverified_observation_count
    - current_window_observation_count
@@ -340,8 +357,8 @@ Implementation should continue with:
    - missing_subject_binding_count
    - top_s4_gaps
    - next_actions
-3. Agent compact output that separates S3 sample quality from S4 delivery/use continuity.
-4. Directory fields for current observation health and supply-continuity summaries.
+3. Directory fields for current observation health and supply-continuity summaries.
+4. S5 challenge/correction integration for disputed, negative, or contradicted S4 observations.
 
 ## Success Criteria
 

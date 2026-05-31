@@ -1,6 +1,6 @@
 # Observation Routing Guide
 
-Status: Accepted guidance for S3/S4 routing. CLI route and template generation commands are implemented; route-specific S4 attach and audit support remain future work.
+Status: Accepted guidance for S3/S4 routing. CLI route, template generation, S3 attach, S4 attach, and basic value-audit summaries are implemented.
 
 ## Purpose
 
@@ -271,7 +271,7 @@ Current template generation is intentionally low-friction:
 
 ```text
 S3_RECOMMENDED -> emits an S3 skeleton and points to the existing evidence s3 attach path.
-S4_RECOMMENDED -> emits an S4 observation skeleton, but S4 attach is not implemented yet.
+S4_RECOMMENDED -> emits an S4 observation skeleton and points to the evidence s4 attach path.
 MIXED_S3_S4 -> emits both skeletons and tells the user to split the material.
 ROUTING_UNCLEAR -> emits clarification questions instead of a forced category.
 ```

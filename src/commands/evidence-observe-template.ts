@@ -130,7 +130,11 @@ function buildS4Template(options: Record<string, string | boolean>, generatedAt:
     route: "S4_RECOMMENDED",
     template_id: templateId,
     purpose: "Performance continuity: delivery, operation, usage, support, repair, uptime, supply, or service behavior is observed over a time window.",
-    implementation_status: "template_only_attach_command_not_yet_implemented",
+    implementation_status: "attach_command_available",
+    suggested_attach_command:
+      `organchor evidence s4 attach --evidence-id evidence-001 --template ${templateId} --observer-id observer.example ` +
+      `--window-start YYYY-MM-DD --window-end YYYY-MM-DD --subject-type ${subjectType} --subject-id ${subjectId} ` +
+      `--scope "Observed continuity supports ${claimId} for ${subjectId}" --raw-bundle-hash sha256:<64-hex> --vault-uri https://vault.example/evidence/observation-bundle`,
     required_before_publish: [
       "observer identity or origin",
       "subject binding",
@@ -306,8 +310,8 @@ function nextActions(route: ObservationRoute): string[] {
   }
   if (route === "S4_RECOMMENDED") {
     return [
-      "Fill the S4 observation summary and keep raw operational records in a vault or observer-controlled store.",
-      "Treat this as template-only until evidence s4 attach is implemented.",
+      "Create or identify the evidence item that will hold the S4 observation receipt or summary.",
+      "Fill the S4 fields, then use organchor evidence s4 attach.",
       "Publish only small receipts, summaries, hashes, and vault pointers publicly."
     ];
   }
@@ -315,7 +319,7 @@ function nextActions(route: ObservationRoute): string[] {
     return [
       "Split the material into a sample-conformance record and a performance-continuity record.",
       "Do not combine sample test results and time-window performance metrics into one ambiguous evidence item.",
-      "Use the S3 attach path for the S3 part; keep the S4 part as a template until S4 attach is implemented."
+      "Use the S3 attach path for the S3 part and the S4 attach path for the S4 part."
     ];
   }
   return [

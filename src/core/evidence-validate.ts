@@ -68,11 +68,17 @@ function validateOptionalSClass(itemObject: Record<string, JsonValue>): void {
   if (itemObject.s3 !== undefined && (!itemObject.s3 || typeof itemObject.s3 !== "object" || Array.isArray(itemObject.s3))) {
     fail("VALIDATION_ERROR", "evidence item.s3 must be an object");
   }
+  if (itemObject.s4 !== undefined && (!itemObject.s4 || typeof itemObject.s4 !== "object" || Array.isArray(itemObject.s4))) {
+    fail("VALIDATION_ERROR", "evidence item.s4 must be an object");
+  }
   if (itemObject.s_class === "S2_THIRD_PARTY_DOCUMENTS" && itemObject.s2 === undefined) {
     fail("VALIDATION_ERROR", "S2 evidence item requires s2 metadata");
   }
   if (itemObject.s_class === "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING" && itemObject.s3 === undefined) {
     fail("VALIDATION_ERROR", "S3 evidence item requires s3 metadata");
+  }
+  if (itemObject.s_class === "S4_REAL_WORLD_OBSERVATION" && itemObject.s4 === undefined) {
+    fail("VALIDATION_ERROR", "S4 evidence item requires s4 metadata");
   }
 }
 

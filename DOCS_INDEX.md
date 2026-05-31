@@ -56,7 +56,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `S2_THIRD_PARTY_MATERIAL_MODEL.md`: implementation-facing S2 model for third-party material fields, Core/Extension boundaries, mechanical checks, and agent summaries.
 - `S3_RANDOM_SAMPLING_MODEL.md`: implementation-facing S3 model for real market/customer-site sample acquisition, sample-control checks, Evidence Vault storage, sample sufficiency, historical retention, and agent summaries.
 - `S3_SAMPLE_RECORD_SPEC.md`: protocol shape, JSON examples, and schema references for standalone S3 sample event and sample-set records.
-- `S4_REAL_WORLD_OBSERVATION_MODEL.md`: accepted S4 design model for real delivery, real use, supply continuity, support, repair, monitoring, and field-observation records, strictly separated from S3 sample testing; current CLI support is skeleton generation only.
+- `S4_REAL_WORLD_OBSERVATION_MODEL.md`: implementation-facing S4 model for real delivery, real use, supply continuity, support, repair, monitoring, and field-observation records, strictly separated from S3 sample testing.
 - `PACKAGE_HEALTH_LAYER.md`: accepted design model for self-declared and observed package health, maintenance responsibility, stale/broken/expired evidence visibility, and low-cost agent fetch decisions.
 - `REAL_WORLD_EVIDENCE_PROFILE.md`: minimum evidence profile for real products and services, including scoped claims, hash-bound evidence, recheck methods, limitations, and anti-gaming rules.
 - `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`: accepted design direction for delegated product/service signing keys, model/batch/unit credentials, service delivery credentials, and feedback attribution to the organization root authority chain.

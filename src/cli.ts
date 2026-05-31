@@ -33,6 +33,7 @@ import { evidenceObserveRouteCommand } from "./commands/evidence-observe-route.t
 import { evidenceObserveTemplateCommand } from "./commands/evidence-observe-template.ts";
 import { evidenceS2AttachCommand, evidenceS2TemplateCommand } from "./commands/evidence-s2.ts";
 import { evidenceS3AttachCommand, evidenceS3TemplateCommand } from "./commands/evidence-s3.ts";
+import { evidenceS4AttachCommand, evidenceS4TemplateCommand } from "./commands/evidence-s4.ts";
 import { evidenceSignCommand } from "./commands/evidence-sign.ts";
 import { evidenceVerifyCommand } from "./commands/evidence-verify.ts";
 import { domainAuditCommand } from "./commands/domain-audit.ts";
@@ -106,6 +107,8 @@ const commands: Record<string, CommandHandler> = {
   "evidence s2 template": evidenceS2TemplateCommand,
   "evidence s3 attach": evidenceS3AttachCommand,
   "evidence s3 template": evidenceS3TemplateCommand,
+  "evidence s4 attach": evidenceS4AttachCommand,
+  "evidence s4 template": evidenceS4TemplateCommand,
   "evidence sign": evidenceSignCommand,
   "evidence verify": evidenceVerifyCommand,
   "init": initCommand,
@@ -266,6 +269,8 @@ Usage:
   organchor evidence s2 attach --evidence-id evidence-001 --template certification_record --issuer-name "Example Certification Body" --anchor-url https://registry.example/records/ABC-123 --scope "Certificate supports claim-001 for model-x1"
   organchor evidence s3 template --template market_purchase
   organchor evidence s3 attach --evidence-id evidence-001 --template market_purchase --sampler-type buyer --acquired-at 2026-05-28T00:00:00Z --subject-type product_model --subject-id model-x1 --scope "Random market purchase sample supports claim-001 for model-x1"
+  organchor evidence s4 template --template order_delivery
+  organchor evidence s4 attach --evidence-id evidence-001 --template order_delivery --observer-id buyer.example --window-start 2026-05-01 --window-end 2026-05-31 --subject-type product_family --subject-id model-x1 --scope "Observed delivery performance supports claim-001 for model-x1" --raw-bundle-hash sha256:... --vault-uri https://vault.example/evidence/orders
   organchor evidence hash --file README.md
   organchor evidence sign --key keys/root-2026.private.json --authority root-authority.json
   organchor evidence sign --key keys/root-b.private.json --authority root-authority.json --append

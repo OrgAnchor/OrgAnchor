@@ -53,7 +53,8 @@ test("observation template command creates an S4 continuity skeleton", () => {
   assert.equal(result.templates.length, 1);
   const first = result.templates[0] as Record<string, any>;
   assert.equal(first.template_id, "order_delivery");
-  assert.equal(first.implementation_status, "template_only_attach_command_not_yet_implemented");
+  assert.equal(first.implementation_status, "attach_command_available");
+  assert.match(first.suggested_attach_command, /evidence s4 attach/);
   assert.equal(first.evidence_item_patch.s_class, "S4_REAL_WORLD_OBSERVATION");
   assert.equal(first.evidence_item_patch.s4.observation_window.start, "2026-05-01");
   assert.equal(first.evidence_item_patch.s4.metric_summary.order_count, 0);

@@ -105,6 +105,8 @@ permission and process for directory or buyer-agent observation.
 
 S4 raw data can be heavy and privacy-sensitive.
 
+S4 storage follows `EVIDENCE_RETENTION_REALITY_PRINCIPLE.md`.
+
 Examples:
 
 ```text
@@ -132,6 +134,16 @@ Therefore S4 should use the same storage separation as S3:
 | Anchor | Hashes of receipts, summaries, and bundle manifests | Public and small |
 
 S4 raw bundles should usually live in Evidence Vaults or observer-controlled storage, not only in the evaluated organization's infrastructure.
+
+The realistic default actors are:
+
+```text
+Directory or recommendation operator for the organizations it lists or recommends;
+buyer, procurement network, or buyer coalition that benefits from future procurement memory;
+organization-funded independent vault where operational records can be redacted and retained without pretending the organization is the sole strong observer.
+```
+
+If no one is willing to retain the raw S4 bundle, the record should be downgraded to summary-only or candidate use. OrgAnchor should expose that state instead of hiding it.
 
 Privacy boundary:
 

@@ -51,6 +51,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`: implementation map showing what is already alpha-ready and what remains for method, attestation, challenge, and agent-output work.
 - `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`: canonical three-axis model for purpose profiles, observation source classes, and challenge/correction lifecycle.
 - `EVIDENCE_SUFFICIENCY_MODEL.md`: accepted design principle that OrgAnchor should judge evidence by purpose-fit sufficiency, not raw field count, completeness scores, or paperwork volume.
+- `EVIDENCE_RETENTION_REALITY_PRINCIPLE.md`: accepted design principle for S3-S5 raw evidence storage reality, availability states, downgrade semantics, and future ledger readiness.
 - `SUBJECT_BINDING_MODEL.md`: accepted design model for binding discovery units, claims, evidence, samples, observations, credentials, and challenges to the exact subject they cover.
 - `OBSERVATION_ROUTING_GUIDE.md`: accepted operator and tool guidance for routing observation records to S3 sample conformance, S4 performance continuity, mixed records, or unclear cases, including the current route/template CLI flow.
 - `S2_THIRD_PARTY_MATERIAL_MODEL.md`: implementation-facing S2 model for third-party material fields, Core/Extension boundaries, mechanical checks, and agent summaries.

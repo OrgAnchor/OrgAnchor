@@ -165,11 +165,15 @@ health_checks_performed
 s2_anchor_check_policy
 broken_link_threshold
 expired_evidence_policy
+raw_evidence_availability_policy
+raw_retention_policy
 external_observation_intake_policy
 correction_response_policy
 ```
 
 The Directory is not required to catch every problem. It is required to be explicit about what it checks, how often it checks, and how it treats external observations.
+
+Raw evidence health follows `EVIDENCE_RETENTION_REALITY_PRINCIPLE.md`. A package or Directory should expose when S3-S5 raw bundles are available, request-restricted, restricted, summary-only, expired, withdrawn, lost, or disputed. Missing raw bundles are not protocol failures by themselves; hiding that condition is the failure.
 
 ## Third-Party Agent Tooling
 

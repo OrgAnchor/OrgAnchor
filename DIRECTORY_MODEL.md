@@ -195,7 +195,18 @@ Recommended roles:
 - `directory-signature.json`: signature over the exported snapshot or feed hash.
 - `health-observations.ndjson`: optional structured package-health observations produced by Directory sweeps or accepted external observations.
 
-Large evidence files remain at the organization's own locations. The Directory records links, hashes, and verification summaries.
+Large evidence files do not belong in the default Directory snapshot. The Directory records links, hashes, verification summaries, and raw-availability state.
+
+If a Directory profits from recommendation, ranking, procurement support, or curated discovery, it may also operate or fund an Evidence Vault for the organizations it covers. That vault role is optional, but the Directory must be explicit:
+
+```text
+which raw evidence it stores;
+which raw evidence it only links to;
+which raw evidence is request-restricted;
+which raw evidence has expired, been withdrawn, been lost, or is disputed.
+```
+
+This follows `EVIDENCE_RETENTION_REALITY_PRINCIPLE.md`: a Directory is not required to preserve every raw bundle, but it must not hide missing or degraded raw availability.
 
 ## Cost Model
 

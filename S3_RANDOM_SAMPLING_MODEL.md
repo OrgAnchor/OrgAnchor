@@ -151,6 +151,8 @@ submit a complete sample receipt, raw bundle hash, acquisition proof, and method
 
 S3 raw data is too heavy to place entirely in the organization package, OrgAnchor official infrastructure, Arweave, IPFS, or any single universal store.
 
+S3 storage follows `EVIDENCE_RETENTION_REALITY_PRINCIPLE.md`.
+
 S3 therefore separates:
 
 | Layer | Content | Storage burden |
@@ -160,19 +162,19 @@ S3 therefore separates:
 | Raw evidence bundle | Invoices, photos, videos, test reports, logs, telemetry export, custody notes | Heavy |
 | Anchor | Hashes of receipts, summaries, and bundle manifests | Very small |
 
-Raw evidence should be held by one or more Evidence Vaults.
+Raw evidence should be held by one or more Evidence Vaults when someone has a durable reason to pay for storage and custody.
 
-An Evidence Vault is a storage and custody operator for raw S3 bundles. It may be run by:
+The realistic default actors are:
 
 ```text
-a directory operator;
-a buyer or procurement network;
-an independent sampler;
-an industry association;
-a testing lab;
-a regulated archive;
-the organization only as an additional mirror, not as the sole strong vault.
+directory or recommendation operator;
+organization-funded independent vault where the organization cannot select the sample or control the only raw store;
+buyer, procurement network, or buyer coalition.
 ```
+
+Other actors such as laboratories, industry associations, regulated archives, independent samplers, and ordinary customers may participate, but OrgAnchor should not assume they will provide durable raw storage by default.
+
+The organization may mirror raw files or publish its own receipt. That is useful for availability, but it is not the sole strong vault for externally controlled S3 evidence.
 
 S3 public records should state:
 
@@ -193,11 +195,14 @@ Recommended availability states:
 AVAILABLE
 REQUEST_REQUIRED
 RESTRICTED
+MIXED
 EXPIRED_SUMMARY_ONLY
 WITHDRAWN
 LOST
 DISPUTED
 ```
+
+If raw material was never provided, current alpha tooling represents that condition through missing raw hash/location fields, candidate states, and value-audit warnings. It must not be represented as available.
 
 The organization package may cite S3 receipts and summaries, but it should not be the only place where negative or externally controlled raw evidence survives.
 

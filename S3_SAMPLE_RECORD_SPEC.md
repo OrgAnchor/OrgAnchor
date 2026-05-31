@@ -287,6 +287,8 @@ with which limitations.
 
 ## Raw Evidence Availability
 
+Raw evidence availability follows `EVIDENCE_RETENTION_REALITY_PRINCIPLE.md`.
+
 Recommended raw availability values:
 
 ```text

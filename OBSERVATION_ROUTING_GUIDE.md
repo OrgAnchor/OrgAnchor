@@ -1,6 +1,6 @@
 # Observation Routing Guide
 
-Status: Accepted guidance for S3/S4 routing. CLI routing commands are not implemented yet.
+Status: Accepted guidance for S3/S4 routing. The first CLI route command is implemented; route-specific observation templates remain future work.
 
 ## Purpose
 
@@ -94,7 +94,7 @@ The tool should avoid asking users to pick S3 or S4 as a first step.
 
 ## CLI Route Output Contract
 
-Future CLI command:
+CLI command:
 
 ```bash
 organchor evidence observe route --text "Recent 90 day on-time delivery for model-x1 orders"

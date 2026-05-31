@@ -29,6 +29,7 @@ import { evidenceAddCommand } from "./commands/evidence-add.ts";
 import { evidenceCreateCommand } from "./commands/evidence-create.ts";
 import { evidenceHashCommand } from "./commands/evidence-hash.ts";
 import { evidenceMethodAddCommand } from "./commands/evidence-method-add.ts";
+import { evidenceObserveRouteCommand } from "./commands/evidence-observe-route.ts";
 import { evidenceS2AttachCommand, evidenceS2TemplateCommand } from "./commands/evidence-s2.ts";
 import { evidenceS3AttachCommand, evidenceS3TemplateCommand } from "./commands/evidence-s3.ts";
 import { evidenceSignCommand } from "./commands/evidence-sign.ts";
@@ -98,6 +99,7 @@ const commands: Record<string, CommandHandler> = {
   "evidence create": evidenceCreateCommand,
   "evidence hash": evidenceHashCommand,
   "evidence method add": evidenceMethodAddCommand,
+  "evidence observe route": evidenceObserveRouteCommand,
   "evidence s2 attach": evidenceS2AttachCommand,
   "evidence s2 template": evidenceS2TemplateCommand,
   "evidence s3 attach": evidenceS3AttachCommand,
@@ -256,6 +258,7 @@ Usage:
   organchor evidence add --file README.md
   organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.mp4 --location-type https --subject-type product --subject-id primary-product
   organchor evidence method add --id method-001 --evidence-id evidence-001 --steps "Fetch the public artifact;Compare the SHA-256 hash" --expected-results "The artifact hash matches the signed manifest"
+  organchor evidence observe route --text "Recent 90 day on-time delivery for model-x1 orders"
   organchor evidence s2 template --template certification_record
   organchor evidence s2 attach --evidence-id evidence-001 --template certification_record --issuer-name "Example Certification Body" --anchor-url https://registry.example/records/ABC-123 --scope "Certificate supports claim-001 for model-x1"
   organchor evidence s3 template --template market_purchase

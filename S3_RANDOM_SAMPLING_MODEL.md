@@ -59,6 +59,8 @@ Therefore `customer_site_sampling` in the CLI means customer-site sample acquisi
 
 S3 subject binding follows `SUBJECT_BINDING_MODEL.md`. An effective S3 record must identify the sampled subject through `sample_identity`. Without sample identity, the record is only candidate sampling because external agents cannot know which product, model, batch, unit, service, deployment, or dataset the sample represents.
 
+S3 intake, sample-slot admission, raw-vault admission, and brush/spam risk controls are defined in `S3_INTAKE_AND_SLOT_MODEL.md`.
+
 ## Claim-Bound Rolling Sample Pool
 
 S3 must not become an unlimited upload channel.
@@ -71,6 +73,7 @@ product_id or service_id
 claim_id
 claim_version
 sample_pool_id
+sample_slot_id
 ```
 
 The organization may publish many claims, but each S3 sample pool is bounded by a declared `sample_policy`.
@@ -88,6 +91,8 @@ uniqueness_basis
 refresh_rule
 limitations
 ```
+
+For effective S3, a sample should also carry a valid `sample_slot_id` from the declared sampling plan. `sample_nullifier` prevents duplicate unit reuse; `sample_slot_id` prevents unlimited real-unit submissions from becoming active S3.
 
 The default replacement policy is:
 
@@ -147,8 +152,10 @@ The nullifier lets a pool detect duplicate submissions without necessarily expos
 Rules:
 
 ```text
+the same sample_slot_id may produce at most one active S3 event;
 the same sample_nullifier may enter the same claim sample pool only once;
 duplicate nullifiers are rejected from active S3;
+samples without valid slots are candidate S3 at most;
 missing or unverifiable credentials downgrade the record to candidate S3 or route it to S4/S5;
 samples that do not match the claim subject are rejected from that S3 pool;
 samples beyond max_active_samples are not accepted as extra active evidence.
@@ -609,6 +616,16 @@ Core fields are required for effective S3:
 s_class = S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING
 s3.state
 s3.sample_type
+s3.claim_binding.claim_id
+s3.claim_binding.claim_version
+s3.claim_binding.sample_pool_id
+s3.sample_slot_id or equivalent slot reference
+s3.sample_policy.max_active_samples
+s3.sample_policy.replacement_policy
+s3.sample_policy.uniqueness_basis
+s3.credential_binding.credential_hash
+s3.credential_binding.sample_nullifier
+s3.sampling_plan
 s3.sampler.type
 s3.sample_identity.subject_type
 s3.sample_identity.subject_id
@@ -631,6 +648,7 @@ the sample appears organization-selected;
 the sample appears organization-provided;
 the sample cannot be bound to a concrete subject;
 claim references do not resolve.
+the sample is missing bounded-pool, slot, credential, nullifier, or sampling-plan gates.
 ```
 
 ## Agent Summary
@@ -646,6 +664,10 @@ s3_state_counts
 organization_selected_sample_count
 organization_provided_sample_count
 missing_sample_identity_count
+missing_sample_pool_count
+missing_duplicate_control_count
+missing_credential_binding_count
+missing_sampling_plan_count
 missing_custody_count
 manual_check_s3_count
 top_s3_gaps

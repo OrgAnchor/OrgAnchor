@@ -56,6 +56,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `OBSERVATION_ROUTING_GUIDE.md`: accepted operator and tool guidance for routing observation records to S3 sample conformance, S4 performance continuity, mixed records, or unclear cases, including the current route/template CLI flow.
 - `S2_THIRD_PARTY_MATERIAL_MODEL.md`: implementation-facing S2 model for third-party material fields, Core/Extension boundaries, mechanical checks, and agent summaries.
 - `S3_RANDOM_SAMPLING_MODEL.md`: implementation-facing S3 model for real market/customer-site sample acquisition, sample-control checks, Evidence Vault storage, sample sufficiency, historical retention, and agent summaries.
+- `S3_INTAKE_AND_SLOT_MODEL.md`: accepted S3 intake and anti-brushing model for candidate signals, sample-slot admission, bounded active pools, raw-vault admission, storage roles, and spam/storage-exhaustion risks.
 - `S3_SAMPLE_RECORD_SPEC.md`: protocol shape, JSON examples, and schema references for standalone S3 sample event and sample-set records.
 - `S4_REAL_WORLD_OBSERVATION_MODEL.md`: implementation-facing S4 model for real delivery, real use, supply continuity, support, repair, monitoring, and field-observation records, strictly separated from S3 sample testing.
 - `PACKAGE_HEALTH_LAYER.md`: accepted design model for self-declared and observed package health, maintenance responsibility, stale/broken/expired evidence visibility, and low-cost agent fetch decisions.
@@ -132,7 +133,7 @@ That workspace may contain private keys, provider credentials, wallets, local re
 
 - No broad external organization pilot has completed yet.
 - The claims/evidence protocol is stronger than the current alpha implementation: signed claims, signed evidence, value audit, and `/verify` publication exist, while dedicated method, attestation, and challenge manifests remain future work.
-- The purpose/evidence/challenge model is documented as the canonical design. Local S2 third-party material checks and local S3 random purchase / sampling checks are implemented, but P1-P5 purpose-profile validators, broader S1/S4/S5 source-class fields, S2 network route adapters, issuer-backed S2 signatures, S3 custody/independent-test route adapters, S4 delivery/use observation commands, and challenge/correction lifecycle extraction are not implemented yet.
+- The purpose/evidence/challenge model is documented as the canonical design. Local S2 third-party material checks and local S3 random purchase / sampling checks are implemented. The S3 intake and sample-slot model is documented, while slot issuance, slot verification, slot-use ledgers, raw-vault admission workflows, P1-P5 purpose-profile validators, broader S1/S4/S5 source-class fields, S2 network route adapters, issuer-backed S2 signatures, S3 custody/independent-test route adapters, S4 delivery/use observation commands, and challenge/correction lifecycle extraction are not implemented yet.
 - The product/service credential layer is documented as an accepted direction, but delegated key statements, model/batch/unit credentials, service delivery credentials, and observation binding are not implemented yet.
 - ENS live resolver reads still require choosing an Ethereum RPC/provider path.
 - No real Onion disaster-recovery address has been registered.

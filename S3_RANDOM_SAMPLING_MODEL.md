@@ -6,6 +6,12 @@ Status: Accepted implementation-facing design model. S3 basic usability is imple
 
 S3 covers evidence created from random purchase, random sampling, or field sample acquisition.
 
+For product or service quality claims, S3 is specifically:
+
+```text
+a finite rolling random-sample pool for an active, listed Product Claim or Service Claim.
+```
+
 Its core anti-gaming question is:
 
 ```text
@@ -52,6 +58,141 @@ Boundary examples:
 Therefore `customer_site_sampling` in the CLI means customer-site sample acquisition. It does not mean broad customer-site performance observation.
 
 S3 subject binding follows `SUBJECT_BINDING_MODEL.md`. An effective S3 record must identify the sampled subject through `sample_identity`. Without sample identity, the record is only candidate sampling because external agents cannot know which product, model, batch, unit, service, deployment, or dataset the sample represents.
+
+## Claim-Bound Rolling Sample Pool
+
+S3 must not become an unlimited upload channel.
+
+For organization-listed products or services, effective S3 should be scoped to a concrete claim:
+
+```text
+organization_id
+product_id or service_id
+claim_id
+claim_version
+sample_pool_id
+```
+
+The organization may publish many claims, but each S3 sample pool is bounded by a declared `sample_policy`.
+
+Recommended `sample_policy` fields:
+
+```text
+purpose_id
+risk_level
+target_confidence_note
+time_window
+max_active_samples
+replacement_policy
+uniqueness_basis
+refresh_rule
+limitations
+```
+
+The default replacement policy is:
+
+```text
+NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE
+```
+
+This means:
+
+```text
+once max_active_samples is reached, a new valid sample does not increase the active sample count;
+the new valid sample replaces the oldest active sample in that pool;
+the replaced sample moves to historical summary/hash status;
+historical samples can support trend and accountability, but not current sufficiency.
+```
+
+S3 therefore uses "enough current valid samples" rather than "more records is always stronger."
+
+## Product Or Service Credential Gate
+
+Every effective S3 submission should prove that the sampled item belongs to the evaluated organization's authority chain.
+
+The preferred gate is a product or service credential from `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`:
+
+```text
+organization root authority
+  -> delegated product/service key
+    -> model/service passport
+      -> batch/unit/service-delivery credential
+        -> S3 sample event
+```
+
+An S3 event should include a credential reference or proof such as:
+
+```text
+product_unit_credential_hash
+batch_credential_hash
+service_delivery_credential_hash
+credential_issuer_delegated_key_id
+credential_verified_against_root
+```
+
+The organization root key should not sign high-frequency sample events. It should authorize delegated product or service keys. Those delegated keys can later be revoked or rotated without destroying root continuity.
+
+## Duplicate And Abuse Control
+
+A single product unit, batch token, or service-delivery credential must not be used to inflate S3.
+
+Recommended duplicate-control field:
+
+```text
+sample_nullifier = sha256(product_or_service_credential_secret_or_token + claim_id + claim_version + sample_pool_id)
+```
+
+The nullifier lets a pool detect duplicate submissions without necessarily exposing a serial number, customer identity, or supply-chain token.
+
+Rules:
+
+```text
+the same sample_nullifier may enter the same claim sample pool only once;
+duplicate nullifiers are rejected from active S3;
+missing or unverifiable credentials downgrade the record to candidate S3 or route it to S4/S5;
+samples that do not match the claim subject are rejected from that S3 pool;
+samples beyond max_active_samples are not accepted as extra active evidence.
+```
+
+Different photos, videos, or reports about the same unit do not create new active S3 samples. They are additional artifacts for the same sample event or later S4/S5 observations, depending on context.
+
+## Sampling Plan Gate
+
+A valid organization credential only proves:
+
+```text
+this sample belongs to the organization's product or service lineage.
+```
+
+It does not prove:
+
+```text
+the sample was randomly selected;
+the sample was representative;
+the organization did not bias selection;
+the result supports the claim for all future production.
+```
+
+Therefore each effective S3 sample set should expose a `sampling_plan`:
+
+```text
+who selected samples;
+who acquired samples;
+which channels were eligible;
+which time window was eligible;
+whether the organization funded sampling;
+whether the organization could choose, exclude, or replace samples;
+how max_active_samples was chosen;
+known biases and exclusions.
+```
+
+S3 confidence comes from the combination:
+
+```text
+credential binding + duplicate control + finite sample policy + sampling plan + current raw availability.
+```
+
+No single component is enough by itself.
 
 ## Not A Review System
 
@@ -216,6 +357,13 @@ S3 should distinguish:
 S3_EVENT = one sample acquisition or observation event
 S3_SAMPLE_SET = a bounded set of S3 events for one subject, window, method, channel, or sampling plan
 S3_STRATIFIED_SAMPLE_SET = a sample set intentionally covering strata such as batch, region, channel, or time window
+```
+
+For active product or service claims, the sample set should be treated as a bounded active pool:
+
+```text
+S3_ACTIVE_SAMPLE_POOL = current valid sample events counted against max_active_samples for one claim and window
+S3_HISTORICAL_SAMPLE_SUMMARY = replaced or expired samples kept as summary/hash/history, not current sufficiency
 ```
 
 S3 does not use a "more is always better" rule.

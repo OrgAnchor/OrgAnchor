@@ -13,6 +13,20 @@
     "subject_type": "product_model",
     "subject_id": "model-x1"
   },
+  "claim_binding": {
+    "claim_id": "claim-001",
+    "claim_version": "2026-05",
+    "sample_pool_id": "s3-pool-claim-001-2026-05"
+  },
+  "sample_policy": {
+    "purpose_id": "industrial_component_screening",
+    "risk_level": "medium",
+    "target_confidence_note": "Directory policy requires at most 24 active valid samples for this screening purpose.",
+    "max_active_samples": 24,
+    "replacement_policy": "NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE",
+    "refresh_rule": "rolling_30_day_window",
+    "uniqueness_basis": "sample_nullifier"
+  },
   "time_window": {
     "from": "2026-05-01T00:00:00Z",
     "to": "2026-05-30T00:00:00Z"
@@ -24,12 +38,24 @@
     }
   ],
   "sample_count": 24,
+  "active_sample_count": 24,
+  "historical_replaced_sample_count": 3,
   "sampling_method": {
     "method_type": "market_purchase_randomized",
     "selected_by": "buyer_agent",
     "organization_selected_sample": false,
     "organization_funded_sampling": true,
     "funding_independence_note": "Organization funded the blind sampling pool but did not select samples."
+  },
+  "sampling_plan": {
+    "plan_id": "sampling-plan-claim-001-2026-05",
+    "eligible_channels": ["retail", "distributor"],
+    "eligible_regions": ["EU", "US"],
+    "selector_control": "directory_operator",
+    "organization_can_choose_samples": false,
+    "known_biases": [
+      "Does not cover direct enterprise-only shipments outside listed channels."
+    ]
   },
   "coverage": {
     "regions": ["EU", "US"],

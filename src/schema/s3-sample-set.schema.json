@@ -12,10 +12,14 @@
     "created_at",
     "purpose",
     "subject",
+    "claim_binding",
+    "sample_policy",
     "time_window",
     "sample_events",
     "sample_count",
+    "active_sample_count",
     "sampling_method",
+    "sampling_plan",
     "coverage",
     "result_summary",
     "sufficiency",
@@ -31,6 +35,8 @@
     "created_at": { "type": "string", "format": "date-time" },
     "purpose": { "$ref": "#/definitions/purpose" },
     "subject": { "$ref": "#/definitions/subject" },
+    "claim_binding": { "$ref": "#/definitions/claim_binding" },
+    "sample_policy": { "$ref": "#/definitions/sample_policy" },
     "time_window": { "$ref": "#/definitions/time_window" },
     "sample_events": {
       "type": "array",
@@ -38,7 +44,10 @@
       "items": { "$ref": "#/definitions/sample_event_ref" }
     },
     "sample_count": { "type": "integer", "minimum": 1 },
+    "active_sample_count": { "type": "integer", "minimum": 1 },
+    "historical_replaced_sample_count": { "type": "integer", "minimum": 0 },
     "sampling_method": { "$ref": "#/definitions/sampling_method" },
+    "sampling_plan": { "$ref": "#/definitions/sampling_plan" },
     "coverage": {
       "type": "object",
       "additionalProperties": true
@@ -78,6 +87,38 @@
         "scope_text": { "type": "string" }
       }
     },
+    "claim_binding": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["claim_id", "claim_version", "sample_pool_id"],
+      "properties": {
+        "claim_id": { "type": "string", "minLength": 1 },
+        "claim_version": { "type": "string", "minLength": 1 },
+        "sample_pool_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "sample_policy": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["max_active_samples", "replacement_policy", "uniqueness_basis"],
+      "properties": {
+        "purpose_id": { "type": "string" },
+        "risk_level": { "type": "string" },
+        "target_confidence_note": { "type": "string" },
+        "max_active_samples": { "type": "integer", "minimum": 1 },
+        "replacement_policy": {
+          "enum": ["NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE"]
+        },
+        "refresh_rule": { "type": "string" },
+        "uniqueness_basis": {
+          "enum": ["sample_nullifier"]
+        },
+        "limitations": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
     "time_window": {
       "type": "object",
       "additionalProperties": true,
@@ -107,6 +148,28 @@
         "organization_selected_sample": { "type": "boolean" },
         "organization_funded_sampling": { "type": "boolean" },
         "funding_independence_note": { "type": "string" }
+      }
+    },
+    "sampling_plan": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["selector_control", "organization_can_choose_samples"],
+      "properties": {
+        "plan_id": { "type": "string" },
+        "eligible_channels": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "eligible_regions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "selector_control": { "type": "string", "minLength": 1 },
+        "organization_can_choose_samples": { "type": "boolean" },
+        "known_biases": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
       }
     },
     "result_summary": {

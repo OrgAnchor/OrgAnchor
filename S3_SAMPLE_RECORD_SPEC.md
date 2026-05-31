@@ -62,6 +62,18 @@ Minimum shape:
     "subject_id": "model-x1",
     "batch_id": "batch-2026-05"
   },
+  "claim_binding": {
+    "claim_id": "claim-001",
+    "claim_version": "2026-05",
+    "sample_pool_id": "s3-pool-claim-001-2026-05"
+  },
+  "credential_binding": {
+    "credential_type": "OrgAnchorProductUnitCredential",
+    "credential_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+    "issuer_delegated_key_id": "product-key-2026",
+    "credential_verified_against_root": true,
+    "sample_nullifier": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+  },
   "submitter": {
     "submitter_type": "buyer_agent",
     "name": "Example Buyer Agent",
@@ -120,6 +132,11 @@ sample_event_id
 created_at
 subject.subject_type
 subject.subject_id
+claim_binding.claim_id
+claim_binding.claim_version
+claim_binding.sample_pool_id
+credential_binding.credential_hash
+credential_binding.sample_nullifier
 submitter.submitter_type
 acquisition.sample_type
 acquisition.acquired_at
@@ -140,6 +157,13 @@ Important rule:
 ```text
 organization_provided_sample = true does not make the event invalid,
 but it weakens S3 and should be visible to agents.
+```
+
+Duplicate-control rule:
+
+```text
+The same sample_nullifier may enter the same claim_id / claim_version / sample_pool_id only once.
+More photos, videos, or reports for the same nullifier are additional artifacts for the same sample event, not extra active S3 samples.
 ```
 
 ## S3 Sample Set
@@ -166,6 +190,20 @@ Minimum shape:
     "subject_type": "product_model",
     "subject_id": "model-x1"
   },
+  "claim_binding": {
+    "claim_id": "claim-001",
+    "claim_version": "2026-05",
+    "sample_pool_id": "s3-pool-claim-001-2026-05"
+  },
+  "sample_policy": {
+    "purpose_id": "industrial_component_screening",
+    "risk_level": "medium",
+    "target_confidence_note": "Directory policy requires at most 24 active valid samples for this screening purpose.",
+    "max_active_samples": 24,
+    "replacement_policy": "NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE",
+    "refresh_rule": "rolling_30_day_window",
+    "uniqueness_basis": "sample_nullifier"
+  },
   "time_window": {
     "from": "2026-05-01T00:00:00Z",
     "to": "2026-05-30T00:00:00Z"
@@ -177,12 +215,24 @@ Minimum shape:
     }
   ],
   "sample_count": 24,
+  "active_sample_count": 24,
+  "historical_replaced_sample_count": 3,
   "sampling_method": {
     "method_type": "market_purchase_randomized",
     "selected_by": "buyer_agent",
     "organization_selected_sample": false,
     "organization_funded_sampling": true,
     "funding_independence_note": "Organization funded the blind sampling pool but did not select samples."
+  },
+  "sampling_plan": {
+    "plan_id": "sampling-plan-claim-001-2026-05",
+    "eligible_channels": ["retail", "distributor"],
+    "eligible_regions": ["EU", "US"],
+    "selector_control": "directory_operator",
+    "organization_can_choose_samples": false,
+    "known_biases": [
+      "Does not cover direct enterprise-only shipments outside listed channels."
+    ]
   },
   "coverage": {
     "regions": ["EU", "US"],
@@ -238,13 +288,21 @@ created_at
 purpose.purpose_id
 subject.subject_type
 subject.subject_id
+claim_binding.claim_id
+claim_binding.claim_version
+claim_binding.sample_pool_id
+sample_policy.max_active_samples
+sample_policy.replacement_policy
+sample_policy.uniqueness_basis
 time_window.from
 time_window.to
 sample_events
 sample_count
+active_sample_count
 sampling_method.method_type
 sampling_method.selected_by
 sampling_method.organization_selected_sample
+sampling_plan
 coverage
 result_summary
 sufficiency.status
@@ -284,6 +342,47 @@ for which subject;
 over which time window;
 with which limitations.
 ```
+
+## Rolling Active Pool Rules
+
+S3 sample sets for active product or service claims should act as bounded rolling pools.
+
+The sample set must not reward unlimited uploads. It should expose:
+
+```text
+claim_binding.claim_id
+claim_binding.claim_version
+claim_binding.sample_pool_id
+sample_policy.max_active_samples
+sample_policy.replacement_policy
+sample_policy.uniqueness_basis
+active_sample_count
+historical_replaced_sample_count
+```
+
+Recommended replacement policy:
+
+```text
+NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE
+```
+
+Meaning:
+
+```text
+valid samples enter the active pool until active_sample_count reaches max_active_samples;
+after that, a newer valid sample replaces the oldest active sample;
+replaced samples move to historical summary/hash status;
+historical samples are useful for trend and accountability, not current sufficiency;
+unlimited extra submissions cannot strengthen the active sample set.
+```
+
+Recommended uniqueness basis:
+
+```text
+sample_nullifier
+```
+
+The sample nullifier should be derived from a product or service credential plus claim and pool context. It prevents duplicate active S3 entries without requiring public serial-number disclosure.
 
 ## Raw Evidence Availability
 

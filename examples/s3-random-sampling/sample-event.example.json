@@ -9,6 +9,18 @@
     "subject_id": "model-x1",
     "batch_id": "batch-2026-05"
   },
+  "claim_binding": {
+    "claim_id": "claim-001",
+    "claim_version": "2026-05",
+    "sample_pool_id": "s3-pool-claim-001-2026-05"
+  },
+  "credential_binding": {
+    "credential_type": "OrgAnchorProductUnitCredential",
+    "credential_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+    "issuer_delegated_key_id": "product-key-2026",
+    "credential_verified_against_root": true,
+    "sample_nullifier": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+  },
   "submitter": {
     "submitter_type": "buyer_agent",
     "name": "Example Buyer Agent",

@@ -11,6 +11,8 @@
     "sample_event_id",
     "created_at",
     "subject",
+    "claim_binding",
+    "credential_binding",
     "submitter",
     "acquisition",
     "result",
@@ -25,6 +27,8 @@
     "sample_event_id": { "type": "string", "minLength": 1 },
     "created_at": { "type": "string", "format": "date-time" },
     "subject": { "$ref": "#/definitions/subject" },
+    "claim_binding": { "$ref": "#/definitions/claim_binding" },
+    "credential_binding": { "$ref": "#/definitions/credential_binding" },
     "submitter": { "$ref": "#/definitions/submitter" },
     "acquisition": { "$ref": "#/definitions/acquisition" },
     "method": { "$ref": "#/definitions/method" },
@@ -53,6 +57,28 @@
         "lot_id": { "type": "string" },
         "serial_or_unit_id": { "type": "string" },
         "scope_text": { "type": "string" }
+      }
+    },
+    "claim_binding": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["claim_id", "claim_version", "sample_pool_id"],
+      "properties": {
+        "claim_id": { "type": "string", "minLength": 1 },
+        "claim_version": { "type": "string", "minLength": 1 },
+        "sample_pool_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "credential_binding": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["credential_hash", "sample_nullifier"],
+      "properties": {
+        "credential_type": { "type": "string" },
+        "credential_hash": { "$ref": "#/definitions/sha256" },
+        "issuer_delegated_key_id": { "type": "string" },
+        "credential_verified_against_root": { "type": "boolean" },
+        "sample_nullifier": { "$ref": "#/definitions/sha256" }
       }
     },
     "submitter": {

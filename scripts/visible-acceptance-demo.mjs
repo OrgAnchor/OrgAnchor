@@ -261,7 +261,9 @@ function inspectVisiblePage(verifyDir) {
     "S5 Challenge",
     "External Policy Route",
     "Trust decision",
-    "Next Checks"
+    "Next Checks",
+    "Key Terms",
+    "Short explanations for human review"
   ];
   const markers = expected.map((label) => ({
     label,

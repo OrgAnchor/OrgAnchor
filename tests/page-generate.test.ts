@@ -79,6 +79,11 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(html, /S4 Observation/);
     assert.match(html, /S5 Challenge/);
     assert.match(html, /Next Checks/);
+    assert.match(html, /Key Terms/);
+    assert.match(html, /Short explanations for human review/);
+    assert.match(html, /authority record for OrgAnchor verification/);
+    assert.match(html, /The final reliance decision/);
+    assert.match(html, /designed to reduce hand-picked sample risk/);
     assert.match(html, /CLI Verification/);
     assert.match(html, /display does not by itself prove identity/);
     assert.match(html, /rel="organchor"/);

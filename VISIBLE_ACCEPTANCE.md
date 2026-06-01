@@ -67,6 +67,7 @@ Serving visible acceptance page: http://127.0.0.1:<port>/verify/index.html
 - `External Policy Route`
 - `Trust decision`
 - `Next Checks`
+- `Key Terms`
 
 这些内容的意义：
 
@@ -77,6 +78,7 @@ Serving visible acceptance page: http://127.0.0.1:<port>/verify/index.html
 - `External Policy Route`：告诉第三方 Agent 下一步应该如何路由，而不是让 OrgAnchor 替外部需求方做最终信任判断。
 - `Trust decision`：必须明确显示 `NOT_ASSIGNED_BY_ORGANCHOR` 或同等边界，避免把 OrgAnchor 误解成认证机构。
 - `Next Checks`：下一步建议检查项，帮助人和 Agent 继续深入。
+- `Key Terms`：把 `Root authority`、`Conformance`、`External Policy Route`、`S1-S5` 等术语解释成人能快速理解的短定义。
 
 ## AI Agent 应该读什么
 

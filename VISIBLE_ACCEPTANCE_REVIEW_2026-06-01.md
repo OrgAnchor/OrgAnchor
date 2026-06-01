@@ -111,8 +111,8 @@ Fireseed visible acceptance is English-first. Multilingual human explanation is 
 
 Priority 1:
 
-- Add glossary-style explanations for the hardest terms on `/verify/index.html`.
-- Keep those explanations short and non-marketing.
+- DONE AFTER REVIEW: add glossary-style explanations for the hardest terms on `/verify/index.html`.
+- Keep those explanations short and non-marketing as the page evolves.
 
 Priority 2:
 

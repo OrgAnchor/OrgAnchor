@@ -259,6 +259,78 @@ export function renderVerifyPage(model: VerifyPageModel): string {
   const policyReasons = agentReview.policyRoute.reasons.length > 0 ?
     agentReview.policyRoute.reasons.map((reason) => `<code>${escapeHtml(reason)}</code>`).join(", ") :
     "none";
+  const keyTerms = [
+    {
+      term: "Root authority",
+      meaning: "The organization's authority record for OrgAnchor verification. It lists the root member keys and signature threshold used to verify current statements."
+    },
+    {
+      term: "Statement",
+      meaning: "The signed official endpoint declaration. It says which website, verify page, security contact, and related public entry points currently belong to the organization."
+    },
+    {
+      term: "Signature threshold",
+      meaning: "How many authorized root-member signatures are required before a statement is accepted as valid."
+    },
+    {
+      term: "Agent Verification View",
+      meaning: "A human-readable version of the same first-pass state that AI agents read from organchor.json."
+    },
+    {
+      term: "Overall status",
+      meaning: "A summary of identity, evidence, and conformance checks. It is not an endorsement of the organization."
+    },
+    {
+      term: "Identity status",
+      meaning: "Whether the signed statement, hashes, signatures, and root authority checks passed."
+    },
+    {
+      term: "Value status",
+      meaning: "Whether the signed claims and evidence package is present and whether obvious evidence gaps were found."
+    },
+    {
+      term: "Conformance",
+      meaning: "How completely this package matches the OrgAnchor verification contract expected by tools and AI agents."
+    },
+    {
+      term: "Trust decision",
+      meaning: "The final reliance decision. OrgAnchor does not assign it; the requesting person, organization, directory, or AI agent applies its own policy."
+    },
+    {
+      term: "External Policy Route",
+      meaning: "A machine-readable hint telling external agents whether to stop, review warnings, request more evidence, or continue with their own policy."
+    },
+    {
+      term: "S1 First-party",
+      meaning: "Evidence submitted by the organization itself. Useful for scope and integrity, but not independent by itself."
+    },
+    {
+      term: "S2 Third-party",
+      meaning: "Third-party-looking material such as certification or lab reports, preferably with a recheck route and clear scope."
+    },
+    {
+      term: "S3 Sampling",
+      meaning: "Evidence from random purchase, random sampling, or real market/customer-site sample checks, designed to reduce hand-picked sample risk."
+    },
+    {
+      term: "S4 Observation",
+      meaning: "Real-world use, delivery, support, uptime, repair, or supply-continuity observation over time. In Fireseed Alpha this is design preview."
+    },
+    {
+      term: "S5 Challenge",
+      meaning: "Public challenge, negative evidence, correction, and dispute lifecycle. In Fireseed Alpha this is design preview."
+    },
+    {
+      term: "Carrier receipts",
+      meaning: "Records showing where artifacts were mirrored, archived, pinned, or timestamped. Carriers help durability, but they are not the identity root."
+    }
+  ].map(
+    (item) => `
+        <div class="term-item">
+          <dt>${escapeHtml(item.term)}</dt>
+          <dd>${escapeHtml(item.meaning)}</dd>
+        </div>`
+  ).join("\n");
 
   return `<!doctype html>
 <html lang="en">
@@ -485,6 +557,28 @@ export function renderVerifyPage(model: VerifyPageModel): string {
       color: var(--muted);
     }
 
+    .term-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin: 18px 0 0;
+    }
+
+    .term-item {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .term-item dt {
+      margin-bottom: 6px;
+    }
+
+    .term-item dd {
+      color: var(--muted);
+    }
+
     dl {
       display: grid;
       grid-template-columns: minmax(140px, 220px) 1fr;
@@ -648,6 +742,14 @@ ${nextBestActions}
           </ol>
         </div>
       </div>
+    </section>
+
+    <section aria-labelledby="key-terms">
+      <h2 id="key-terms">Key Terms</h2>
+      <p>Short explanations for human review. The machine-readable protocol still uses stable JSON keys, status codes, and policy route codes.</p>
+      <dl class="term-list">
+${keyTerms}
+      </dl>
     </section>
 
     <section aria-labelledby="identity">

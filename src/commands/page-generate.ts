@@ -17,6 +17,7 @@ import { validateDirectorySnapshot } from "../directory/snapshot.ts";
 import type { JsonValue } from "../core/json.ts";
 import type {
   VerifyCarrierReceipt,
+  VerifyAgentReview,
   VerifyLinkedArtifact,
   VerifyMigrationArtifact,
   VerifyProofCheck,
@@ -162,6 +163,9 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     carrierReceipts,
     valueContinuity
   });
+  const agentReview = buildAgentReview({
+    valueContinuity
+  });
 
   const index: JsonValue = {
     type: "OrgAnchorVerifyIndex",
@@ -235,6 +239,26 @@ export async function pageGenerateCommand(options: Record<string, string | boole
         migration_count: migrationArtifacts.length,
         carrier_receipt_count: carrierReceipts.length
       }
+    },
+    agent_review: {
+      overall_status: agentReview.overallStatus,
+      identity_status: agentReview.identityStatus,
+      value_status: agentReview.valueStatus,
+      conformance_status: agentReview.conformanceStatus,
+      trust_decision: agentReview.trustDecision,
+      policy_route: {
+        route: agentReview.policyRoute.route,
+        guidance: agentReview.policyRoute.guidance,
+        reasons: agentReview.policyRoute.reasons
+      },
+      evidence_class_summary: agentReview.evidenceClassSummary.map((item) => ({
+        label: item.label,
+        status: item.status,
+        count: item.count,
+        detail: item.detail
+      })),
+      next_best_actions: agentReview.nextBestActions,
+      source_files: agentReview.sourceFiles
     },
     root_continuity: {
       status: rootContinuity.status,
@@ -347,6 +371,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     carrierReceipts,
     rootContinuity,
     valueContinuity,
+    agentReview,
     proofChecks
   });
   await writeFile(join(out, "index.html"), html, "utf8");
@@ -354,6 +379,166 @@ export async function pageGenerateCommand(options: Record<string, string | boole
   console.log(`Generated verify page: ${join(out, "index.html")}`);
   console.log(`Statement hash: ${statementHash}`);
   console.log(`Authority hash: ${authorityHash}`);
+}
+
+function buildAgentReview(options: {
+  valueContinuity: VerifyValueContinuity;
+}): VerifyAgentReview {
+  const summary = options.valueContinuity.summary;
+  const valueStatus = valueStatusFromSummary(options.valueContinuity);
+  const identityStatus = "PASS";
+  const overallStatus = valueStatus === "PASS" ? "PASS" : "WARN";
+  const conformanceStatus = conformanceStatusFromPage(identityStatus, valueStatus);
+  const policyRoute = pagePolicyRoute(valueStatus, summary);
+  const evidenceClassSummary = evidenceClassSummaryFromValue(options.valueContinuity);
+  const nextBestActions = uniqueStrings([
+    ...pageNextBestActions(valueStatus, summary, options.valueContinuity),
+    ...arrayStrings(options.valueContinuity.claimSupportSummary?.next_best_actions),
+    ...arrayStrings(options.valueContinuity.s2Summary?.next_actions),
+    ...arrayStrings(options.valueContinuity.s3Summary?.next_actions),
+    ...arrayStrings(options.valueContinuity.s4Summary?.next_actions)
+  ]).slice(0, 8);
+  const sourceFiles = [
+    INDEX_FILE,
+    options.valueContinuity.status === "PRESENT" && options.valueContinuity.path ? options.valueContinuity.path : "",
+    options.valueContinuity.status === "PRESENT" && options.valueContinuity.markdownPath ? options.valueContinuity.markdownPath : ""
+  ].filter(Boolean);
+
+  return {
+    overallStatus,
+    identityStatus,
+    valueStatus,
+    conformanceStatus,
+    trustDecision: "NOT_ASSIGNED_BY_ORGANCHOR",
+    policyRoute,
+    evidenceClassSummary,
+    nextBestActions: nextBestActions.length > 0 ?
+      nextBestActions :
+      ["Use the verified artifacts as inputs to your own policy. OrgAnchor does not assign final trust."],
+    sourceFiles
+  };
+}
+
+function valueStatusFromSummary(valueContinuity: VerifyValueContinuity): "PASS" | "WARN" | "NOT_INCLUDED" {
+  if (valueContinuity.status !== "PRESENT") return "NOT_INCLUDED";
+  const summary = valueContinuity.summary;
+  return numberMetric(summary.FAIL) > 0 || numberMetric(summary.WARN) > 0 || numberMetric(summary.unsupported_claims) > 0 ?
+    "WARN" :
+    "PASS";
+}
+
+function conformanceStatusFromPage(identityStatus: "PASS" | "FAIL", valueStatus: "PASS" | "WARN" | "NOT_INCLUDED"): string {
+  if (identityStatus !== "PASS") return "FAILED";
+  if (valueStatus === "PASS") return "FULL_COMPATIBLE";
+  if (valueStatus === "WARN") return "PARTIAL";
+  return "IDENTITY_VERIFY_PASS";
+}
+
+function pagePolicyRoute(
+  valueStatus: "PASS" | "WARN" | "NOT_INCLUDED",
+  summary: Record<string, JsonValue>
+): VerifyAgentReview["policyRoute"] {
+  if (valueStatus === "NOT_INCLUDED") {
+    return {
+      route: "REQUEST_VALUE_EVIDENCE",
+      guidance: "Identity can be used for endpoint continuity, but product or service evaluation needs signed claims and evidence.",
+      reasons: ["value_layer_not_included"]
+    };
+  }
+  if (valueStatus === "WARN") {
+    const reasons: string[] = [];
+    if (numberMetric(summary.WARN) > 0) reasons.push("value_warnings_present");
+    if (numberMetric(summary.unsupported_claims) > 0) reasons.push("unsupported_claims_present");
+    if (numberMetric(summary.FAIL) > 0) reasons.push("value_failures_present");
+    return {
+      route: "REVIEW_VALUE_WARNINGS",
+      guidance: "The value layer is present but has warnings, failures, or unsupported claims. Route to external policy review before transaction decisions.",
+      reasons
+    };
+  }
+  if (numberMetric(summary.MANUAL_CHECK_REQUIRED) > 0 || (numberMetric(summary.total_claims) > 0 && numberMetric(summary.third_party_claims) === 0)) {
+    const reasons: string[] = [];
+    if (numberMetric(summary.MANUAL_CHECK_REQUIRED) > 0) reasons.push("manual_checks_present");
+    if (numberMetric(summary.total_claims) > 0 && numberMetric(summary.third_party_claims) === 0) reasons.push("no_third_party_claims");
+    return {
+      route: "EXTERNAL_POLICY_REVIEW",
+      guidance: "Verification passed, but external policy still needs to decide whether the evidence is sufficient for the intended purpose.",
+      reasons
+    };
+  }
+  return {
+    route: "READY_FOR_EXTERNAL_POLICY",
+    guidance: "Identity and value package checks passed. Use them as inputs to the external agent's own policy; OrgAnchor still does not assign final trust.",
+    reasons: ["identity_and_value_checks_passed"]
+  };
+}
+
+function evidenceClassSummaryFromValue(valueContinuity: VerifyValueContinuity): VerifyAgentReview["evidenceClassSummary"] {
+  const summary = valueContinuity.summary;
+  const s2 = valueContinuity.s2Summary ?? {};
+  const s3 = valueContinuity.s3Summary ?? {};
+  const s4 = valueContinuity.s4Summary ?? {};
+  return [
+    {
+      label: "S1 First-party",
+      status: numberMetric(summary.first_party_evidence_items) > 0 ? "PRESENT" : "NOT_INCLUDED",
+      count: numberMetric(summary.first_party_evidence_items),
+      detail: "Organization-submitted evidence. Useful for scope and integrity, but not independent by itself."
+    },
+    {
+      label: "S2 Third-party",
+      status: evidenceClassStatus(numberMetric(s2.effective_s2_count), numberMetric(s2.manual_check_s2_count)),
+      count: numberMetric(s2.effective_s2_count),
+      detail: "Organization-submitted third-party material with mechanical route and gap checks."
+    },
+    {
+      label: "S3 Sampling",
+      status: evidenceClassStatus(numberMetric(s3.effective_s3_count), numberMetric(s3.manual_check_s3_count)),
+      count: numberMetric(s3.effective_s3_count),
+      detail: "Random purchase or sampling records. Current tooling checks declared gates; network slot ledgers are future work."
+    },
+    {
+      label: "S4 Observation",
+      status: numberMetric(s4.effective_s4_count) > 0 ? "PRESENT" : "DESIGN_PREVIEW",
+      count: numberMetric(s4.effective_s4_count),
+      detail: "Real-use or delivery observation. Alpha support is partial and should be treated as a design-preview signal."
+    },
+    {
+      label: "S5 Challenge",
+      status: "DESIGN_PREVIEW",
+      count: 0,
+      detail: "Public challenge and negative evidence governance is documented but not implemented as a finished acceptance gate."
+    }
+  ];
+}
+
+function evidenceClassStatus(count: number, manualChecks: number): string {
+  if (count === 0) return "NOT_INCLUDED";
+  return manualChecks > 0 ? "MANUAL_CHECK_REQUIRED" : "PRESENT";
+}
+
+function pageNextBestActions(
+  valueStatus: "PASS" | "WARN" | "NOT_INCLUDED",
+  summary: Record<string, JsonValue>,
+  valueContinuity: VerifyValueContinuity
+): string[] {
+  const actions: string[] = [];
+  if (valueStatus === "NOT_INCLUDED") {
+    actions.push("Ask the organization for signed claims/evidence manifests if product or service evaluation matters.");
+  }
+  if (numberMetric(summary.unsupported_claims) > 0) {
+    actions.push("Ask the organization to link unsupported claims to hash-bound evidence or mark them as limitations.");
+  }
+  if (numberMetric(summary.WARN) > 0 || numberMetric(summary.FAIL) > 0) {
+    actions.push("Review the value continuity report before using claims in a transaction decision.");
+  }
+  if (numberMetric(summary.third_party_claims) === 0 && numberMetric(summary.total_claims) > 0) {
+    actions.push("Request independent S2/S3/S4 support when the decision requires more than first-party evidence.");
+  }
+  if (numberMetric(valueContinuity.s3Summary?.effective_s3_count) === 0) {
+    actions.push("Request S3 random purchase or sampling support when anti-hand-picked-sample assurance matters.");
+  }
+  return actions;
 }
 
 function buildRootContinuity(options: {
@@ -496,7 +681,11 @@ async function includeValueContinuityReport(options: {
     status: "PRESENT",
     path: VALUE_REPORT_FILE,
     hash: sha256CanonicalJson(report),
-    summary: publicValueContinuitySummary(asRecord(report.summary))
+    summary: publicValueContinuitySummary(asRecord(report.summary)),
+    claimSupportSummary: summarizeClaimSupportForPage(report),
+    s2Summary: asRecord(report.s2_summary),
+    s3Summary: asRecord(report.s3_summary),
+    s4Summary: asRecord(report.s4_summary)
   };
   if (markdownExists) {
     result.markdownPath = VALUE_REPORT_MARKDOWN_FILE;
@@ -518,6 +707,9 @@ function emptyValueContinuitySummary(): Record<string, JsonValue> {
     external_evidence_items: 0,
     first_party_evidence_items: 0,
     stale_evidence_items: 0,
+    profile_declared_claims: 0,
+    profile_pass_claims: 0,
+    profile_gap_claims: 0,
     PASS: 0,
     WARN: 0,
     FAIL: 0,
@@ -549,7 +741,43 @@ function valueContinuityIndex(valueContinuity: VerifyValueContinuity): JsonValue
     hash: valueContinuity.hash ?? "",
     markdown_path: valueContinuity.markdownPath ?? null,
     markdown_hash: valueContinuity.markdownHash ?? null,
-    summary: valueContinuity.summary
+    summary: valueContinuity.summary,
+    claim_support_summary: valueContinuity.claimSupportSummary ?? {},
+    s2_summary: valueContinuity.s2Summary ?? {},
+    s3_summary: valueContinuity.s3Summary ?? {},
+    s4_summary: valueContinuity.s4Summary ?? {}
+  };
+}
+
+function summarizeClaimSupportForPage(report: Record<string, JsonValue>): Record<string, JsonValue> {
+  const claims = Array.isArray(report.claims) ? report.claims.map((claim) => asRecord(claim)) : [];
+  const supportLevels = emptyClaimSupportLevels();
+  const riskGaps: string[] = [];
+  const nextBestActions: string[] = [];
+  for (const claim of claims) {
+    const level = stringValue(claim.protocol_support_level);
+    if (Object.prototype.hasOwnProperty.call(supportLevels, level)) {
+      supportLevels[level] = (supportLevels[level] ?? 0) + 1;
+    }
+    riskGaps.push(...arrayStrings(claim.risk_gaps));
+    nextBestActions.push(...arrayStrings(claim.next_best_actions));
+  }
+  return {
+    support_levels: supportLevels as unknown as JsonValue,
+    risk_gap_count: riskGaps.length,
+    top_risk_gaps: uniqueFirst(riskGaps, 5) as unknown as JsonValue,
+    next_best_actions: uniqueFirst(nextBestActions, 5) as unknown as JsonValue
+  };
+}
+
+function emptyClaimSupportLevels(): Record<string, number> {
+  return {
+    L0_UNSUPPORTED: 0,
+    L1_SIGNED_SELF_CLAIM: 0,
+    L2_HASH_BOUND_EVIDENCE: 0,
+    L3_REPRODUCIBLE_METHOD: 0,
+    L4_INDEPENDENT_ATTESTATION: 0,
+    TIME_OBSERVED: 0
   };
 }
 
@@ -890,6 +1118,27 @@ function asRecord(value: JsonValue | undefined): Record<string, JsonValue> {
 
 function stringValue(value: JsonValue | undefined): string {
   return typeof value === "string" ? value : "";
+}
+
+function arrayStrings(value: JsonValue | undefined): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === "string" && item.length > 0);
+}
+
+function uniqueStrings(values: string[]): string[] {
+  return [...new Set(values)];
+}
+
+function uniqueFirst(values: string[], limit: number): string[] {
+  const seen = new Set<string>();
+  const output: string[] = [];
+  for (const value of values) {
+    if (seen.has(value)) continue;
+    seen.add(value);
+    output.push(value);
+    if (output.length >= limit) break;
+  }
+  return output;
 }
 
 function publicPathLabel(value: string): string {

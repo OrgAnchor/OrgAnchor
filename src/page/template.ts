@@ -77,6 +77,31 @@ export interface VerifyValueContinuity {
   markdownPath?: string;
   markdownHash?: string;
   summary: Record<string, JsonValue>;
+  claimSupportSummary?: Record<string, JsonValue>;
+  s2Summary?: Record<string, JsonValue>;
+  s3Summary?: Record<string, JsonValue>;
+  s4Summary?: Record<string, JsonValue>;
+}
+
+export interface VerifyAgentReview {
+  overallStatus: "PASS" | "WARN" | "FAIL";
+  identityStatus: "PASS" | "FAIL";
+  valueStatus: "PASS" | "WARN" | "NOT_INCLUDED";
+  conformanceStatus: string;
+  trustDecision: "NOT_ASSIGNED_BY_ORGANCHOR";
+  policyRoute: {
+    route: string;
+    guidance: string;
+    reasons: string[];
+  };
+  evidenceClassSummary: Array<{
+    label: string;
+    status: string;
+    count: number;
+    detail: string;
+  }>;
+  nextBestActions: string[];
+  sourceFiles: string[];
 }
 
 export interface VerifyPageModel {
@@ -96,6 +121,7 @@ export interface VerifyPageModel {
   carrierReceipts: VerifyCarrierReceipt[];
   rootContinuity: VerifyRootContinuity;
   valueContinuity: VerifyValueContinuity;
+  agentReview: VerifyAgentReview;
   proofChecks: VerifyProofCheck[];
 }
 
@@ -215,6 +241,24 @@ export function renderVerifyPage(model: VerifyPageModel): string {
         </tr>`
     )
     .join("\n");
+  const agentReview = model.agentReview;
+  const evidenceClassCards = agentReview.evidenceClassSummary
+    .map(
+      (item) => `
+        <div class="agent-card">
+          <span class="summary-label">${escapeHtml(item.label)}</span>
+          <span class="badge badge-${escapeHtml(cssClass(item.status))}">${escapeHtml(item.status)}</span>
+          <strong>${escapeHtml(String(item.count))}</strong>
+          <p>${escapeHtml(item.detail)}</p>
+        </div>`
+    )
+    .join("\n");
+  const nextBestActions = agentReview.nextBestActions.length > 0 ?
+    agentReview.nextBestActions.map((action) => `<li>${escapeHtml(action)}</li>`).join("\n") :
+    "<li>Use the verified artifacts as inputs to your own policy. OrgAnchor does not assign final trust.</li>";
+  const policyReasons = agentReview.policyRoute.reasons.length > 0 ?
+    agentReview.policyRoute.reasons.map((reason) => `<code>${escapeHtml(reason)}</code>`).join(", ") :
+    "none";
 
   return `<!doctype html>
 <html lang="en">
@@ -372,6 +416,28 @@ export function renderVerifyPage(model: VerifyPageModel): string {
       color: var(--neutral);
     }
 
+    .badge-warn,
+    .badge-review_value_warnings,
+    .badge-external_policy_review,
+    .badge-partial,
+    .badge-design_preview,
+    .badge-manual_check_required {
+      color: var(--warn);
+    }
+
+    .badge-fail,
+    .badge-stop_identity_failure,
+    .badge-review_failed_checks {
+      color: #b3261e;
+    }
+
+    .badge-full_compatible,
+    .badge-ready_for_external_policy,
+    .badge-identity_verify_pass,
+    .badge-value_verify_pass {
+      color: var(--ok);
+    }
+
     .status::before {
       content: "";
       width: 10px;
@@ -383,6 +449,40 @@ export function renderVerifyPage(model: VerifyPageModel): string {
     section {
       padding: 24px 0;
       border-bottom: 1px solid var(--line);
+    }
+
+    .agent-panel {
+      display: grid;
+      gap: 16px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 18px;
+      border-radius: 8px;
+    }
+
+    .agent-decision {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .agent-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--bg);
+    }
+
+    .agent-card strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 1.35rem;
+    }
+
+    .next-actions {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
     }
 
     dl {
@@ -501,6 +601,53 @@ export function renderVerifyPage(model: VerifyPageModel): string {
 ${proofRows}
         </tbody>
       </table>
+    </section>
+
+    <section aria-labelledby="agent-view">
+      <h2 id="agent-view">Agent Verification View</h2>
+      <p>This is the human-readable version of the same machine-readable verification package. It shows what an AI agent can cheaply learn first, before making any external policy or transaction decision.</p>
+      <div class="agent-panel">
+        <div class="agent-decision" aria-label="AI agent first-pass decision summary">
+          <div class="summary-item">
+            <span class="summary-label">Overall status</span>
+            <span class="badge badge-${escapeHtml(cssClass(agentReview.overallStatus))}">${escapeHtml(agentReview.overallStatus)}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Identity status</span>
+            <span class="badge badge-${escapeHtml(cssClass(agentReview.identityStatus))}">${escapeHtml(agentReview.identityStatus)}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Value status</span>
+            <span class="badge badge-${escapeHtml(cssClass(agentReview.valueStatus))}">${escapeHtml(agentReview.valueStatus)}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Conformance</span>
+            <span class="badge badge-${escapeHtml(cssClass(agentReview.conformanceStatus))}">${escapeHtml(agentReview.conformanceStatus)}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Trust decision</span>
+            <span class="summary-value">External policy</span>
+          </div>
+        </div>
+        <div>
+          <h2>Evidence Classes</h2>
+          <div class="summary" aria-label="Evidence class summary">
+${evidenceClassCards}
+          </div>
+        </div>
+        <div>
+          <h2>External Policy Route</h2>
+          <p><span class="badge badge-${escapeHtml(cssClass(agentReview.policyRoute.route))}">${escapeHtml(agentReview.policyRoute.route)}</span></p>
+          <p>${escapeHtml(agentReview.policyRoute.guidance)}</p>
+          <p>Reasons: ${policyReasons}</p>
+        </div>
+        <div>
+          <h2>Next Checks</h2>
+          <ol class="next-actions">
+${nextBestActions}
+          </ol>
+        </div>
+      </div>
     </section>
 
     <section aria-labelledby="identity">

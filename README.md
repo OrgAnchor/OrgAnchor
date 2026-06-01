@@ -75,6 +75,7 @@ Implemented so far:
 - Static adopting-organization `/verify` page generation.
 - Automatic Beacon discovery surfaces: `/.well-known/organchor.json`, `robots.txt`, `sitemap.xml`, HTML discovery links, and JSON-LD metadata.
 - Machine-readable `public/verify/organchor.json`.
+- Human-readable Agent Verification View on `/verify/index.html`, backed by the same `agent_review` data exposed in `organchor.json`.
 - Agent-facing discovery and verification contract for `/.well-known/organchor.json`.
 - Third-party AI agent integration guide with compact-result examples.
 - `organchor verify url` for external AI agents and other verifiers.

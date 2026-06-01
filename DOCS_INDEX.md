@@ -15,6 +15,8 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `CAPABILITY_TRACEABILITY_MATRIX.md`: implementation-audit map linking public capability claims to status, commands, tests, artifacts, and limits.
 - `CAPABILITY_AUDIT_SCENARIOS.md`: executable scenario audit map linking capability groups to runnable command paths and generated reports.
 - `VISIBLE_ACCEPTANCE.md`: human-visible acceptance guide for seeing the local `/verify` page, agent summary, and tamper-failure demo.
+- `VISIBLE_ACCEPTANCE_REVIEW_2026-06-01.md`: current review snapshot for the visible acceptance page, including the Fireseed language gap caveat.
+- `LANGUAGE_COMPATIBILITY.md`: active policy for stable machine contracts and localized human explanation.
 - `CONTRIBUTING.md`: Fireseed contributor guide for adopter trials, technical review, evidence/governance review, PR hygiene, and scope boundaries.
 - `CALL_FOR_FIRESEED_REVIEW.md`: public Fireseed review invitation and success condition.
 - `ROADMAP.md`: implementation stages and current project direction.
@@ -38,6 +40,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `TECHNICAL_DECISIONS.md`: accumulated technical decisions.
 - `CRYPTO_POLICY.md`: cryptographic policy, algorithm agility, and post-quantum stance.
 - `THREAT_MODEL.md`: risks OrgAnchor does and does not address.
+- `LANGUAGE_COMPATIBILITY.md`: language policy for keeping AI-agent protocol fields stable while allowing human-facing localization.
 - `docs/adr/*.md`: accepted architecture decision records.
 
 ## Adoption And Operator Guides

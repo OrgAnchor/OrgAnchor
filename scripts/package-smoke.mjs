@@ -54,6 +54,8 @@ try {
   assertContains(copiedFiles, "CAPABILITY_TRACEABILITY_MATRIX.md");
   assertContains(copiedFiles, "CAPABILITY_AUDIT_SCENARIOS.md");
   assertContains(copiedFiles, "VISIBLE_ACCEPTANCE.md");
+  assertContains(copiedFiles, "VISIBLE_ACCEPTANCE_REVIEW_2026-06-01.md");
+  assertContains(copiedFiles, "LANGUAGE_COMPATIBILITY.md");
   assertContains(copiedFiles, "CALL_FOR_FIRESEED_REVIEW.md");
   assertContains(copiedFiles, "CHANGELOG.md");
   assertContains(copiedFiles, "CONTRIBUTING.md");

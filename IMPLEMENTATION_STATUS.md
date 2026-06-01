@@ -87,7 +87,7 @@ Release hygiene:
 
 ## Current Fireseed Launch Focus
 
-The current launch path is Fireseed Alpha, defined in `FIRESEED_ALPHA_PLAN.md`, with the operational GO/HOLD decision in `FIRESEED_READINESS_GATE.md`.
+The current launch path is Fireseed Alpha, defined in `FIRESEED_ALPHA_PLAN.md`, with the operational GO/HOLD decision in `FIRESEED_READINESS_GATE.md` and the first GO decision in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 
 Fireseed Alpha is the minimum necessary public collaboration loop:
 
@@ -107,7 +107,7 @@ The shortest useful launch path is:
 2. Keep `https://organchor.org` publicly verifiable as the reference self-pilot.
 3. Keep future alpha publishes under new release ids, not as stable v1 claims.
 4. Finish Fireseed Freeze work: S3 baseline clarity, S4/S5 design-preview wording, README/onboarding/contributor clarity, visible known gaps, and the readiness gate.
-5. Invite early adopting organizations, technical reviewers, and evidence/governance critics.
+5. Invite named early adopting organizations, technical reviewers, and evidence/governance critics according to `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 6. Run the first low-risk external pilot using `EXTERNAL_PILOT_RUNBOOK.md`.
 7. Feed pilot lessons back into onboarding, evidence, and agent-facing verification outputs.
 

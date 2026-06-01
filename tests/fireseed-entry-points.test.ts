@@ -13,6 +13,7 @@ test("README exposes the Fireseed public entry points", () => {
   assert.match(readme, /## Fireseed Review Tracks/);
   assert.match(readme, /S1-S3 evidence baseline/);
   assert.match(readme, /S4\/S5 design preview/);
+  assert.match(readme, /FIRESEED_LAUNCH_DECISION_2026-06-01\.md/);
   assert.match(readme, /FIRESEED_READINESS_GATE\.md/);
   assert.match(readme, /CONTRIBUTING\.md/);
   assert.match(readme, /CALL_FOR_FIRESEED_REVIEW\.md/);
@@ -39,6 +40,7 @@ test("Fireseed public review brief does not overclaim maturity", () => {
   const call = readText("CALL_FOR_FIRESEED_REVIEW.md");
 
   assert.match(call, /Fireseed Alpha does not claim/);
+  assert.match(call, /FIRESEED_LAUNCH_DECISION_2026-06-01\.md/);
   assert.match(call, /FIRESEED_READINESS_GATE\.md/);
   assert.match(call, /Product quality certification/);
   assert.match(call, /Guaranteed truth/);

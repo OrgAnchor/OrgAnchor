@@ -48,6 +48,8 @@ Then follow `ADOPTION_GUIDE.md`, `ORG_ONBOARDING_CHECKLIST.md`, and `EXTERNAL_PI
 
 Use `FIRESEED_READINESS_GATE.md` to distinguish Fireseed launch blockers from normal alpha feedback.
 
+The current named-outreach decision is recorded in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
+
 Useful issue type:
 
 ```text

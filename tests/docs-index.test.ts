@@ -13,6 +13,7 @@ test("documentation index is discoverable from README and package metadata", () 
   assert.match(readme, /PROJECT_NORTH_STAR\.md/);
   assert.match(readme, /DOCS_INDEX\.md/);
   assert.match(readme, /FIRESEED_ALPHA_PLAN\.md/);
+  assert.match(readme, /FIRESEED_LAUNCH_DECISION_2026-06-01\.md/);
   assert.match(readme, /FIRESEED_READINESS_GATE\.md/);
   assert.match(readme, /CONTRIBUTING\.md/);
   assert.match(readme, /CALL_FOR_FIRESEED_REVIEW\.md/);
@@ -24,6 +25,10 @@ test("documentation index is discoverable from README and package metadata", () 
   assert.ok(packageJson.files?.includes("PROJECT_NORTH_STAR.md"), "package.json files must include PROJECT_NORTH_STAR.md");
   assert.ok(packageJson.files?.includes("DOCS_INDEX.md"), "package.json files must include DOCS_INDEX.md");
   assert.ok(packageJson.files?.includes("FIRESEED_ALPHA_PLAN.md"), "package.json files must include FIRESEED_ALPHA_PLAN.md");
+  assert.ok(
+    packageJson.files?.includes("FIRESEED_LAUNCH_DECISION_2026-06-01.md"),
+    "package.json files must include FIRESEED_LAUNCH_DECISION_2026-06-01.md"
+  );
   assert.ok(
     packageJson.files?.includes("FIRESEED_READINESS_GATE.md"),
     "package.json files must include FIRESEED_READINESS_GATE.md"

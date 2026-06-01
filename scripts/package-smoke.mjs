@@ -55,6 +55,7 @@ try {
   assertContains(copiedFiles, "CHANGELOG.md");
   assertContains(copiedFiles, "CONTRIBUTING.md");
   assertContains(copiedFiles, "DOCS_INDEX.md");
+  assertContains(copiedFiles, "FIRESEED_LAUNCH_DECISION_2026-06-01.md");
   assertContains(copiedFiles, "FIRESEED_READINESS_GATE.md");
   assertContains(copiedFiles, "PROJECT_NORTH_STAR.md");
   assertContains(copiedFiles, "ARCHITECTURE.md");

@@ -18,6 +18,8 @@ S4/S5 are clearly marked as design preview;
 the project invites co-builders before pretending to be complete.
 ```
 
+The first launch decision is recorded in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
+
 ## What We Are Asking People To Review
 
 ### Adopting Organizations
@@ -80,8 +82,9 @@ OrgAnchor verifies signatures, hashes, continuity, publication structure, and de
 1. Read `README.md`.
 2. Read `FIRESEED_ALPHA_PLAN.md`.
 3. Read `FIRESEED_READINESS_GATE.md` to understand what is in scope for Fireseed and what remains unfinished.
-4. Run `npm run agent:demo` from a source checkout, or install with `npm install -g organchor@alpha`.
-5. Use the GitHub issue templates for adopter trials, technical review, or evidence/governance review.
+4. Read `FIRESEED_LAUNCH_DECISION_2026-06-01.md` for the GO decision, accepted gaps, and first outreach tracks.
+5. Run `npm run agent:demo` from a source checkout, or install with `npm install -g organchor@alpha`.
+6. Use the GitHub issue templates for adopter trials, technical review, or evidence/governance review.
 
 ## Fireseed Success Condition
 

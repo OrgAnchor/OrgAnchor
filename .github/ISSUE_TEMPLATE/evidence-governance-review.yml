@@ -1,0 +1,56 @@
+name: Evidence / Governance Review
+description: Review evidence, sampling, observation, challenge, Directory, or abuse-resistance design.
+title: "[Evidence/Governance] "
+labels:
+  - fireseed
+  - evidence-governance
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for concrete scenarios where OrgAnchor evidence could be misleading, too costly, too easy to game, or too hard for AI agents to interpret.
+  - type: dropdown
+    id: source_layer
+    attributes:
+      label: Source layer or governance area
+      options:
+        - S1 first-party evidence
+        - S2 third-party material
+        - S3 random purchase / sampling
+        - S4 real-use observation
+        - S5 public challenge / negative evidence
+        - Package health
+        - Directory / Beacon discovery
+        - Storage incentives
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario
+      description: Describe the concrete organization/product/service situation.
+    validations:
+      required: true
+  - type: textarea
+    id: failure_mode
+    attributes:
+      label: Failure mode
+      description: How could the current model mislead agents, punish honest adopters, or allow abuse?
+    validations:
+      required: true
+  - type: textarea
+    id: desired_agent_output
+    attributes:
+      label: Desired AI-agent output
+      description: What should a low-cost external AI agent be able to see or conclude?
+    validations:
+      required: false
+  - type: textarea
+    id: proposed_constraint
+    attributes:
+      label: Proposed constraint or improvement
+      description: Rule, field, check, warning, documentation change, or future workflow.
+    validations:
+      required: false
+

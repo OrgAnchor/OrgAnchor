@@ -1,0 +1,58 @@
+name: Technical Review / Fireseed
+description: Report implementation, security, schema, release, or verification issues.
+title: "[Technical Review] "
+labels:
+  - fireseed
+  - technical-review
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for concrete technical review findings. Include reproducible commands and public fixtures only.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Canonical JSON / hashing
+        - Signature verification
+        - Threshold root authority
+        - Root authority migration
+        - /verify package
+        - Beacon discovery
+        - Agent verification output
+        - Claims/evidence manifests
+        - S2/S3 checks
+        - Release/package safety
+        - Documentation contract
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: finding
+    attributes:
+      label: Finding
+      description: State the bug, ambiguity, or risk.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Commands, fixtures, URLs, or exact steps.
+      render: bash
+    validations:
+      required: false
+  - type: textarea
+    id: expected_actual
+    attributes:
+      label: Expected vs actual behavior
+    validations:
+      required: false
+  - type: textarea
+    id: proposed_fix
+    attributes:
+      label: Proposed fix or review direction
+    validations:
+      required: false
+

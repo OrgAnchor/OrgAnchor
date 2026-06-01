@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Fireseed Alpha Plan
+    url: https://github.com/OrgAnchor/OrgAnchor/blob/main/FIRESEED_ALPHA_PLAN.md
+    about: Read the current Fireseed launch boundary before opening broad scope proposals.

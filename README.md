@@ -19,13 +19,29 @@ It is designed around:
 
 The identity root is the adopting organization's root authority, not OrgAnchor's website, a domain, a platform account, IPFS, Arweave, ENS, or a lockfile.
 
+## Fireseed Alpha
+
+OrgAnchor is currently preparing Fireseed Alpha: the first public collaboration point where the minimum useful loop is visible enough for outside review.
+
+Fireseed Alpha focuses on:
+
+- Organization root authority and migration continuity.
+- Signed official endpoint statements.
+- Public `/verify` packages.
+- AI-agent-readable verification through `/.well-known/organchor.json` and `organchor verify url --compact`.
+- Signed claims and evidence manifests.
+- S1-S3 evidence baseline: first-party evidence, organization-submitted third-party material, and random purchase / sampling structure.
+- S4/S5 design preview only: real-use observation and public challenge are important, but not finished acceptance gates.
+
+Start with `FIRESEED_ALPHA_PLAN.md`, `CALL_FOR_FIRESEED_REVIEW.md`, and `CONTRIBUTING.md` if you want to try, review, or critique the project.
+
 ## Purpose and Values
 
 OrgAnchor is not only a tool for keeping an organizational name alive. Its purpose is to help long-term, evidence-bearing organizations make their public identity, claims, evidence, corrections, and migrations easier to verify over time.
 
 OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
 
-See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `IMPLEMENTATION_STATUS.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `S2_THIRD_PARTY_MATERIAL_MODEL.md`, `PACKAGE_HEALTH_LAYER.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, S2 third-party material model, package health model, real-world evidence profile, product/service credential direction, implementation map, and document map.
+See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `FIRESEED_ALPHA_PLAN.md`, `IMPLEMENTATION_STATUS.md`, `CALL_FOR_FIRESEED_REVIEW.md`, `CONTRIBUTING.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `S2_THIRD_PARTY_MATERIAL_MODEL.md`, `PACKAGE_HEALTH_LAYER.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, S2 third-party material model, package health model, real-world evidence profile, product/service credential direction, implementation map, and document map.
 
 The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DISCOVERY_TAXONOMY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
 
@@ -41,7 +57,7 @@ The accepted but not yet implemented `PACKAGE_HEALTH_LAYER.md` defines how organ
 
 ## Current Status
 
-Stage 5 now has a published MVP alpha: `organchor@0.1.0-alpha.3` under the npm `alpha` dist-tag, with Git tag `v0.1.0-alpha.3` and a published GitHub prerelease. The current focus is to keep the CLI installable, keep the public self-pilot verifiable, and start the first low-risk external pilot. The core v1 surface now includes root authority records, signed endpoint statements, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
+OrgAnchor has a published MVP alpha: `organchor@0.1.0-alpha.3` under the npm `alpha` dist-tag, with Git tag `v0.1.0-alpha.3` and a published GitHub prerelease. The current focus is Fireseed Alpha: keep the CLI installable, keep the public self-pilot verifiable, finish the S1-S3 minimum evidence loop, keep S4/S5 as design preview, and invite early adopters and reviewers before calling the project v1. The core alpha surface now includes root authority records, signed endpoint statements, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
 
 OrgAnchor's own public self-pilot is active at `https://organchor.org/verify/`. Its real operational artifacts live outside this source repository so that the publishable project remains clean: no private keys, provider tokens, payment records, or deployment credentials are stored here.
 
@@ -142,6 +158,16 @@ npm run agent:demo
 ```
 
 The demo creates a temporary adopting organization, serves its `/verify` package on localhost, then runs Beacon sweep, local indexing, Directory snapshot export, need-match query, and direct compact verification. It writes observable outputs under a temporary workspace so people can inspect what actually happened.
+
+## Fireseed Review Tracks
+
+Fireseed Alpha has three practical review paths:
+
+- Adopting organization trial: test whether a real or realistic organization can publish a useful OrgAnchor package without excessive effort.
+- Technical review: test signatures, canonicalization, threshold authority, migration, `/verify`, Beacon, package safety, and release checks.
+- Evidence/governance review: test S1-S3 abuse cases, S3 sampling assumptions, S4/S5 design gaps, Directory risks, and stale or misleading evidence.
+
+Use `CONTRIBUTING.md` for contribution rules and `CALL_FOR_FIRESEED_REVIEW.md` for the public review brief.
 
 ## CLI Quick Start
 

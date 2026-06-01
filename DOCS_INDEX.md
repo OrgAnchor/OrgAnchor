@@ -12,6 +12,8 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 
 - `README.md`: project overview, alpha install, quick start, current status, and safety boundaries.
 - `DOCS_INDEX.md`: this documentation map.
+- `CONTRIBUTING.md`: Fireseed contributor guide for adopter trials, technical review, evidence/governance review, PR hygiene, and scope boundaries.
+- `CALL_FOR_FIRESEED_REVIEW.md`: public Fireseed review invitation and success condition.
 - `ROADMAP.md`: implementation stages and current project direction.
 - `V1_ACCEPTANCE.md`: definition of v1 completeness.
 - `IMPLEMENTATION_STATUS.md`: current implemented surface, remaining gaps, non-goals, and verification commands.

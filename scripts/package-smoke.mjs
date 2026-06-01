@@ -51,7 +51,9 @@ try {
   assertContains(copiedFiles, "package.json");
   assertContains(copiedFiles, "LICENSE");
   assertContains(copiedFiles, "README.md");
+  assertContains(copiedFiles, "CALL_FOR_FIRESEED_REVIEW.md");
   assertContains(copiedFiles, "CHANGELOG.md");
+  assertContains(copiedFiles, "CONTRIBUTING.md");
   assertContains(copiedFiles, "DOCS_INDEX.md");
   assertContains(copiedFiles, "PROJECT_NORTH_STAR.md");
   assertContains(copiedFiles, "ARCHITECTURE.md");

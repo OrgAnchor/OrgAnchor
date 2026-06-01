@@ -12,6 +12,9 @@ test("documentation index is discoverable from README and package metadata", () 
 
   assert.match(readme, /PROJECT_NORTH_STAR\.md/);
   assert.match(readme, /DOCS_INDEX\.md/);
+  assert.match(readme, /FIRESEED_ALPHA_PLAN\.md/);
+  assert.match(readme, /CONTRIBUTING\.md/);
+  assert.match(readme, /CALL_FOR_FIRESEED_REVIEW\.md/);
   assert.match(readme, /DISCOVERY_STRATEGY\.md/);
   assert.match(readme, /ORGANCHOR_BEACON\.md/);
   assert.match(readme, /DIRECTORY_MODEL\.md/);
@@ -19,6 +22,12 @@ test("documentation index is discoverable from README and package metadata", () 
   assert.match(readme, /Operator-facing adoption and verification documents/);
   assert.ok(packageJson.files?.includes("PROJECT_NORTH_STAR.md"), "package.json files must include PROJECT_NORTH_STAR.md");
   assert.ok(packageJson.files?.includes("DOCS_INDEX.md"), "package.json files must include DOCS_INDEX.md");
+  assert.ok(packageJson.files?.includes("FIRESEED_ALPHA_PLAN.md"), "package.json files must include FIRESEED_ALPHA_PLAN.md");
+  assert.ok(packageJson.files?.includes("CONTRIBUTING.md"), "package.json files must include CONTRIBUTING.md");
+  assert.ok(
+    packageJson.files?.includes("CALL_FOR_FIRESEED_REVIEW.md"),
+    "package.json files must include CALL_FOR_FIRESEED_REVIEW.md"
+  );
   assert.ok(packageJson.files?.includes("DISCOVERY_STRATEGY.md"), "package.json files must include DISCOVERY_STRATEGY.md");
   assert.ok(packageJson.files?.includes("ORGANCHOR_BEACON.md"), "package.json files must include ORGANCHOR_BEACON.md");
   assert.ok(packageJson.files?.includes("DIRECTORY_MODEL.md"), "package.json files must include DIRECTORY_MODEL.md");

@@ -1,0 +1,66 @@
+name: Adopter Trial / Fireseed
+description: Report a real or realistic OrgAnchor adoption attempt.
+title: "[Adopter Trial] "
+labels:
+  - fireseed
+  - adopter-trial
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for organizations testing the Fireseed Alpha flow. Do not include private keys, recovery codes, provider tokens, wallets, payment data, customer-private data, or confidential evidence.
+  - type: input
+    id: organization_kind
+    attributes:
+      label: Organization or product/service kind
+      description: Describe the adopting organization at a non-confidential level.
+      placeholder: "Example: small manufacturer, open-source project, SaaS API, service provider"
+    validations:
+      required: true
+  - type: dropdown
+    id: package_visibility
+    attributes:
+      label: Package visibility
+      options:
+        - Public URL available
+        - Local-only trial
+        - Cannot share yet
+    validations:
+      required: true
+  - type: input
+    id: public_url
+    attributes:
+      label: Public URL, if available
+      placeholder: "https://example.org/verify/"
+    validations:
+      required: false
+  - type: checkboxes
+    id: completed_steps
+    attributes:
+      label: Completed steps
+      options:
+        - label: Root authority created
+        - label: Official endpoint statement signed
+        - label: /verify package generated
+        - label: Beacon generated or published
+        - label: Claims manifest created
+        - label: Evidence manifest created
+        - label: S1 first-party evidence added
+        - label: S2 third-party material attempted
+        - label: S3 random purchase / sampling attempted
+        - label: External AI-agent verification attempted
+  - type: textarea
+    id: blockers
+    attributes:
+      label: Blockers or confusing steps
+      description: Describe the smallest concrete step that failed or felt too heavy.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_help
+    attributes:
+      label: What would make adoption lower-friction?
+      description: CLI change, documentation change, template, example, or protocol simplification.
+    validations:
+      required: false
+

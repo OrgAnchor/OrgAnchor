@@ -14,6 +14,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `DOCS_INDEX.md`: this documentation map.
 - `CAPABILITY_TRACEABILITY_MATRIX.md`: implementation-audit map linking public capability claims to status, commands, tests, artifacts, and limits.
 - `CAPABILITY_AUDIT_SCENARIOS.md`: executable scenario audit map linking capability groups to runnable command paths and generated reports.
+- `VISIBLE_ACCEPTANCE.md`: human-visible acceptance guide for seeing the local `/verify` page, agent summary, and tamper-failure demo.
 - `CONTRIBUTING.md`: Fireseed contributor guide for adopter trials, technical review, evidence/governance review, PR hygiene, and scope boundaries.
 - `CALL_FOR_FIRESEED_REVIEW.md`: public Fireseed review invitation and success condition.
 - `ROADMAP.md`: implementation stages and current project direction.
@@ -95,6 +96,7 @@ The Beacon layer is the preferred anti-capture foundation for discovery. The Dir
 - `examples/agent-verification/organchor-compact-result.json`: compact verification result example.
 - `examples/agent-verification/organchor-beacon-query-result.json`: Beacon need-match discovery result example.
 - `examples/agent-discovery-loop/`: runnable seed -> sweep -> index -> query -> verify discovery-loop example.
+- `VISIBLE_ACCEPTANCE.md`: plain-language bridge between human-visible `/verify` review and machine-readable `agent_review` output.
 
 The preferred low-friction agent path is `/.well-known/organchor.json` plus:
 
@@ -112,6 +114,7 @@ organchor directory build --beacon-index beacon-index.json --node-origin https:/
 organchor directory compare --snapshots directory-a.json,directory-b.json
 organchor directory export --snapshot public/directory/directory-snapshot.json --format ndjson
 npm run agent:demo
+npm run visible:demo
 ```
 
 ## Examples And Templates

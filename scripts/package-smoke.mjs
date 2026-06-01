@@ -53,6 +53,7 @@ try {
   assertContains(copiedFiles, "README.md");
   assertContains(copiedFiles, "CAPABILITY_TRACEABILITY_MATRIX.md");
   assertContains(copiedFiles, "CAPABILITY_AUDIT_SCENARIOS.md");
+  assertContains(copiedFiles, "VISIBLE_ACCEPTANCE.md");
   assertContains(copiedFiles, "CALL_FOR_FIRESEED_REVIEW.md");
   assertContains(copiedFiles, "CHANGELOG.md");
   assertContains(copiedFiles, "CONTRIBUTING.md");
@@ -79,6 +80,7 @@ try {
   assertContains(copiedFiles, join("scripts", "agent-discovery-demo.mjs"));
   assertContains(copiedFiles, join("scripts", "capability-audit.mjs"));
   assertContains(copiedFiles, join("scripts", "capability-scenarios.mjs"));
+  assertContains(copiedFiles, join("scripts", "visible-acceptance-demo.mjs"));
   assertContains(copiedFiles, join("dist", "cli.js"));
   assertContains(copiedFiles, join("examples", "agent-discovery-loop", "README.md"));
   assertContains(copiedFiles, join("examples", "agent-verification", "organchor-beacon-query-result.json"));
@@ -137,6 +139,10 @@ try {
   const demo = run(process.execPath, [join(packageDir, "scripts", "agent-discovery-demo.mjs"), "--cleanup"], packageDir);
   if (!demo.stdout.includes("Agent discovery demo PASS")) {
     throw new Error(`packaged agent discovery demo did not pass:\n${demo.stdout}`);
+  }
+  const visibleDemo = run(process.execPath, [join(packageDir, "scripts", "visible-acceptance-demo.mjs"), "--cleanup"], packageDir);
+  if (!visibleDemo.stdout.includes("Visible acceptance demo PASS")) {
+    throw new Error(`packaged visible acceptance demo did not pass:\n${visibleDemo.stdout}`);
   }
   const capabilityAudit = run(process.execPath, [join(packageDir, "scripts", "capability-audit.mjs"), "--check"], packageDir);
   if (!capabilityAudit.stdout.includes("Capability audit PASS")) {

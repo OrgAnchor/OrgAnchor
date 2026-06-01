@@ -6,6 +6,8 @@ keys/*.private.json
 node_modules/
 dist/
 coverage/
+reports/capability-audit.json
+reports/capability-audit.md
 
 # Local environment files
 .env

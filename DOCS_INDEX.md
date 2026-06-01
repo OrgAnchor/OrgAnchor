@@ -13,6 +13,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `README.md`: project overview, alpha install, quick start, current status, and safety boundaries.
 - `DOCS_INDEX.md`: this documentation map.
 - `CAPABILITY_TRACEABILITY_MATRIX.md`: implementation-audit map linking public capability claims to status, commands, tests, artifacts, and limits.
+- `CAPABILITY_AUDIT_SCENARIOS.md`: executable scenario audit map linking capability groups to runnable command paths and generated reports.
 - `CONTRIBUTING.md`: Fireseed contributor guide for adopter trials, technical review, evidence/governance review, PR hygiene, and scope boundaries.
 - `CALL_FOR_FIRESEED_REVIEW.md`: public Fireseed review invitation and success condition.
 - `ROADMAP.md`: implementation stages and current project direction.

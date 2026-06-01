@@ -8,6 +8,8 @@ dist/
 coverage/
 reports/capability-audit.json
 reports/capability-audit.md
+reports/capability-scenarios.json
+reports/capability-scenarios.md
 
 # Local environment files
 .env

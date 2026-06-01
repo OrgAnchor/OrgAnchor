@@ -52,6 +52,7 @@ try {
   assertContains(copiedFiles, "LICENSE");
   assertContains(copiedFiles, "README.md");
   assertContains(copiedFiles, "CAPABILITY_TRACEABILITY_MATRIX.md");
+  assertContains(copiedFiles, "CAPABILITY_AUDIT_SCENARIOS.md");
   assertContains(copiedFiles, "CALL_FOR_FIRESEED_REVIEW.md");
   assertContains(copiedFiles, "CHANGELOG.md");
   assertContains(copiedFiles, "CONTRIBUTING.md");
@@ -77,6 +78,7 @@ try {
   assertContains(copiedFiles, "EVIDENCE_ONBOARDING_GUIDE.md");
   assertContains(copiedFiles, join("scripts", "agent-discovery-demo.mjs"));
   assertContains(copiedFiles, join("scripts", "capability-audit.mjs"));
+  assertContains(copiedFiles, join("scripts", "capability-scenarios.mjs"));
   assertContains(copiedFiles, join("dist", "cli.js"));
   assertContains(copiedFiles, join("examples", "agent-discovery-loop", "README.md"));
   assertContains(copiedFiles, join("examples", "agent-verification", "organchor-beacon-query-result.json"));
@@ -139,6 +141,10 @@ try {
   const capabilityAudit = run(process.execPath, [join(packageDir, "scripts", "capability-audit.mjs"), "--check"], packageDir);
   if (!capabilityAudit.stdout.includes("Capability audit PASS")) {
     throw new Error(`packaged capability audit did not pass:\n${capabilityAudit.stdout}`);
+  }
+  const capabilityScenarios = run(process.execPath, [join(packageDir, "scripts", "capability-scenarios.mjs"), "--manifest-only"], packageDir);
+  if (!capabilityScenarios.stdout.includes("Capability scenario manifest PASS")) {
+    throw new Error(`packaged capability scenario manifest did not pass:\n${capabilityScenarios.stdout}`);
   }
 
   const exampleDir = join(packageDir, "examples", "complete");

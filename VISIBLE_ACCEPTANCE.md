@@ -55,6 +55,7 @@ Serving visible acceptance page: http://127.0.0.1:<port>/verify/index.html
 打开 `/verify/index.html` 后，至少应该能看到这些区域：
 
 - `How to Read This Page`
+- `Reliance Guardrails`
 - `Agent Verification View`
 - `Overall status`
 - `Identity status`
@@ -73,6 +74,7 @@ Serving visible acceptance page: http://127.0.0.1:<port>/verify/index.html
 这些内容的意义：
 
 - `How to Read This Page`：告诉用户先看身份，再看证据，再套用外部策略，最后用工具或 Agent 复查。
+- `Reliance Guardrails`：把“身份失败就停止”“OrgAnchor 不是信任背书”“S4/S5 仍是设计预览”等边界放在详细证明表之前。
 - `Overall status`：当前公开包的总体机器验证状态。
 - `Identity status`：身份链、声明哈希、签名、根权威是否通过。
 - `Value status`：声明和证据层是否存在明显缺口。

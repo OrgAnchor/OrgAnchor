@@ -56,6 +56,12 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(html, /Review evidence state/);
     assert.match(html, /Apply external policy/);
     assert.match(html, /Re-check with tools/);
+    assert.match(html, /Reliance Guardrails/);
+    assert.match(html, /Identity gate/);
+    assert.match(html, /Evidence limits/);
+    assert.match(html, /Not a trust badge/);
+    assert.match(html, /Design preview boundary/);
+    assert.match(html, /Recheck before relying/);
     assert.match(html, /Visible Proof Trail/);
     assert.match(html, /Signature threshold/);
     assert.match(html, /Carrier Receipts/);

@@ -355,6 +355,52 @@ export function renderVerifyPage(model: VerifyPageModel): string {
           <p>${escapeHtml(step.detail)}</p>
         </li>`
   ).join("\n");
+  const s4Status = agentReview.evidenceClassSummary.find((item) => item.label.startsWith("S4 "))?.status ?? "NOT_INCLUDED";
+  const s5Status = agentReview.evidenceClassSummary.find((item) => item.label.startsWith("S5 "))?.status ?? "NOT_INCLUDED";
+  const hasDesignPreview = [s4Status, s5Status].some((status) => status === "DESIGN_PREVIEW" || status === "NOT_INCLUDED");
+  const guardrails = [
+    {
+      title: "Identity gate",
+      status: agentReview.identityStatus === "PASS" ? "PASS" : "STOP",
+      detail: agentReview.identityStatus === "PASS" ?
+        "Identity checks passed when this package was generated. Re-run verification from the current origin before relying." :
+        "If identity checks fail, stop. Do not rely on claims, evidence, carrier receipts, or links until identity verifies."
+    },
+    {
+      title: "Evidence limits",
+      status: agentReview.valueStatus,
+      detail: agentReview.valueStatus === "PASS" ?
+        "The claims/evidence package is present and no unsupported claims were found by the local value audit. External policy may still require stronger evidence." :
+        "Evidence is missing, incomplete, stale, or warning-bearing. Treat this as a request for more review, not as a product-quality pass."
+    },
+    {
+      title: "Not a trust badge",
+      status: "EXTERNAL_POLICY",
+      detail: "OrgAnchor does not certify that this organization is good, safe, lawful, effective, or the best choice. It exposes verifiable materials for external judgment."
+    },
+    {
+      title: "Design preview boundary",
+      status: hasDesignPreview ? "DESIGN_PREVIEW" : "PRESENT",
+      detail: "S4 real-use observation and S5 public challenge are not finished Fireseed acceptance gates. Do not treat them as mature governance systems yet."
+    },
+    {
+      title: "Carrier boundary",
+      status: model.carrierReceipts.length > 0 ? "PRESENT" : "NOT_INCLUDED",
+      detail: "IPFS, Arweave, OpenTimestamps, websites, and other carriers can improve durability and discovery, but they are not the identity root."
+    },
+    {
+      title: "Recheck before relying",
+      status: "RECHECK_REQUIRED",
+      detail: `Use ${model.indexFile} for machine inspection and run organchor verify url <origin> --compact against the current public origin.`
+    }
+  ].map(
+    (item) => `
+        <div class="guardrail-card">
+          <span class="summary-label">${escapeHtml(item.title)}</span>
+          <span class="badge badge-${escapeHtml(cssClass(item.status))}">${escapeHtml(item.status)}</span>
+          <p>${escapeHtml(item.detail)}</p>
+        </div>`
+  ).join("\n");
 
   return `<!doctype html>
 <html lang="en">
@@ -522,9 +568,15 @@ export function renderVerifyPage(model: VerifyPageModel): string {
     }
 
     .badge-fail,
+    .badge-stop,
     .badge-stop_identity_failure,
     .badge-review_failed_checks {
       color: #b3261e;
+    }
+
+    .badge-external_policy,
+    .badge-recheck_required {
+      color: var(--warn);
     }
 
     .badge-full_compatible,
@@ -604,6 +656,25 @@ export function renderVerifyPage(model: VerifyPageModel): string {
 
     .read-step p {
       margin: 0;
+    }
+
+    .guardrails {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .guardrail-card {
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--warn);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .guardrail-card p {
+      margin: 10px 0 0;
     }
 
     .term-list {
@@ -735,6 +806,14 @@ export function renderVerifyPage(model: VerifyPageModel): string {
       <ol class="read-steps">
 ${readingSteps}
       </ol>
+    </section>
+
+    <section aria-labelledby="reliance-guardrails">
+      <h2 id="reliance-guardrails">Reliance Guardrails</h2>
+      <p>These guardrails prevent a visible page from being mistaken for endorsement. They are intentionally shown before the detailed proof trail.</p>
+      <div class="guardrails" aria-label="Reliance guardrails">
+${guardrails}
+      </div>
     </section>
 
     <section aria-labelledby="proof-trail">

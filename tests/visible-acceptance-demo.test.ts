@@ -26,6 +26,7 @@ test("visible acceptance demo proves human page, agent result, and tamper failur
   assert.match(result.stdout, /"identity_status": "PASS"/);
   assert.match(result.stdout, /"policy_route": "STOP_IDENTITY_FAILURE"/);
   assert.match(result.stdout, /How to Read This Page/);
+  assert.match(result.stdout, /Reliance Guardrails/);
   assert.match(result.stdout, /Key Terms/);
   assert.match(result.stdout, /tamper-compact-verify\.json/);
 });

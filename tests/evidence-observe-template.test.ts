@@ -32,10 +32,15 @@ test("observation template command creates an S3 fillable skeleton", () => {
   assert.equal(first.evidence_item_patch.s_class, "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING");
   assert.equal(first.evidence_item_patch.s3.sample_identity.subject_id, "model-x1");
   assert.equal(first.evidence_item_patch.s3.claim_binding.claim_id, "claim-001");
+  assert.equal(first.evidence_item_patch.s3.sample_slot.slot_verification_status, "NOT_VERIFIED_BY_ALPHA_TOOLING");
   assert.equal(first.evidence_item_patch.s3.sample_policy.replacement_policy, "NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE");
   assert.equal(first.evidence_item_patch.s3.sample_policy.uniqueness_basis, "sample_nullifier");
   assert.equal(first.evidence_item_patch.s3.sampling_plan.organization_can_choose_samples, false);
+  assert.equal(first.evidence_item_patch.s3.raw_evidence.storage_role, "DIRECTORY_VAULT");
+  assert.equal(first.evidence_item_patch.s3.raw_evidence.raw_availability_status, "REQUEST_REQUIRED");
+  assert.match(first.suggested_attach_command, /--sample-slot-id/);
   assert.match(first.suggested_attach_command, /--sample-nullifier/);
+  assert.match(first.suggested_attach_command, /--storage-role DIRECTORY_VAULT/);
 });
 
 test("observation template command creates an S4 continuity skeleton", () => {

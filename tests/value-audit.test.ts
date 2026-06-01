@@ -322,9 +322,12 @@ test("value audit classifies S3 random purchase sampling and exposes sample-cont
     const templateJson = JSON.parse(template.stdout);
     assert.equal(templateJson.s3.sample_type, "market_purchase");
     assert.equal(templateJson.s3.claim_binding.sample_pool_id, "s3-pool-claim-001-2026-05");
+    assert.equal(templateJson.s3.sample_slot_id, "sample-slot-claim-001-2026-05-001");
     assert.equal(templateJson.s3.sample_policy.replacement_policy, "NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE");
     assert.equal(templateJson.s3.credential_binding.credential_verified_against_root, false);
     assert.equal(templateJson.s3.sampling_plan.organization_can_choose_samples, false);
+    assert.equal(templateJson.s3.raw_evidence.storage_role, "DIRECTORY_VAULT");
+    assert.equal(templateJson.s3.raw_evidence.raw_availability_status, "REQUEST_REQUIRED");
     const attach = run(workspace, [
       "evidence",
       "s3",
@@ -349,6 +352,8 @@ test("value audit classifies S3 random purchase sampling and exposes sample-cont
       "2026-05",
       "--sample-pool-id",
       "s3-pool-claim-001-2026-05",
+      "--sample-slot-id",
+      "sample-slot-claim-001-2026-05-001",
       "--max-active-samples",
       "24",
       "--credential-hash",
@@ -364,6 +369,14 @@ test("value audit classifies S3 random purchase sampling and exposes sample-cont
       "retail_market",
       "--eligible-regions",
       "EU",
+      "--storage-role",
+      "DIRECTORY_VAULT",
+      "--raw-availability-status",
+      "AVAILABLE",
+      "--vault-operator",
+      "Example Directory",
+      "--vault-origin",
+      "https://directory.example",
       "--scope",
       "Random market purchase sample supports claim-001 for model-x1."
     ]);
@@ -390,22 +403,29 @@ test("value audit classifies S3 random purchase sampling and exposes sample-cont
     assert.equal(report.s3_summary.missing_sample_identity_count, 0);
     assert.equal(report.s3_summary.missing_claim_binding_count, 0);
     assert.equal(report.s3_summary.missing_sample_pool_count, 0);
+    assert.equal(report.s3_summary.missing_sample_slot_count, 0);
     assert.equal(report.s3_summary.missing_finite_policy_count, 0);
     assert.equal(report.s3_summary.missing_duplicate_control_count, 0);
     assert.equal(report.s3_summary.missing_credential_binding_count, 0);
     assert.equal(report.s3_summary.missing_sampling_plan_count, 0);
     assert.equal(report.s3_summary.organization_can_choose_samples_count, 0);
+    assert.equal(report.s3_summary.missing_raw_evidence_reference_count, 0);
+    assert.equal(report.s3_summary.organization_controlled_storage_count, 0);
     assert.equal(report.s3_summary.missing_custody_count, 1);
     assert.equal(report.evidence[0]?.s3.state, "S3_1_SAMPLING_ROUTE_PROVIDED");
     assert.equal(report.evidence[0]?.s3.effective, true);
     assert.equal(report.evidence[0]?.s3.organization_selected_sample, false);
     assert.equal(report.evidence[0]?.s3.organization_provided_sample, false);
     assert.equal(report.evidence[0]?.s3.sample_pool_id, "s3-pool-claim-001-2026-05");
+    assert.equal(report.evidence[0]?.s3.sample_slot_id, "sample-slot-claim-001-2026-05-001");
+    assert.equal(report.evidence[0]?.s3.sample_slot_declared, true);
     assert.equal(report.evidence[0]?.s3.max_active_samples, 24);
     assert.equal(report.evidence[0]?.s3.duplicate_control_present, true);
     assert.equal(report.evidence[0]?.s3.credential_binding_present, true);
     assert.equal(report.evidence[0]?.s3.credential_verified_against_root, true);
     assert.equal(report.evidence[0]?.s3.sampling_plan_present, true);
+    assert.equal(report.evidence[0]?.s3.raw_evidence_reference_present, true);
+    assert.equal(report.evidence[0]?.s3.storage_role, "DIRECTORY_VAULT");
     assert.deepEqual(report.evidence[0]?.s3.unresolved_claim_refs, []);
   } finally {
     rmSync(workspace, { recursive: true, force: true });
@@ -479,6 +499,7 @@ test("value audit downgrades S3 when bounded pool and credential gates are missi
     const report = readReport(workspace);
     assert.equal(report.s3_summary.effective_s3_count, 0);
     assert.equal(report.s3_summary.candidate_unverified_sampling_count, 1);
+    assert.equal(report.s3_summary.missing_sample_slot_count, 1);
     assert.equal(report.s3_summary.missing_credential_binding_count, 1);
     assert.equal(report.s3_summary.missing_duplicate_control_count, 1);
     assert.equal(report.evidence[0]?.s3.state, "CANDIDATE_UNVERIFIED_SAMPLING");
@@ -705,11 +726,14 @@ function readReport(workspace: string): {
     missing_sample_identity_count: number;
     missing_claim_binding_count: number;
     missing_sample_pool_count: number;
+    missing_sample_slot_count: number;
     missing_finite_policy_count: number;
     missing_duplicate_control_count: number;
     missing_credential_binding_count: number;
     missing_sampling_plan_count: number;
     organization_can_choose_samples_count: number;
+    missing_raw_evidence_reference_count: number;
+    organization_controlled_storage_count: number;
     missing_custody_count: number;
   };
   claims: Array<{
@@ -755,11 +779,15 @@ function readReport(workspace: string): {
       organization_selected_sample: boolean;
       organization_provided_sample: boolean;
       sample_pool_id: string;
+      sample_slot_id: string;
+      sample_slot_declared: boolean;
       max_active_samples: number;
       duplicate_control_present: boolean;
       credential_binding_present: boolean;
       credential_verified_against_root: boolean;
       sampling_plan_present: boolean;
+      raw_evidence_reference_present: boolean;
+      storage_role: string;
       gaps: string[];
       unresolved_claim_refs: string[];
     };

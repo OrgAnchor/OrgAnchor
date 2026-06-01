@@ -38,6 +38,25 @@
           "type": "buyer",
           "name": "Example Buyer"
         },
+        "claim_binding": {
+          "claim_id": "claim-001",
+          "claim_version": "2026-05",
+          "sample_pool_id": "s3-pool-claim-001-2026-05"
+        },
+        "sample_slot_id": "sample-slot-claim-001-2026-05-001",
+        "sample_slot": {
+          "sample_slot_id": "sample-slot-claim-001-2026-05-001",
+          "sample_pool_id": "s3-pool-claim-001-2026-05",
+          "slot_status": "ISSUED_OR_RESERVED",
+          "slot_verification_status": "NOT_VERIFIED_BY_ALPHA_TOOLING"
+        },
+        "credential_binding": {
+          "credential_type": "OrgAnchorProductUnitCredential",
+          "credential_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+          "issuer_delegated_key_id": "product-key-2026",
+          "credential_verified_against_root": true,
+          "sample_nullifier": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+        },
         "sample_identity": {
           "subject_type": "product_model",
           "subject_id": "model-x1",
@@ -51,6 +70,48 @@
           "organization_provided_sample": false,
           "sampling_method": "random_purchase",
           "sample_size": 1
+        },
+        "sample_policy": {
+          "purpose_id": "market_purchase",
+          "risk_level": "medium",
+          "target_confidence_note": "At most 24 active valid samples are counted for this claim and window.",
+          "max_active_samples": 24,
+          "replacement_policy": "NEWEST_VALID_SAMPLE_REPLACES_OLDEST_ACTIVE_SAMPLE",
+          "refresh_rule": "rolling_30_day_window",
+          "uniqueness_basis": "sample_nullifier",
+          "limitations": [
+            "One market sample does not prove all batches, regions, or future production."
+          ]
+        },
+        "sampling_plan": {
+          "plan_id": "sampling-plan-claim-001-2026-05",
+          "eligible_channels": [
+            "retail_market"
+          ],
+          "eligible_regions": [
+            "EU"
+          ],
+          "selector_control": "buyer",
+          "organization_can_choose_samples": false,
+          "known_biases": [
+            "Does not cover direct enterprise-only shipments outside listed channels."
+          ]
+        },
+        "raw_evidence": {
+          "bundle_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "bundle_manifest_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "raw_availability_status": "REQUEST_REQUIRED",
+          "storage_role": "DIRECTORY_VAULT",
+          "vaults": [
+            {
+              "vault_operator": "Example Directory",
+              "vault_origin": "https://directory.example",
+              "vault_independence": "directory_operator",
+              "raw_availability_status": "REQUEST_REQUIRED",
+              "access_policy": "request_required",
+              "raw_retention_until": "2026-12-31T00:00:00Z"
+            }
+          ]
         },
         "custody": {
           "custody_documented": false,

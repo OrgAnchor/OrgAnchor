@@ -133,6 +133,8 @@ export interface S3EvidenceAudit {
   sample_size: number;
   claim_binding_present: boolean;
   sample_pool_id: string;
+  sample_slot_id: string;
+  sample_slot_declared: boolean;
   finite_sample_policy_present: boolean;
   max_active_samples: number;
   duplicate_control_present: boolean;
@@ -148,6 +150,9 @@ export interface S3EvidenceAudit {
   organization_provided_sample: boolean;
   sample_identity_present: boolean;
   acquired_at_present: boolean;
+  raw_evidence_reference_present: boolean;
+  raw_availability_status: string;
+  storage_role: string;
   custody_documented: boolean;
   gaps: string[];
   checks: ValueAuditCheck[];
@@ -162,11 +167,14 @@ export interface S3Summary {
   missing_sample_identity_count: number;
   missing_claim_binding_count: number;
   missing_sample_pool_count: number;
+  missing_sample_slot_count: number;
   missing_finite_policy_count: number;
   missing_duplicate_control_count: number;
   missing_credential_binding_count: number;
   missing_sampling_plan_count: number;
   organization_can_choose_samples_count: number;
+  missing_raw_evidence_reference_count: number;
+  organization_controlled_storage_count: number;
   missing_custody_count: number;
   manual_check_s3_count: number;
   top_s3_gaps: string[];
@@ -475,11 +483,14 @@ Evidence: \`${report.evidence_path}\`
 | Missing sample identity | ${report.s3_summary.missing_sample_identity_count} |
 | Missing claim binding | ${report.s3_summary.missing_claim_binding_count} |
 | Missing sample pool | ${report.s3_summary.missing_sample_pool_count} |
+| Missing sample slot | ${report.s3_summary.missing_sample_slot_count} |
 | Missing finite sample policy | ${report.s3_summary.missing_finite_policy_count} |
 | Missing duplicate control | ${report.s3_summary.missing_duplicate_control_count} |
 | Missing credential binding | ${report.s3_summary.missing_credential_binding_count} |
 | Missing sampling plan | ${report.s3_summary.missing_sampling_plan_count} |
 | Organization can choose samples | ${report.s3_summary.organization_can_choose_samples_count} |
+| Missing raw evidence reference | ${report.s3_summary.missing_raw_evidence_reference_count} |
+| Organization-controlled raw storage | ${report.s3_summary.organization_controlled_storage_count} |
 | Missing custody documentation | ${report.s3_summary.missing_custody_count} |
 | S3 manual checks | ${report.s3_summary.manual_check_s3_count} |
 
@@ -841,6 +852,9 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
   const event = asRecord(s3.sampling_event);
   const samplePolicy = asRecord(s3.sample_policy);
   const samplingPlan = asRecord(s3.sampling_plan);
+  const sampleSlot = asRecord(s3.sample_slot);
+  const intake = asRecord(s3.intake);
+  const rawEvidence = asRecord(s3.raw_evidence);
   const custody = asRecord(s3.custody);
   const checks: ValueAuditCheck[] = [];
   const gaps: string[] = [];
@@ -855,6 +869,8 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
   const claimBindingPresent = Boolean(claimBindingClaimId && stringValue(claimBinding.claim_version));
   const samplePoolId = stringValue(claimBinding.sample_pool_id);
   const samplePoolPresent = Boolean(samplePoolId);
+  const sampleSlotId = stringValue(s3.sample_slot_id) || stringValue(sampleSlot.sample_slot_id) || stringValue(intake.sample_slot_id);
+  const sampleSlotDeclared = Boolean(sampleSlotId);
   const maxActiveSamples = positiveIntegerValue(samplePolicy.max_active_samples);
   const replacementPolicy = stringValue(samplePolicy.replacement_policy);
   const uniquenessBasis = stringValue(samplePolicy.uniqueness_basis);
@@ -890,6 +906,12 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
   const acquiredAt = stringValue(event.acquired_at);
   const acquiredAtPresent = Boolean(acquiredAt && Number.isFinite(Date.parse(acquiredAt)));
   const sampleSize = positiveIntegerValue(event.sample_size);
+  const rawBundleHash = stringValue(rawEvidence.bundle_hash) || stringValue(rawEvidence.receipt_hash);
+  const rawAvailabilityStatus = stringValue(rawEvidence.raw_availability_status) || stringValue(rawEvidence.availability_state);
+  const storageRole = stringValue(rawEvidence.storage_role) || stringValue(intake.storage_role);
+  const rawAvailabilityStatusKnown = S3_RAW_AVAILABILITY_STATUSES.has(rawAvailabilityStatus);
+  const rawEvidenceReferencePresent = isSha256Digest(rawBundleHash) && rawAvailabilityStatusKnown;
+  const storageRoleKnown = S3_STORAGE_ROLES.has(storageRole);
   const custodyDocumented = booleanValue(custody.custody_documented);
 
   addS3Check(
@@ -944,6 +966,16 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
     id,
     "S3_SAMPLE_POOL_DECLARED",
     samplePoolPresent ? `S3 sample pool is ${samplePoolId}.` : "S3 claim_binding.sample_pool_id is missing; active sample-pool limits cannot be enforced."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    sampleSlotDeclared ? "PASS" : "WARN",
+    id,
+    "S3_SAMPLE_SLOT_DECLARED",
+    sampleSlotDeclared
+      ? `S3 sample slot is ${sampleSlotId}. Local alpha tooling records this field but does not yet verify slot issuance.`
+      : "S3 sample_slot_id is missing; the sample cannot be tied to a bounded slot-gated intake plan."
   );
   addS3Check(
     checks,
@@ -1073,6 +1105,28 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
     "S3_CUSTODY_DOCUMENTED",
     custodyDocumented ? "S3 custody is documented." : "S3 custody is not documented; acceptable for S3_1 but weak for higher-assurance review."
   );
+  addS3Check(
+    checks,
+    gaps,
+    rawEvidenceReferencePresent ? "PASS" : "WARN",
+    id,
+    "S3_RAW_EVIDENCE_REFERENCE_DECLARED",
+    rawEvidenceReferencePresent
+      ? `S3 raw evidence reference is declared with ${rawAvailabilityStatus}.`
+      : "S3 raw_evidence.bundle_hash and a known raw_availability_status are required so agents can see where the underlying material is or was held."
+  );
+  addS3Check(
+    checks,
+    gaps,
+    storageRoleKnown ? (storageRole === "ORGANIZATION_CONTROLLED" ? "MANUAL_CHECK_REQUIRED" : "PASS") : "MANUAL_CHECK_REQUIRED",
+    id,
+    "S3_STORAGE_ROLE_DECLARED",
+    storageRoleKnown
+      ? storageRole === "ORGANIZATION_CONTROLLED"
+        ? "S3 raw storage role is ORGANIZATION_CONTROLLED; useful for availability, but weaker than an external vault for externally controlled S3."
+        : `S3 raw storage role is ${storageRole}.`
+      : "S3 raw_evidence.storage_role should be ORGANIZATION_CONTROLLED, DIRECTORY_VAULT, or PUBLIC_INTEREST_ARCHIVE."
+  );
   if (state === "S3_2_CUSTODY_DOCUMENTED") {
     addS3Check(
       checks,
@@ -1103,6 +1157,7 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
     unresolvedClaimRefs.length === 0 &&
     claimBindingPresent &&
     samplePoolPresent &&
+    sampleSlotDeclared &&
     finiteSamplePolicyPresent &&
     credentialBindingPresent &&
     duplicateControlPresent &&
@@ -1118,7 +1173,9 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
     !isUnknownOrMissing(selectedBy) &&
     organizationProvidedDeclared &&
     !organizationSelectedSample &&
-    !organizationProvidedSample;
+    !organizationProvidedSample &&
+    rawEvidenceReferencePresent &&
+    storageRoleKnown;
 
   if (!hasRequiredCore) state = "CANDIDATE_UNVERIFIED_SAMPLING";
   if (state === "S3_2_CUSTODY_DOCUMENTED" || state === "S3_3_INDEPENDENT_TEST_RECORDED") state = "S3_1_SAMPLING_ROUTE_PROVIDED";
@@ -1137,6 +1194,8 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
     sample_size: sampleSize,
     claim_binding_present: claimBindingPresent,
     sample_pool_id: samplePoolId,
+    sample_slot_id: sampleSlotId,
+    sample_slot_declared: sampleSlotDeclared,
     finite_sample_policy_present: finiteSamplePolicyPresent,
     max_active_samples: maxActiveSamples,
     duplicate_control_present: duplicateControlPresent,
@@ -1152,6 +1211,9 @@ function auditS3Sampling(item: Record<string, JsonValue>, claimIds: Set<string>)
     organization_provided_sample: organizationProvidedSample,
     sample_identity_present: sampleIdentityPresent,
     acquired_at_present: acquiredAtPresent,
+    raw_evidence_reference_present: rawEvidenceReferencePresent,
+    raw_availability_status: rawAvailabilityStatus,
+    storage_role: storageRole,
     custody_documented: custodyDocumented,
     gaps: uniqueStrings(gaps),
     checks
@@ -1172,6 +1234,8 @@ function emptyS3Audit(): S3EvidenceAudit {
     sample_size: 0,
     claim_binding_present: false,
     sample_pool_id: "",
+    sample_slot_id: "",
+    sample_slot_declared: false,
     finite_sample_policy_present: false,
     max_active_samples: 0,
     duplicate_control_present: false,
@@ -1187,6 +1251,9 @@ function emptyS3Audit(): S3EvidenceAudit {
     organization_provided_sample: false,
     sample_identity_present: false,
     acquired_at_present: false,
+    raw_evidence_reference_present: false,
+    raw_availability_status: "",
+    storage_role: "",
     custody_documented: false,
     gaps: [],
     checks: []
@@ -2358,11 +2425,14 @@ function summarizeS3(evidence: EvidenceValueAudit[]): S3Summary {
     missing_sample_identity_count: s3Items.filter((item) => !item.s3.sample_identity_present).length,
     missing_claim_binding_count: s3Items.filter((item) => !item.s3.claim_binding_present).length,
     missing_sample_pool_count: s3Items.filter((item) => !item.s3.sample_pool_id).length,
+    missing_sample_slot_count: s3Items.filter((item) => !item.s3.sample_slot_declared).length,
     missing_finite_policy_count: s3Items.filter((item) => !item.s3.finite_sample_policy_present).length,
     missing_duplicate_control_count: s3Items.filter((item) => !item.s3.duplicate_control_present).length,
     missing_credential_binding_count: s3Items.filter((item) => !item.s3.credential_binding_present || !item.s3.credential_verified_against_root).length,
     missing_sampling_plan_count: s3Items.filter((item) => !item.s3.sampling_plan_present).length,
     organization_can_choose_samples_count: s3Items.filter((item) => item.s3.organization_can_choose_samples).length,
+    missing_raw_evidence_reference_count: s3Items.filter((item) => !item.s3.raw_evidence_reference_present).length,
+    organization_controlled_storage_count: s3Items.filter((item) => item.s3.storage_role === "ORGANIZATION_CONTROLLED").length,
     missing_custody_count: s3Items.filter((item) => !item.s3.custody_documented).length,
     manual_check_s3_count: manualCheckCount,
     top_s3_gaps: uniqueStrings(s3Items.flatMap((item) => item.s3.gaps)).slice(0, 5),
@@ -2432,15 +2502,22 @@ function s3NextActions(summary: S3Summary): string[] {
   if (
     summary.missing_claim_binding_count > 0 ||
     summary.missing_sample_pool_count > 0 ||
+    summary.missing_sample_slot_count > 0 ||
     summary.missing_finite_policy_count > 0
   ) {
-    actions.push("Add claim_binding and sample_policy so S3 is a bounded rolling sample pool rather than an unlimited upload channel.");
+    actions.push("Add claim_binding, sample_slot_id, and sample_policy so S3 is a bounded slot-gated rolling sample pool rather than an unlimited upload channel.");
   }
   if (summary.missing_credential_binding_count > 0 || summary.missing_duplicate_control_count > 0) {
     actions.push("Add product/service credential binding and sample_nullifier so duplicate or misattributed samples cannot inflate S3.");
   }
   if (summary.missing_sampling_plan_count > 0 || summary.organization_can_choose_samples_count > 0) {
     actions.push("Add a sampling_plan controlled outside the organization; S3 cannot rely on organization-chosen samples.");
+  }
+  if (summary.missing_raw_evidence_reference_count > 0) {
+    actions.push("Add raw_evidence bundle hashes, availability state, and vault/storage pointers so agents can see where the underlying sample material is or was held.");
+  }
+  if (summary.organization_controlled_storage_count > 0) {
+    actions.push("For stronger S3, mirror raw sample material or receipts into a Directory vault or public-interest archive instead of relying only on organization-controlled storage.");
   }
   if (summary.missing_custody_count > 0) {
     actions.push("Add custody notes when the purpose requires higher assurance; S3_1 can remain usable but custody gaps should be visible.");
@@ -2503,6 +2580,18 @@ const S3_EFFECTIVE_STATES = new Set<S3SamplingState>([
   "S3_1_SAMPLING_ROUTE_PROVIDED",
   "S3_2_CUSTODY_DOCUMENTED",
   "S3_3_INDEPENDENT_TEST_RECORDED"
+]);
+
+const S3_STORAGE_ROLES = new Set(["ORGANIZATION_CONTROLLED", "DIRECTORY_VAULT", "PUBLIC_INTEREST_ARCHIVE"]);
+const S3_RAW_AVAILABILITY_STATUSES = new Set([
+  "AVAILABLE",
+  "REQUEST_REQUIRED",
+  "RESTRICTED",
+  "MIXED",
+  "EXPIRED_SUMMARY_ONLY",
+  "WITHDRAWN",
+  "LOST",
+  "DISPUTED"
 ]);
 
 function isS3SamplingState(value: string): value is S3SamplingState {

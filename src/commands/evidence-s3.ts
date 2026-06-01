@@ -83,8 +83,12 @@ export async function evidenceS3AttachCommand(options: Record<string, string | b
   const checkedAt = timestampOption(options["checked-at"]) || new Date().toISOString();
   const claimVersion = stringOption(options["claim-version"]) || "current";
   const samplePoolId = stringOption(options["sample-pool-id"]) || defaultSamplePoolId(resolvedClaimRefs[0] ?? "claim", claimVersion);
+  const sampleSlotId = stringOption(options["sample-slot-id"]);
   const maxActiveSamples = positiveIntegerOption(options["max-active-samples"]) || 24;
   const selectedBy = stringOption(options["selected-by"]) || template.selectedBy;
+  const rawBundleHash = stringOption(options["raw-bundle-hash"]) || stringValue(item.hash);
+  const storageRole = storageRoleOption(options["storage-role"]) || "ORGANIZATION_CONTROLLED";
+  const rawAvailabilityStatus = rawAvailabilityStatusOption(options["raw-availability-status"]) || "REQUEST_REQUIRED";
 
   item.s_class = "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING";
   item.issuer_type = "third_party";
@@ -106,6 +110,7 @@ export async function evidenceS3AttachCommand(options: Record<string, string | b
     claimRefs: resolvedClaimRefs,
     claimVersion,
     samplePoolId,
+    sampleSlotId,
     maxActiveSamples,
     riskLevel: stringOption(options["risk-level"]) || "medium",
     targetConfidenceNote: stringOption(options["target-confidence-note"]) || "Declared S3 pool limit for this claim and purpose.",
@@ -121,6 +126,15 @@ export async function evidenceS3AttachCommand(options: Record<string, string | b
     selectorControl: stringOption(options["selector-control"]) || selectedBy,
     organizationCanChooseSamples: options["organization-can-choose-samples"] === true,
     knownBiases: parseList(options["known-biases"]),
+    rawBundleHash,
+    rawBundleManifestHash: stringOption(options["raw-bundle-manifest-hash"]),
+    rawAvailabilityStatus,
+    storageRole,
+    vaultOperator: stringOption(options["vault-operator"]),
+    vaultOrigin: stringOption(options["vault-origin"]),
+    vaultIndependence: stringOption(options["vault-independence"]) || storageRole.toLowerCase(),
+    accessPolicy: stringOption(options["access-policy"]) || "request_required",
+    rawRetentionUntil: stringOption(options["raw-retention-until"]),
     scopeText,
     limitations: limitations.length > 0 ? limitations : template.defaultLimitations,
     checkedAt
@@ -133,6 +147,8 @@ export async function evidenceS3AttachCommand(options: Record<string, string | b
   console.log("State: S3_1_SAMPLING_ROUTE_PROVIDED");
   console.log(`Claims: ${resolvedClaimRefs.join(", ")}`);
   console.log(`Sample: ${subjectType}:${subjectId}`);
+  console.log(`Sample slot: ${sampleSlotId || "MISSING (candidate S3 until slot-gated)"}`);
+  console.log(`Raw evidence: ${rawBundleHash ? rawAvailabilityStatus : "MISSING"}`);
 }
 
 export async function evidenceS3TemplateCommand(options: Record<string, string | boolean>): Promise<void> {
@@ -141,7 +157,10 @@ export async function evidenceS3TemplateCommand(options: Record<string, string |
   const resolvedClaimRefs = claimRefs.length > 0 ? claimRefs : ["claim-001"];
   const claimVersion = stringOption(options["claim-version"]) || "2026-05";
   const samplePoolId = stringOption(options["sample-pool-id"]) || defaultSamplePoolId(resolvedClaimRefs[0] ?? "claim-001", claimVersion);
+  const sampleSlotId = stringOption(options["sample-slot-id"]) || "sample-slot-claim-001-2026-05-001";
   const selectedBy = stringOption(options["selected-by"]) || template.selectedBy;
+  const storageRole = storageRoleOption(options["storage-role"]) || "DIRECTORY_VAULT";
+  const rawAvailabilityStatus = rawAvailabilityStatusOption(options["raw-availability-status"]) || "REQUEST_REQUIRED";
   const sample = {
     s_class: "S3_RANDOM_PURCHASE_OR_RANDOM_SAMPLING",
     s3: buildS3Metadata({
@@ -162,6 +181,7 @@ export async function evidenceS3TemplateCommand(options: Record<string, string |
       claimRefs: resolvedClaimRefs,
       claimVersion,
       samplePoolId,
+      sampleSlotId,
       maxActiveSamples: positiveIntegerOption(options["max-active-samples"]) || 24,
       riskLevel: stringOption(options["risk-level"]) || "medium",
       targetConfidenceNote: stringOption(options["target-confidence-note"]) || "At most 24 active valid samples are counted for this claim and window.",
@@ -179,6 +199,17 @@ export async function evidenceS3TemplateCommand(options: Record<string, string |
       selectorControl: stringOption(options["selector-control"]) || selectedBy,
       organizationCanChooseSamples: options["organization-can-choose-samples"] === true,
       knownBiases: parseList(options["known-biases"]).length > 0 ? parseList(options["known-biases"]) : ["Declare channels, regions, batches, or customers not covered by this pool."],
+      rawBundleHash:
+        stringOption(options["raw-bundle-hash"]) || "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      rawBundleManifestHash:
+        stringOption(options["raw-bundle-manifest-hash"]) || "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      rawAvailabilityStatus,
+      storageRole,
+      vaultOperator: stringOption(options["vault-operator"]) || "Example Evidence Vault",
+      vaultOrigin: stringOption(options["vault-origin"]) || "https://directory.example",
+      vaultIndependence: stringOption(options["vault-independence"]) || "directory_operator",
+      accessPolicy: stringOption(options["access-policy"]) || "request_required",
+      rawRetentionUntil: stringOption(options["raw-retention-until"]) || "2026-12-31T00:00:00Z",
       scopeText: stringOption(options.scope) || "Describe exactly which claim this random purchase or sampling evidence supports.",
       limitations: parseList(options.limitations).length > 0 ? parseList(options.limitations) : template.defaultLimitations,
       checkedAt: timestampOption(options["checked-at"]) || "2026-05-28T00:00:00.000Z"
@@ -205,6 +236,7 @@ function buildS3Metadata(options: {
   claimRefs: string[];
   claimVersion: string;
   samplePoolId: string;
+  sampleSlotId: string;
   maxActiveSamples: number;
   riskLevel: string;
   targetConfidenceNote: string;
@@ -220,6 +252,15 @@ function buildS3Metadata(options: {
   selectorControl: string;
   organizationCanChooseSamples: boolean;
   knownBiases: string[];
+  rawBundleHash: string;
+  rawBundleManifestHash: string;
+  rawAvailabilityStatus: string;
+  storageRole: string;
+  vaultOperator: string;
+  vaultOrigin: string;
+  vaultIndependence: string;
+  accessPolicy: string;
+  rawRetentionUntil: string;
   scopeText: string;
   limitations: string[];
   checkedAt: string;
@@ -250,6 +291,13 @@ function buildS3Metadata(options: {
       claim_version: options.claimVersion,
       sample_pool_id: options.samplePoolId
     },
+    sample_slot_id: options.sampleSlotId,
+    sample_slot: {
+      sample_slot_id: options.sampleSlotId,
+      sample_pool_id: options.samplePoolId,
+      slot_status: options.sampleSlotId ? "ISSUED_OR_RESERVED" : "NOT_DECLARED",
+      slot_verification_status: "NOT_VERIFIED_BY_ALPHA_TOOLING"
+    },
     sample_identity: sampleIdentity,
     sampling_event: {
       acquired_at: options.acquiredAt,
@@ -277,6 +325,22 @@ function buildS3Metadata(options: {
       selector_control: options.selectorControl,
       organization_can_choose_samples: options.organizationCanChooseSamples,
       known_biases: options.knownBiases
+    },
+    raw_evidence: {
+      bundle_hash: options.rawBundleHash,
+      bundle_manifest_hash: options.rawBundleManifestHash,
+      raw_availability_status: options.rawAvailabilityStatus,
+      storage_role: options.storageRole,
+      vaults: [
+        {
+          vault_operator: options.vaultOperator || (options.storageRole === "ORGANIZATION_CONTROLLED" ? "Evaluated organization" : "Evidence vault"),
+          vault_origin: options.vaultOrigin,
+          vault_independence: options.vaultIndependence,
+          raw_availability_status: options.rawAvailabilityStatus,
+          access_policy: options.accessPolicy,
+          raw_retention_until: options.rawRetentionUntil
+        }
+      ].filter((vault) => vault.vault_operator || vault.vault_origin) as JsonValue[]
     },
     custody,
     organization_claimed_support: {
@@ -338,6 +402,24 @@ function positiveIntegerOption(value: string | boolean | undefined): number {
   const number = Number(string);
   if (!Number.isSafeInteger(number) || number < 1) throw new Error("Numeric option must be a positive integer");
   return number;
+}
+
+function storageRoleOption(value: string | boolean | undefined): string {
+  const role = stringOption(value);
+  if (!role) return "";
+  const allowed = new Set(["ORGANIZATION_CONTROLLED", "DIRECTORY_VAULT", "PUBLIC_INTEREST_ARCHIVE"]);
+  if (!allowed.has(role)) throw new Error("--storage-role must be one of: ORGANIZATION_CONTROLLED, DIRECTORY_VAULT, PUBLIC_INTEREST_ARCHIVE");
+  return role;
+}
+
+function rawAvailabilityStatusOption(value: string | boolean | undefined): string {
+  const status = stringOption(value);
+  if (!status) return "";
+  const allowed = new Set(["AVAILABLE", "REQUEST_REQUIRED", "RESTRICTED", "MIXED", "EXPIRED_SUMMARY_ONLY", "WITHDRAWN", "LOST", "DISPUTED"]);
+  if (!allowed.has(status)) {
+    throw new Error("--raw-availability-status must be one of: AVAILABLE, REQUEST_REQUIRED, RESTRICTED, MIXED, EXPIRED_SUMMARY_ONLY, WITHDRAWN, LOST, DISPUTED");
+  }
+  return status;
 }
 
 function stringOption(value: string | boolean | undefined): string {

@@ -34,6 +34,8 @@ test("S3 sample event example follows the accepted minimum shape", () => {
   assert.equal(event.claim_binding.claim_id, "claim-001");
   assert.equal(event.claim_binding.claim_version, "2026-05");
   assert.equal(event.claim_binding.sample_pool_id, "s3-pool-claim-001-2026-05");
+  assert.equal(event.sample_slot_id, "sample-slot-claim-001-2026-05-001");
+  assert.equal(event.sample_slot.slot_verification_status, "NOT_VERIFIED_BY_ALPHA_TOOLING");
   assert.match(event.credential_binding.credential_hash, sha256Pattern);
   assert.match(event.credential_binding.sample_nullifier, sha256Pattern);
   assert.equal(event.credential_binding.credential_verified_against_root, true);
@@ -86,6 +88,8 @@ test("S3 docs define claim-bound rolling sample-pool anti-abuse rules", () => {
   }
 
   assert.match(model, /delegated product\/service key/);
+  assert.match(spec, /sample_slot_id/);
+  assert.match(spec, /NOT_VERIFIED_BY_ALPHA_TOOLING/);
   assert.match(model, /duplicate nullifiers are rejected from active S3/);
   assert.match(model, /historical summary\/hash status/);
   assert.match(spec, /unlimited extra submissions cannot strengthen the active sample set/);

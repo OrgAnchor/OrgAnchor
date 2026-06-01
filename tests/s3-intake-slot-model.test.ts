@@ -23,9 +23,15 @@ test("S3 intake model preserves anti-brushing and storage admission boundaries",
     "Open reporting is cheap",
     "Effective S3 is slot-gated",
     "Raw storage is admission-gated",
+    "Fireseed S3 Gate Matrix",
+    "Who submits?",
+    "Where is it stored?",
+    "What is required?",
+    "What does it mean?",
     "sample_slot_id",
     "sample_nullifier",
     "max_active_samples",
+    "ORGANIZATION_CONTROLLED",
     "DIRECTORY_VAULT",
     "PUBLIC_INTEREST_ARCHIVE",
     "candidate signal",
@@ -56,4 +62,3 @@ function readText(path: string): string {
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
-

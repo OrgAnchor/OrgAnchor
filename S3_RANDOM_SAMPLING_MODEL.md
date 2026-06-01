@@ -111,6 +111,14 @@ historical samples can support trend and accountability, but not current suffici
 
 S3 therefore uses "enough current valid samples" rather than "more records is always stronger."
 
+Fireseed Alpha tooling records `sample_slot_id` but does not yet verify slot issuer signatures or slot-use ledgers. That boundary must remain visible to agents:
+
+```text
+slot field present = the package declares slot-gated intake;
+slot verification present = future stronger route;
+slot field missing = candidate S3 at most.
+```
+
 ## Product Or Service Credential Gate
 
 Every effective S3 submission should prove that the sampled item belongs to the evaluated organization's authority chain.
@@ -665,9 +673,12 @@ organization_selected_sample_count
 organization_provided_sample_count
 missing_sample_identity_count
 missing_sample_pool_count
+missing_sample_slot_count
 missing_duplicate_control_count
 missing_credential_binding_count
 missing_sampling_plan_count
+missing_raw_evidence_reference_count
+organization_controlled_storage_count
 missing_custody_count
 manual_check_s3_count
 top_s3_gaps

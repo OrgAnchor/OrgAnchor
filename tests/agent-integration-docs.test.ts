@@ -47,8 +47,11 @@ test("agent compact example is a valid first-pass result", () => {
   assert.equal(result.evidence_summary.s2_summary.not_a_trust_decision, true);
   assert.equal(result.evidence_summary.s3_summary.effective_s3_count, 0);
   assert.equal(typeof result.evidence_summary.s3_summary.missing_sample_pool_count, "number");
+  assert.equal(typeof result.evidence_summary.s3_summary.missing_sample_slot_count, "number");
   assert.equal(typeof result.evidence_summary.s3_summary.missing_duplicate_control_count, "number");
   assert.equal(typeof result.evidence_summary.s3_summary.missing_sampling_plan_count, "number");
+  assert.equal(typeof result.evidence_summary.s3_summary.missing_raw_evidence_reference_count, "number");
+  assert.equal(typeof result.evidence_summary.s3_summary.organization_controlled_storage_count, "number");
   assert.equal(result.evidence_summary.s3_summary.not_a_trust_decision, true);
   assert.equal(result.evidence_summary.s4_summary.effective_s4_count, 0);
   assert.equal(result.evidence_summary.s4_summary.not_a_trust_decision, true);

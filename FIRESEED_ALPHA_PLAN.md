@@ -125,8 +125,8 @@ Before Fireseed Alpha outreach, S3 should be treated as "baseline complete" when
 ```text
 S3 rules are documented;
 S3 intake and slot risks are documented;
-S3 template and attach commands emit bounded-pool fields;
-value audit checks bounded-pool, credential, nullifier, and sampling-plan gates;
+S3 template and attach commands emit bounded-pool, sample-slot, raw-evidence, and storage-role fields;
+value audit checks bounded-pool, sample-slot, credential, nullifier, sampling-plan, raw-evidence, and storage-role gates;
 compact agent output exposes S3 gaps;
 missing gates downgrade to candidate S3;
 sample-slot issuance and verification are explicitly documented as future work, not silently implied.
@@ -332,4 +332,3 @@ delay broad promotion until at least one external pilot is reproducible.
 ```
 
 The fire must stay small enough to keep alive, but real enough for others to gather around.
-

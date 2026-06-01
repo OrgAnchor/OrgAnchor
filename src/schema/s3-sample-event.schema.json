@@ -12,6 +12,7 @@
     "created_at",
     "subject",
     "claim_binding",
+    "sample_slot_id",
     "credential_binding",
     "submitter",
     "acquisition",
@@ -28,6 +29,8 @@
     "created_at": { "type": "string", "format": "date-time" },
     "subject": { "$ref": "#/definitions/subject" },
     "claim_binding": { "$ref": "#/definitions/claim_binding" },
+    "sample_slot_id": { "type": "string", "minLength": 1 },
+    "sample_slot": { "$ref": "#/definitions/sample_slot" },
     "credential_binding": { "$ref": "#/definitions/credential_binding" },
     "submitter": { "$ref": "#/definitions/submitter" },
     "acquisition": { "$ref": "#/definitions/acquisition" },
@@ -79,6 +82,17 @@
         "issuer_delegated_key_id": { "type": "string" },
         "credential_verified_against_root": { "type": "boolean" },
         "sample_nullifier": { "$ref": "#/definitions/sha256" }
+      }
+    },
+    "sample_slot": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["sample_slot_id", "sample_pool_id", "slot_verification_status"],
+      "properties": {
+        "sample_slot_id": { "type": "string", "minLength": 1 },
+        "sample_pool_id": { "type": "string", "minLength": 1 },
+        "slot_status": { "type": "string" },
+        "slot_verification_status": { "type": "string", "minLength": 1 }
       }
     },
     "submitter": {

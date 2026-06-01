@@ -67,6 +67,13 @@ Minimum shape:
     "claim_version": "2026-05",
     "sample_pool_id": "s3-pool-claim-001-2026-05"
   },
+  "sample_slot_id": "sample-slot-claim-001-2026-05-001",
+  "sample_slot": {
+    "sample_slot_id": "sample-slot-claim-001-2026-05-001",
+    "sample_pool_id": "s3-pool-claim-001-2026-05",
+    "slot_status": "ISSUED_OR_RESERVED",
+    "slot_verification_status": "NOT_VERIFIED_BY_ALPHA_TOOLING"
+  },
   "credential_binding": {
     "credential_type": "OrgAnchorProductUnitCredential",
     "credential_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
@@ -135,6 +142,7 @@ subject.subject_id
 claim_binding.claim_id
 claim_binding.claim_version
 claim_binding.sample_pool_id
+sample_slot_id
 credential_binding.credential_hash
 credential_binding.sample_nullifier
 submitter.submitter_type
@@ -151,6 +159,8 @@ raw_evidence.vaults
 limitations
 not_a_trust_decision
 ```
+
+Fireseed Alpha requires `sample_slot_id` to be present for effective S3, but current alpha tooling does not yet verify slot issuer signatures or slot-use ledgers. Agents should treat `slot_verification_status = NOT_VERIFIED_BY_ALPHA_TOOLING` as an explicit limitation, not as proof that slot issuance is solved.
 
 Important rule:
 

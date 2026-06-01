@@ -22,6 +22,8 @@ test("Fireseed Alpha keeps S3 as acceptance and S4/S5 as design preview", () => 
   assert.match(plan, /S3 \| Acceptance gate/);
   assert.match(plan, /S4 \| Design Preview/);
   assert.match(plan, /S5 \| Design Preview/);
+  assert.match(plan, /sample-slot/);
+  assert.match(plan, /raw-evidence/);
   assert.match(plan, /S3 proves the evidence layer is not merely self-assertion/);
   assert.match(plan, /S4\/S5 show the direction and invite co-design/);
 });
@@ -46,4 +48,3 @@ function readText(path: string): string {
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
-

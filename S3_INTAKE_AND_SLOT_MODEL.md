@@ -53,6 +53,30 @@ ordinary user reviews become proof;
 OrgAnchor assigns the final trust decision.
 ```
 
+## Fireseed S3 Gate Matrix
+
+For Fireseed Alpha, every S3 record should be explainable through the same four questions.
+
+| Question | Fireseed answer |
+| --- | --- |
+| Who submits? | Effective S3 comes from a sampling-plan participant outside the evaluated organization's direct sample selection: buyer or buyer agent, Directory operator, independent sampler/auditor, distributor/warehouse/customer-site controller, or organization-funded blind plan. |
+| Where is it stored? | Public records stay small in the signed evidence manifest or referenced S3 event/sample-set JSON. Heavy raw material belongs in one of three storage roles: `ORGANIZATION_CONTROLLED`, `DIRECTORY_VAULT`, or `PUBLIC_INTEREST_ARCHIVE`. |
+| What is required? | Claim binding, sample pool, `sample_slot_id`, finite `sample_policy`, product/service credential binding, `sample_nullifier`, sampling plan, external selection, raw evidence hash/availability state, storage role, limitations, and `not_a_trust_decision`. |
+| What is optional? | Invoices, shipping/custody chain, photos/videos, lab reports, vault custody attestations, timestamp anchors, public challenge windows, disputes, corrections, and withdrawal records. |
+| What does it mean? | A bounded current sample pool exists for a stated claim and purpose. It is not a product-wide proof, future-batch guarantee, review score, certification, or final trust decision. |
+
+The minimum Fireseed anti-brushing rule is:
+
+```text
+sample_slot_id limits who may enter the active pool;
+sample_nullifier prevents duplicate unit or credential reuse;
+max_active_samples limits active count;
+replacement_policy keeps the active pool current;
+raw-vault admission prevents storage exhaustion.
+```
+
+If a record lacks `sample_slot_id`, raw evidence reference, or a known storage role, current tooling must expose that gap and downgrade or warn rather than silently treating the record as fully strong S3.
+
 ## Submission Layers
 
 S3 has four submission layers.
@@ -331,4 +355,3 @@ What remains unproven?
 ```
 
 The final decision remains external policy.
-

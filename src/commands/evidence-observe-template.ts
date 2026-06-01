@@ -54,12 +54,15 @@ function buildS3Template(options: Record<string, string | boolean>, generatedAt:
       `organchor evidence s3 attach --evidence-id evidence-001 --template ${templateId} --sampler-type ${observerType} ` +
       `--acquired-at ${generatedAt} --subject-type ${subjectType} --subject-id ${subjectId} --claim-id ${claimId} ` +
       `--claim-version ${claimVersion} --sample-pool-id ${samplePoolId} --max-active-samples 24 ` +
+      `--sample-slot-id ${samplePoolId}-slot-001 ` +
       `--credential-hash sha256:<64-hex> --sample-nullifier sha256:<64-hex> --credential-verified-against-root ` +
-      `--selector-control ${observerType} --scope "Sample observation supports ${claimId} for ${subjectId}"`,
+      `--selector-control ${observerType} --storage-role DIRECTORY_VAULT --raw-availability-status REQUEST_REQUIRED ` +
+      `--vault-operator "directory-or-public-interest-vault" --scope "Sample observation supports ${claimId} for ${subjectId}"`,
     required_before_publish: [
       "evidence item id",
       "claim id",
       "claim version and sample pool id",
+      "sample slot id for active-pool admission",
       "product/service credential hash",
       "sample nullifier for duplicate control",
       "finite sample policy",
@@ -90,6 +93,13 @@ function buildS3Template(options: Record<string, string | boolean>, generatedAt:
           claim_id: claimId,
           claim_version: claimVersion,
           sample_pool_id: samplePoolId
+        },
+        sample_slot_id: `${samplePoolId}-slot-001`,
+        sample_slot: {
+          sample_slot_id: `${samplePoolId}-slot-001`,
+          sample_pool_id: samplePoolId,
+          slot_status: "ISSUED_OR_RESERVED",
+          slot_verification_status: "NOT_VERIFIED_BY_ALPHA_TOOLING"
         },
         credential_binding: {
           credential_type: "OrgAnchorProductUnitCredential",
@@ -143,10 +153,14 @@ function buildS3Template(options: Record<string, string | boolean>, generatedAt:
         },
         raw_evidence: {
           bundle_hash: "sha256:<raw-bundle-or-report-hash>",
-          locations_or_vaults: [
+          raw_availability_status: "REQUEST_REQUIRED",
+          storage_role: "DIRECTORY_VAULT",
+          vaults: [
             {
-              type: "evidence_vault",
-              uri: stringOption(options["vault-uri"]) || "https://vault.example/evidence/sample-bundle",
+              vault_operator: "directory-or-public-interest-vault",
+              vault_origin: stringOption(options["vault-uri"]) || "https://vault.example/evidence/sample-bundle",
+              vault_independence: "directory_operator",
+              raw_availability_status: "REQUEST_REQUIRED",
               access_policy: "request_required"
             }
           ]

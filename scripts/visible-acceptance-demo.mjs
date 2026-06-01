@@ -249,6 +249,11 @@ function inspectVisiblePage(verifyDir) {
   const htmlPath = join(verifyDir, "index.html");
   const html = readFileSync(htmlPath, "utf8");
   const expected = [
+    "How to Read This Page",
+    "Check identity first",
+    "Review evidence state",
+    "Apply external policy",
+    "Re-check with tools",
     "Agent Verification View",
     "Overall status",
     "Identity status",

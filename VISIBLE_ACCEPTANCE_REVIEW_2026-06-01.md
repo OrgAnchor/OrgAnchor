@@ -33,6 +33,7 @@ It is not yet a finished multilingual product surface.
 ## What Passed
 
 - The page has a clear organization header.
+- The page has a `How to Read This Page` section that gives a first-pass review order.
 - It shows that the statement is signed.
 - It shows root authority threshold information.
 - It shows a visible proof trail.
@@ -111,6 +112,7 @@ Fireseed visible acceptance is English-first. Multilingual human explanation is 
 
 Priority 1:
 
+- DONE AFTER REVIEW: add a first-pass reading order through `How to Read This Page`.
 - DONE AFTER REVIEW: add glossary-style explanations for the hardest terms on `/verify/index.html`.
 - Keep those explanations short and non-marketing as the page evolves.
 

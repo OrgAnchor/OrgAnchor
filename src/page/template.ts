@@ -274,7 +274,7 @@ export function renderVerifyPage(model: VerifyPageModel): string {
     },
     {
       term: "Agent Verification View",
-      meaning: "A human-readable version of the same first-pass state that AI agents read from organchor.json."
+      meaning: `A human-readable version of the same first-pass state that AI agents read from ${model.indexFile}.`
     },
     {
       term: "Overall status",
@@ -330,6 +330,30 @@ export function renderVerifyPage(model: VerifyPageModel): string {
           <dt>${escapeHtml(item.term)}</dt>
           <dd>${escapeHtml(item.meaning)}</dd>
         </div>`
+  ).join("\n");
+  const readingSteps = [
+    {
+      title: "1. Check identity first",
+      detail: "If identity checks fail, stop. Evidence and carrier mirrors are not meaningful until the signed statement verifies against the expected root authority."
+    },
+    {
+      title: "2. Review evidence state",
+      detail: "Value and evidence status show what support is present, what is missing, and what still needs external review."
+    },
+    {
+      title: "3. Apply external policy",
+      detail: "OrgAnchor does not certify quality, safety, legality, or suitability. The requesting person, organization, directory, or agent applies its own policy."
+    },
+    {
+      title: "4. Re-check with tools",
+      detail: `Machines should start from /.well-known/organchor.json or ${model.indexFile}, then run organchor verify url <origin> --compact.`
+    }
+  ].map(
+    (step) => `
+        <li class="read-step">
+          <strong>${escapeHtml(step.title)}</strong>
+          <p>${escapeHtml(step.detail)}</p>
+        </li>`
   ).join("\n");
 
   return `<!doctype html>
@@ -557,6 +581,31 @@ export function renderVerifyPage(model: VerifyPageModel): string {
       color: var(--muted);
     }
 
+    .read-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin: 18px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .read-step {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .read-step strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .read-step p {
+      margin: 0;
+    }
+
     .term-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -679,6 +728,14 @@ export function renderVerifyPage(model: VerifyPageModel): string {
         </div>
       </div>
     </header>
+
+    <section aria-labelledby="how-to-read">
+      <h2 id="how-to-read">How to Read This Page</h2>
+      <p>This page has two audiences: people who need a visible review path, and machines that need stable artifacts to verify. Use this order before relying on the organization.</p>
+      <ol class="read-steps">
+${readingSteps}
+      </ol>
+    </section>
 
     <section aria-labelledby="proof-trail">
       <h2 id="proof-trail">Visible Proof Trail</h2>

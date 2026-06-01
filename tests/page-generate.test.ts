@@ -51,6 +51,11 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(html, /https:\/\/example\.org/);
     assert.match(html, /Statement hash/);
     assert.match(html, /Root authority hash/);
+    assert.match(html, /How to Read This Page/);
+    assert.match(html, /Check identity first/);
+    assert.match(html, /Review evidence state/);
+    assert.match(html, /Apply external policy/);
+    assert.match(html, /Re-check with tools/);
     assert.match(html, /Visible Proof Trail/);
     assert.match(html, /Signature threshold/);
     assert.match(html, /Carrier Receipts/);

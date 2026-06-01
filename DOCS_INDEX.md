@@ -19,6 +19,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `IMPLEMENTATION_STATUS.md`: current implemented surface, remaining gaps, non-goals, and verification commands.
 - `MVP_LAUNCH_CHECKLIST.md`: alpha MVP launch gate for package publication and first external pilot readiness.
 - `FIRESEED_ALPHA_PLAN.md`: accepted Fireseed Alpha boundary for S3-focused minimum evidence closure, S4/S5 design preview, freeze rules, and co-builder invitation.
+- `FIRESEED_READINESS_GATE.md`: active GO/HOLD gate for deciding whether Fireseed outreach can begin without overclaiming readiness.
 - `CHANGELOG.md`: release-facing change history.
 - `RELEASE_INTEGRITY.md`: release consistency gate for source, package, public `/verify`, carrier receipts, and notes.
 - `RELEASE_PUBLISHING_PLAN.md`: operator publishing plan for npm, GitHub tags, GitHub releases, and trusted publishing.

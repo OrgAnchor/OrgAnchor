@@ -33,7 +33,7 @@ Fireseed Alpha focuses on:
 - S1-S3 evidence baseline: first-party evidence, organization-submitted third-party material, and random purchase / sampling structure.
 - S4/S5 design preview only: real-use observation and public challenge are important, but not finished acceptance gates.
 
-Start with `FIRESEED_ALPHA_PLAN.md`, `CALL_FOR_FIRESEED_REVIEW.md`, and `CONTRIBUTING.md` if you want to try, review, or critique the project.
+Start with `FIRESEED_ALPHA_PLAN.md`, `FIRESEED_READINESS_GATE.md`, `CALL_FOR_FIRESEED_REVIEW.md`, and `CONTRIBUTING.md` if you want to try, review, or critique the project.
 
 ## Purpose and Values
 
@@ -41,7 +41,7 @@ OrgAnchor is not only a tool for keeping an organizational name alive. Its purpo
 
 OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
 
-See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `FIRESEED_ALPHA_PLAN.md`, `IMPLEMENTATION_STATUS.md`, `CALL_FOR_FIRESEED_REVIEW.md`, `CONTRIBUTING.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `S2_THIRD_PARTY_MATERIAL_MODEL.md`, `PACKAGE_HEALTH_LAYER.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, S2 third-party material model, package health model, real-world evidence profile, product/service credential direction, implementation map, and document map.
+See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `FIRESEED_ALPHA_PLAN.md`, `FIRESEED_READINESS_GATE.md`, `IMPLEMENTATION_STATUS.md`, `CALL_FOR_FIRESEED_REVIEW.md`, `CONTRIBUTING.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `S2_THIRD_PARTY_MATERIAL_MODEL.md`, `PACKAGE_HEALTH_LAYER.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, S2 third-party material model, package health model, real-world evidence profile, product/service credential direction, implementation map, and document map.
 
 The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DISCOVERY_TAXONOMY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
 

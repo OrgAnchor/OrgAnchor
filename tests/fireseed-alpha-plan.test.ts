@@ -12,8 +12,11 @@ test("Fireseed Alpha plan is package-facing and indexed", () => {
   const status = readText("IMPLEMENTATION_STATUS.md");
 
   assert.ok(packageJson.files?.includes("FIRESEED_ALPHA_PLAN.md"));
+  assert.ok(packageJson.files?.includes("FIRESEED_READINESS_GATE.md"));
   assert.match(docsIndex, /FIRESEED_ALPHA_PLAN\.md/);
+  assert.match(docsIndex, /FIRESEED_READINESS_GATE\.md/);
   assert.match(status, /FIRESEED_ALPHA_PLAN\.md/);
+  assert.match(status, /FIRESEED_READINESS_GATE\.md/);
 });
 
 test("Fireseed Alpha keeps S3 as acceptance and S4/S5 as design preview", () => {
@@ -26,6 +29,25 @@ test("Fireseed Alpha keeps S3 as acceptance and S4/S5 as design preview", () => 
   assert.match(plan, /raw-evidence/);
   assert.match(plan, /S3 proves the evidence layer is not merely self-assertion/);
   assert.match(plan, /S4\/S5 show the direction and invite co-design/);
+  assert.match(plan, /FIRESEED_READINESS_GATE\.md/);
+});
+
+test("Fireseed readiness gate defines GO/HOLD without turning OrgAnchor into a trust authority", () => {
+  const gate = readText("FIRESEED_READINESS_GATE.md");
+
+  for (const phrase of [
+    "GO",
+    "HOLD",
+    "LIMITED_GO",
+    "S1-S3 Evidence Baseline",
+    "sample_slot_id",
+    "raw evidence availability status",
+    "storage role",
+    "S4 and S5 are Design Preview during Fireseed",
+    "OrgAnchor does not certify that an organization is good"
+  ]) {
+    assert.match(gate, new RegExp(escapeRegExp(phrase)));
+  }
 });
 
 test("Fireseed Freeze prevents infinite scope expansion before public collaboration", () => {

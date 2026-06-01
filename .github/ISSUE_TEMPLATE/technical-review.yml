@@ -24,6 +24,7 @@ body:
         - Claims/evidence manifests
         - S2/S3 checks
         - Release/package safety
+        - Fireseed readiness gate
         - Documentation contract
         - Other
     validations:
@@ -55,4 +56,15 @@ body:
       label: Proposed fix or review direction
     validations:
       required: false
-
+  - type: dropdown
+    id: fireseed_gate_impact
+    attributes:
+      label: Fireseed gate impact
+      description: Use FIRESEED_READINESS_GATE.md to classify whether this blocks public Fireseed outreach.
+      options:
+        - Blocks Fireseed GO
+        - Allows LIMITED_GO only
+        - Normal alpha feedback
+        - Unsure
+    validations:
+      required: true

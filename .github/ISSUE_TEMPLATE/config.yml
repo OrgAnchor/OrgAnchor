@@ -3,3 +3,6 @@ contact_links:
   - name: Fireseed Alpha Plan
     url: https://github.com/OrgAnchor/OrgAnchor/blob/main/FIRESEED_ALPHA_PLAN.md
     about: Read the current Fireseed launch boundary before opening broad scope proposals.
+  - name: Fireseed Readiness Gate
+    url: https://github.com/OrgAnchor/OrgAnchor/blob/main/FIRESEED_READINESS_GATE.md
+    about: Check whether a finding is a Fireseed launch blocker, limited-go issue, or normal alpha feedback.

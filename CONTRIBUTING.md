@@ -46,6 +46,8 @@ organchor --help
 
 Then follow `ADOPTION_GUIDE.md`, `ORG_ONBOARDING_CHECKLIST.md`, and `EXTERNAL_PILOT_RUNBOOK.md`.
 
+Use `FIRESEED_READINESS_GATE.md` to distinguish Fireseed launch blockers from normal alpha feedback.
+
 Useful issue type:
 
 ```text
@@ -89,6 +91,8 @@ Technical Review / Fireseed
 
 Include exact command output, fixture paths, and expected versus actual behavior.
 
+If a finding makes any required readiness gate fail, call that out explicitly.
+
 ### 3. Evidence And Governance Review
 
 Use this path if you are testing whether the evidence model can survive real-world abuse, low-effort adoption, or misleading claims.
@@ -109,6 +113,8 @@ Evidence / Governance Review
 ```
 
 Report the smallest concrete scenario that breaks clarity, creates misleading confidence, or imposes unnecessary cost on honest adopters.
+
+Use `FIRESEED_READINESS_GATE.md` to separate S1-S3 acceptance-gate issues from S4/S5 design-preview issues.
 
 ## Pull Request Checklist
 

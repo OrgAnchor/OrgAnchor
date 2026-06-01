@@ -46,6 +46,18 @@ body:
       description: What should a low-cost external AI agent be able to see or conclude?
     validations:
       required: false
+  - type: dropdown
+    id: fireseed_gate_impact
+    attributes:
+      label: Fireseed gate impact
+      description: Use FIRESEED_READINESS_GATE.md. S4/S5 are design preview unless the issue causes overclaiming.
+      options:
+        - Blocks Fireseed GO
+        - Allows LIMITED_GO only
+        - Normal alpha feedback
+        - Unsure
+    validations:
+      required: true
   - type: textarea
     id: proposed_constraint
     attributes:
@@ -53,4 +65,3 @@ body:
       description: Rule, field, check, warning, documentation change, or future workflow.
     validations:
       required: false
-

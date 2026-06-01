@@ -318,6 +318,8 @@ known gaps are easy to find;
 the project explicitly says OrgAnchor is not a trust authority.
 ```
 
+The operational GO/HOLD decision is maintained in `FIRESEED_READINESS_GATE.md`.
+
 ## Post-Fireseed Rhythm
 
 After Fireseed Alpha:

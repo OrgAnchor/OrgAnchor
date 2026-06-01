@@ -13,6 +13,7 @@ test("README exposes the Fireseed public entry points", () => {
   assert.match(readme, /## Fireseed Review Tracks/);
   assert.match(readme, /S1-S3 evidence baseline/);
   assert.match(readme, /S4\/S5 design preview/);
+  assert.match(readme, /FIRESEED_READINESS_GATE\.md/);
   assert.match(readme, /CONTRIBUTING\.md/);
   assert.match(readme, /CALL_FOR_FIRESEED_REVIEW\.md/);
 });
@@ -24,6 +25,7 @@ test("Fireseed contributor guide keeps participation paths and safety boundaries
     "Adopting Organization Trial",
     "Technical Review",
     "Evidence And Governance Review",
+    "FIRESEED_READINESS_GATE.md",
     "Do not submit private keys",
     "Do not describe OrgAnchor compatibility as a trust badge",
     "npm run package:smoke",
@@ -37,6 +39,7 @@ test("Fireseed public review brief does not overclaim maturity", () => {
   const call = readText("CALL_FOR_FIRESEED_REVIEW.md");
 
   assert.match(call, /Fireseed Alpha does not claim/);
+  assert.match(call, /FIRESEED_READINESS_GATE\.md/);
   assert.match(call, /Product quality certification/);
   assert.match(call, /Guaranteed truth/);
   assert.match(call, /S4\/S5 are clearly marked as design preview/);
@@ -56,8 +59,12 @@ test("GitHub issue templates route Fireseed feedback into the three review paths
   }
 
   assert.match(readText(".github/ISSUE_TEMPLATE/adopter-trial.yml"), /Adopter Trial \/ Fireseed/);
+  assert.match(readText(".github/ISSUE_TEMPLATE/adopter-trial.yml"), /FIRESEED_READINESS_GATE\.md/);
   assert.match(readText(".github/ISSUE_TEMPLATE/technical-review.yml"), /Technical Review \/ Fireseed/);
+  assert.match(readText(".github/ISSUE_TEMPLATE/technical-review.yml"), /Fireseed gate impact/);
   assert.match(readText(".github/ISSUE_TEMPLATE/evidence-governance-review.yml"), /Evidence \/ Governance Review/);
+  assert.match(readText(".github/ISSUE_TEMPLATE/evidence-governance-review.yml"), /Fireseed gate impact/);
+  assert.match(readText(".github/ISSUE_TEMPLATE/config.yml"), /Fireseed Readiness Gate/);
 });
 
 function readText(path: string): string {

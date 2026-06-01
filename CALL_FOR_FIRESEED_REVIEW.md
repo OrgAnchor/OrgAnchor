@@ -79,8 +79,9 @@ OrgAnchor verifies signatures, hashes, continuity, publication structure, and de
 
 1. Read `README.md`.
 2. Read `FIRESEED_ALPHA_PLAN.md`.
-3. Run `npm run agent:demo` from a source checkout, or install with `npm install -g organchor@alpha`.
-4. Use the GitHub issue templates for adopter trials, technical review, or evidence/governance review.
+3. Read `FIRESEED_READINESS_GATE.md` to understand what is in scope for Fireseed and what remains unfinished.
+4. Run `npm run agent:demo` from a source checkout, or install with `npm install -g organchor@alpha`.
+5. Use the GitHub issue templates for adopter trials, technical review, or evidence/governance review.
 
 ## Fireseed Success Condition
 

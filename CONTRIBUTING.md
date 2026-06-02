@@ -46,6 +46,8 @@ organchor --help
 
 Then follow `ADOPTION_GUIDE.md`, `ORG_ONBOARDING_CHECKLIST.md`, and `EXTERNAL_PILOT_RUNBOOK.md`.
 
+Use `FIRESEED_OUTREACH_KIT.md` for the shortest external-validation task list, feedback route, and safety boundaries.
+
 Use `FIRESEED_READINESS_GATE.md` to distinguish Fireseed launch blockers from normal alpha feedback.
 
 The current named-outreach decision is recorded in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.

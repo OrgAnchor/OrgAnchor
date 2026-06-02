@@ -14,6 +14,7 @@ test("README exposes the Fireseed public entry points", () => {
   assert.match(readme, /S1-S3 evidence baseline/);
   assert.match(readme, /S4\/S5 design preview/);
   assert.match(readme, /FIRESEED_LAUNCH_DECISION_2026-06-01\.md/);
+  assert.match(readme, /FIRESEED_OUTREACH_KIT\.md/);
   assert.match(readme, /FIRESEED_READINESS_GATE\.md/);
   assert.match(readme, /CONTRIBUTING\.md/);
   assert.match(readme, /CALL_FOR_FIRESEED_REVIEW\.md/);
@@ -72,6 +73,32 @@ test("GitHub issue templates route Fireseed feedback into the three review paths
 function readText(path: string): string {
   return readFileSync(join(repoRoot, path), "utf8");
 }
+
+test("Fireseed outreach kit gives external reviewers concrete tasks and boundaries", () => {
+  const kit = readText("FIRESEED_OUTREACH_KIT.md");
+  const packageJson = JSON.parse(readText("package.json")) as { files?: string[] };
+  const docsIndex = readText("DOCS_INDEX.md");
+  const call = readText("CALL_FOR_FIRESEED_REVIEW.md");
+
+  assert.equal(packageJson.files?.includes("FIRESEED_OUTREACH_KIT.md"), true);
+  assert.match(docsIndex, /FIRESEED_OUTREACH_KIT\.md/);
+  assert.match(call, /FIRESEED_OUTREACH_KIT\.md/);
+
+  for (const phrase of [
+    "Adopting Organization Trial",
+    "Technical Review",
+    "Evidence And Governance Review",
+    "AI-Agent Or Directory Builder",
+    "What Counts As Useful Feedback",
+    "Success Criteria",
+    "Failure Or Hold Criteria",
+    "Copyable Short Invitation",
+    "Do not claim",
+    "OrgAnchor 现在处于 Fireseed Alpha 阶段"
+  ]) {
+    assert.match(kit, new RegExp(escapeRegExp(phrase)));
+  }
+});
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

@@ -15,7 +15,7 @@ The north star prevents that drift.
 OrgAnchor's core goal is:
 
 ```text
-Help AI agents representing demand-side or supply-side parties discover, verify, and understand an organization's identity continuity, product or service claims, evidence, gaps, and risks with the lowest practical friction, so organizations can reduce the cost of establishing trust and starting useful transactions.
+Help AI agents representing demand-side or supply-side parties discover, verify, and understand an organization's identity continuity, product or service claims, evidence, gaps, risks, and commercial-fit constraints with the lowest practical friction, so organizations can reduce the cost of establishing trust and starting useful transactions.
 ```
 
 Short form:
@@ -34,13 +34,13 @@ discover candidate organizations
 fetch their OrgAnchor package
 verify identity continuity
 inspect claims and evidence
-surface gaps and risks
+surface gaps, risks, and commercial-fit constraints
 let the external party or agent decide
 ```
 
 If a feature does not help this loop, it is probably outside the current product.
 
-## Four Product Pillars
+## Five Product Pillars
 
 ### 1. Verifiable Identity Continuity
 
@@ -118,11 +118,28 @@ Current design records:
 - `DIRECTORY_MODEL.md`
 - `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`
 
+### 5. Commercial Fit Without Marketplace Capture
+
+Questions answered:
+
+```text
+Is this candidate commercially worth contacting for this need?
+Is there a public price band, signed price sheet, or signed private quote path?
+Are minimum order, lead time, region, currency, validity, and quote-response limits visible?
+Can an agent avoid spending verification effort on candidates that are clearly outside budget or procurement constraints?
+```
+
+Current design record:
+
+- `COMMERCIAL_FIT_LAYER.md`
+
+Commercial fit is not a price recommendation, procurement decision, or trust score. It is a set of signed or declared routing signals that help external agents decide whether to request a quote, continue verification, or skip a candidate under their own policy.
+
 ## Alignment Questions
 
 Before adding or expanding a major feature, answer these questions:
 
-1. Does it reduce discovery cost, verification cost, or understanding cost?
+1. Does it reduce discovery cost, verification cost, understanding cost, or commercial-screening cost?
 2. Does it make AI-agent consumption easier, smaller, clearer, or more reliable?
 3. Does it preserve the adopting organization's root authority as the identity root?
 4. Does it keep the final trust decision outside OrgAnchor?
@@ -142,6 +159,7 @@ OrgAnchor should optimize for:
 - low-cost AI-agent first-pass checks
 - clear separation between facts, warnings, and final judgment
 - signed claims and evidence
+- commercial-fit signals that can be checked without forcing universal public pricing
 - transparent gaps and corrections
 - repeatable adoption by small and serious organizations
 - purpose-fit sufficiency instead of paperwork volume
@@ -157,6 +175,7 @@ OrgAnchor should not optimize for:
 
 - becoming a certification authority
 - assigning universal trust scores
+- assigning universal price scores
 - selling trust badges
 - hosting all evidence for everyone
 - becoming a marketplace
@@ -177,6 +196,7 @@ OrgAnchor may report:
 identity verification passed or failed
 statement hashes matched or did not match
 claims and evidence are present, missing, stale, unsupported, or manual-check-only
+public commercial-fit signals are present, missing, stale, expired, or quote-required
 carrier receipts exist or do not exist
 migration continuity can or cannot be verified
 ```
@@ -187,6 +207,7 @@ OrgAnchor must not report:
 this organization is good
 this organization is the best supplier
 this product works
+this price is fair
 this evidence is sufficient for every use case
 this organization deserves trust
 ```
@@ -226,6 +247,7 @@ When uncertain, choose the path that:
 makes organizations easier to find without asking permission from one index
 makes claims and evidence easier to verify
 makes limitations harder to hide
+makes commercial mismatch cheaper to discover
 makes AI agents spend less effort
 keeps final trust decentralized
 keeps OrgAnchor from becoming the gatekeeper

@@ -69,6 +69,7 @@ Only these status values are allowed:
 | OA-024 | Delegated product or service credentials | DESIGN_ONLY | Future | PRODUCT_SERVICE_CREDENTIAL_LAYER.md; SUBJECT_BINDING_MODEL.md; PROJECT_NORTH_STAR.md | none | none | none | Delegated keys, model passports, batch commitments, unit credentials, and service delivery credentials are not implemented. |
 | OA-025 | Package health layer commands | DESIGN_ONLY | Future | PACKAGE_HEALTH_LAYER.md; IMPLEMENTATION_STATUS.md; FIRESEED_LAUNCH_DECISION_2026-06-01.md | none | none | none | Health commands, observed health lookup, and Directory health summaries are not implemented. |
 | OA-026 | Broad external organization pilot | NOT_IMPLEMENTED | Post-Fireseed | EXTERNAL_PILOT_RUNBOOK.md; FIRESEED_LAUNCH_DECISION_2026-06-01.md; IMPLEMENTATION_STATUS.md | none | none | none | No broad external organization pilot has completed yet. |
+| OA-027 | Commercial fit layer | DESIGN_ONLY | Future | COMMERCIAL_FIT_LAYER.md; PROJECT_NORTH_STAR.md; IMPLEMENTATION_STATUS.md | none | tests/commercial-fit-layer.test.ts | none | Public commercial-fit manifests, signed price sheets, delegated commercial keys, private quote verification, and compact commercial-fit summaries are not implemented. |
 
 ## Audit Rules
 
@@ -81,4 +82,3 @@ Only these status values are allowed:
 - Fireseed-required rows are not silently marked `DESIGN_ONLY` or `NOT_IMPLEMENTED`.
 
 This is not a proof that the software is correct. It is a guardrail against documentation overstating implementation maturity.
-

@@ -43,6 +43,7 @@ Value evidence layer:
 - S3 random purchase / sampling basic usability implemented: optional `s_class`/`s3` metadata, `evidence s3 template`, `evidence s3 attach`, candidate versus effective S3 classification, sample identity/source/selector checks, sample slot declaration, bounded active pool checks, credential/nullifier checks, raw evidence availability and storage-role checks, organization-selected/provided sample exposure, custody gap extraction, value-audit `s3_summary`, and compact agent `s3_summary`.
 - Package health layer documented as the accepted direction for self-declared and observed package health, maintenance responsibility, stale/broken/expired evidence visibility, and low-cost agent fetch recommendations.
 - Product/service credential layer documented as an accepted design direction for delegated operational keys, five-class observation sources, and attribution of observations, complaints, tests, and corrections to the organization root authority chain.
+- Commercial fit layer documented as an accepted design direction for price disclosure modes, signed public price sheets, private signed quotes, lead time, MOQ, validity windows, and commercial-fit routing without turning OrgAnchor into a marketplace or price judge.
 - Evidence sufficiency model documented as an accepted design principle so OrgAnchor can avoid field-count competition and report purpose-fit support instead of universal completeness scores.
 - Subject binding model documented as the accepted rule that discovery matches, claims, evidence, samples, observations, credentials, and challenges must declare the subject they cover and must not silently widen evidence coverage.
 
@@ -118,6 +119,7 @@ These are not considered done:
 - Broad external organization pilot.
 - Dedicated method, attestation, and challenge manifests from `CLAIMS_EVIDENCE_PROTOCOL.md`.
 - Delegated product/service key statements, product model passports, batch commitments, unit credentials, service delivery credentials, and observation binding checks from `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`.
+- Commercial-fit manifests, signed public price sheets, delegated commercial keys, private signed quote verification, and compact commercial-fit summaries from `COMMERCIAL_FIT_LAYER.md`.
 - Common subject binding helpers, subject relation checks, and compact subject coverage outputs from `SUBJECT_BINDING_MODEL.md`.
 - Purpose-fit evidence outputs such as `fit_for`, `not_enough_for`, and `missing_optional_context` from `EVIDENCE_SUFFICIENCY_MODEL.md`.
 - Discovery Unit schemas, validators, Beacon fields, Directory fields, and coverage-preview query behavior from `DISCOVERY_UNIT_MODEL.md`.

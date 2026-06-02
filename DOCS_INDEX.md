@@ -71,6 +71,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `S3_SAMPLE_RECORD_SPEC.md`: protocol shape, JSON examples, and schema references for standalone S3 sample event and sample-set records.
 - `S4_REAL_WORLD_OBSERVATION_MODEL.md`: implementation-facing S4 model for real delivery, real use, supply continuity, support, repair, monitoring, and field-observation records, strictly separated from S3 sample testing.
 - `PACKAGE_HEALTH_LAYER.md`: accepted design model for self-declared and observed package health, maintenance responsibility, stale/broken/expired evidence visibility, and low-cost agent fetch decisions.
+- `COMMERCIAL_FIT_LAYER.md`: accepted design direction for price disclosure modes, public price sheets, private signed quotes, lead time, MOQ, validity, and commercial-fit routing without becoming a marketplace.
 - `REAL_WORLD_EVIDENCE_PROFILE.md`: minimum evidence profile for real products and services, including scoped claims, hash-bound evidence, recheck methods, limitations, and anti-gaming rules.
 - `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`: accepted design direction for delegated product/service signing keys, model/batch/unit credentials, service delivery credentials, and feedback attribution to the organization root authority chain.
 - `VALUE_CONTINUITY_MODEL.md`: claims, evidence, outcomes, corrections, and value audit model.
@@ -148,6 +149,7 @@ That workspace may contain private keys, provider credentials, wallets, local re
 - The claims/evidence protocol is stronger than the current alpha implementation: signed claims, signed evidence, value audit, and `/verify` publication exist, while dedicated method, attestation, and challenge manifests remain future work.
 - The purpose/evidence/challenge model is documented as the canonical design. Local S2 third-party material checks and local S3 random purchase / sampling checks are implemented. The S3 intake and sample-slot model is documented, while slot issuance, slot verification, slot-use ledgers, raw-vault admission workflows, P1-P5 purpose-profile validators, broader S1/S4/S5 source-class fields, S2 network route adapters, issuer-backed S2 signatures, S3 custody/independent-test route adapters, S4 delivery/use observation commands, and challenge/correction lifecycle extraction are not implemented yet.
 - The product/service credential layer is documented as an accepted direction, but delegated key statements, model/batch/unit credentials, service delivery credentials, and observation binding are not implemented yet.
+- The commercial fit layer is documented as an accepted direction, but public commercial-fit manifests, signed price sheets, delegated commercial keys, private signed quote verification, and compact commercial-fit summaries are not implemented yet.
 - ENS live resolver reads still require choosing an Ethereum RPC/provider path.
 - No real Onion disaster-recovery address has been registered.
 - OpenTimestamps proofs may remain pending until calendar proofs are upgraded to Bitcoin attestations.

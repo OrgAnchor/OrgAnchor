@@ -4,6 +4,35 @@ OrgAnchor helps organizations publish signed official endpoint statements so tha
 
 OrgAnchor 帮助组织发布经过签名的官方入口声明，使组织在域名、平台和基础设施发生变化时，仍然能够保持可验证的在线身份连续性。
 
+## 3-Minute Version
+
+OrgAnchor is a Fireseed Alpha project for organization identity continuity and evidence-aware verification.
+
+The short version:
+
+- It helps an organization prove which public endpoints, statements, keys, evidence packages, and migration history belong to its own root authority.
+- It gives external AI agents a low-friction path to discover `/.well-known/organchor.json`, verify signatures and hashes, inspect evidence gaps, and decide what to check next.
+- It treats websites, IPFS, Arweave, Onion, ENS, Directory snapshots, and cloud platforms as carriers or discovery aids, not as the identity root.
+- It does not certify that an organization is good, truthful, safe, lawful, cheap, or the best supplier. `PASS` is identity/evidence-structure verification, not a trust badge; OrgAnchor's own trust decision field remains `NOT_ASSIGNED_BY_ORGANCHOR`.
+- It is not stable v1 yet. The current public phase is for named early adopters, technical reviewers, evidence/governance reviewers, directory builders, and sponsors who can help test the minimum useful loop.
+
+Fast visible checks:
+
+```bash
+npm run agent:demo
+npm run visible:demo
+organchor verify url https://organchor.org --compact
+```
+
+Best public starting points:
+
+- `PUBLIC_EXPLAINER.md`: plain-language explanation for first-time readers.
+- `FIRESEED_DECK_OUTLINE.md`: slide outline for a public introduction deck.
+- `VIDEO_SCRIPT_90S.md`: short concept video script.
+- `VIDEO_SCRIPT_DEMO.md`: practical demo video script.
+- `SPONSOR_LETTER.md`: sponsor / supporter letter template.
+- `FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
+
 ## What It Is
 
 OrgAnchor is an open-source identity continuity toolkit.

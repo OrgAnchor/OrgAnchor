@@ -20,6 +20,11 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `CONTRIBUTING.md`: Fireseed contributor guide for adopter trials, technical review, evidence/governance review, PR hygiene, and scope boundaries.
 - `CALL_FOR_FIRESEED_REVIEW.md`: public Fireseed review invitation and success condition.
 - `FIRESEED_OUTREACH_KIT.md`: practical external-validation starter kit with track-specific tasks, commands, feedback routing, success/hold criteria, and invitation text.
+- `PUBLIC_EXPLAINER.md`: one-page public explanation for first-time readers and non-specialist reviewers.
+- `FIRESEED_DECK_OUTLINE.md`: slide outline for presenting OrgAnchor as a Fireseed Alpha seed project.
+- `VIDEO_SCRIPT_90S.md`: short concept video script for public outreach.
+- `VIDEO_SCRIPT_DEMO.md`: practical demo video script showing visible and AI-agent verification flows.
+- `SPONSOR_LETTER.md`: sponsor/supporter letter template with explicit non-pay-for-trust boundaries.
 - `ROADMAP.md`: implementation stages and current project direction.
 - `V1_ACCEPTANCE.md`: definition of v1 completeness.
 - `IMPLEMENTATION_STATUS.md`: current implemented surface, remaining gaps, non-goals, and verification commands.

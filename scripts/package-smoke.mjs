@@ -60,6 +60,11 @@ try {
   assertContains(copiedFiles, "CHANGELOG.md");
   assertContains(copiedFiles, "CONTRIBUTING.md");
   assertContains(copiedFiles, "DOCS_INDEX.md");
+  assertContains(copiedFiles, "PUBLIC_EXPLAINER.md");
+  assertContains(copiedFiles, "FIRESEED_DECK_OUTLINE.md");
+  assertContains(copiedFiles, "VIDEO_SCRIPT_90S.md");
+  assertContains(copiedFiles, "VIDEO_SCRIPT_DEMO.md");
+  assertContains(copiedFiles, "SPONSOR_LETTER.md");
   assertContains(copiedFiles, "FIRESEED_LAUNCH_DECISION_2026-06-01.md");
   assertContains(copiedFiles, "FIRESEED_READINESS_GATE.md");
   assertContains(copiedFiles, "PROJECT_NORTH_STAR.md");

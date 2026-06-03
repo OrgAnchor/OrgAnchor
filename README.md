@@ -28,9 +28,13 @@ Best public starting points:
 
 - `PUBLIC_EXPLAINER.md`: plain-language explanation for first-time readers.
 - `FIRESEED_DECK_OUTLINE.md`: slide outline for a public introduction deck.
+- `OUTREACH_PLAN.md`: public understanding, publishing order, target audiences, and sponsorship-entry plan.
+- `VIDEO_SCRIPT_SHORT.md`: Chinese-first 90-second concept video script.
 - `VIDEO_SCRIPT_90S.md`: short concept video script.
 - `VIDEO_SCRIPT_DEMO.md`: practical demo video script.
+- `VIDEO_SCRIPT_DEEP_DIVE.md`: 20-minute architecture/evidence/discovery/commercial-fit script.
 - `SPONSOR_LETTER.md`: sponsor / supporter letter template.
+- `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Fireseed Wave 1.
 - `FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
 
 ## What It Is

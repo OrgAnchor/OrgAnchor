@@ -8,9 +8,13 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 const publicLaunchDocs = [
   "PUBLIC_EXPLAINER.md",
+  "OUTREACH_PLAN.md",
   "FIRESEED_DECK_OUTLINE.md",
+  "VIDEO_SCRIPT_SHORT.md",
   "VIDEO_SCRIPT_90S.md",
   "VIDEO_SCRIPT_DEMO.md",
+  "VIDEO_SCRIPT_DEEP_DIVE.md",
+  "FIRESEED_VALIDATION_TRACKING_ISSUE.md",
   "SPONSOR_LETTER.md"
 ];
 
@@ -52,9 +56,29 @@ test("public launch prep docs preserve the Fireseed boundary", () => {
     "not a certification authority",
     "NOT_ASSIGNED_BY_ORGANCHOR",
     "S1-S3",
-    "S4/S5"
+    "S4/S5",
+    "Fireseed Alpha External Validation Wave 1",
+    "Sponsorship does not buy"
   ]) {
     assert.match(combined, new RegExp(escapeRegExp(phrase), "i"));
+  }
+});
+
+test("outreach plan defines a bounded publishing and sponsorship sequence", () => {
+  const plan = readText("OUTREACH_PLAN.md");
+
+  for (const phrase of [
+    "Public Understanding Package",
+    "Publishing Order",
+    "Target Audiences",
+    "Sponsorship Entry Strategy",
+    "Sponsors support a defined Fireseed Alpha validation phase",
+    "Sponsorship must not buy",
+    "GitHub Sponsors",
+    "Open Collective",
+    "Open Source Collective"
+  ]) {
+    assert.match(plan, new RegExp(escapeRegExp(phrase), "i"));
   }
 });
 

@@ -145,7 +145,46 @@ State clearly:
 - Not stable v1.
 - Not a guarantee of permanence.
 
-## Slide 12: Fireseed Ask
+## Slide 12: What Still Needs External Validation
+
+Message: The alpha is ready to be tested, not declared finished.
+
+Needs:
+
+- External adopter trial.
+- Independent technical review.
+- Evidence and governance review.
+- AI-agent and Directory discovery test.
+- Sponsor-supported documentation, video, examples, and pilot operations.
+
+## Slide 13: Fireseed Plan
+
+Message: Fireseed Alpha is a bounded validation phase.
+
+Wave 1 should produce:
+
+- one external or realistic pilot package;
+- one technical review;
+- one evidence/governance review;
+- one AI-agent or Directory experiment;
+- one documented failure or friction point that changes the roadmap.
+
+## Slide 14: What Sponsorship Supports
+
+Message: Sponsor a defined validation phase, not an indefinite promise.
+
+Sponsor support funds:
+
+- public explainers and demo videos;
+- first pilot support;
+- technical review;
+- evidence/governance review;
+- examples and documentation;
+- AI-agent and Directory compatibility experiments.
+
+Boundary: Sponsorship does not buy ranking, certification, verification outcomes, Directory priority, or trust status.
+
+## Slide 15: Fireseed Ask
 
 Ask for:
 
@@ -161,4 +200,3 @@ Close with:
 - `PUBLIC_EXPLAINER.md`
 - `FIRESEED_OUTREACH_KIT.md`
 - `CALL_FOR_FIRESEED_REVIEW.md`
-

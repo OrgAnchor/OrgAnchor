@@ -1,0 +1,29 @@
+{
+  "type": "OrgAnchorConfig",
+  "version": "1.0",
+  "organization": {
+    "name": "example-adopter",
+    "display_name": "Example Adopter",
+    "description": "Placeholder organization profile for a minimal OrgAnchor adopter."
+  },
+  "official_endpoints": {
+    "website": "https://example.org",
+    "verify": "https://example.org/verify",
+    "security": "mailto:security@example.org",
+    "documentation": "https://example.org/docs"
+  },
+  "domain_security": {
+    "primary_domain": "example.org",
+    "dnssec": null,
+    "spf": null,
+    "dkim": null,
+    "dmarc": null,
+    "registry_lock": null
+  },
+  "auxiliary_names": {
+    "ens": null
+  },
+  "disaster_recovery": {
+    "onion": null
+  }
+}

@@ -6,22 +6,36 @@ Status: Fireseed Alpha outreach plan.
 
 ## Purpose
 
-This plan turns OrgAnchor from "a technically implemented alpha" into "a seed project that outside people can understand, reproduce, challenge, support, and help improve."
+This plan is not meant to package OrgAnchor as a mature finished product. It is meant to turn OrgAnchor into a public seed that outside people can understand, reproduce, challenge, try, support, and help improve.
 
-The goal is not to prove that OrgAnchor is already great. The goal is to prove that the direction is understandable, reviewable, and worth external validation.
+Fireseed Alpha does not try to prove that OrgAnchor has already succeeded. It tries to test whether, after AI-generated content makes "seeing is believing" increasingly unreliable, a non-monopolistic, inspectable, AI-agent-friendly substrate for organization identity and evidence is worth building with more people.
 
 ## Core Message
 
-OrgAnchor is a verifiable organization identity and evidence substrate.
+OrgAnchor's core message is that an organization should not have to prove itself only through platform accounts, domains, websites, cloud infrastructure, or polished promotional material.
 
-It helps organizations expose:
+OrgAnchor adds a signed, inspectable, migratable, machine-readable identity and evidence history layer on top of ordinary public entrypoints. A website can still be the main human-facing entrance, but it no longer has to carry the full burden of identity continuity, evidence history, and AI-agent verification by itself.
 
-- who is speaking;
-- which endpoints are official;
-- which claims are signed;
-- which evidence supports the claims;
-- what is stale, missing, contradicted, or outside scope;
-- what an external person or AI agent should verify next.
+OrgAnchor turns "who we are, where we are official, what we claim, what evidence supports it, what remains uncertain, and what an external AI agent should check next" into a public package that can be verified across carrier changes.
+
+OrgAnchor does not make final trust, purchase, partnership, safety, or policy decisions. It lowers the cost for people, organizations, directories, and AI agents to discover, verify, understand, and compare organization-provided identity and evidence materials.
+
+Core advantages to reuse in public materials:
+
+- Identity root is separated from domains, websites, platform accounts, and cloud providers. The organization's root authority is the continuity anchor.
+- Single-carrier failure is less likely to make years of organizational effort hard to trace. Domains may expire, accounts may be disabled, websites may move, and cloud services may fail, but signed statements, evidence packages, migration records, and historical anchors can remain traceable.
+- A traditional website is upgraded from a current display surface into a verifiable entrypoint through `/verify`, `/.well-known/organchor.json`, signatures, hashes, and machine-readable indexes.
+- Important history becomes harder to rewrite silently. Changed statements require new signed records, new hashes, or explicit migration/supersession paths.
+- Root authority can evolve. A small organization can start simple, then migrate toward threshold authority and better custody without discarding history.
+- AI agents get a low-friction route: discover the Beacon, fetch the verify package, verify signatures and hashes, inspect evidence, read gaps, and decide what to check next.
+- `PASS` is not a trust badge. OrgAnchor verifies identity and evidence structure while keeping the final decision outside OrgAnchor.
+- Claims and evidence are bound together. Claims, evidence, hashes, methods, limitations, freshness, risk gaps, and next actions can be inspected together instead of scattered across marketing pages.
+- Evidence is judged by purpose-fit sufficiency, not raw paperwork volume. OrgAnchor should not reward organizations for filling the most optional fields.
+- S1-S3 gives a minimum evidence baseline: first-party evidence, organization-submitted third-party material, and random purchase / sampling structure.
+- Beacon-first discovery lets every adopter emit an origin-owned discovery signal before any Directory includes it.
+- Directories can reduce search cost without becoming identity roots, certification authorities, or monopoly discovery gates.
+- Commercial-fit signals can reduce wasted verification effort by exposing price disclosure mode, quote path, lead time, MOQ, region, and validity where appropriate.
+- Capability audits, package smoke tests, visible demos, and agent demos reduce the gap between documentation claims and implementation reality.
 
 OrgAnchor is not:
 
@@ -30,71 +44,110 @@ OrgAnchor is not:
 - a certification authority;
 - a government identity replacement;
 - a guarantee that a product or organization is good;
+- a guarantee that any carrier will remain online;
 - stable v1.
 
 ## Why This Problem Will Get Worse
 
-AI-generated content lowers the cost of polished appearance. Photos, videos, websites, product pages, testimonials, and marketing assets can look convincing without being reliable.
+AI-generated content is lowering the cost of convincing appearances. Product photos, videos, websites, testimonials, certificates, and marketing pages can look credible without being reliable.
+
+At the same time, traditional public entrypoints are weak historical proof layers. A website can be edited, old pages can disappear, platform accounts can be suspended, and domain or infrastructure failures can break the trail that outsiders use to understand what was official before. Without signed history, outsiders cannot easily distinguish continuity from later rewriting.
 
 That changes the verification problem:
 
-- "Looks real" becomes weaker evidence.
-- Centralized recommendations can become expensive or captured.
-- Traditional certification remains useful, but often costs too much, moves too slowly, or covers too little context.
-- Demand-side AI agents need low-cost first-pass verification before deeper due diligence.
-- Small and serious organizations need a way to prove identity continuity and evidence quality without depending on a single platform gatekeeper.
+- "looks real" becomes weaker evidence;
+- ordinary websites are no longer enough to preserve signed, inspectable history;
+- imitation gets cheaper while serious organizations need cheaper ways to expose durable evidence;
+- centralized recommendations and review systems can become expensive, captured, pay-to-play, or polluted by synthetic activity;
+- traditional certification remains useful, but often costs too much, moves too slowly, or covers too little context;
+- AI agents will evaluate many more candidates than humans can, so unstructured verification cost becomes a scaling problem;
+- demand-side AI agents need low-cost first-pass verification before deeper due diligence;
+- small and serious organizations need a way to prove identity continuity and evidence quality without depending on a single platform gatekeeper.
 
 ## Public Understanding Package
 
-The package-facing materials are:
+The public understanding package should make OrgAnchor understandable at three depths and for two kinds of readers: humans and AI agents.
 
-- `PUBLIC_EXPLAINER.md`: one-page project explanation.
-- `FIRESEED_DECK_OUTLINE.md`: 12-15 slide public deck outline.
-- `VIDEO_SCRIPT_SHORT.md`: 90-second concept video script, Chinese-first.
-- `VIDEO_SCRIPT_90S.md`: 90-second English concept script.
-- `VIDEO_SCRIPT_DEMO.md`: 6-8 minute demo script.
-- `VIDEO_SCRIPT_DEEP_DIVE.md`: 20-minute architecture/evidence/directory/commercial-fit script.
-- `SPONSOR_LETTER.md`: sponsor/supporter letter template.
-- `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Wave 1 external validation.
+Depths:
+
+1. quick understanding: what problem OrgAnchor addresses and why it matters;
+2. visible proof: what the current alpha can actually demonstrate;
+3. external action: how reviewers, pilot organizations, AI-agent builders, Directory builders, and sponsors can participate.
+
+Human-facing materials:
+
+- `PUBLIC_EXPLAINER.md`: one-page explanation for first-time readers.
+- `VIDEO_SCRIPT_SHORT.md`: bilingual 90-second concept video review script, with English as the canonical voiceover and Chinese meaning alignment.
+- `VIDEO_SCRIPT_90S.md`: public English 90-second concept script for the same message.
+- `VIDEO_SCRIPT_DEMO.md`: 6-8 minute demo script showing visible verification and AI-agent verification.
+- `VIDEO_SCRIPT_DEEP_DIVE.md`: 20-minute script for architecture, evidence, S1-S3, Directory, and commercial-fit explanation.
+- `FIRESEED_DECK_OUTLINE.md`: 12-15 slide PPT / deck outline for sponsors, collaborators, and serious reviewers.
+
+AI-agent-facing materials:
+
+- `README.md`: first-pass project overview, install path, current status, and boundaries.
+- `DOCS_INDEX.md`: map of current public docs, design records, implementation status, examples, and known gaps.
+- `PUBLIC_EXPLAINER.md`: short project positioning that is also useful for first-pass AI summarization.
+- `AGENT_VERIFICATION_CONTRACT.md`: stable discovery and verification result contract.
+- `AGENT_INTEGRATION_GUIDE.md`: practical instructions for external AI agents and automated verifiers.
+- `CAPABILITY_TRACEABILITY_MATRIX.md`: implementation-audit map separating implemented, partial, design-only, and not-implemented capabilities.
+- `CLAIMS_EVIDENCE_PROTOCOL.md`: evidence and claim model for interpreting organization-provided assertions.
+- `examples/agent-verification/`: compact verification and Beacon query examples.
+- `examples/agent-discovery-loop/`: runnable local discovery-loop example.
+
+Action-facing materials:
+
+- `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub issue for Wave 1 external validation.
 - `FIRESEED_OUTREACH_KIT.md`: operational review and pilot starter kit.
+- `SPONSOR_LETTER.md`: sponsor/supporter letter template for defined Fireseed Alpha validation support.
 
 ## Publishing Order
 
-1. Publish the GitHub project and `FIRESEED_OUTREACH_KIT.md`.
-2. Publish the 90-second concept video.
-3. Publish the 6-8 minute demo video.
-4. Publish the public deck.
-5. Open GitHub tracking issue: "Fireseed Alpha External Validation Wave 1".
-6. Open a sponsorship entry.
-7. Send sponsor letters and targeted invitations.
-8. Collect external review results and update the Fireseed gate.
+1. Keep the GitHub repository, README, public `/verify` page, and `FIRESEED_OUTREACH_KIT.md` ready.
+2. Open GitHub tracking issue: "Fireseed Alpha External Validation Wave 1".
+3. Coordinate with the CivitasX parent-channel plan so OrgAnchor is introduced as Project 01, not as an unexplained standalone channel identity.
+4. Publish the reframed 90-second OrgAnchor Project 01 concept video.
+5. Publish the 6-8 minute demo video.
+6. Publish the 12-15 slide PPT / deck for sponsors, collaborators, and serious reviewers.
+7. Publish or pin the AI-agent quick path: `npm run visible:demo -- --out ./visible-demo --serve`, `npm run agent:demo`, and `organchor verify url <local-or-public-organchor-url> --compact`.
+8. Invite technical reviewers, AI-agent builders, Directory builders, and evidence/governance reviewers.
+9. Open a sponsorship entry only after the problem, demo, review path, and Fireseed boundary are public.
+10. Send sponsor letters and targeted invitations.
+11. Collect external review results, record friction points, and update the Fireseed gate.
 
 ## Target Audiences
 
-Do not target only open-source users.
+Do not target only open-source users. Fireseed outreach should separate audiences by the kind of help they can provide.
 
-Initial outreach should include:
+Primary audiences:
 
-- AI-agent builders;
-- supply chain, procurement, and manufacturing practitioners;
-- decentralized identity, DID, Web3 naming, ENS, IPFS, Arweave, and timestamping communities;
-- open-source infrastructure maintainers;
-- anti-fraud, evidence-chain, provenance, and certification researchers;
-- people who support non-monopolistic public infrastructure;
-- operators of serious small organizations who need low-cost public verification.
+- AI-agent builders and automated-verification developers: test whether OrgAnchor packages are easy to discover, parse, verify, and route into external policy.
+- Directory builders, search/index operators, and dataset maintainers: test whether Beacon and Directory records can reduce candidate-discovery cost without becoming a monopoly trust gate.
+- Serious small organizations and early adopter operators: test whether a real organization can publish identity, endpoint, claim, evidence, and commercial-fit materials without excessive burden.
+- Supply chain, procurement, manufacturing, and B2B service practitioners: test whether OrgAnchor reduces supplier discovery, verification, and first-contact cost.
+- Evidence, provenance, anti-fraud, certification, and audit researchers: test whether the evidence model exposes gaps without pretending to be a central certification authority.
+- Decentralized identity, DID, Web3 naming, ENS, IPFS, Arweave, timestamping, and open infrastructure communities: test whether OrgAnchor uses these carriers correctly without turning any carrier into the identity root.
+- Open-source infrastructure maintainers: review release integrity, package safety, contribution flow, and long-term maintainability.
+- Supporters of non-monopolistic public infrastructure: help fund, review, mirror, explain, or connect the Fireseed validation wave.
 
 ## Sponsorship Entry Strategy
 
-Use mature funding platforms first instead of building custom payment infrastructure.
+Sponsorship is not the first public action. OrgAnchor should first make the problem, demo, review path, and Fireseed boundary understandable.
 
-Recommended order:
+At the Fireseed Alpha stage, sponsorship should be treated as optional support for a defined validation wave, not as proof of traction and not as an indefinite project promise.
 
-1. GitHub Sponsors for direct open-source sponsorship. GitHub Sponsors is designed to let people financially support developers and organizations that build open-source projects. Reference: https://docs.github.com/en/sponsors/getting-started-with-github-sponsors/about-github-sponsors
-2. Open Collective / Open Source Collective when transparent budgets, fiscal hosting, expense processing, and multi-person project operations become necessary. Open Collective describes fiscal hosts as providing access to legal status, expense processing, and bank accounts. References: https://documentation.opencollective.com/collectives/choosing-a-fiscal-host and https://oscollective.org/projects/
+Default sequence:
 
-Sponsor message:
+1. publish the public understanding package;
+2. open the Fireseed Wave 1 tracking issue;
+3. invite reviewers and pilot candidates;
+4. collect early external feedback;
+5. open a lightweight sponsorship entry only if there is clear support interest or a concrete need for funded validation work.
 
-Sponsors support a defined Fireseed Alpha validation phase, not an indefinite project promise.
+Funding entry options:
+
+1. GitHub Sponsors is the lightweight first option for direct open-source sponsorship if a simple public support path is needed.
+2. Open Collective / Open Source Collective should be considered later if the project needs transparent budgets, fiscal hosting, expense processing, shared governance, or multi-person project operations.
 
 Sponsorship funds should be framed as support for:
 
@@ -113,29 +166,46 @@ Sponsorship must not buy:
 - trust status;
 - ranking;
 - certification;
-- policy influence.
+- policy influence;
+- preferential treatment in capability, evidence, or conformance reporting.
+
+Operational rule:
+
+Sponsorship should be tracked separately from verification. If a sponsor is also reviewed, listed, piloted, or included in a Directory, that relationship must be disclosed and must not change verification results.
 
 ## Fireseed Wave 1 Acceptance
 
-Wave 1 should be considered useful if it produces:
+Wave 1 is useful if it creates external evidence about whether OrgAnchor is understandable, reproducible, and worth improving.
 
-- one external organization or realistic pilot workspace completing a basic OrgAnchor package;
-- one technical reviewer finding or confirming important implementation issues;
-- one evidence/governance reviewer identifying S1-S3 strengths and weaknesses;
-- one AI-agent or Directory builder testing discovery and compact verification;
-- at least one documented failure or friction point that changes the next roadmap.
+Minimum useful outcomes:
+
+- one real external organization or realistic pilot workspace completes a basic OrgAnchor package under realistic constraints;
+- one external human reviewer can understand the public `/verify` page, visible demo, and boundary that `PASS` is not a trust badge;
+- one technical reviewer reproduces the local demo or identifies a concrete implementation, packaging, signing, verification, or documentation issue;
+- one evidence/governance reviewer identifies practical strengths, weaknesses, or abuse risks in S1-S3;
+- one AI-agent or Directory builder tests discovery, compact verification, and whether the result gives enough next-step guidance;
+- at least one documented failure, confusion, or friction point changes the next roadmap.
+
+Negative findings count as useful Fireseed results if they are specific, reproducible, and improve the project boundary or implementation.
 
 Wave 1 should be held or slowed if:
 
-- external reviewers cannot understand what OrgAnchor does;
-- the demo cannot be reproduced by a technically capable reviewer;
-- OrgAnchor is being interpreted as a trust badge;
-- S1-S3 evidence claims look stronger in public materials than the implementation supports;
-- sponsorship language looks like pay-for-trust.
+- external reviewers cannot understand what OrgAnchor does after reading the public understanding package;
+- a technically capable reviewer cannot reproduce the demo path;
+- the public `/verify` page or AI-agent output does not make the trust boundary visible;
+- OrgAnchor is being interpreted as a trust badge, marketplace, certification authority, or final ranking system;
+- public materials describe S1-S3 as more mature, automated, or proof-like than the implementation actually supports;
+- documentation and implementation drift apart in a way that misleads reviewers;
+- sponsorship language looks like pay-for-trust;
+- review feedback exposes a security or integrity issue that should be fixed before further outreach.
 
 ## Operating Principle
 
-Every public outreach asset must preserve this boundary:
+Every public outreach asset must preserve these boundaries:
 
-OrgAnchor provides a verifiable material substrate. It does not make final trust, purchase, partnership, or safety decisions. Those decisions remain with the external person, organization, AI agent, policy, or Directory.
+1. OrgAnchor provides a verifiable material substrate. It is not a trust badge, certification authority, marketplace ranking system, or recommendation platform.
+2. The identity root belongs to the adopting organization, not to OrgAnchor, a Directory, a domain, a website, a platform account, or any storage / publication carrier.
+3. Evidence gaps, expired materials, scope limits, uncertainty, and unresolved risks must remain visible. Public materials must not package them as "already trusted".
+4. Public explanations must distinguish implemented alpha capabilities from design direction, future work, and open research questions.
 
+Final trust, purchase, partnership, safety, and policy decisions remain with the external person, organization, AI agent, policy, or Directory.

@@ -6,6 +6,7 @@ keys/*.private.json
 node_modules/
 dist/
 coverage/
+outputs/
 reports/capability-audit.json
 reports/capability-audit.md
 reports/capability-scenarios.json

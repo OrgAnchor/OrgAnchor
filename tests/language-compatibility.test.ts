@@ -53,13 +53,13 @@ test("public entry documents keep readable Chinese text", () => {
   const agentGuide = readText("AGENT_INTEGRATION_GUIDE.md");
   const outreach = readText("FIRESEED_OUTREACH_KIT.md");
 
-  assert.match(readme, /帮助组织发布经过签名的官方入口声明/);
+  assert.match(readme, /帮助组织发布经过签名、可复查的公开资料/);
   assert.match(agentGuide, /Chinese name: AI 代理接入指南/);
   assert.match(agentGuide, /AI agent = AI 代理，代表某个用户、组织、买家、平台或审计方做查询和判断的程序/);
   assert.match(outreach, /我们正在邀请少量具名早期验证者/);
 
   for (const text of [readme, agentGuide, outreach]) {
-    assert.equal(/锛|浠|绛|楠|鏍|鎵|甯|缁|熷|€||||/.test(text), false);
+    assert.equal(/鐜|舶|浠庤|绛惧|缁勭粐|浠ｇ悊|鎺ュ叆|楠岃|閭€璇|\?\?\?\?/.test(text), false);
   }
 });
 

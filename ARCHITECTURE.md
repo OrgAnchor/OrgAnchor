@@ -2,7 +2,7 @@
 
 Status: Accepted baseline, actively implemented
 
-OrgAnchor helps organizations publish signed official endpoint and value-evidence statements so their online presence can remain discoverable, verifiable, and understandable across domain, platform, infrastructure, and discovery-channel changes.
+OrgAnchor helps organizations publish signed identity, official-presence, and value-evidence records so their online presence can remain discoverable, verifiable, and understandable across domain, platform, infrastructure, and discovery-channel changes.
 
 OrgAnchor is not a trust oracle. It does not decide whether an organization is good, safe, lawful, or the best supplier for a given need. It creates a low-friction verification substrate that humans, organizations, directories, and AI agents can use as input to their own policies.
 
@@ -20,7 +20,7 @@ The architecture optimizes for five properties:
 
 ```mermaid
 flowchart TD
-  A["Root authority set"] --> B["Signed official endpoint statement"]
+  A["Root authority set"] --> B["Signed official-presence statement"]
   A --> C["Signed claims manifest"]
   A --> D["Signed evidence manifest"]
   A --> E["Root migration statements"]
@@ -123,6 +123,8 @@ An adopting organization can publish:
 /verify/official-endpoints.json
 /verify/official-endpoints.json.sig
 /verify/root-authority.json
+/verify/organchor.lock.json
+/verify/organchor.lock.json.sig
 /verify/claims/product-claims.json
 /verify/claims/product-claims.json.sig
 /verify/evidence/evidence-manifest.json
@@ -157,7 +159,7 @@ The intended AI-agent flow is:
 3. Fetch statement, signature, and root authority artifacts.
 4. Recompute canonical hashes.
 5. Verify the signature threshold.
-6. Inspect claims, evidence, value audit, carrier receipts, and migration history.
+6. Inspect claims, evidence, value audit, signed lockfile integrity, carrier receipts, and migration history.
 7. Produce an external policy decision outside OrgAnchor.
 
 The CLI exposes this flow through:

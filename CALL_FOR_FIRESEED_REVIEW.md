@@ -59,7 +59,7 @@ Focus on:
 - S3 random sampling and anti-brushing limits.
 - Stale or misleading evidence.
 - Directory capture and ranking risks.
-- S4/S5 observation and challenge gaps.
+- S4/S5 observation, challenge, correction, and accountability gaps.
 - Ways to expose uncertainty without making OrgAnchor a central judge.
 
 ## What Fireseed Does Not Claim
@@ -73,7 +73,7 @@ Fireseed Alpha does not claim:
 - Permanent identity.
 - Anti-censorship guarantees.
 - Official Directory privilege.
-- A solved public challenge network.
+- A solved public challenge, correction, and accountability network.
 
 OrgAnchor verifies signatures, hashes, continuity, publication structure, and declared evidence relationships. Final trust decisions remain with external agents, buyers, reviewers, directories, regulators, communities, and people.
 

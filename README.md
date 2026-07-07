@@ -1,8 +1,8 @@
 # OrgAnchor
 
-OrgAnchor helps organizations publish signed official endpoint statements so that their online presence remains verifiable across domain, platform, and infrastructure changes.
+OrgAnchor helps organizations publish signed, recheckable public records that link identity, official presence, claims, evidence, and migration history so people and AI agents can discover, screen, verify, understand, and compare candidate organizations at lower cost across domain, platform, website, or infrastructure changes.
 
-OrgAnchor 帮助组织发布经过签名的官方入口声明，使组织在域名、平台和基础设施发生变化时，仍然能够保持可验证的在线身份连续性。
+OrgAnchor 帮助组织发布经过签名、可复查的公开资料，将身份、官方入口、主张、证据和迁移历史串联起来，使外部用户和 AI Agent 即使面对域名、平台账号、官网或基础设施变化，也能以更低成本发现、初筛、验证、理解和比较候选组织。
 
 ## 3-Minute Version
 
@@ -10,7 +10,8 @@ OrgAnchor is a Fireseed Alpha project for organization identity continuity and e
 
 The short version:
 
-- It helps an organization prove which public endpoints, statements, keys, evidence packages, and migration history belong to its own root authority.
+- It helps an organization publish signed records of who it is, where its official presence can be found, what it claims, what evidence it exposes, and what changed over time.
+- It helps people and AI agents reduce the cost of deciding whether an organization is worth deeper review, contact, partnership, purchase, or support.
 - It gives external AI agents a low-friction path to discover `/.well-known/organchor.json`, verify signatures and hashes, inspect evidence gaps, and decide what to check next.
 - It treats websites, IPFS, Arweave, Onion, ENS, Directory snapshots, and cloud platforms as carriers or discovery aids, not as the identity root.
 - It does not certify that an organization is good, truthful, safe, lawful, cheap, or the best supplier. `PASS` is identity/evidence-structure verification, not a trust badge; OrgAnchor's own trust decision field remains `NOT_ASSIGNED_BY_ORGANCHOR`.
@@ -19,23 +20,35 @@ The short version:
 Fast visible checks:
 
 ```bash
+npm run visible:demo -- --out ./visible-demo --serve
 npm run agent:demo
-npm run visible:demo
-organchor verify url https://organchor.org --compact
+organchor verify url <local-or-public-organchor-url> --compact
 ```
 
 Best public starting points:
 
+- `CURRENT_PROJECT_STATE_2026-07-02.md`: current source-repository state, Fireseed boundary, repository boundary, and next-work order.
 - `PUBLIC_EXPLAINER.md`: plain-language explanation for first-time readers.
+- `DESIGN_RATIONALE.md`: full design logic from core goal to mechanisms, effects, and limits.
+- `ADOPTER_QUICKSTART.md`: shortest practical path for an adopting organization.
+- `PILOT_MINIMAL_PATH.md`: minimal external pilot definition and verification gate.
+- `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`: current external-view review of OrgAnchor's own public self-pilot against the minimal path.
 - `FIRESEED_DECK_OUTLINE.md`: slide outline for a public introduction deck.
 - `OUTREACH_PLAN.md`: public understanding, publishing order, target audiences, and sponsorship-entry plan.
-- `VIDEO_SCRIPT_SHORT.md`: Chinese-first 90-second concept video script.
-- `VIDEO_SCRIPT_90S.md`: short concept video script.
+- `PUBLIC_RELEASE_CHECKLIST.md`: practical release gate for public assets, local checks, owner approvals, and hold criteria.
+- `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: latest release-preparation check results for local gates, capability audit, public self-pilot, and public root-signed lockfile verification.
+- `PUBLIC_VIDEO_90S_RELEASE_PACK.md`: Project 01 OrgAnchor video draft/release pack with shot list, publishing copy, captions, and upload checklist.
+- `PUBLIC_FEEDBACK_CHAIN_PLAN.md`: Project 01 first-wave platform strategy, to be used after CivitasX parent-channel context is established.
+- `PUBLIC_POSTS_FIRESEED_WAVE_1.md`: copyable Project 01 post drafts for GitHub, Bluesky, LinkedIn, X, and optional Fediverse mirrors.
+- `VIDEO_SCRIPT_SHORT.md`: bilingual 90-second concept video review script with English as the canonical voiceover.
+- `VIDEO_SCRIPT_90S.md`: public English 90-second concept video script.
 - `VIDEO_SCRIPT_DEMO.md`: practical demo video script.
 - `VIDEO_SCRIPT_DEEP_DIVE.md`: 20-minute architecture/evidence/discovery/commercial-fit script.
 - `SPONSOR_LETTER.md`: sponsor / supporter letter template.
 - `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Fireseed Wave 1.
 - `FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
+- `FIRESEED_ALPHA_COMPLETION_AUDIT_2026-07-06.md`: requirement-by-requirement completion audit for Fireseed Alpha public-release preparation.
+- `AI_OPERATING_MODEL.md`: project operating model for human-owner and AI-execution-lead collaboration.
 
 ## What It Is
 
@@ -44,7 +57,7 @@ OrgAnchor is an open-source identity continuity toolkit.
 It is designed around:
 
 - An organization root authority.
-- Signed official endpoint statements.
+- Signed official-presence records.
 - Static adopting-organization `/verify` pages.
 - Machine-readable verification artifacts.
 - Claims and evidence manifests.
@@ -59,22 +72,22 @@ OrgAnchor is currently in Fireseed Alpha: the first public collaboration point w
 Fireseed Alpha focuses on:
 
 - Organization root authority and migration continuity.
-- Signed official endpoint statements.
+- Signed official-presence records.
 - Public `/verify` packages.
 - AI-agent-readable verification through `/.well-known/organchor.json` and `organchor verify url --compact`.
 - Signed claims and evidence manifests.
 - S1-S3 evidence baseline: first-party evidence, organization-submitted third-party material, and random purchase / sampling structure.
-- S4/S5 design preview only: real-use observation and public challenge are important, but not finished acceptance gates.
+- S4/S5 design preview only: real-use observation, public challenge, correction, and historical accountability are important, but not finished acceptance gates.
 
 Start with `FIRESEED_OUTREACH_KIT.md`, `FIRESEED_ALPHA_PLAN.md`, `FIRESEED_READINESS_GATE.md`, `FIRESEED_LAUNCH_DECISION_2026-06-01.md`, `CAPABILITY_TRACEABILITY_MATRIX.md`, `CALL_FOR_FIRESEED_REVIEW.md`, and `CONTRIBUTING.md` if you want to try, review, or critique the project.
 
 ## Purpose and Values
 
-OrgAnchor is not only a tool for keeping an organizational name alive. Its purpose is to help long-term, evidence-bearing organizations make their public identity, claims, evidence, corrections, and migrations easier to verify over time.
+OrgAnchor is not only a tool for keeping an organizational name alive. Its purpose is to help long-term, evidence-bearing organizations make their public identity, claims, evidence, corrections, and migrations easier to verify over time, while reducing the cost of deciding whether they are worth deeper review, contact, partnership, purchase, or support.
 
 OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
 
-See `PROJECT_NORTH_STAR.md`, `DOCS_INDEX.md`, `CAPABILITY_TRACEABILITY_MATRIX.md`, `CAPABILITY_AUDIT_SCENARIOS.md`, `VISIBLE_ACCEPTANCE.md`, `VISIBLE_ACCEPTANCE_REVIEW_2026-06-01.md`, `LANGUAGE_COMPATIBILITY.md`, `FIRESEED_OUTREACH_KIT.md`, `FIRESEED_ALPHA_PLAN.md`, `FIRESEED_READINESS_GATE.md`, `FIRESEED_LAUNCH_DECISION_2026-06-01.md`, `IMPLEMENTATION_STATUS.md`, `CALL_FOR_FIRESEED_REVIEW.md`, `CONTRIBUTING.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `S2_THIRD_PARTY_MATERIAL_MODEL.md`, `PACKAGE_HEALTH_LAYER.md`, `COMMERCIAL_FIT_LAYER.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, visible acceptance flow, language compatibility, Fireseed outreach kit, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, S2 third-party material model, package health model, commercial-fit model, real-world evidence profile, product/service credential direction, implementation map, executable scenario audit, and document map.
+See `PROJECT_NORTH_STAR.md`, `DESIGN_RATIONALE.md`, `AI_OPERATING_MODEL.md`, `DOCS_INDEX.md`, `CAPABILITY_TRACEABILITY_MATRIX.md`, `CAPABILITY_AUDIT_SCENARIOS.md`, `VISIBLE_ACCEPTANCE.md`, `VISIBLE_ACCEPTANCE_REVIEW_2026-06-01.md`, `PUBLIC_LAUNCH_REVIEW_2026-06-06.md`, `PUBLIC_RELEASE_CHECKLIST.md`, `LANGUAGE_COMPATIBILITY.md`, `FIRESEED_OUTREACH_KIT.md`, `FIRESEED_ALPHA_PLAN.md`, `FIRESEED_READINESS_GATE.md`, `FIRESEED_LAUNCH_DECISION_2026-06-01.md`, `IMPLEMENTATION_STATUS.md`, `CALL_FOR_FIRESEED_REVIEW.md`, `CONTRIBUTING.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `S2_THIRD_PARTY_MATERIAL_MODEL.md`, `PACKAGE_HEALTH_LAYER.md`, `COMMERCIAL_FIT_LAYER.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, operating model, design rationale, visible acceptance flow, public launch consistency review, public release gate, language compatibility, Fireseed outreach kit, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, S2 third-party material model, package health model, commercial-fit model, real-world evidence profile, product/service credential direction, implementation map, executable scenario audit, and document map.
 
 The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DISCOVERY_TAXONOMY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
 
@@ -84,7 +97,7 @@ The accepted but not yet implemented `PRODUCT_SERVICE_CREDENTIAL_LAYER.md` defin
 
 The accepted `EVIDENCE_SUFFICIENCY_MODEL.md` prevents the evidence layer from becoming a paperwork race: OrgAnchor should report whether evidence is sufficient for a stated purpose, not reward raw field count.
 
-The accepted but not yet implemented `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md` defines the three-axis model for purpose profiles, observation source classes, and challenge/correction lifecycle. Public challenge review is a horizontal lifecycle mode, not a sixth ascending purpose profile.
+The accepted but not yet fully implemented `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md` defines the three-axis model for purpose profiles, observation source classes, and challenge/correction/accountability lifecycle. Public challenge review is a horizontal lifecycle mode, not a sixth ascending purpose profile. Product/service history and broader accountability observations are routed through S5 instead of becoming a separate Historical Layer.
 
 The accepted but not yet implemented `PACKAGE_HEALTH_LAYER.md` defines how organizations and external observers should expose freshness, broken links, expired evidence, withdrawn claims, maintenance policy, and low-cost agent fetch recommendations without turning health into a trust score.
 
@@ -92,7 +105,7 @@ The accepted but not yet implemented `COMMERCIAL_FIT_LAYER.md` defines how price
 
 ## Current Status
 
-OrgAnchor has a published MVP alpha: `organchor@0.1.0-alpha.3` under the npm `alpha` dist-tag, with Git tag `v0.1.0-alpha.3` and a published GitHub prerelease. Fireseed Alpha has a GO decision for named early adopter, technical, and evidence/governance outreach in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`. The current focus is to keep the CLI installable, keep the public self-pilot verifiable, collect focused Fireseed feedback, and avoid treating S4/S5 design previews as finished governance systems. The core alpha surface now includes root authority records, signed endpoint statements, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
+OrgAnchor has a published MVP alpha: `organchor@0.1.0-alpha.3` under the npm `alpha` dist-tag, with Git tag `v0.1.0-alpha.3` and a published GitHub prerelease. Fireseed Alpha has a GO decision for named early adopter, technical, and evidence/governance outreach in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`. The current focus is to keep the CLI installable, keep the public self-pilot verifiable, collect focused Fireseed feedback, and avoid treating S4/S5 design previews as finished governance systems. The core alpha surface now includes root authority records, signed official-presence records, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
 
 OrgAnchor's own public self-pilot is active at `https://organchor.org/verify/`. Its real operational artifacts live outside this source repository so that the publishable project remains clean: no private keys, provider tokens, payment records, or deployment credentials are stored here.
 
@@ -117,6 +130,8 @@ Implemented so far:
 - Compact `organchor verify url --compact` output for low-cost first-pass agent routing.
 - `conformance_status` in agent verification output so integrations can separate claimed, partial, failed, and full-compatible adoption.
 - Human-visible and machine-readable carrier receipt summaries from `organchor.lock.json`.
+- `organchor lockfile hash`, `organchor lockfile sign`, and `organchor lockfile verify` for root-signed publication ledger snapshots.
+- `/verify` publication of `organchor.lock.json`, `organchor.lock.json.sig`, and machine-readable `lockfile_integrity` when a signed lockfile is available.
 - Signed claims/evidence manifests are copied into `/verify` and indexed when available.
 - Value continuity audit reports for claim support levels, evidence quality, stale evidence, and unsupported claims.
 - Claim-level support axes, risk gaps, next best actions, and compact support-level counts for low-friction external AI-agent review.
@@ -200,7 +215,7 @@ The demo creates a temporary adopting organization, serves its `/verify` package
 To see the human-readable `/verify` page, the matching `agent_review` JSON, and a tamper-failure proof without external credentials, run:
 
 ```bash
-npm run visible:demo
+npm run visible:demo -- --out ./visible-demo --serve
 ```
 
 For a browser URL that stays open until stopped, run:
@@ -354,6 +369,8 @@ IPFS CIDs identify content, but they do not guarantee that someone will keep ser
 
 The default IPFS mirror is the small `public/verify` verification package, not a large evidence repository. Large media, datasets, PDFs, and other heavy artifacts should be recorded in the signed evidence manifest with hashes and external locations such as HTTPS, R2/S3, GitHub Releases, or independent IPFS CIDs.
 
+`organchor.lock.json` is the publication receipt ledger. It records non-sensitive receipt metadata such as artifact hashes, provider names, CIDs, transaction ids, and timestamps. When the adopting organization's root authority signs the lockfile, changing any recorded receipt changes the canonical hash and breaks `organchor lockfile verify`.
+
 Traditional domains, Cloudflare, ENS, Onion, IPFS, and Arweave are all carriers or discovery surfaces. The trust path returns to the root authority, signatures, hashes, and migration history.
 
 ## Product Shape
@@ -380,14 +397,18 @@ For AI agents, `PASS` is not a trust badge. `organchor verify url --compact` inc
 Operator-facing adoption and verification documents:
 
 - `DOCS_INDEX.md`
+- `CURRENT_PROJECT_STATE_2026-07-02.md`
+- `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`
 - `PROJECT_NORTH_STAR.md`
 - `PURPOSE_AND_VALUES.md`
+- `ADOPTER_QUICKSTART.md`
 - `ADOPTION_PRINCIPLES.md`
 - `ADOPTION_GUIDE.md`
 - `AGENT_COMPATIBILITY_PLAN.md`
 - `AGENT_INTEGRATION_GUIDE.md`
 - `AGENT_VERIFICATION_CONTRACT.md`
 - `COMMERCIAL_FIT_LAYER.md`
+- `PILOT_MINIMAL_PATH.md`
 - `EXTERNAL_PILOT_RUNBOOK.md`
 - `ORG_ONBOARDING_CHECKLIST.md`
 - `ROOT_AUTHORITY_CUSTODY_GUIDE.md`

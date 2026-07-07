@@ -71,7 +71,7 @@ These gaps are accepted for Fireseed and must remain visible:
 - no stable v1 release exists;
 - S3 slot issuance, slot verification, slot-use ledgers, and raw-vault admission workflows are not complete;
 - S4 real-use observation remains Design Preview;
-- S5 public challenge and negative evidence remains Design Preview;
+- S5 public challenge, correction, negative evidence, and historical accountability remains Design Preview;
 - public challenge governance, malicious-reporting controls, privacy handling, and durable storage incentives are not solved;
 - delegated product/service key credentials are documented but not implemented;
 - live ENS resolver reads still require choosing an Ethereum RPC/provider path;
@@ -130,7 +130,7 @@ Ask for critique of:
 - S1-S3 abuse cases;
 - S3 sampling and anti-brushing assumptions;
 - stale or misleading evidence;
-- S4/S5 design gaps;
+- S4/S5 observation, challenge, correction, and accountability design gaps;
 - Directory capture and ranking risks;
 - storage incentives.
 
@@ -145,7 +145,7 @@ This launch decision does not claim:
 - guaranteed truth;
 - anti-censorship guarantees;
 - official Directory privilege;
-- a solved public challenge network;
+- a solved public challenge, correction, and accountability network;
 - that OrgAnchor can decide which organization should be trusted.
 
 OrgAnchor verifies signatures, hashes, continuity, publication structure, and declared evidence relationships. External agents and people still own final policy and trust decisions.
@@ -159,4 +159,3 @@ Open Fireseed outreach with named participants and require feedback to use the e
 - `Evidence / Governance Review`.
 
 Do not expand S4/S5 into large implementation tracks until initial Fireseed feedback has been collected and triaged.
-

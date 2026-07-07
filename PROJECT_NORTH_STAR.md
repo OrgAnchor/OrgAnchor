@@ -163,7 +163,7 @@ OrgAnchor should optimize for:
 - transparent gaps and corrections
 - repeatable adoption by small and serious organizations
 - purpose-fit sufficiency instead of paperwork volume
-- explicit separation of purpose profiles, evidence source classes, and challenge/correction lifecycle
+- explicit separation of purpose profiles, evidence source classes, and challenge/correction/accountability lifecycle
 - portable public artifacts
 - native adopter discoverability through origin-owned Beacon signals
 - open discovery that can be mirrored or forked

@@ -104,10 +104,13 @@ The public repository should not include local operations notes such as:
 CLOUDFLARE_*.md
 SELF_PILOT_*.md
 DOMAIN_CANDIDATE_REPORT.md
-vps-entry-layout-*.svg
 ```
 
 Those files are useful local project memory, but they are not part of the clean public source release.
+
+Previously found `vps-entry-layout-*.svg` mockups were unrelated to OrgAnchor and
+have been moved to `_review_non_organchor_2026-07-02/` for human review before
+deletion.
 
 ### 3. Create NPM Publisher Identity
 

@@ -29,7 +29,7 @@ The goal is not to prove that OrgAnchor is finished. The goal is to make the cur
 
 ## What OrgAnchor Is
 
-OrgAnchor helps organizations publish signed official endpoint and evidence packages so people and AI agents can verify identity continuity, evidence structure, carrier receipts, and migration history across domain, platform, and infrastructure changes.
+OrgAnchor helps organizations publish signed, recheckable public records that link identity, official presence, claims, evidence, and migration history so people and AI agents can discover, screen, verify, understand, and compare candidate organizations at lower cost across domain, platform, website, or infrastructure changes.
 
 ## What OrgAnchor Is Not
 
@@ -104,9 +104,9 @@ Focus:
 ## Fast Local Checks
 
 ```bash
+npm run visible:demo -- --out ./visible-demo --serve
 npm run agent:demo
-npm run visible:demo
-organchor verify url https://organchor.org --compact
+organchor verify url <local-or-public-organchor-url> --compact
 ```
 
 ## Useful Public Docs
@@ -154,4 +154,3 @@ Please include:
 - whether this affects Fireseed readiness;
 - suggested fix or open question.
 ```
-

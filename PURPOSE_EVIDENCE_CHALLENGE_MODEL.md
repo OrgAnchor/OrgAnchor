@@ -26,7 +26,7 @@ Use three independent axes:
 ```text
 P-axis = purpose profile
 S-axis = observation source class
-C-axis = challenge and correction lifecycle
+C-axis = challenge, correction, and accountability lifecycle
 ```
 
 These axes answer different questions:
@@ -34,7 +34,7 @@ These axes answer different questions:
 ```text
 P-axis: What purpose can this package support?
 S-axis: Where did the supporting material or observation come from?
-C-axis: Has this claim, evidence, product, service, or observation been challenged or corrected over time?
+C-axis: Has this claim, evidence, product, service, or observation been challenged, corrected, or made subject to accountability over time?
 ```
 
 They must not be collapsed into one trust score.
@@ -156,7 +156,7 @@ S2 sample source disclosed
 sample selected_by disclosed
 commercial relationship disclosed
 recheck method present
-challenge and correction status visible
+challenge, correction, and accountability status visible
 ```
 
 Strongly recommended but external-policy controlled:
@@ -192,7 +192,7 @@ scope explicitly covers the safety-critical claim
 sample source and custody chain disclosed
 standard or regulatory reference present
 known limitations and exclusions present
-S5 public challenge and negative-evidence route visible
+S5 public challenge, correction, and negative-evidence route visible
 ```
 
 Not enough for:
@@ -216,7 +216,43 @@ Reason:
 Any long-running organization, product, service, claim, credential, or evidence item can be challenged, corrected, withdrawn, or superseded.
 ```
 
-Therefore every purpose profile should expose challenge and correction state where relevant.
+Therefore every purpose profile should expose challenge, correction, and accountability state where relevant.
+
+## No Separate Historical Layer
+
+OrgAnchor should not create an independent "Historical Layer" for product history, organizational conduct, or broader value/civilization observations.
+
+Reason:
+
+```text
+history only matters to OrgAnchor when it affects inspection, correction, accountability, or future reliance;
+separating it into another layer would make the model harder to use and easier to overclaim;
+S5 already provides the correct place for challenged, corrected, disputed, negative, or accountability-bearing records.
+```
+
+The boundary is:
+
+```text
+S3 = random purchase or random sampling: how a sample was independently selected, acquired, and checked.
+S4 = field-use observation: what happened during real customer use, delivery, repair, support, telemetry, return, warranty, or long-term operation.
+S5 = public challenge, correction, negative evidence, dispute, and historical accountability: what was challenged, contradicted, corrected, withdrawn, superseded, or left unresolved.
+```
+
+Product or service history belongs in S5 when it becomes an accountability record:
+
+```text
+serious defect disclosure
+recall or withdrawal
+failed retest
+major incident
+public contradiction
+customer or field evidence that challenges a claim
+organization response, correction, or refusal to respond
+```
+
+Broader conduct or values-related observations may also appear through S5 only when they are structured as challenge, correction, dispute, or accountability records with declared scope, evidence, response state, and limitations.
+
+OrgAnchor must not label organizations as good, bad, civilized, uncivilized, ethical, or unethical. It exposes signed records, evidence paths, gaps, challenges, corrections, and response history so external people, agents, directories, or buyers can apply their own policy.
 
 ## S-Axis: Observation Source Classes
 
@@ -234,6 +270,8 @@ S4_FIELD_USE_OBSERVATION
 S5_PUBLIC_CHALLENGE_AND_NEGATIVE_EVIDENCE
 ```
 
+`S5_PUBLIC_CHALLENGE_AND_NEGATIVE_EVIDENCE` is the stable protocol name. Its human-facing meaning is "S5 public challenge, correction, and historical accountability."
+
 Summary:
 
 | Source | Meaning | Main value |
@@ -242,7 +280,7 @@ Summary:
 | S2 | Lab, auditor, certifier, customer, platform, regulator, or other external records | External reference with disclosed scope |
 | S3 | Market-bought, warehouse-sampled, distributor-held, or customer-site samples not selected by the organization | Reduces hand-picked sample risk |
 | S4 | Customer, repair, distributor, sensor, warranty, return, support, telemetry, or real-use records | Captures operational reality |
-| S5 | Counterexamples, failed samples, complaints, failed retests, corrections, withdrawals, contradictions, or unresolved disputes | Prevents positive-only evidence |
+| S5 | Counterexamples, failed samples, complaints, failed retests, corrections, withdrawals, contradictions, unresolved disputes, major incidents, and historical accountability records | Prevents positive-only evidence and exposes accountability over time |
 
 S1 and S2 can support lower-friction discovery and screening.
 
@@ -382,9 +420,9 @@ not_a_trust_decision
 
 The implementation-facing S3 field model, Core/Extension boundary, sample-control checks, and compact agent summary are defined in `S3_RANDOM_SAMPLING_MODEL.md`.
 
-## C-Axis: Challenge And Correction Lifecycle
+## C-Axis: Challenge, Correction, And Accountability Lifecycle
 
-Challenge and correction states describe time, dispute, and revision status.
+Challenge, correction, and accountability states describe time, dispute, response, and revision status.
 
 Recommended states:
 
@@ -422,8 +460,8 @@ Minimum useful structure by purpose:
 | --- | --- | --- |
 | P1 Low-risk discovery | Identity continuity, signed official endpoints, organization description, contact or official endpoint | Show known organization-level warnings if present |
 | P2 Basic contact screening | P1 plus scoped claim, S1 Core, limitations | Show known claim-level challenge state if present |
-| P3 Ordinary procurement review | P2 plus hash-bound evidence, retrieval path, source disclosure, S2 Core or method-backed evidence | Show challenge/correction status for claims and evidence |
-| P4 High-value procurement review | P3 plus product/service credential binding, delegated key chain where relevant, sample source, selected_by, commercial relationship, recheck method | Show challenge/correction/withdrawal/supersession records for product/service lineage |
+| P3 Ordinary procurement review | P2 plus hash-bound evidence, retrieval path, source disclosure, S2 Core or method-backed evidence | Show challenge/correction/accountability status for claims and evidence |
+| P4 High-value procurement review | P3 plus product/service credential binding, delegated key chain where relevant, sample source, selected_by, commercial relationship, recheck method | Show challenge/correction/accountability/withdrawal/supersession records for product/service lineage |
 | P5 Safety-critical review | P4 plus safety-specific third-party or regulatory evidence, standards, custody chain, limitations/exclusions, S5 route visible | Show negative evidence route, open challenges, contradictions, corrections, and withdrawals |
 
 ## Evidence Sufficiency Rule
@@ -451,7 +489,7 @@ This is especially important for:
 ```text
 S3 random purchase or random sampling
 S4 field-use observation
-S5 public challenge and negative evidence
+S5 public challenge, correction, negative evidence, and historical accountability
 ```
 
 Without credential binding, the record may still be useful, but OrgAnchor should expose a linkage gap.
@@ -516,7 +554,7 @@ S1 = organization-submitted
 S2 = organization-submitted third-party material with an external recheck anchor; issuer-backed signatures are an optional strengthening path
 S3 = externally sourced sample route; record may be published by the organization package, sampler, customer, channel, platform, or hub, but organization-selected/provided samples must be labeled and downgraded
 S4 = customer, repairer, channel, platform, system, or hub-submitted; organization-controlled sources must be labeled
-S5 = externally submitter-open but structurally validated and graded by identity, credential binding, artifact hashes, and response state
+S5 = externally submitter-open but structurally validated and graded by identity, credential binding, artifact hashes, response state, and accountability scope
 ```
 
 Open submission does not mean high trust.
@@ -529,7 +567,7 @@ Future implementation should add:
 
 1. Purpose-profile validators for P1-P5.
 2. Remaining source-class fields and validation for S1/S4/S5, plus S2/S3 route adapters.
-3. Challenge/correction lifecycle manifests and status extraction.
+3. Challenge/correction/accountability lifecycle manifests and status extraction.
 4. Purpose-fit compact agent output.
 5. Value audit integration for P/S/C axes.
 6. Directory and Beacon outputs that expose purpose fit without ranking by field count.

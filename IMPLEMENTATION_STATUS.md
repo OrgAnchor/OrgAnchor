@@ -2,7 +2,7 @@
 
 Status: active alpha implementation snapshot
 
-Last updated: 2026-05-28
+Last updated: 2026-07-06
 
 This document records what is already implemented, what remains external or future work, and what OrgAnchor intentionally does not do. It exists to keep development aligned with the project north star: lower the cost for third-party AI agents, organizations, and people to discover, verify, understand, and compare organization-controlled identity and value evidence without turning OrgAnchor into a central trust authority.
 
@@ -11,7 +11,7 @@ This document records what is already implemented, what remains external or futu
 Identity continuity:
 
 - Root key and threshold root authority creation.
-- Signed official endpoint statements.
+- Signed official-presence statements.
 - Canonical JSON and SHA-256 hashing.
 - Detached Ed25519 signatures.
 - Statement verification and tamper rejection.
@@ -25,6 +25,8 @@ Public verification surface:
 - `robots.txt` and `sitemap.xml` discovery hints.
 - Visible proof trail for people.
 - Compact and full agent verification results.
+- Root-signed lockfile snapshots through `lockfile hash`, `lockfile sign`, and `lockfile verify`.
+- `/verify` publication of `organchor.lock.json`, `organchor.lock.json.sig`, and machine-readable `lockfile_integrity` when a signed lockfile is available.
 
 Value evidence layer:
 
@@ -38,7 +40,7 @@ Value evidence layer:
 - Real-world profile gap validators for physical product, service delivery, SaaS/API, certification/compliance, and dataset/research claims.
 - Policy-route hints for external AI agents.
 - Claims/evidence protocol baseline for claim support levels, reproducible methods, third-party attestations, challenges, and low-cost AI-agent evaluation.
-- Purpose/evidence/challenge model documented as the accepted three-axis direction for P1-P5 purpose profiles, S1-S5 observation source classes, S2 effective third-party material boundaries, and challenge/correction lifecycle states.
+- Purpose/evidence/challenge model documented as the accepted three-axis direction for P1-P5 purpose profiles, S1-S5 observation source classes, S2 effective third-party material boundaries, and challenge/correction/accountability lifecycle states.
 - S2 third-party material basic usability implemented: optional `s_class`/`s2` metadata, `evidence s2 template`, `evidence s2 attach`, candidate versus effective S2 classification, local Core checks, S2 gap extraction, value-audit `s2_summary`, and compact agent `s2_summary`.
 - S3 random purchase / sampling basic usability implemented: optional `s_class`/`s3` metadata, `evidence s3 template`, `evidence s3 attach`, candidate versus effective S3 classification, sample identity/source/selector checks, sample slot declaration, bounded active pool checks, credential/nullifier checks, raw evidence availability and storage-role checks, organization-selected/provided sample exposure, custody gap extraction, value-audit `s3_summary`, and compact agent `s3_summary`.
 - Package health layer documented as the accepted direction for self-declared and observed package health, maintenance responsibility, stale/broken/expired evidence visibility, and low-cost agent fetch recommendations.
@@ -52,6 +54,7 @@ Carriers and auxiliary surfaces:
 - IPFS dry-run, Kubo publish/verify, remote pinning, and Pinata upload receipts.
 - Arweave manual packages, Turbo upload receipts, gateway TX verification, and size estimation.
 - OpenTimestamps proof creation, upgrade, and verification.
+- Signed publication receipt ledger integrity for carrier receipt history.
 - Domain audit reports.
 - Onion address validation and Tor hidden-service config guidance.
 - ENS offline plan and snapshot verification.
@@ -85,6 +88,7 @@ Release hygiene:
 - Alpha-line release-state matrix and checklist alignment merged into `main`.
 - `organchor@0.1.0-alpha.3` published through npm Trusted Publishing under the `alpha` dist-tag.
 - Public self-pilot release-state hashes and carrier receipts recorded in `RELEASE_STATE_2026-05-25.md`.
+- Public self-pilot minimal review recorded in `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`, including public compact verification, doctor readiness, signed statement verification, signed claims/evidence verification, and root-signed lockfile verification.
 
 ## Current Fireseed Launch Focus
 
@@ -102,15 +106,16 @@ S4/S5 design preview;
 clear invitation for external review and co-builders.
 ```
 
-The shortest useful launch path is:
+The shortest useful launch path is now:
 
 1. Keep `main` green and installable.
 2. Keep `https://organchor.org` publicly verifiable as the reference self-pilot.
 3. Keep future alpha publishes under new release ids, not as stable v1 claims.
-4. Finish Fireseed Freeze work: S3 baseline clarity, S4/S5 design-preview wording, README/onboarding/contributor clarity, visible known gaps, and the readiness gate.
-5. Invite named early adopting organizations, technical reviewers, and evidence/governance critics according to `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
-6. Run the first low-risk external pilot using `EXTERNAL_PILOT_RUNBOOK.md`.
-7. Feed pilot lessons back into onboarding, evidence, and agent-facing verification outputs.
+4. Keep Fireseed boundaries visible: S1-S3 are the current evidence baseline, while S4/S5, product/service credentials, package health, and commercial fit remain design or partial surfaces unless a specific implemented command and test is cited.
+5. Use `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`, `PUBLIC_RELEASE_CHECKLIST.md`, and `FIRESEED_READINESS_GATE.md` as the public-release evidence gate.
+6. Invite named early adopting organizations, technical reviewers, and evidence/governance critics according to `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
+7. Run the first low-risk external pilot using `PILOT_MINIMAL_PATH.md` first, then `EXTERNAL_PILOT_RUNBOOK.md` if the pilot needs the full path.
+8. Feed pilot lessons back into onboarding, evidence, and agent-facing verification outputs.
 
 ## Not Yet Complete
 
@@ -123,8 +128,8 @@ These are not considered done:
 - Common subject binding helpers, subject relation checks, and compact subject coverage outputs from `SUBJECT_BINDING_MODEL.md`.
 - Purpose-fit evidence outputs such as `fit_for`, `not_enough_for`, and `missing_optional_context` from `EVIDENCE_SUFFICIENCY_MODEL.md`.
 - Discovery Unit schemas, validators, Beacon fields, Directory fields, and coverage-preview query behavior from `DISCOVERY_UNIT_MODEL.md`.
-- P1-P5 purpose-profile validators, broader S1/S4/S5 source-class fields, S2 network verified-route adapters, issuer-backed S2 signatures from `S2_THIRD_PARTY_MATERIAL_MODEL.md`, S3 custody/independent-test route adapters from `S3_RANDOM_SAMPLING_MODEL.md`, and challenge/correction lifecycle extraction from `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
-- Fireseed Alpha intentionally treats S4 and S5 as Design Preview, not launch acceptance gates. Their concepts are documented, but mature observer networks, privacy handling, negative-evidence governance, public challenge abuse controls, and durable storage incentives remain future/co-builder work.
+- P1-P5 purpose-profile validators, broader S1/S4/S5 source-class fields, S2 network verified-route adapters, issuer-backed S2 signatures from `S2_THIRD_PARTY_MATERIAL_MODEL.md`, S3 custody/independent-test route adapters from `S3_RANDOM_SAMPLING_MODEL.md`, and S5 challenge/correction/accountability lifecycle extraction from `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`.
+- Fireseed Alpha intentionally treats S4 and S5 as Design Preview, not launch acceptance gates. Their concepts are documented, but mature observer networks, privacy handling, negative-evidence governance, public challenge abuse controls, historical accountability interpretation, and durable storage incentives remain future/co-builder work.
 - Package health commands, observed health lookup, Beacon health summaries, Directory health observation summaries, observed health reports, and agent fetch recommendations from `PACKAGE_HEALTH_LAYER.md`.
 - Live ENS resolver reads through a chosen Ethereum RPC/provider path.
 - Real Onion disaster-recovery address registration.

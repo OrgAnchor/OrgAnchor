@@ -76,7 +76,7 @@ Fireseed Alpha accepts these as launch-scope:
 | S2 | Acceptance gate | Organization-submitted third-party material is supported with route and gap checks. |
 | S3 | Acceptance gate | Random purchase/sampling baseline is supported with bounded pool, credential, nullifier, sampling-plan, and documented slot gates. |
 | S4 | Design Preview | Real-use/real-delivery observation direction is documented and partially tooled, but not mature. |
-| S5 | Design Preview | Public challenge/negative evidence direction is documented, but governance and abuse handling are not mature. |
+| S5 | Design Preview | Public challenge, correction, negative evidence, and historical accountability direction is documented, but governance and abuse handling are not mature. |
 
 ## Why Stop Acceptance At S3
 
@@ -180,26 +180,30 @@ S4 can make final delivery-quality decisions.
 S5 means:
 
 ```text
-public challenge, negative evidence, contradiction, dispute, correction, withdrawal, or supersession.
+public challenge, negative evidence, contradiction, dispute, correction, withdrawal, supersession, or historical accountability record.
 ```
 
 S5 is essential because a system that accepts only favorable evidence becomes marketing infrastructure.
+
+S5 also absorbs product/service history and broader conduct-related observations when they matter as accountability records. OrgAnchor does not create a separate Historical Layer and does not label organizations as good or bad.
 
 S5 should eventually answer:
 
 ```text
 What negative or contradictory evidence exists?
+What historical incident, correction, withdrawal, or unresolved dispute matters for this claim?
 Who submitted it?
 How is abuse or false reporting handled?
 Did the organization respond?
 Was the claim corrected, withdrawn, superseded, or disputed?
+What remains a buyer, directory, agent, or external-policy judgment?
 Who stores the high-value negative evidence?
 ```
 
 Fireseed only claims:
 
 ```text
-S5 principle and challenge/correction direction are documented.
+S5 principle and challenge/correction/accountability direction are documented.
 ```
 
 Fireseed does not claim:
@@ -208,6 +212,7 @@ Fireseed does not claim:
 public challenge governance is solved;
 malicious reporting is solved;
 directory-wide health observation is mature;
+historical accountability interpretation is solved;
 external agents should treat S5 absence as proof of safety.
 ```
 

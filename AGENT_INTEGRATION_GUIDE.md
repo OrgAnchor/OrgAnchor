@@ -11,10 +11,11 @@ This guide is for third-party AI agents, agent developers, marketplaces, buyers,
 The goal is not to make an agent "trust OrgAnchor." The goal is to help an agent cheaply answer:
 
 ```text
-Is there a signed organization endpoint statement?
+Is there a signed organization official-presence statement?
 Which root authority signed it?
 Did the public files change after signing?
 Are claims and evidence present?
+Is publication receipt history signed or only unsigned metadata?
 What is missing or only manual-checkable?
 Where should the agent's own policy take over?
 ```
@@ -347,7 +348,7 @@ trust_decision -> still NOT_ASSIGNED_BY_ORGANCHOR
 Current route values:
 
 ```text
-STOP_IDENTITY_FAILURE = stop using the endpoint statement as verified OrgAnchor identity
+STOP_IDENTITY_FAILURE = stop using the signed identity package as verified OrgAnchor identity
 REVIEW_FAILED_CHECKS = identity passed, but other verification checks failed
 REQUEST_VALUE_EVIDENCE = identity passed, but claims/evidence/value layer is missing
 REVIEW_VALUE_WARNINGS = value layer exists but has warnings or unsupported claims

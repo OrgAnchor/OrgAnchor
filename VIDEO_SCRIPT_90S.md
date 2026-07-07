@@ -1,6 +1,8 @@
 # 90-Second Concept Video Script
 
-Status: Public concept script for Fireseed Alpha.
+Status: Public English concept script for Fireseed Alpha.
+
+Source rule: This English voiceover should stay aligned with `VIDEO_SCRIPT_SHORT.md`.
 
 ## Goal
 
@@ -8,53 +10,53 @@ Explain why OrgAnchor exists without overclaiming maturity.
 
 ## Script
 
-### 0-10s: Opening Problem
+### 0-12s: Opening Problem
 
-Visual: polished websites, platform profiles, AI-generated product images, domain change warning.
-
-Voice:
-
-"Online organizations are increasingly judged through screens. But in the AI era, polished appearance is cheap. A good-looking website, video, or profile is no longer enough evidence that an organization is stable, official, or accountable."
-
-### 10-25s: Fragile Carriers
-
-Visual: domain, platform account, cloud server, archive, mirror.
+Visual: polished website, professional video, detailed product page, then AI-generated variations appearing quickly.
 
 Voice:
 
-"Domains, websites, platforms, and cloud providers are useful, but they are carriers. They can move, fail, expire, or be captured. If the carrier changes, how does an outside person or AI agent know which new endpoint is official?"
+"Not long ago, a polished website, a professional video, or a detailed product page still meant something. It meant effort. It meant cost. It gave people a reason to believe there might be a real organization behind it."
+
+### 12-25s: Fragile Carriers
+
+Visual: AI-generated marketing assets, domain expiration warning, platform account disabled, website moved, old search result disappearing.
+
+Voice:
+
+"But AI is changing that. The look of credibility is becoming cheap. And at the same time, real organizations can lose their visible history overnight: a domain expires, a platform account is disabled, a website moves, or an old trail disappears."
 
 ### 25-45s: OrgAnchor Core
 
-Visual: root authority -> signed endpoint statement -> verify page -> agent result.
+Visual: organization -> signed records -> official presence list -> evidence path -> change history.
 
 Voice:
 
-"OrgAnchor separates the identity root from the carriers. An organization controls a root authority, signs its official endpoints, publishes a public verify package, and exposes a machine-readable entrypoint for external AI agents."
+"OrgAnchor is built for that gap. It lets an organization publish signed records of who it is, where its official presence can be found now, what it claims, what evidence supports those claims, and what has changed over time."
 
-### 45-65s: Evidence Layer
+### 45-62s: Verification Path
 
-Visual: claims, evidence, hashes, support gaps, next checks.
-
-Voice:
-
-"It also makes claims and evidence easier to inspect. OrgAnchor can show what is signed, what evidence supports it, what is stale or missing, and what should be checked next. It does not ask anyone to trust a badge. It makes the evidence path more visible."
-
-### 65-80s: Limits
-
-Visual: clear boundary list.
+Visual: website as front door -> public `/verify` package -> signatures -> hashes -> evidence gaps -> next checks for an AI agent.
 
 Voice:
 
-"OrgAnchor is not a marketplace, not a certification authority, not a government identity replacement, and not stable v1. A verification pass is not a trust score. It is a structured result that another human or AI agent can use in its own policy."
+"The website can still be the front door. But the website no longer has to be the only proof. People can read a public verify page, while AI agents and verification tools can inspect the underlying package, check signatures and hashes, surface evidence gaps, and show what to verify next."
 
-### 80-90s: Call
+### 62-78s: Boundary
 
-Visual: GitHub, public `/verify`, demo commands.
+Visual: Not a trust badge / Not a marketplace / Not a certification authority / Not stable v1.
 
 Voice:
 
-"OrgAnchor is now in Fireseed Alpha. We are looking for early reviewers, pilot organizations, AI-agent builders, Directory builders, and sponsors who want to help test a lower-cost verification layer for organizations."
+"OrgAnchor is not a trust badge. It is not a marketplace, not a certification authority, and not a final score. It does not tell you who to trust. It makes the material easier to verify."
+
+### 78-90s: Fireseed Ask
+
+Visual: GitHub repository, public `/verify`, demo commands, Fireseed Alpha tracking issue.
+
+Voice:
+
+"OrgAnchor is now in Fireseed Alpha. We are looking for people to test it, question it, run it on real organizations, and help build a lower-cost, non-monopolistic way to verify organization identity and evidence."
 
 Screen text:
 
@@ -63,4 +65,3 @@ organchor.org/verify
 github.com/OrgAnchor/OrgAnchor
 npm run agent:demo
 ```
-

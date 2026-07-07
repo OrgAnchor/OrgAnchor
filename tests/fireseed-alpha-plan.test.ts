@@ -65,13 +65,28 @@ test("Fireseed launch decision records GO scope, verification results, and accep
     "conformance_status: FULL_COMPATIBLE",
     "Accepted Known Gaps",
     "S4 real-use observation remains Design Preview",
-    "S5 public challenge and negative evidence remains Design Preview",
+    "S5 public challenge, correction, negative evidence, and historical accountability remains Design Preview",
     "Adopting Organization Trial",
     "Technical Review",
     "Evidence And Governance Review",
     "This launch decision does not claim"
   ]) {
     assert.match(decision, new RegExp(escapeRegExp(phrase)));
+  }
+});
+
+test("purpose evidence challenge model folds history into S5 instead of a separate layer", () => {
+  const model = readText("PURPOSE_EVIDENCE_CHALLENGE_MODEL.md");
+
+  for (const phrase of [
+    "No Separate Historical Layer",
+    "S3 = random purchase or random sampling",
+    "S4 = field-use observation",
+    "S5 = public challenge, correction, negative evidence, dispute, and historical accountability",
+    "Product or service history belongs in S5 when it becomes an accountability record",
+    "OrgAnchor must not label organizations as good, bad, civilized, uncivilized, ethical, or unethical"
+  ]) {
+    assert.match(model, new RegExp(escapeRegExp(phrase)));
   }
 });
 

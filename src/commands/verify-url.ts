@@ -1,6 +1,7 @@
 import { validateClaimsManifest, validateEvidenceManifest } from "../core/evidence-validate.ts";
 import { sha256CanonicalJson } from "../core/hash.ts";
 import { parseStrictJson, type JsonValue } from "../core/json.ts";
+import { validateLockfile } from "../core/lockfile.ts";
 import { asObject, validateOfficialStatement, validateRootAuthority, validateSignatureFile } from "../core/validate.ts";
 import { verifySignatureFile } from "../crypto/signature.ts";
 
@@ -40,6 +41,7 @@ export interface AgentVerificationResult {
   discovery_signal: AgentDiscoverySignal;
   organization: JsonValue;
   identity: Record<string, JsonValue>;
+  history: Record<string, JsonValue>;
   value_continuity: Record<string, JsonValue>;
   policy_route: AgentPolicyRoute;
   checks: AgentCheck[];
@@ -126,6 +128,11 @@ export interface AgentVerificationCompactResult {
       next_actions: string[];
       not_a_trust_decision: boolean;
     };
+  };
+  history_summary: {
+    lockfile: CheckStatus;
+    lockfile_hash: string;
+    carrier_receipts: CheckStatus;
   };
   policy_route: AgentPolicyRoute;
   failures: string[];
@@ -275,6 +282,13 @@ export async function verifyUrlTarget(
     artifactBaseUrl,
     timeoutMs
   });
+  const history = await verifyLockfileIntegrity({
+    checks,
+    indexLockfile: optionalRecord(indexObject.lockfile_integrity),
+    artifactBaseUrl,
+    authority,
+    timeoutMs
+  });
 
   addCheck(
     checks,
@@ -317,6 +331,7 @@ export async function verifyUrlTarget(
       threshold_total: authority.threshold.total,
       valid_signatures: statementVerification.valid_signatures
     },
+    history: history.publicHistory,
     value_continuity: valueContinuity.publicValue,
     policy_route: policyRoute,
     checks,
@@ -366,6 +381,11 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
       s2_summary: compactS2Summary(s2Summary),
       s3_summary: compactS3Summary(s3Summary),
       s4_summary: compactS4Summary(s4Summary)
+    },
+    history_summary: {
+      lockfile: strongestCheckStatus(result.checks, ["lockfile_signature", "lockfile_hash"]),
+      lockfile_hash: stringValue(optionalRecord(result.history.lockfile).hash),
+      carrier_receipts: checkStatus(result.checks, "carrier_receipts")
     },
     policy_route: result.policy_route,
     failures: result.checks
@@ -468,6 +488,14 @@ function compactOrganization(organization: Record<string, JsonValue>): AgentVeri
 
 function checkStatus(checks: AgentCheck[], id: string): CheckStatus {
   return checks.find((check) => check.id === id)?.status ?? "NOT_INCLUDED";
+}
+
+function strongestCheckStatus(checks: AgentCheck[], ids: string[]): CheckStatus {
+  const statuses = ids.map((id) => checkStatus(checks, id));
+  if (statuses.includes("FAIL")) return "FAIL";
+  if (statuses.includes("WARN")) return "WARN";
+  if (statuses.includes("PASS")) return "PASS";
+  return "NOT_INCLUDED";
 }
 
 const identityCheckIds = new Set([
@@ -756,6 +784,93 @@ async function verifyValueContinuity(options: {
   };
 }
 
+async function verifyLockfileIntegrity(options: {
+  checks: AgentCheck[];
+  indexLockfile: Record<string, JsonValue>;
+  artifactBaseUrl: URL;
+  authority: ReturnType<typeof validateRootAuthority>;
+  timeoutMs: number;
+}): Promise<{
+  publicHistory: Record<string, JsonValue>;
+}> {
+  const indexedStatus = stringValue(options.indexLockfile.status);
+  if (indexedStatus !== "SIGNED" && indexedStatus !== "UNSIGNED") {
+    addCheck(options.checks, "lockfile_hash", "NOT_INCLUDED", "No lockfile snapshot was indexed.");
+    addCheck(options.checks, "lockfile_signature", "NOT_INCLUDED", "No lockfile signature was indexed.");
+    return {
+      publicHistory: {
+        lockfile: {
+          status: "NOT_INCLUDED"
+        }
+      }
+    };
+  }
+
+  const path = requireString(options.indexLockfile, "path", "index.lockfile_integrity");
+  const lockfile = validateLockfile(await fetchJson(resolveArtifactUrl(options.artifactBaseUrl, path), "lockfile", options.timeoutMs));
+  const hash = sha256CanonicalJson(lockfile);
+  const expectedHash = stringValue(options.indexLockfile.hash);
+  const hashMatches = expectedHash === hash;
+  addCheck(
+    options.checks,
+    "lockfile_hash",
+    hashMatches ? "PASS" : "FAIL",
+    hashMatches ? `Lockfile hash matches ${hash}.` : `Lockfile hash mismatch: expected ${expectedHash}, got ${hash}.`
+  );
+
+  const signaturePath = stringValue(options.indexLockfile.signature_path);
+  const publicLockfile: Record<string, JsonValue> = {
+    status: indexedStatus,
+    path,
+    hash,
+    signature_path: signaturePath || null,
+    required_signatures: numberValue(options.indexLockfile.required_signatures),
+    valid_signatures: []
+  };
+
+  if (!signaturePath) {
+    addCheck(
+      options.checks,
+      "lockfile_signature",
+      "WARN",
+      "Lockfile snapshot is present but unsigned. Treat carrier receipts as unsigned metadata."
+    );
+    return {
+      publicHistory: {
+        lockfile: publicLockfile
+      }
+    };
+  }
+
+  const signature = validateSignatureFile(
+    await fetchJson(resolveArtifactUrl(options.artifactBaseUrl, signaturePath), "lockfile signature", options.timeoutMs)
+  );
+  const signatureHash = sha256CanonicalJson(signature);
+  const expectedSignatureHash = stringValue(options.indexLockfile.signature_hash);
+  const verification = verifySignatureFile(lockfile, signature, options.authority);
+  const errors = [...verification.errors];
+  if (expectedSignatureHash && expectedSignatureHash !== signatureHash) {
+    errors.push(`Lockfile signature hash mismatch: expected ${expectedSignatureHash}, got ${signatureHash}`);
+  }
+
+  publicLockfile.signature_hash = signatureHash;
+  publicLockfile.valid_signatures = verification.valid_signatures as unknown as JsonValue;
+  publicLockfile.required_signatures = verification.required_signatures;
+  addCheck(
+    options.checks,
+    "lockfile_signature",
+    errors.length === 0 ? "PASS" : "FAIL",
+    errors.length === 0
+      ? `Lockfile is signed by ${verification.valid_signatures.length}/${verification.required_signatures} required root member(s).`
+      : errors.join("; ")
+  );
+  return {
+    publicHistory: {
+      lockfile: publicLockfile
+    }
+  };
+}
+
 function summarizeClaimSupport(report: Record<string, JsonValue>): Record<string, JsonValue> {
   const claims = Array.isArray(report.claims) ? report.claims.map((claim) => asObject(claim, "value report claim")) : [];
   const supportLevels = emptyClaimSupportLevels();
@@ -893,6 +1008,9 @@ function recommendedNextSteps(checks: AgentCheck[], valueStatus: "PASS" | "WARN"
   }
   if (checks.some((check) => check.id === "carrier_receipts" && check.status !== "PASS")) {
     steps.push("Consider checking additional mirrors or archives if long-term availability matters.");
+  }
+  if (checks.some((check) => check.id === "lockfile_signature" && check.status !== "PASS")) {
+    steps.push("Ask the organization to publish a root-signed lockfile snapshot if publication history matters.");
   }
   if (steps.length === 0) {
     steps.push("Use the verified artifacts as inputs to your own policy; OrgAnchor does not assign final trust.");

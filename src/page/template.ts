@@ -70,6 +70,18 @@ export interface VerifyCarrierReceipt {
   summary: Record<string, JsonValue>;
 }
 
+export interface VerifyLockfileIntegrity {
+  status: "SIGNED" | "UNSIGNED" | "NOT_INCLUDED";
+  path?: string;
+  hash?: string;
+  signaturePath?: string;
+  signatureHash?: string;
+  validSignatures: string[];
+  requiredSignatures: number;
+  sourceLockfile?: string;
+  sourceSignature?: string;
+}
+
 export interface VerifyValueContinuity {
   status: "PRESENT" | "NOT_INCLUDED";
   path?: string;
@@ -119,6 +131,7 @@ export interface VerifyPageModel {
   linkedArtifacts: VerifyLinkedArtifact[];
   migrationArtifacts: VerifyMigrationArtifact[];
   carrierReceipts: VerifyCarrierReceipt[];
+  lockfileIntegrity: VerifyLockfileIntegrity;
   rootContinuity: VerifyRootContinuity;
   valueContinuity: VerifyValueContinuity;
   agentReview: VerifyAgentReview;
@@ -216,6 +229,17 @@ export function renderVerifyPage(model: VerifyPageModel): string {
         </tr>`
     )
     .join("\n");
+  const lockfileIntegrity = model.lockfileIntegrity;
+  const lockfileLinks = lockfileIntegrity.status !== "NOT_INCLUDED" ?
+    `<dl>
+        <dt>Lockfile</dt>
+        <dd><a href="./${escapeHtml(lockfileIntegrity.path ?? "")}">${escapeHtml(lockfileIntegrity.path ?? "")}</a><br><code>${escapeHtml(lockfileIntegrity.hash ?? "")}</code></dd>
+        ${lockfileIntegrity.signaturePath ? `<dt>Lockfile signature</dt>
+        <dd><a href="./${escapeHtml(lockfileIntegrity.signaturePath)}">${escapeHtml(lockfileIntegrity.signaturePath)}</a><br><code>${escapeHtml(lockfileIntegrity.signatureHash ?? "")}</code></dd>` : ""}
+        <dt>Root signatures</dt>
+        <dd>${escapeHtml(String(lockfileIntegrity.validSignatures.length))} of ${escapeHtml(String(lockfileIntegrity.requiredSignatures))}</dd>
+      </dl>` :
+    "<p>No lockfile snapshot was included in this verification package.</p>";
   const valueContinuity = model.valueContinuity;
   const valueSummary = valueContinuity.summary;
   const valueReportLinks = valueContinuity.status === "PRESENT" ?
@@ -318,11 +342,15 @@ export function renderVerifyPage(model: VerifyPageModel): string {
     },
     {
       term: "S5 Challenge",
-      meaning: "Public challenge, negative evidence, correction, and dispute lifecycle. In Fireseed Alpha this is design preview."
+      meaning: "Public challenge, negative evidence, correction, dispute lifecycle, and historical accountability. In Fireseed Alpha this is design preview."
     },
     {
       term: "Carrier receipts",
       meaning: "Records showing where artifacts were mirrored, archived, pinned, or timestamped. Carriers help durability, but they are not the identity root."
+    },
+    {
+      term: "Lockfile",
+      meaning: "A publication ledger for carrier receipts and artifact hashes. When signed by the root authority, it becomes a tamper-evident snapshot of publication history."
     }
   ].map(
     (item) => `
@@ -381,12 +409,19 @@ export function renderVerifyPage(model: VerifyPageModel): string {
     {
       title: "Design preview boundary",
       status: hasDesignPreview ? "DESIGN_PREVIEW" : "PRESENT",
-      detail: "S4 real-use observation and S5 public challenge are not finished Fireseed acceptance gates. Do not treat them as mature governance systems yet."
+      detail: "S4 real-use observation and S5 public challenge, correction, and historical accountability are not finished Fireseed acceptance gates. Do not treat them as mature governance systems yet."
     },
     {
       title: "Carrier boundary",
       status: model.carrierReceipts.length > 0 ? "PRESENT" : "NOT_INCLUDED",
       detail: "IPFS, Arweave, OpenTimestamps, websites, and other carriers can improve durability and discovery, but they are not the identity root."
+    },
+    {
+      title: "History ledger boundary",
+      status: model.lockfileIntegrity.status,
+      detail: model.lockfileIntegrity.status === "SIGNED" ?
+        "The lockfile snapshot is hash-bound and signed by the root authority. It records publication receipts, but it does not make carriers an identity root." :
+        "A lockfile snapshot is missing or unsigned. Treat carrier receipts as helpful metadata until a signed snapshot is published."
     },
     {
       title: "Recheck before relying",
@@ -546,11 +581,13 @@ export function renderVerifyPage(model: VerifyPageModel): string {
     }
 
     .badge-published,
-    .badge-verified {
+    .badge-verified,
+    .badge-signed {
       color: var(--ok);
     }
 
-    .badge-manual_package {
+    .badge-manual_package,
+    .badge-unsigned {
       color: var(--warn);
     }
 
@@ -949,6 +986,10 @@ ${keyTerms}
     <section aria-labelledby="carrier-receipts">
       <h2 id="carrier-receipts">Carrier Receipts</h2>
       <p>These receipts summarize where this verification package or related proof artifacts were mirrored, archived, pinned, or timestamped. Carriers help discovery and durability; they are not the identity root.</p>
+      <h2>Lockfile Integrity</h2>
+      <p>The lockfile is the publication receipt ledger. A signed lockfile snapshot makes receipt history tamper-evident: changing a receipt, timestamp, CID, TX id, or artifact hash changes the lockfile hash and breaks the signature check.</p>
+      <p><span class="badge badge-${escapeHtml(cssClass(lockfileIntegrity.status))}">${escapeHtml(lockfileIntegrity.status)}</span></p>
+      ${lockfileLinks}
       ${carrierRows ? `<table>
         <thead>
           <tr>
@@ -1068,6 +1109,8 @@ ${migrationRows}
         <li><a href="./${escapeHtml(model.authorityFile)}">${escapeHtml(model.authorityFile)}</a></li>
         <li><a href="./${escapeHtml(model.statementFile)}">${escapeHtml(model.statementFile)}</a></li>
         <li><a href="./${escapeHtml(model.signatureFile)}">${escapeHtml(model.signatureFile)}</a></li>
+        ${lockfileIntegrity.path ? `<li><a href="./${escapeHtml(lockfileIntegrity.path)}">${escapeHtml(lockfileIntegrity.path)}</a></li>` : ""}
+        ${lockfileIntegrity.signaturePath ? `<li><a href="./${escapeHtml(lockfileIntegrity.signaturePath)}">${escapeHtml(lockfileIntegrity.signaturePath)}</a></li>` : ""}
       </ul>
       ${linkedFiles ? `<h2>Claims And Evidence</h2><ul>${linkedFiles}\n      </ul>` : ""}
       ${migrationFiles ? `<h2>Migration Files</h2><ul>${migrationFiles}\n      </ul>` : ""}
@@ -1079,7 +1122,13 @@ ${migrationRows}
   --authority ${escapeHtml(model.authorityFile)} \\
   --expected-authority-hash ${escapeHtml(model.authorityHash)} \\
   --in ${escapeHtml(model.statementFile)} \\
-  --sig ${escapeHtml(model.signatureFile)}</code></pre>
+  --sig ${escapeHtml(model.signatureFile)}${lockfileIntegrity.path && lockfileIntegrity.signaturePath ? `
+
+organchor lockfile verify \\
+  --authority ${escapeHtml(model.authorityFile)} \\
+  --expected-authority-hash ${escapeHtml(model.authorityHash)} \\
+  --in ${escapeHtml(lockfileIntegrity.path)} \\
+  --sig ${escapeHtml(lockfileIntegrity.signaturePath)}` : ""}</code></pre>
     </section>
   </main>
 </body>

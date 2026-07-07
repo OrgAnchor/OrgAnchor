@@ -23,7 +23,7 @@ Use this exact scope:
 ```text
 OrgAnchor Fireseed Alpha exposes a minimum inspectable loop:
 root authority;
-signed endpoint statement;
+signed official-presence records;
 public /verify package;
 origin-owned Beacon discovery;
 AI-agent compact verification;
@@ -41,7 +41,7 @@ official trust badge;
 official supplier ranking;
 product quality certification;
 legal, safety, procurement, or ethical approval;
-finished public challenge network;
+finished public challenge, correction, and accountability network;
 finished marketplace or directory ecosystem.
 ```
 
@@ -95,7 +95,7 @@ Minimum task list:
 ```text
 install the alpha package or use a source checkout;
 create a root authority;
-sign an official endpoint statement;
+sign an official-presence record;
 generate a public /verify package;
 generate Beacon discovery surfaces;
 create at least one narrow claim;
@@ -167,7 +167,7 @@ npm test
 npm run package:smoke
 npm run agent:demo
 npm run visible:demo -- --cleanup
-organchor verify url https://organchor.org --compact
+organchor verify url <local-or-public-organchor-url> --compact
 ```
 
 Feedback goes to:
@@ -331,7 +331,7 @@ participants repeatedly expose secrets by following unclear instructions.
 English:
 
 ```text
-OrgAnchor is in Fireseed Alpha. It helps organizations publish signed identity and evidence packages so external AI agents and people can verify continuity, claims, evidence, gaps, and risks without treating OrgAnchor as a trust authority.
+OrgAnchor is in Fireseed Alpha. It helps organizations publish signed, recheckable public records that link identity, official presence, claims, evidence, and migration history so external AI agents and people can discover, screen, verify, understand, and compare candidate organizations at lower cost without treating OrgAnchor as a trust authority.
 
 We are looking for a small number of named early reviewers: adopting organizations, technical reviewers, and evidence/governance critics. The goal is not endorsement or promotion. The goal is to find concrete friction, misleading outputs, abuse cases, and missing boundaries before v1.
 
@@ -342,9 +342,9 @@ https://github.com/OrgAnchor/OrgAnchor/blob/main/FIRESEED_OUTREACH_KIT.md
 Chinese:
 
 ```text
-OrgAnchor 现在处于 Fireseed Alpha 阶段。它帮助组织发布经过签名的身份与证据包，使外部 AI Agent 和人能够验证身份连续性、主张、证据、缺口与风险，同时不把 OrgAnchor 当成最终信任权威。
+OrgAnchor 现在处于 Fireseed Alpha 阶段。它帮助组织发布经过签名、可复查的公开资料，将身份、官方入口、主张、证据和迁移历史串联起来，使外部 AI Agent 和人能够以更低成本发现、初筛、验证、理解和比较候选组织，同时不把 OrgAnchor 当成最终信任权威。
 
-我们正在邀请少量具名早期验证者：试用组织、技术审查者、证据/治理批评者。目标不是背书或宣传，而是在 v1 前找出真实摩擦、误导性输出、滥用场景和缺失边界。
+我们正在邀请少量具名早期验证者：试用组织、技术审查者、证据/治理批评者。目标不是背书或宣传，而是在 v1 之前找出真实摩擦、误导性输出、滥用场景和缺失边界。
 
 从这里开始：
 https://github.com/OrgAnchor/OrgAnchor/blob/main/FIRESEED_OUTREACH_KIT.md
@@ -366,4 +366,3 @@ unpublished commercial quotes.
 ```
 
 If a finding requires private material, ask for a minimized synthetic reproduction instead.
-

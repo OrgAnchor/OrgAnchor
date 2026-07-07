@@ -53,7 +53,7 @@ self-claims are signed and scoped;
 evidence is hash-bound and retrievable;
 methods are explicit and repeatable where possible;
 third parties can attest to narrow facts;
-others can challenge or correct claims;
+others can challenge, correct, or hold claims accountable;
 AI agents apply their own policy over open evidence.
 ```
 
@@ -138,7 +138,7 @@ S2 third-party material must follow the S2 boundary in `PURPOSE_EVIDENCE_CHALLEN
 
 For product and service claims, S3, S4, and S5 are especially important because they reduce dependence on supplier-selected proof material.
 
-Purpose profiles and challenge/correction lifecycle are defined in `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`. Public challenge review is not a sixth ascending purpose profile; it is a horizontal lifecycle mode that can apply to any purpose.
+Purpose profiles and challenge/correction/accountability lifecycle are defined in `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`. Public challenge review is not a sixth ascending purpose profile; it is a horizontal lifecycle mode that can apply to any purpose.
 
 Required evidence fields:
 
@@ -200,15 +200,20 @@ OrgAnchor verifies attestation signatures and linkage. It does not automatically
 
 ### 5. Challenge
 
-A challenge records a dispute, contradiction, correction request, incident, stale evidence warning, or failed reproduction.
+A challenge records a dispute, contradiction, correction request, incident, stale evidence warning, failed reproduction, withdrawal, supersession, or historical accountability event.
 
-Challenges matter because a trustworthy evidence system must not only publish positive proof.
+Challenges matter because a trustworthy evidence system must not only publish favorable proof.
+
+OrgAnchor does not create a separate Historical Layer. Product/service history and broader conduct-related observations enter the evidence graph through S5 only when they are structured as challenge, correction, dispute, negative-evidence, response, or accountability records with explicit scope and limitations.
 
 Challenge fields should include:
 
 - target claim or evidence ID;
+- target product/service credential, model, batch, unit, service delivery, organization record, or observation when relevant;
 - challenger identity if public;
 - challenge type;
+- accountability scope;
+- event time or observation window when relevant;
 - evidence or method behind the challenge;
 - status;
 - organization response;

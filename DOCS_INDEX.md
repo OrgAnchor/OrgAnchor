@@ -8,6 +8,37 @@ This index explains which OrgAnchor documents are current operating guidance, wh
 
 OrgAnchor has intentionally grown beyond a small signing utility. Without a map, readers can confuse current instructions with early planning notes. Treat this file as the first stop after `README.md`.
 
+## Recommended Reading Paths
+
+If you are seeing OrgAnchor for the first time:
+
+- Start with `PUBLIC_EXPLAINER.md` for the public explanation.
+- Then read `DESIGN_RATIONALE.md` for the full goal -> mechanism -> effect -> limit logic.
+- Then read `README.md` for install, demo, current status, and boundaries.
+- Use `VISIBLE_ACCEPTANCE.md` to see the local `/verify` page, agent summary, and tamper-failure demo.
+
+If you are an AI-agent builder, verifier, crawler, or Directory builder:
+
+- Start with `AGENT_INTEGRATION_GUIDE.md` and `AGENT_VERIFICATION_CONTRACT.md`.
+- Then inspect `examples/agent-discovery-loop/` and the Beacon / Directory documents.
+- Use `CAPABILITY_TRACEABILITY_MATRIX.md` and `CAPABILITY_AUDIT_SCENARIOS.md` to check whether public claims are implemented, tested, or only documented.
+
+If you are reviewing evidence quality, abuse risk, or real-world usefulness:
+
+- Start with `CLAIMS_EVIDENCE_PROTOCOL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `S2_THIRD_PARTY_MATERIAL_MODEL.md`, and `S3_RANDOM_SAMPLING_MODEL.md`.
+- Treat S1-S3 as the current Fireseed Alpha evidence baseline.
+- Treat S4/S5 as design-preview territory unless a specific implemented command, schema, and test is cited.
+
+If you are helping with Fireseed outreach, sponsorship, video, or presentation material:
+
+- Start with `OUTREACH_PLAN.md`, `PUBLIC_RELEASE_CHECKLIST.md`, `FIRESEED_DECK_OUTLINE.md`, `VIDEO_SCRIPT_90S.md`, `VIDEO_SCRIPT_DEMO.md`, and `SPONSOR_LETTER.md`.
+- Keep the boundary clear: OrgAnchor is not a trust badge, certification authority, marketplace, official registry, or final ranking system.
+
+If you are reviewing how the project is operated by a human owner and AI execution lead:
+
+- Start with `AI_OPERATING_MODEL.md`.
+- Then use `PROJECT_NORTH_STAR.md`, `DESIGN_RATIONALE.md`, `IMPLEMENTATION_STATUS.md`, and `CAPABILITY_TRACEABILITY_MATRIX.md` to check whether execution stays aligned with the accepted project purpose and current implementation state.
+
 ## Current Public Entry Points
 
 - `README.md`: project overview, alpha install, quick start, current status, and safety boundaries.
@@ -16,15 +47,27 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `CAPABILITY_AUDIT_SCENARIOS.md`: executable scenario audit map linking capability groups to runnable command paths and generated reports.
 - `VISIBLE_ACCEPTANCE.md`: human-visible acceptance guide for seeing the local `/verify` page, agent summary, and tamper-failure demo.
 - `VISIBLE_ACCEPTANCE_REVIEW_2026-06-01.md`: current review snapshot for the visible acceptance page, including the Fireseed language gap caveat.
+- `PUBLIC_LAUNCH_REVIEW_2026-06-06.md`: current pre-public-asset consistency review covering positioning, implementation/documentation alignment, public-material hygiene, Fireseed boundaries, AI-agent path, and verification results.
+- `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`: current external-view public self-pilot review against the minimal pilot path, including verified identity/evidence results and the resolved public root-signed lockfile verification result.
 - `LANGUAGE_COMPATIBILITY.md`: active policy for stable machine contracts and localized human explanation.
 - `CONTRIBUTING.md`: Fireseed contributor guide for adopter trials, technical review, evidence/governance review, PR hygiene, and scope boundaries.
 - `CALL_FOR_FIRESEED_REVIEW.md`: public Fireseed review invitation and success condition.
 - `FIRESEED_OUTREACH_KIT.md`: practical external-validation starter kit with track-specific tasks, commands, feedback routing, success/hold criteria, and invitation text.
-- `PUBLIC_EXPLAINER.md`: one-page public explanation for first-time readers and non-specialist reviewers.
+- `PUBLIC_EXPLAINER.md`: public entrance explanation for first-time readers, non-specialist reviewers, and first-pass AI summaries.
+- `DESIGN_RATIONALE.md`: full explanatory design rationale connecting the core goal to required properties, mechanisms, expected effects, and limits.
+- `AI_OPERATING_MODEL.md`: active project operating model for human-owner and AI-execution-lead collaboration, including default execution authority and required owner decision gates.
 - `OUTREACH_PLAN.md`: public understanding plan covering publishing order, target audiences, funding-entry options, and Fireseed Wave 1 acceptance.
+- `PUBLIC_RELEASE_CHECKLIST.md`: active public-release operating gate for local checks, public self-pilot checks, asset alignment, owner intervention gates, publishing order, and hold criteria.
+- `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: latest local release gate, capability audit, public self-pilot, public root-signed lockfile, and diff-hygiene precheck snapshot.
+- `CURRENT_PROJECT_STATE_2026-07-02.md`: current source-repository state snapshot, Fireseed boundary, repository boundary, next-work order, and hold conditions.
+- `ADOPTER_QUICKSTART.md`: shortest practical path for an adopting organization to create a root authority, signed official-presence statement, public `/verify` package, and first adoption status.
+- `PILOT_MINIMAL_PATH.md`: minimal external pilot definition, required artifacts, approval gates, independent verification path, and pilot feedback record.
+- `PUBLIC_VIDEO_90S_RELEASE_PACK.md`: Project 01 OrgAnchor video draft/release pack with production timeline, platform copy, captions, and upload checklist.
+- `PUBLIC_FEEDBACK_CHAIN_PLAN.md`: Project 01 public feedback-chain strategy with Bluesky as a core discussion surface, used after CivitasX parent-channel context is established.
+- `PUBLIC_POSTS_FIRESEED_WAVE_1.md`: copyable Project 01 public posts for GitHub, Bluesky, LinkedIn, X, and optional Fediverse mirrors.
 - `FIRESEED_DECK_OUTLINE.md`: slide outline for presenting OrgAnchor as a Fireseed Alpha seed project.
-- `VIDEO_SCRIPT_SHORT.md`: Chinese-first 90-second concept video script for problem-led public outreach.
-- `VIDEO_SCRIPT_90S.md`: short concept video script for public outreach.
+- `VIDEO_SCRIPT_SHORT.md`: bilingual 90-second concept video review script with English as the canonical voiceover.
+- `VIDEO_SCRIPT_90S.md`: public English 90-second concept video script for problem-led outreach.
 - `VIDEO_SCRIPT_DEMO.md`: practical demo video script showing visible and AI-agent verification flows.
 - `VIDEO_SCRIPT_DEEP_DIVE.md`: 20-minute deep-dive script for architecture, evidence, S1-S3, Directory, and commercial-fit explanation.
 - `SPONSOR_LETTER.md`: sponsor/supporter letter template with explicit non-pay-for-trust boundaries.
@@ -34,6 +77,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `IMPLEMENTATION_STATUS.md`: current implemented surface, remaining gaps, non-goals, and verification commands.
 - `MVP_LAUNCH_CHECKLIST.md`: alpha MVP launch gate for package publication and first external pilot readiness.
 - `FIRESEED_ALPHA_PLAN.md`: accepted Fireseed Alpha boundary for S3-focused minimum evidence closure, S4/S5 design preview, freeze rules, and co-builder invitation.
+- `FIRESEED_ALPHA_COMPLETION_AUDIT_2026-07-06.md`: current requirement-by-requirement completion audit for Fireseed Alpha public-release preparation.
 - `FIRESEED_READINESS_GATE.md`: active GO/HOLD gate for deciding whether Fireseed outreach can begin without overclaiming readiness.
 - `FIRESEED_LAUNCH_DECISION_2026-06-01.md`: Fireseed GO decision record for named early adopter, technical, and evidence/governance outreach.
 - `CHANGELOG.md`: release-facing change history.
@@ -44,6 +88,8 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 ## Core Design Documents
 
 - `PROJECT_NORTH_STAR.md`: active alignment gate for keeping features focused on lower-friction discovery, verification, understanding, and non-monopolistic trust decisions.
+- `DESIGN_RATIONALE.md`: system-level explanation of why OrgAnchor's layers should reduce discovery, verification, understanding, and transaction-friction costs without making OrgAnchor a final trust authority.
+- `AI_OPERATING_MODEL.md`: project operating model for AI-assisted execution, owner decision gates, feedback intake, anti-drift controls, and security boundaries. This is not part of the OrgAnchor verification protocol.
 - `PROJECT_BRIEF.md`: original project brief and positioning.
 - `PRODUCT_SHAPE.md`: accepted product surfaces: core library, CLI, future local-first studio, and adopting-organization `/verify` page.
 - `ARCHITECTURE.md`: layered trust model and implementation structure.
@@ -58,7 +104,9 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `ADOPTION_MODEL.md`: adoption levels and repeatability model.
 - `ADOPTION_PRINCIPLES.md`: good-fit and poor-fit adopter guidance.
 - `ADOPTION_GUIDE.md`: operator-oriented adoption explanation.
+- `ADOPTER_QUICKSTART.md`: concise adopter path for reaching the minimum identity -> verify -> agent-readable loop.
 - `ORG_ONBOARDING_CHECKLIST.md`: checklist for an adopting organization.
+- `PILOT_MINIMAL_PATH.md`: narrow Fireseed Alpha external pilot path before using the full runbook.
 - `EXTERNAL_PILOT_RUNBOOK.md`: shortest repeatable path for the first low-risk external organization pilot.
 - `ROOT_AUTHORITY_CUSTODY_GUIDE.md`: root authority custody, loss, compromise, and governance guidance.
 - `MIGRATION_GUIDE.md`: root authority migration and historical continuity runbook.
@@ -70,7 +118,7 @@ OrgAnchor has intentionally grown beyond a small signing utility. Without a map,
 - `PURPOSE_AND_VALUES.md`: project purpose and misuse boundaries.
 - `CLAIMS_EVIDENCE_PROTOCOL.md`: protocol baseline for structured claims, evidence, methods, third-party attestations, challenges, and AI-agent claim-support output.
 - `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`: implementation map showing what is already alpha-ready and what remains for method, attestation, challenge, and agent-output work.
-- `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`: canonical three-axis model for purpose profiles, observation source classes, and challenge/correction lifecycle.
+- `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`: canonical three-axis model for purpose profiles, observation source classes, and challenge/correction/accountability lifecycle.
 - `EVIDENCE_SUFFICIENCY_MODEL.md`: accepted design principle that OrgAnchor should judge evidence by purpose-fit sufficiency, not raw field count, completeness scores, or paperwork volume.
 - `EVIDENCE_RETENTION_REALITY_PRINCIPLE.md`: accepted design principle for S3-S5 raw evidence storage reality, availability states, downgrade semantics, and future ledger readiness.
 - `SUBJECT_BINDING_MODEL.md`: accepted design model for binding discovery units, claims, evidence, samples, observations, credentials, and challenges to the exact subject they cover.
@@ -128,12 +176,13 @@ organchor directory build --beacon-index beacon-index.json --node-origin https:/
 organchor directory compare --snapshots directory-a.json,directory-b.json
 organchor directory export --snapshot public/directory/directory-snapshot.json --format ndjson
 npm run agent:demo
-npm run visible:demo
+npm run visible:demo -- --out ./visible-demo --serve
 ```
 
 ## Examples And Templates
 
 - `examples/complete/`: public minimal example artifacts. These are test/example artifacts, not a real organization identity.
+- `examples/adopter-minimal/`: safe adopter skeleton with placeholder config and the shortest local command path. It is not a real organization identity.
 - `examples/s2-third-party-material/`: S2 third-party material example showing the template and attach workflow for certification-style evidence.
 - `examples/s3-random-sampling/`: S3 random purchase / sampling example showing the template and attach workflow for anti-hand-picked-sample evidence, plus standalone sample event and sample-set examples.
 - `examples/agent-discovery-loop/`: local AI-agent discovery loop example, backed by `npm run agent:demo`.
@@ -157,7 +206,7 @@ That workspace may contain private keys, provider credentials, wallets, local re
 
 - No broad external organization pilot has completed yet.
 - The claims/evidence protocol is stronger than the current alpha implementation: signed claims, signed evidence, value audit, and `/verify` publication exist, while dedicated method, attestation, and challenge manifests remain future work.
-- The purpose/evidence/challenge model is documented as the canonical design. Local S2 third-party material checks and local S3 random purchase / sampling checks are implemented. The S3 intake and sample-slot model is documented, while slot issuance, slot verification, slot-use ledgers, raw-vault admission workflows, P1-P5 purpose-profile validators, broader S1/S4/S5 source-class fields, S2 network route adapters, issuer-backed S2 signatures, S3 custody/independent-test route adapters, S4 delivery/use observation commands, and challenge/correction lifecycle extraction are not implemented yet.
+- The purpose/evidence/challenge model is documented as the canonical design. Local S2 third-party material checks and local S3 random purchase / sampling checks are implemented. The S3 intake and sample-slot model is documented, while slot issuance, slot verification, slot-use ledgers, raw-vault admission workflows, P1-P5 purpose-profile validators, broader S1/S4/S5 source-class fields, S2 network route adapters, issuer-backed S2 signatures, S3 custody/independent-test route adapters, S4 delivery/use observation commands, and S5 challenge/correction/accountability lifecycle extraction are not implemented yet.
 - The product/service credential layer is documented as an accepted direction, but delegated key statements, model/batch/unit credentials, service delivery credentials, and observation binding are not implemented yet.
 - The commercial fit layer is documented as an accepted direction, but public commercial-fit manifests, signed price sheets, delegated commercial keys, private signed quote verification, and compact commercial-fit summaries are not implemented yet.
 - ENS live resolver reads still require choosing an Ethereum RPC/provider path.

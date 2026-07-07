@@ -50,6 +50,7 @@ The OrgAnchor reference self-pilot must expose:
 - a current signed official endpoint statement;
 - a current root authority record;
 - machine-readable verification output that an external agent can fetch without private context.
+- if publication history or carrier receipts are presented as part of the public self-pilot, a downloadable root-signed lockfile and lockfile signature that do not fall back to HTML.
 
 If the public self-pilot is temporarily broken, Fireseed can continue only as `LIMITED_GO` for local technical review.
 
@@ -133,7 +134,7 @@ S4 and S5 are Design Preview during Fireseed.
 
 S4 can expose templates, attach basics, and audit gaps for real-use or real-delivery observation.
 
-S5 can expose principles and challenge/correction direction.
+S5 can expose principles and challenge/correction/accountability direction.
 
 Fireseed must not claim:
 
@@ -142,6 +143,7 @@ Fireseed must not claim:
 - solved durable storage incentives;
 - solved public challenge governance;
 - reliable negative-evidence reputation;
+- solved historical accountability interpretation;
 - final product-quality decisions.
 
 Any broad S4/S5 implementation push before Fireseed review is a scope-expansion risk.
@@ -198,4 +200,3 @@ If any required gate fails:
 ```text
 HOLD until the failure is fixed or clearly moved outside the Fireseed acceptance boundary.
 ```
-

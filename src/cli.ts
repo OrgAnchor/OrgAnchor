@@ -49,6 +49,9 @@ import { initCommand } from "./commands/init.ts";
 import { keyGenerateCommand } from "./commands/key-generate.ts";
 import { keyPublicCommand } from "./commands/key-public.ts";
 import { keyRotatePlanCommand } from "./commands/key-rotate-plan.ts";
+import { lockfileHashCommand } from "./commands/lockfile-hash.ts";
+import { lockfileSignCommand } from "./commands/lockfile-sign.ts";
+import { lockfileVerifyCommand } from "./commands/lockfile-verify.ts";
 import { migrateCreateCommand } from "./commands/migrate-create.ts";
 import { migrateSignCommand } from "./commands/migrate-sign.ts";
 import { migrateVerifyCommand } from "./commands/migrate-verify.ts";
@@ -115,6 +118,9 @@ const commands: Record<string, CommandHandler> = {
   "key generate": keyGenerateCommand,
   "key public": keyPublicCommand,
   "key rotate-plan": keyRotatePlanCommand,
+  "lockfile hash": lockfileHashCommand,
+  "lockfile sign": lockfileSignCommand,
+  "lockfile verify": lockfileVerifyCommand,
   "mirror ipfs pin": ipfsPinCommand,
   "mirror ipfs publish": ipfsPublishCommand,
   "mirror ipfs upload": ipfsUploadCommand,
@@ -206,6 +212,9 @@ Usage:
   organchor key generate --id root-2026
   organchor key public --key keys/root-2026.private.json
   organchor key rotate-plan --authority root-authority.json --replace-key root-a --new-key keys/root-d.public.json
+  organchor lockfile hash --in organchor.lock.json
+  organchor lockfile sign --key keys/root-2026.private.json --authority root-authority.json --in organchor.lock.json
+  organchor lockfile verify --authority root-authority.json --in organchor.lock.json --sig organchor.lock.json.sig
   organchor authority change-plan --old-authority root-authority.json --add-keys keys/root-d.public.json,keys/root-e.public.json --threshold 3
   organchor authority create --key keys/root-2026.private.json
   organchor authority create --keys keys/root-a.private.json,keys/root-b.private.json,keys/root-c.private.json --threshold 2

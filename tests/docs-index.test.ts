@@ -11,6 +11,7 @@ test("documentation index is discoverable from README and package metadata", () 
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8")) as { files?: string[] };
 
   assert.match(readme, /PROJECT_NORTH_STAR\.md/);
+  assert.match(readme, /AI_OPERATING_MODEL\.md/);
   assert.match(readme, /DOCS_INDEX\.md/);
   assert.match(readme, /FIRESEED_ALPHA_PLAN\.md/);
   assert.match(readme, /FIRESEED_LAUNCH_DECISION_2026-06-01\.md/);
@@ -23,6 +24,7 @@ test("documentation index is discoverable from README and package metadata", () 
   assert.match(readme, /DIRECTORY_SNAPSHOT_SPEC\.md/);
   assert.match(readme, /Operator-facing adoption and verification documents/);
   assert.ok(packageJson.files?.includes("PROJECT_NORTH_STAR.md"), "package.json files must include PROJECT_NORTH_STAR.md");
+  assert.ok(packageJson.files?.includes("AI_OPERATING_MODEL.md"), "package.json files must include AI_OPERATING_MODEL.md");
   assert.ok(packageJson.files?.includes("DOCS_INDEX.md"), "package.json files must include DOCS_INDEX.md");
   assert.ok(packageJson.files?.includes("FIRESEED_ALPHA_PLAN.md"), "package.json files must include FIRESEED_ALPHA_PLAN.md");
   assert.ok(
@@ -60,6 +62,27 @@ test("documentation index names the package-facing guidance documents", () => {
 
   for (const doc of packageFacingDocs) {
     assert.match(docsIndex, new RegExp(escapeRegExp(doc)), `${doc} should be listed in DOCS_INDEX.md`);
+  }
+});
+
+test("AI operating model defines execution authority and owner decision gates", () => {
+  const docsIndex = readFileSync(join(repoRoot, "DOCS_INDEX.md"), "utf8");
+  const model = readFileSync(join(repoRoot, "AI_OPERATING_MODEL.md"), "utf8");
+
+  assert.match(docsIndex, /AI_OPERATING_MODEL\.md/);
+
+  for (const phrase of [
+    "human project owner plus AI execution lead model",
+    "Default Execution Authority",
+    "Required Owner Decision Gates",
+    "public posting, paid actions, account changes, permission expansion, or final release publication",
+    "If a decision is ambiguous and could affect public trust, security, money, law, or project values",
+    "PROJECT_NORTH_STAR.md",
+    "FIRESEED_READINESS_GATE.md",
+    "The current priority is Fireseed Alpha external validation",
+    "It is not part of the OrgAnchor verification protocol"
+  ]) {
+    assert.match(model, new RegExp(escapeRegExp(phrase)));
   }
 });
 

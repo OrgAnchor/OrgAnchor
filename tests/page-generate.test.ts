@@ -39,6 +39,8 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(existsSync(join(verifyDir, "official-endpoints.json")), true);
     assert.equal(existsSync(join(verifyDir, "official-endpoints.json.sig")), true);
     assert.equal(existsSync(join(verifyDir, "root-authority.json")), true);
+    assert.equal(existsSync(join(verifyDir, "organchor.lock.json")), true);
+    assert.equal(existsSync(join(verifyDir, "organchor.lock.json.sig")), true);
     assert.equal(existsSync(join(verifyDir, "claims", "product-claims.json")), true);
     assert.equal(existsSync(join(verifyDir, "claims", "product-claims.json.sig")), true);
     assert.equal(existsSync(join(verifyDir, "evidence", "evidence-manifest.json")), true);
@@ -65,6 +67,10 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(html, /Visible Proof Trail/);
     assert.match(html, /Signature threshold/);
     assert.match(html, /Carrier Receipts/);
+    assert.match(html, /Lockfile Integrity/);
+    assert.match(html, /publication receipt ledger/);
+    assert.match(html, /organchor\.lock\.json/);
+    assert.match(html, /organchor lockfile verify/);
     assert.match(html, /ipfs-pinata/);
     assert.match(html, /bafyexampleverifycid/);
     assert.match(html, /arweave-tx-statement/);
@@ -114,6 +120,7 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(index.agent_verification.compact_command, "organchor verify url <organization-url> --compact");
     assert.equal(index.agent_verification.compact_result_type, "OrgAnchorAgentVerificationCompactResult");
     assert.equal(index.agent_verification.summary.preferred_first_pass, "compact");
+    assert.equal(index.agent_verification.summary.optional_history_checks.includes("lockfile_signature"), true);
     assert.equal(
       index.agent_verification.summary.required_identity_checks.includes("statement_signature_threshold"),
       true
@@ -132,6 +139,9 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(index.visible_proof.summary.valid_signature_count, 1);
     assert.equal(index.visible_proof.summary.required_signature_count, 1);
     assert.equal(index.visible_proof.summary.carrier_receipt_count, 2);
+    assert.equal(index.visible_proof.summary.lockfile_status, "SIGNED");
+    assert.match(index.visible_proof.summary.lockfile_hash, /^sha256:[0-9a-f]{64}$/);
+    assert.equal(index.visible_proof.summary.lockfile_signed, true);
     assert.equal(index.agent_review.overall_status, "WARN");
     assert.equal(index.agent_review.identity_status, "PASS");
     assert.equal(index.agent_review.value_status, "WARN");
@@ -181,7 +191,16 @@ test("page generate creates static verify page and machine-readable artifacts", 
       true
     );
     assert.equal(index.carrier_receipts.status, "PRESENT");
+    assert.equal(index.carrier_receipts.source_lockfile, "organchor.lock.json");
     assert.equal(index.carrier_receipts.receipts.length, 2);
+    assert.equal(index.lockfile_integrity.status, "SIGNED");
+    assert.equal(index.lockfile_integrity.path, "organchor.lock.json");
+    assert.equal(index.lockfile_integrity.signature_path, "organchor.lock.json.sig");
+    assert.match(index.lockfile_integrity.hash, /^sha256:[0-9a-f]{64}$/);
+    assert.match(index.lockfile_integrity.signature_hash, /^sha256:[0-9a-f]{64}$/);
+    assert.deepEqual(index.lockfile_integrity.valid_signatures, ["root-2026"]);
+    assert.equal(index.lockfile_integrity.required_signatures, 1);
+    assert.equal(index.lockfile_integrity.trust_boundary.lockfile_is_identity_root, false);
     assert.equal(index.carrier_receipts.receipts[0].provider, "arweave");
     assert.deepEqual(index.carrier_receipts.receipts[0].summary.tx_ids, [
       "arweave-tx-statement",
@@ -197,6 +216,12 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(
       index.visible_proof.checks.some((check: { label: string; status: string }) =>
         check.label === "Migration history" && check.status === "NOT_INCLUDED"
+      ),
+      true
+    );
+    assert.equal(
+      index.visible_proof.checks.some((check: { label: string; status: string }) =>
+        check.label === "Lockfile integrity" && check.status === "PASS"
       ),
       true
     );
@@ -261,6 +286,20 @@ test("page generate creates static verify page and machine-readable artifacts", 
       "evidence/evidence-manifest.json.sig"
     ]);
     assert.match(copiedEvidence.stdout, /PASS/);
+
+    const copiedLockfile = run(verifyDir, [
+      "lockfile",
+      "verify",
+      "--authority",
+      "root-authority.json",
+      "--expected-authority-hash",
+      index.root_authority.hash,
+      "--in",
+      "organchor.lock.json",
+      "--sig",
+      "organchor.lock.json.sig"
+    ]);
+    assert.match(copiedLockfile.stdout, /PASS/);
   } finally {
     rmSync(workspace, { recursive: true, force: true });
   }
@@ -467,6 +506,16 @@ function createSignedStatement(workspace: string): void {
     ),
     "utf8"
   );
+  run(workspace, [
+    "lockfile",
+    "sign",
+    "--key",
+    "keys/root-2026.private.json",
+    "--authority",
+    "root-authority.json",
+    "--in",
+    "organchor.lock.json"
+  ]);
 }
 
 function createDirectoryDiscoveryFiles(workspace: string): void {

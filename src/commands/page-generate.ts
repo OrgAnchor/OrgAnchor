@@ -1,9 +1,10 @@
 import { copyFile, readFile, writeFile } from "node:fs/promises";
-import { basename, isAbsolute, join } from "node:path";
+import { basename, isAbsolute, join, resolve } from "node:path";
 import { validateClaimsManifest, validateEvidenceManifest } from "../core/evidence-validate.ts";
 import { ensureDir, pathExists, writeJsonFile } from "../core/files.ts";
 import { sha256CanonicalJson } from "../core/hash.ts";
 import { readJsonFile } from "../core/json.ts";
+import { validateLockfile } from "../core/lockfile.ts";
 import { normalizeBeaconOrigin, writeBeaconDiscoverySurfaces } from "../beacon/surfaces.ts";
 import {
   validateOfficialStatement,
@@ -19,6 +20,7 @@ import type {
   VerifyCarrierReceipt,
   VerifyAgentReview,
   VerifyLinkedArtifact,
+  VerifyLockfileIntegrity,
   VerifyMigrationArtifact,
   VerifyProofCheck,
   VerifyRootContinuity,
@@ -31,6 +33,8 @@ const STATEMENT_FILE = "official-endpoints.json";
 const SIGNATURE_FILE = "official-endpoints.json.sig";
 const AUTHORITY_FILE = "root-authority.json";
 const INDEX_FILE = "organchor.json";
+const LOCKFILE_FILE = "organchor.lock.json";
+const LOCKFILE_SIGNATURE_FILE = "organchor.lock.json.sig";
 const VALUE_REPORT_FILE = "reports/value-continuity-report.json";
 const VALUE_REPORT_MARKDOWN_FILE = "reports/value-continuity-report.md";
 const DIRECTORY_SNAPSHOT_FILE = "directory-snapshot.json";
@@ -50,6 +54,9 @@ export async function pageGenerateCommand(options: Record<string, string | boole
   const out = typeof options.out === "string" ? options.out : "public/verify";
   const lockfilePath = typeof options.lockfile === "string" ? options.lockfile : "organchor.lock.json";
   const explicitLockfile = typeof options.lockfile === "string";
+  const lockfileSigPath =
+    typeof options["lockfile-sig"] === "string" ? options["lockfile-sig"] : `${lockfilePath}.sig`;
+  const explicitLockfileSignature = typeof options["lockfile-sig"] === "string";
   const valueReportPath = typeof options["value-report"] === "string" ? options["value-report"] : VALUE_REPORT_FILE;
   const valueReportMarkdownPath =
     typeof options["value-report-md"] === "string" ? options["value-report-md"] : VALUE_REPORT_MARKDOWN_FILE;
@@ -133,6 +140,14 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     currentAuthorityHash: authorityHash
   });
   const carrierReceipts = await includeCarrierReceipts(lockfilePath, explicitLockfile);
+  const lockfileIntegrity = await includeLockfileIntegrity({
+    lockfilePath,
+    signaturePath: lockfileSigPath,
+    targetDir: out,
+    authority,
+    explicitLockfile,
+    explicitSignature: explicitLockfileSignature
+  });
   const valueContinuity = await includeValueContinuityReport({
     reportPath: valueReportPath,
     markdownPath: valueReportMarkdownPath,
@@ -161,6 +176,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     linkedArtifacts,
     migrationArtifacts,
     carrierReceipts,
+    lockfileIntegrity,
     valueContinuity
   });
   const agentReview = buildAgentReview({
@@ -219,6 +235,12 @@ export async function pageGenerateCommand(options: Record<string, string | boole
           "claims_evidence_references",
           "value_continuity"
         ],
+        optional_history_checks: [
+          "lockfile_hash",
+          "lockfile_signature",
+          "carrier_receipts",
+          "external_anchors"
+        ],
         preferred_first_pass: "compact"
       }
     },
@@ -237,7 +259,10 @@ export async function pageGenerateCommand(options: Record<string, string | boole
         required_signature_count: verification.required_signatures,
         linked_artifact_count: linkedArtifacts.length,
         migration_count: migrationArtifacts.length,
-        carrier_receipt_count: carrierReceipts.length
+        carrier_receipt_count: carrierReceipts.length,
+        lockfile_status: lockfileIntegrity.status,
+        lockfile_hash: lockfileIntegrity.hash ?? null,
+        lockfile_signed: lockfileIntegrity.status === "SIGNED"
       }
     },
     agent_review: {
@@ -317,6 +342,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
         summary: receipt.summary
       }))
     },
+    lockfile_integrity: lockfileIntegrityIndex(lockfileIntegrity),
     value_continuity: valueContinuityIndex(valueContinuity),
     directory_discovery: directoryDiscovery,
     linked_artifacts: linkedIndex,
@@ -369,6 +395,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     linkedArtifacts,
     migrationArtifacts,
     carrierReceipts,
+    lockfileIntegrity,
     rootContinuity,
     valueContinuity,
     agentReview,
@@ -507,7 +534,7 @@ function evidenceClassSummaryFromValue(valueContinuity: VerifyValueContinuity): 
       label: "S5 Challenge",
       status: "DESIGN_PREVIEW",
       count: 0,
-      detail: "Public challenge and negative evidence governance is documented but not implemented as a finished acceptance gate."
+      detail: "Public challenge, correction, negative evidence, and historical accountability governance is documented but not implemented as a finished acceptance gate."
     }
   ];
 }
@@ -580,6 +607,7 @@ function buildProofChecks(options: {
   linkedArtifacts: VerifyLinkedArtifact[];
   migrationArtifacts: VerifyMigrationArtifact[];
   carrierReceipts: VerifyCarrierReceipt[];
+  lockfileIntegrity: VerifyLockfileIntegrity;
   valueContinuity: VerifyValueContinuity;
 }): VerifyProofCheck[] {
   const claimsIncluded = options.linkedArtifacts.some((artifact) => artifact.path === "claims/product-claims.json");
@@ -637,8 +665,13 @@ function buildProofChecks(options: {
       label: "Carrier receipts",
       status: options.carrierReceipts.length > 0 ? "PRESENT" : "NOT_INCLUDED",
       detail: options.carrierReceipts.length > 0 ?
-        `${options.carrierReceipts.length} carrier receipt(s) summarized from organchor.lock.json.` :
+        `${options.carrierReceipts.length} carrier receipt(s) summarized from ${LOCKFILE_FILE}.` :
         "No IPFS, Arweave, OpenTimestamps, or other carrier receipts were included."
+    },
+    {
+      label: "Lockfile integrity",
+      status: options.lockfileIntegrity.status === "SIGNED" ? "PASS" : options.lockfileIntegrity.status === "UNSIGNED" ? "PRESENT" : "NOT_INCLUDED",
+      detail: lockfileIntegrityDetail(options.lockfileIntegrity)
     }
   ];
 }
@@ -889,6 +922,103 @@ async function includeCarrierReceipts(lockfilePath: string, explicit: boolean): 
   }
 
   return receipts.sort((a, b) => b.recordedAt.localeCompare(a.recordedAt));
+}
+
+async function includeLockfileIntegrity(options: {
+  lockfilePath: string;
+  signaturePath: string;
+  targetDir: string;
+  authority: RootAuthority;
+  explicitLockfile: boolean;
+  explicitSignature: boolean;
+}): Promise<VerifyLockfileIntegrity> {
+  const lockfileExists = await pathExists(options.lockfilePath);
+  if (!lockfileExists) {
+    if (options.explicitLockfile) throw new Error(`Missing lockfile: ${options.lockfilePath}`);
+    return {
+      status: "NOT_INCLUDED",
+      validSignatures: [],
+      requiredSignatures: options.authority.threshold.required
+    };
+  }
+
+  const lockfile = validateLockfile(await readJsonFile(options.lockfilePath));
+  const hash = sha256CanonicalJson(lockfile);
+  await ensureDir(options.targetDir);
+  await copyFileIfDifferent(options.lockfilePath, join(options.targetDir, LOCKFILE_FILE));
+
+  const signatureExists = await pathExists(options.signaturePath);
+  if (!signatureExists) {
+    if (options.explicitSignature) throw new Error(`Missing lockfile signature: ${options.signaturePath}`);
+    return {
+      status: "UNSIGNED",
+      path: LOCKFILE_FILE,
+      hash,
+      validSignatures: [],
+      requiredSignatures: options.authority.threshold.required,
+      sourceLockfile: basename(options.lockfilePath)
+    };
+  }
+
+  const signature = validateSignatureFile(await readJsonFile(options.signaturePath));
+  const signatureHash = sha256CanonicalJson(signature);
+  const verification = verifySignatureFile(lockfile, signature, options.authority);
+  if (!verification.ok) {
+    throw new Error(`Cannot include invalid lockfile signature ${options.signaturePath}: ${verification.errors.join("; ")}`);
+  }
+
+  await copyFileIfDifferent(options.signaturePath, join(options.targetDir, LOCKFILE_SIGNATURE_FILE));
+  return {
+    status: "SIGNED",
+    path: LOCKFILE_FILE,
+    hash,
+    signaturePath: LOCKFILE_SIGNATURE_FILE,
+    signatureHash,
+    validSignatures: verification.valid_signatures,
+    requiredSignatures: verification.required_signatures,
+    sourceLockfile: basename(options.lockfilePath),
+    sourceSignature: basename(options.signaturePath)
+  };
+}
+
+async function copyFileIfDifferent(source: string, target: string): Promise<void> {
+  if (resolve(source) === resolve(target)) return;
+  await copyFile(source, target);
+}
+
+function lockfileIntegrityIndex(lockfile: VerifyLockfileIntegrity): JsonValue {
+  if (lockfile.status === "NOT_INCLUDED") {
+    return {
+      status: "NOT_INCLUDED",
+      note: "No lockfile snapshot was included."
+    };
+  }
+  return {
+    status: lockfile.status,
+    path: lockfile.path ?? LOCKFILE_FILE,
+    hash: lockfile.hash ?? "",
+    signature_path: lockfile.signaturePath ?? null,
+    signature_hash: lockfile.signatureHash ?? null,
+    valid_signatures: lockfile.validSignatures,
+    required_signatures: lockfile.requiredSignatures,
+    source_lockfile: lockfile.sourceLockfile ?? null,
+    source_signature: lockfile.sourceSignature ?? null,
+    trust_boundary: {
+      lockfile_is_identity_root: false,
+      carriers_are_identity_root: false,
+      purpose: "publication_receipt_history"
+    }
+  };
+}
+
+function lockfileIntegrityDetail(lockfile: VerifyLockfileIntegrity): string {
+  if (lockfile.status === "SIGNED") {
+    return `${LOCKFILE_FILE} hash ${lockfile.hash ?? ""} is signed by ${lockfile.validSignatures.length}/${lockfile.requiredSignatures} required root member(s).`;
+  }
+  if (lockfile.status === "UNSIGNED") {
+    return `${LOCKFILE_FILE} hash ${lockfile.hash ?? ""} is included, but no root signature was found. Treat carrier receipts as unsigned metadata.`;
+  }
+  return "No signed publication receipt ledger was included.";
 }
 
 function summarizeReceipt(receipt: Record<string, JsonValue>): Record<string, JsonValue> {

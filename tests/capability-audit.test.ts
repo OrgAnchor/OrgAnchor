@@ -73,7 +73,7 @@ test("capability matrix distinguishes implemented, partial, design-only, and not
     "NOT_IMPLEMENTED",
     "S3 sample-slot issuance and ledger",
     "S4 real-use or delivery observation",
-    "S5 public challenge and negative evidence",
+    "S5 public challenge, correction, negative evidence, and historical accountability",
     "Broad external organization pilot"
   ]) {
     assert.match(matrix, new RegExp(escapeRegExp(phrase)));

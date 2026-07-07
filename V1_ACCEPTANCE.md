@@ -160,7 +160,7 @@ Acceptance tests must prove:
 - The verify directory contains the statement, signature file, and root authority record.
 - The verify directory contains signed claims and evidence manifests when available.
 - The page displays organization metadata.
-- The page displays official endpoints.
+- The page displays the organization's declared official presence endpoints.
 - The page displays statement hash.
 - The page displays root authority fingerprint.
 - The page displays a visible proof trail for generated and verified artifacts.
@@ -173,6 +173,7 @@ Acceptance tests must prove:
 - AI agents can inspect `visible_proof.status`, checks, and summary from `public/verify/organchor.json`.
 - AI agents can inspect `root_continuity.status`, current root authority, previous root authorities, migration chain, and historical verification rule from `public/verify/organchor.json`.
 - AI agents can inspect `migration_history.status` and migration artifacts from `public/verify/organchor.json`.
+- AI agents can inspect `lockfile_integrity.status`, `path`, `hash`, `signature_path`, and `valid_signatures` from `public/verify/organchor.json` when a lockfile snapshot is included.
 
 ## Lockfile Acceptance
 
@@ -182,8 +183,13 @@ Acceptance tests must prove:
 - Lockfile entries are keyed by artifact hashes.
 - Lockfile entries include timestamps and provider names.
 - Lockfile entries do not include secrets.
-- Modifying the lockfile cannot make an invalid statement verify.
-- A stale lockfile is reported as stale or mismatched when hashes differ.
+- `organchor lockfile hash --in organchor.lock.json` emits the canonical SHA-256 lockfile hash.
+- `organchor lockfile sign --key <root-member-private-key> --authority root-authority.json --in organchor.lock.json` creates `organchor.lock.json.sig`.
+- `organchor lockfile verify --authority root-authority.json --in organchor.lock.json --sig organchor.lock.json.sig` passes for an unchanged signed lockfile.
+- Modifying any signed lockfile field causes `organchor lockfile verify` to fail.
+- `page generate` copies `organchor.lock.json` and `organchor.lock.json.sig` into `/verify` when available, and refuses to include an invalid lockfile signature.
+- `verify url` fetches the indexed lockfile snapshot and verifies its hash/signature when `lockfile_integrity` is present.
+- A stale or mismatched lockfile is reported as stale, mismatched, or failed when hashes differ.
 
 ## Claims and Evidence Acceptance
 
@@ -370,7 +376,7 @@ In this self-pilot, OrgAnchor is the first adopting organization using OrgAnchor
 The self-pilot must prove:
 
 - OrgAnchor has its own root authority record.
-- OrgAnchor has a signed official endpoint statement.
+- OrgAnchor has a signed official-presence statement.
 - OrgAnchor has a generated verify page.
 - OrgAnchor has IPFS receipt data in `organchor.lock.json`.
 - OrgAnchor has Arweave dry-run/manual package or real receipt data.

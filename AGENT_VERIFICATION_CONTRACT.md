@@ -39,10 +39,11 @@ This entity is legally or ethically certified.
 It may say:
 
 ```text
-The endpoint statement signature is valid or invalid.
+The official-presence statement signature is valid or invalid.
 The root authority hash matches or does not match.
 The claims manifest is signed or missing.
 The evidence manifest is signed or missing.
+The lockfile snapshot is signed, unsigned, missing, or hash-mismatched.
 The value continuity report contains PASS/WARN/FAIL/MANUAL_CHECK_REQUIRED counts.
 The agent should review these gaps before making a transaction decision.
 ```
@@ -107,6 +108,29 @@ The index should include:
 `artifact_base_path` tells the agent where relative artifact paths resolve. This prevents the agent from guessing whether files beside `/.well-known/organchor.json` or under `/verify/` are authoritative.
 
 `directory_discovery`, when present, tells the agent where to find an optional Directory snapshot. The Directory is only a candidate-discovery surface. It is not the organization's identity root and does not replace direct origin verification.
+
+`lockfile_integrity`, when present, tells the agent where to find the publication receipt ledger snapshot and its detached signature:
+
+```json
+{
+  "lockfile_integrity": {
+    "status": "SIGNED",
+    "path": "organchor.lock.json",
+    "hash": "sha256:<hash>",
+    "signature_path": "organchor.lock.json.sig",
+    "signature_hash": "sha256:<hash>",
+    "valid_signatures": ["root-2026"],
+    "required_signatures": 1,
+    "trust_boundary": {
+      "lockfile_is_identity_root": false,
+      "carriers_are_identity_root": false,
+      "purpose": "publication_receipt_history"
+    }
+  }
+}
+```
+
+The lockfile is not the identity root. It is a root-signed publication receipt ledger. If a CID, transaction id, timestamp, artifact hash, or receipt field is changed after signing, the lockfile hash/signature check fails.
 
 ## Discovery Query Contract
 
@@ -209,10 +233,24 @@ statement hash matches index.statement.hash
 signature hash matches index.signature.hash
 root authority hash matches index.root_authority.hash
 statement.root_authority_hash matches fetched root authority hash
-official endpoint statement signature meets root authority threshold
+official-presence statement signature meets root authority threshold
 ```
 
 If any required identity check fails, the agent should treat the OrgAnchor identity result as failed.
+
+## History And Carrier Checks
+
+If present, the agent should also check:
+
+```text
+lockfile hash matches lockfile_integrity.hash
+lockfile signature hash matches lockfile_integrity.signature_hash
+lockfile signature meets root authority threshold
+carrier receipts are treated as durability/discovery metadata, not identity roots
+OpenTimestamps/Bitcoin proofs are treated as time anchors for hashes, not truth proofs
+```
+
+If `lockfile_integrity.status == "UNSIGNED"`, the agent may still inspect carrier receipts, but should treat them as unsigned metadata. If publication history matters for the decision, the recommended next step is to request a root-signed lockfile snapshot.
 
 ## Claims And Evidence Checks
 

@@ -2,14 +2,12 @@
 
 Status: Copyable Project 01 first-wave public post drafts.
 
-Use after the CivitasX parent-channel overview exists and the reframed OrgAnchor
-Project 01 YouTube video is uploaded.
+Use for the first GitHub-issue-led public feedback wave. This version does not require a YouTube video.
 
 Replace placeholders:
 
 ```text
-<YOUTUBE_URL>
-<GITHUB_ISSUE_URL>
+https://github.com/OrgAnchor/OrgAnchor/issues/4
 <BLUESKY_THREAD_URL>
 <LINKEDIN_POST_URL>
 <X_THREAD_URL>
@@ -17,7 +15,7 @@ Replace placeholders:
 
 ## YouTube
 
-Use `PUBLIC_VIDEO_90S_RELEASE_PACK.md` for the title, description, pinned comment, and captions.
+Deferred. Use `PUBLIC_VIDEO_90S_RELEASE_PACK.md` later for the title, description, pinned comment, and captions after the video quality gate is met.
 
 After upload, copy the YouTube URL into:
 
@@ -31,16 +29,15 @@ README or release note only after the first feedback loop is stable.
 
 ## GitHub Tracking Issue Opening Comment
 
-Use the body from `FIRESEED_VALIDATION_TRACKING_ISSUE.md`, then add this at the top:
+Already opened:
 
-```markdown
-## First Public Video
-
-90-second concept video:
-<YOUTUBE_URL>
-
-This video is the first OrgAnchor Project 01 Fireseed Alpha outreach asset. It is not a claim that OrgAnchor is finished. It introduces the problem, the minimum verification direction, and the review invitation.
+```text
+https://github.com/OrgAnchor/OrgAnchor/issues/4
 ```
+
+Use comments on that issue to record public post URLs and useful feedback.
+
+Do not add a video block until a public video is actually published.
 
 ## Bluesky Thread
 
@@ -135,11 +132,8 @@ https://organchor.org/verify/
 Source:
 https://github.com/OrgAnchor/OrgAnchor
 
-Video:
-<YOUTUBE_URL>
-
 Review issue:
-<GITHUB_ISSUE_URL>
+https://github.com/OrgAnchor/OrgAnchor/issues/4
 ```
 
 ## LinkedIn Post
@@ -157,14 +151,14 @@ The current Fireseed Alpha includes a visible minimum loop: root authority, sign
 
 We are looking for early reviewers, pilot organizations, AI-agent builders, Directory builders, and evidence/governance critics.
 
-Video:
-<YOUTUBE_URL>
-
 Start here:
 https://organchor.org/verify/
 
 Source:
 https://github.com/OrgAnchor/OrgAnchor
+
+Review issue:
+https://github.com/OrgAnchor/OrgAnchor/issues/4
 ```
 
 ## X Thread
@@ -206,8 +200,8 @@ https://organchor.org/verify/
 Source:
 https://github.com/OrgAnchor/OrgAnchor
 
-Video:
-<YOUTUBE_URL>
+Issue:
+https://github.com/OrgAnchor/OrgAnchor/issues/4
 
 We need technical reviewers, AI-agent builders, Directory builders, pilot organizations, and evidence/governance critics.
 ```

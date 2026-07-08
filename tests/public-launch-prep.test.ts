@@ -191,9 +191,9 @@ test("public feedback chain treats Bluesky as discussion surface, not trust root
   const posts = readText("PUBLIC_POSTS_FIRESEED_WAVE_1.md");
 
   for (const phrase of [
-    "YouTube   -> canonical video host",
-    "GitHub    -> executable review",
+    "GitHub    -> canonical executable review",
     "Bluesky   -> first discussion chain",
+    "YouTube   -> deferred canonical video host",
     "the first public conversation layer",
     "not the canonical artifact store",
     "not the source of truth",
@@ -209,8 +209,7 @@ test("public feedback chain treats Bluesky as discussion surface, not trust root
     "Final trust stays external",
     "S4/S5 are design previews",
     "adopting organizations, AI-agent builders, Directory builders",
-    "<YOUTUBE_URL>",
-    "<GITHUB_ISSUE_URL>"
+    "https://github.com/OrgAnchor/OrgAnchor/issues/4"
   ]) {
     assert.match(posts, new RegExp(escapeRegExp(phrase), "i"));
   }

@@ -4,24 +4,22 @@ Status: Active Project 01 public feedback strategy.
 
 ## Purpose
 
-This plan defines where the first OrgAnchor Project 01 public video should be published and why.
+This plan defines where the first OrgAnchor Project 01 public feedback wave should be published and why.
 
 The goal is not maximum traffic. The goal is high-quality public feedback that can be traced, summarized, turned into issues, and used to improve Fireseed Alpha.
 
-OrgAnchor is Project 01 under CivitasX. Use this plan only after the CivitasX
-parent-channel context exists, so viewers understand why an OrgAnchor video
-appears on a CivitasX channel.
+OrgAnchor is Project 01 under CivitasX, but the first feedback wave can start from GitHub before the public video is finalized. The video path remains useful, but it is not a blocker for the first validation call.
 
 ## First-Wave Platform Roles
 
 Use this first-wave matrix:
 
 ```text
-YouTube   -> canonical video host and long-lived public video URL.
-GitHub    -> executable review, issues, reproduction, roadmap changes.
+GitHub    -> canonical executable review, issues, reproduction, roadmap changes.
 Bluesky   -> first discussion chain and open-protocol audience.
 LinkedIn  -> professional audience: supply chain, AI, open infrastructure, sponsors.
 X         -> mirror distribution for AI/open-source/Web3 technical audiences.
+YouTube   -> deferred canonical video host after the video quality gate is met.
 ```
 
 ## Why Bluesky Is First Wave
@@ -49,16 +47,15 @@ not a replacement for GitHub issues.
 
 ## Recommended Publishing Order
 
-Use this order:
+Use this first-wave order:
 
 ```text
-1. Publish or pin the CivitasX parent-channel overview.
-2. Publish the reframed OrgAnchor Project 01 video on YouTube.
-3. Open or update the Fireseed Wave 1 GitHub issue with the YouTube URL.
-4. Publish the Bluesky thread, linking to YouTube, GitHub, and organchor.org/verify.
-5. Publish the LinkedIn post with a professional framing.
-6. Publish the X thread as a mirror distribution channel.
-7. Record all URLs in a release note or tracking issue.
+1. Open the Fireseed Wave 1 GitHub issue.
+2. Publish the Bluesky thread, linking to the GitHub issue, source repository, and organchor.org/verify.
+3. Publish the LinkedIn post with a professional framing.
+4. Publish the X thread as an optional mirror distribution channel.
+5. Record all public post URLs in the GitHub tracking issue.
+6. Publish the OrgAnchor video later only after the video quality gate is met.
 ```
 
 ## Account Requirements
@@ -66,11 +63,11 @@ Use this order:
 The human owner must provide or create:
 
 ```text
-YouTube channel access;
 GitHub organization access;
 Bluesky account access;
 LinkedIn profile or organization page access;
 optional X account access.
+optional YouTube channel access after the video quality gate.
 ```
 
 Preferred Bluesky setup:

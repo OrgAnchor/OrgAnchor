@@ -89,6 +89,8 @@ OrgAnchor does not certify that an organization is good, lawful, ethical, effect
 
 See `PROJECT_NORTH_STAR.md`, `DESIGN_RATIONALE.md`, `AI_OPERATING_MODEL.md`, `DOCS_INDEX.md`, `CAPABILITY_TRACEABILITY_MATRIX.md`, `CAPABILITY_AUDIT_SCENARIOS.md`, `VISIBLE_ACCEPTANCE.md`, `VISIBLE_ACCEPTANCE_REVIEW_2026-06-01.md`, `PUBLIC_LAUNCH_REVIEW_2026-06-06.md`, `PUBLIC_RELEASE_CHECKLIST.md`, `LANGUAGE_COMPATIBILITY.md`, `FIRESEED_OUTREACH_KIT.md`, `FIRESEED_ALPHA_PLAN.md`, `FIRESEED_READINESS_GATE.md`, `FIRESEED_LAUNCH_DECISION_2026-06-01.md`, `IMPLEMENTATION_STATUS.md`, `CALL_FOR_FIRESEED_REVIEW.md`, `CONTRIBUTING.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `S2_THIRD_PARTY_MATERIAL_MODEL.md`, `PACKAGE_HEALTH_LAYER.md`, `COMMERCIAL_FIT_LAYER.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, operating model, design rationale, visible acceptance flow, public launch consistency review, public release gate, language compatibility, Fireseed outreach kit, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, S2 third-party material model, package health model, commercial-fit model, real-world evidence profile, product/service credential direction, implementation map, executable scenario audit, and document map.
 
+Protocol evolution is governed by `PROTOCOL_EVOLUTION_POLICY.md`: old adopter packages should remain verifiable under the schema, signatures, hashes, root authority, and verification rules that created them. Newer OrgAnchor versions may expose legacy gaps, but they must not retroactively erase valid historical snapshots.
+
 The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DISCOVERY_TAXONOMY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
 
 OrgAnchor does not issue organization IDs or require official Directory inclusion. Any organization can adopt the standard by publishing a verifiable origin-owned package; Directory nodes are discovery aids with no protocol privilege.
@@ -400,6 +402,7 @@ Operator-facing adoption and verification documents:
 - `CURRENT_PROJECT_STATE_2026-07-02.md`
 - `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`
 - `PROJECT_NORTH_STAR.md`
+- `PROTOCOL_EVOLUTION_POLICY.md`
 - `PURPOSE_AND_VALUES.md`
 - `ADOPTER_QUICKSTART.md`
 - `ADOPTION_PRINCIPLES.md`

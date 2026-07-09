@@ -90,6 +90,7 @@ If you are reviewing how the project is operated by a human owner and AI executi
 - `PROJECT_NORTH_STAR.md`: active alignment gate for keeping features focused on lower-friction discovery, verification, understanding, and non-monopolistic trust decisions.
 - `DESIGN_RATIONALE.md`: system-level explanation of why OrgAnchor's layers should reduce discovery, verification, understanding, and transaction-friction costs without making OrgAnchor a final trust authority.
 - `AI_OPERATING_MODEL.md`: project operating model for AI-assisted execution, owner decision gates, feedback intake, anti-drift controls, and security boundaries. This is not part of the OrgAnchor verification protocol.
+- `PROTOCOL_EVOLUTION_POLICY.md`: accepted policy for schema/version evolution, legacy verification, historical package preservation, and migration without retroactively invalidating old adopter records.
 - `PROJECT_BRIEF.md`: original project brief and positioning.
 - `PRODUCT_SHAPE.md`: accepted product surfaces: core library, CLI, future local-first studio, and adopting-organization `/verify` page.
 - `ARCHITECTURE.md`: layered trust model and implementation structure.
@@ -109,6 +110,7 @@ If you are reviewing how the project is operated by a human owner and AI executi
 - `PILOT_MINIMAL_PATH.md`: narrow Fireseed Alpha external pilot path before using the full runbook.
 - `EXTERNAL_PILOT_RUNBOOK.md`: shortest repeatable path for the first low-risk external organization pilot.
 - `ROOT_AUTHORITY_CUSTODY_GUIDE.md`: root authority custody, loss, compromise, and governance guidance.
+- `PROTOCOL_EVOLUTION_POLICY.md`: protocol evolution and legacy-verification rules for adopters that need old snapshots to remain historically verifiable.
 - `MIGRATION_GUIDE.md`: root authority migration and historical continuity runbook.
 - `PUBLISHING_GUIDE.md`: website, IPFS, Arweave, OpenTimestamps, and publishing limits.
 - `DOMAIN_HARDENING_GUIDE.md`: traditional domain audit and hardening guidance.

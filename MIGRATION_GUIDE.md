@@ -66,6 +66,9 @@ historical statement
 
 current statement
   A statement signed after migration. It should verify against the new authority.
+
+historical package
+  A dated /verify package produced under a specific OrgAnchor schema and protocol version. It should remain verifiable under that version even if newer OrgAnchor guidance becomes stronger.
 ```
 
 ## Migration Principle
@@ -86,6 +89,8 @@ It does not prove:
 - The content of future claims is true.
 
 OrgAnchor records and verifies the continuity chain. It does not replace governance judgment.
+
+Protocol evolution follows the same continuity principle. If OrgAnchor later introduces a stronger schema or evidence model, older public packages are not erased by the newer rules. They should be preserved and evaluated as legacy-but-verifiable when their original hashes, signatures, root authority, and schema-specific checks still pass.
 
 ## Current v1 Capability
 
@@ -126,6 +131,7 @@ During migration:
 After migration:
 
 - Keep old authority records available for historical verification.
+- Keep old verify packages available by stable dated or versioned paths when practical.
 - Keep migration statements available beside current verification artifacts.
 - Sign new official statements with the new authority.
 - Archive the migration statement and signature after final review.
@@ -154,9 +160,13 @@ statements/official-endpoints.json
 statements/official-endpoints.json.sig
 public/verify/migrations/migration-2027-001.json
 public/verify/migrations/migration-2027-001.json.sig
+public/verify/2026-07-09/index.html
+public/verify/2026-07-09/organchor-verify-index.json
 ```
 
 After a real migration, `root-authority.json` may point to the current authority, but the old authority must remain available by stable historical filename.
+
+After a major OrgAnchor package-shape change, `/verify/` may point to the current package, while older snapshots remain available under dated or versioned paths such as `/verify/2026-07-09/`.
 
 ## Standard Migration Flow
 

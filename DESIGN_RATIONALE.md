@@ -71,7 +71,7 @@ To reduce real transaction cost, the system needs these properties.
 | Commercial-fit routing | Price, lead time, MOQ, quote validity, and region can decide whether deeper review is worth doing. |
 | Anti-capture discovery | Directories can help discovery, but the protocol must work without one official gatekeeper. |
 | Agent-readable outputs | AI agents need stable, compact, machine-readable results instead of human-only pages. |
-| Evolvability | Keys, algorithms, carriers, evidence profiles, and discovery routes must improve without erasing history. |
+| Evolvability | Keys, algorithms, carriers, evidence profiles, and discovery routes must improve without erasing history or retroactively invalidating old adopter packages. |
 
 OrgAnchor's layers exist because each property covers a specific failure mode.
 
@@ -451,9 +451,19 @@ historical statements remain verified by the authority that signed them
 future statements verify against the current authority
 ```
 
+OrgAnchor also treats public adopter packages as versioned historical snapshots. A future protocol version may expose new gaps in an old package, but it must not mark a previously valid package as invalid merely because the new version expects stronger evidence, richer agent output, or a different optional carrier model.
+
 ### Effect
 
 The organization can evolve from a small founder-controlled key to a multi-person threshold authority without erasing the previous chain.
+
+An older package can remain historically meaningful as:
+
+```text
+valid under the OrgAnchor schema and verification rules that signed it
+```
+
+even if the current recommended package shape is stronger.
 
 ### Limit
 
@@ -555,6 +565,8 @@ every future cryptographic assumption will remain strong forever
 These are external policy, operational, market, legal, scientific, or governance questions.
 
 OrgAnchor's role is to make the facts, claims, signatures, gaps, receipts, and routes easier to inspect.
+
+For schema and protocol evolution, the project follows `PROTOCOL_EVOLUTION_POLICY.md`: new versions can add stronger checks and clearer gap visibility, but historical adopter packages must remain verifiable under their original version-specific rules when those rules are supported.
 
 ## Why This Can Lower Transaction Cost
 

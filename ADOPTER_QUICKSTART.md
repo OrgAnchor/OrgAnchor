@@ -154,6 +154,8 @@ Also expose:
 
 The website is not the identity root. It is the easiest discovery carrier.
 
+After the first public package is published, treat it as a versioned adoption snapshot. If OrgAnchor later changes package shape or schema expectations, preserve the old package under a dated path such as `/verify/2026-07-09/`, publish the new package at `/verify/`, and use migration or continuity records when the root authority or package lineage changes. See `PROTOCOL_EVOLUTION_POLICY.md`.
+
 ## 6. Run Local And Public Verification
 
 Local package check:

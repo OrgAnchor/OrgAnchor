@@ -96,6 +96,23 @@ New provider receipts, evidence categories, policy hints, or model-facing summar
 
 Agents must be able to ignore unknown fields and still verify identity continuity.
 
+### Legacy Verification
+
+Agent compatibility also includes historical packages.
+
+A newer verifier should not treat a known older package as failed only because it lacks fields introduced later. It should verify the package under its original schema and report a legacy/gap-bearing status when appropriate.
+
+Recommended future routing statuses include:
+
+```text
+LEGACY_BUT_VERIFIABLE
+LEGACY_WITH_GAPS
+UNSUPPORTED_VERSION
+INVALID_OR_TAMPERED
+```
+
+`UNSUPPORTED_VERSION` means the verifier cannot safely evaluate that version. It is different from `INVALID_OR_TAMPERED`, which means a supported package failed hash, signature, schema, root authority, or required-artifact checks.
+
 ## Iteration Metrics
 
 Each agent-compatibility change should be judged against these metrics:
@@ -138,6 +155,9 @@ false_negative_risk down
 7. Unknown fields must be safe to ignore.
 8. Provider carriers such as domains, IPFS, Arweave, ENS, Onion, Cloudflare, GitHub, or NPM must never become the identity root.
 9. `policy_route` must remain a routing hint owned by the external agent, not a final trust decision assigned by OrgAnchor.
+10. Known older adopter package versions should remain verifiable under version-specific logic when practical.
+11. Unsupported future or unknown versions must fail closed as unsupported rather than be guessed into compatibility.
+12. New evidence expectations may create gap warnings for legacy packages, but must not retroactively turn valid historical signatures into tamper failures.
 
 ## Test Fixtures
 

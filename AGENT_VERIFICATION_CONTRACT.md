@@ -23,6 +23,30 @@ Chinese terms used in product discussions:
 
 OrgAnchor does not assign the final trust decision. It exposes signed identity continuity, evidence structure, visible gaps, and machine-readable findings so the external agent can apply its own policy.
 
+## Version And Legacy Behavior
+
+Agent-facing verification must distinguish version evolution from tampering.
+
+A known older OrgAnchor package should be verified under the schema and verification rules that created it. If it passes those checks but lacks newer optional capabilities, a newer verifier should report a legacy or gap-bearing status rather than treating it as invalid.
+
+Recommended interpretation:
+
+```text
+LEGACY_BUT_VERIFIABLE
+  The package verifies under an older known version.
+
+LEGACY_WITH_GAPS
+  The package verifies under an older known version but lacks newer evidence, discovery, or agent-output capabilities.
+
+UNSUPPORTED_VERSION
+  The verifier cannot safely evaluate this version.
+
+INVALID_OR_TAMPERED
+  A supported package failed hash, signature, schema, root authority, or required-artifact checks.
+```
+
+This keeps historical adopter snapshots useful while still letting agents see that newer packages may provide stronger evidence or lower verification cost.
+
 ## Non-Goal
 
 OrgAnchor must not become a self-awarded trust badge.

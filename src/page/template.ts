@@ -785,6 +785,11 @@ export function renderVerifyPage(model: VerifyPageModel): string {
       border-radius: 4px;
     }
 
+    :not(pre) > code {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
     pre {
       overflow-x: auto;
       padding: 16px;

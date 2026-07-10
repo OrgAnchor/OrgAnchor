@@ -105,6 +105,7 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(html, /display does not by itself prove identity/);
     assert.match(html, /rel="organchor"/);
     assert.match(html, /application\/ld\+json/);
+    assert.match(html, /:not\(pre\) > code \{[\s\S]*?overflow-wrap: anywhere;[\s\S]*?word-break: break-word;/);
 
     const index = JSON.parse(readFileSync(join(verifyDir, "organchor.json"), "utf8"));
     assert.equal(index.type, "OrgAnchorVerifyIndex");

@@ -69,6 +69,8 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(html, /Carrier Receipts/);
     assert.match(html, /Lockfile Integrity/);
     assert.match(html, /publication receipt ledger/);
+    assert.match(html, /The table shows only the latest receipt for each provider/);
+    assert.match(html, /the complete signed history remains in/);
     assert.match(html, /organchor\.lock\.json/);
     assert.match(html, /organchor lockfile verify/);
     assert.match(html, /ipfs-pinata/);

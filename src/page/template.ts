@@ -217,15 +217,23 @@ export function renderVerifyPage(model: VerifyPageModel): string {
         </li>`
     )
     .join("\n");
-  const carrierRows = model.carrierReceipts
+  const carrierGroups = Array.from(groupCarrierReceiptsByProvider(model.carrierReceipts).entries())
+    .map(([provider, receipts]) => ({
+      provider,
+      receipts,
+      latest: receipts.reduce((current, receipt) => receipt.recordedAt > current.recordedAt ? receipt : current)
+    }))
+    .sort((left, right) => right.latest.recordedAt.localeCompare(left.latest.recordedAt));
+  const carrierRows = carrierGroups
     .map(
-      (receipt) => `
+      ({ provider, receipts, latest }) => `
         <tr>
-          <th scope="row">${escapeHtml(receipt.provider)}</th>
-          <td><span class="badge badge-${escapeHtml(cssClass(receipt.status))}">${escapeHtml(receipt.status)}</span></td>
-          <td>${escapeHtml(receipt.action)}<br>${escapeHtml(receipt.artifactKind)}<br><code>${escapeHtml(receipt.artifactHash)}</code></td>
-          <td>${renderCarrierSummary(receipt.summary)}</td>
-          <td>${escapeHtml(receipt.recordedAt)}</td>
+          <th scope="row">${escapeHtml(provider)}</th>
+          <td>${escapeHtml(String(receipts.length))}</td>
+          <td><span class="badge badge-${escapeHtml(cssClass(latest.status))}">${escapeHtml(latest.status)}</span></td>
+          <td>${escapeHtml(latest.action)}<br>${escapeHtml(latest.artifactKind)}<br><code>${escapeHtml(latest.artifactHash)}</code></td>
+          <td>${renderCarrierSummary(latest.summary)}</td>
+          <td>${escapeHtml(latest.recordedAt)}</td>
         </tr>`
     )
     .join("\n");
@@ -995,14 +1003,16 @@ ${keyTerms}
       <p>The lockfile is the publication receipt ledger. A signed lockfile snapshot makes receipt history tamper-evident: changing a receipt, timestamp, CID, TX id, or artifact hash changes the lockfile hash and breaks the signature check.</p>
       <p><span class="badge badge-${escapeHtml(cssClass(lockfileIntegrity.status))}">${escapeHtml(lockfileIntegrity.status)}</span></p>
       ${lockfileLinks}
+      ${carrierRows ? `<p>Human summary: ${escapeHtml(String(model.carrierReceipts.length))} receipt(s) across ${escapeHtml(String(carrierGroups.length))} provider(s). The table shows only the latest receipt for each provider; the complete signed history remains in <a href="./${escapeHtml(lockfileIntegrity.path ?? "organchor.lock.json")}">the lockfile</a> for tools and AI agents.</p>` : ""}
       ${carrierRows ? `<table>
         <thead>
           <tr>
             <th scope="col">Provider</th>
-            <th scope="col">Status</th>
-            <th scope="col">Artifact</th>
-            <th scope="col">Receipt summary</th>
-            <th scope="col">Recorded at</th>
+            <th scope="col">Records</th>
+            <th scope="col">Latest status</th>
+            <th scope="col">Latest artifact</th>
+            <th scope="col">Latest receipt summary</th>
+            <th scope="col">Latest recorded at</th>
           </tr>
         </thead>
         <tbody>
@@ -1177,6 +1187,16 @@ function renderCarrierSummary(summary: Record<string, JsonValue>): string {
   return entries
     .map(([key, value]) => `<div><strong>${escapeHtml(key)}:</strong> ${escapeHtml(formatJsonValue(value))}</div>`)
     .join("");
+}
+
+function groupCarrierReceiptsByProvider(receipts: VerifyCarrierReceipt[]): Map<string, VerifyCarrierReceipt[]> {
+  const groups = new Map<string, VerifyCarrierReceipt[]>();
+  for (const receipt of receipts) {
+    const group = groups.get(receipt.provider) ?? [];
+    group.push(receipt);
+    groups.set(receipt.provider, group);
+  }
+  return groups;
 }
 
 function formatJsonValue(value: JsonValue): string {

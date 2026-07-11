@@ -148,6 +148,8 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(index.agent_review.value_status, "WARN");
     assert.equal(index.agent_review.conformance_status, "PARTIAL");
     assert.equal(index.agent_review.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
+    assert.equal(index.agent_review.status_scope.value_status, "REPORT_INTEGRITY_AND_DECLARED_RELATION_CHECKS");
+    assert.equal(index.agent_review.status_scope.evidence_sufficiency, "EXTERNAL_POLICY_DECISION");
     assert.equal(index.agent_review.policy_route.route, "REVIEW_VALUE_WARNINGS");
     assert.equal(index.agent_review.evidence_class_summary.some((item: { label: string }) => item.label === "S1 First-party"), true);
     assert.equal(index.agent_review.evidence_class_summary.some((item: { label: string }) => item.label === "S3 Sampling"), true);

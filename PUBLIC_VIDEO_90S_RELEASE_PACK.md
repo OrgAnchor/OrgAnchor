@@ -1,31 +1,22 @@
 # OrgAnchor 90-Second Concept Video Release Pack
 
-Status: Rendered local draft asset pack for OrgAnchor as CivitasX Project 01.
+Status: Rendered local draft asset pack for OrgAnchor. Not approved for public upload.
 
 ## Purpose
 
-This pack supports the OrgAnchor Project 01 public release action:
+This pack supports a future OrgAnchor public video action:
 
 ```text
-Publish a 90-second OrgAnchor concept video after CivitasX parent-channel context is established.
+Publish a 90-second OrgAnchor concept video only after the OrgAnchor video quality gate is met.
 ```
 
 The video should explain the problem and direction, not sell OrgAnchor as finished infrastructure.
 
-## Parent-Channel Boundary
+## Distribution Boundary
 
-OrgAnchor is Project 01 under CivitasX.
+This pack remains an OrgAnchor-owned video source package. OrgAnchor does not depend on a CivitasX parent-channel launch. CivitasX may later cross-share the finished video with broader portfolio context, but that is a distribution choice rather than a release prerequisite or protocol relationship.
 
-Do not publish the current local draft as the first public CivitasX channel video.
-The CivitasX channel should first establish the parent frame, then publish the
-OrgAnchor video as:
-
-```text
-CivitasX Project 01: OrgAnchor
-```
-
-This pack remains the OrgAnchor-owned video source package. CivitasX controls
-the parent-channel order and cross-project framing.
+Do not publish the current local draft merely because the assets exist. Voice, pacing, visual hierarchy, captions, claims, and linked public verification paths must pass the separate video quality gate first.
 
 ## Generated Draft Assets
 

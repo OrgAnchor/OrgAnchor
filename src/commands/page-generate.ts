@@ -271,6 +271,13 @@ export async function pageGenerateCommand(options: Record<string, string | boole
       value_status: agentReview.valueStatus,
       conformance_status: agentReview.conformanceStatus,
       trust_decision: agentReview.trustDecision,
+      status_scope: {
+        identity_status: "CRYPTOGRAPHIC_AUTHORITY_AND_CONTINUITY",
+        value_status: "REPORT_INTEGRITY_AND_DECLARED_RELATION_CHECKS",
+        conformance_status: "ORGANCHOR_PROTOCOL_COMPATIBILITY",
+        evidence_sufficiency: "EXTERNAL_POLICY_DECISION",
+        claim_truth: "NOT_PROVEN_BY_ORGANCHOR_STATUS"
+      },
       policy_route: {
         route: agentReview.policyRoute.route,
         guidance: agentReview.policyRoute.guidance,

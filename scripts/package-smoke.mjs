@@ -70,6 +70,7 @@ try {
   assertContains(copiedFiles, "SPONSOR_LETTER.md");
   assertContains(copiedFiles, "FIRESEED_VALIDATION_TRACKING_ISSUE.md");
   assertContains(copiedFiles, "FIRESEED_LAUNCH_DECISION_2026-06-01.md");
+  assertContains(copiedFiles, "FIRESEED_ALPHA4_LOCAL_CONVERGENCE_2026-07-11.md");
   assertContains(copiedFiles, "FIRESEED_READINESS_GATE.md");
   assertContains(copiedFiles, "PROJECT_NORTH_STAR.md");
   assertContains(copiedFiles, "ARCHITECTURE.md");
@@ -102,6 +103,13 @@ try {
   assertContains(copiedFiles, join("examples", "complete", "statements", "official-endpoints.json.sig"));
   assertContains(copiedFiles, join("src", "schema", "directory-snapshot.schema.json"));
   assertContains(copiedFiles, join("src", "schema", "official-endpoints.schema.json"));
+  assertNotContainsPrefix(copiedFiles, "public-assets/");
+
+  const packageBytes = copiedFiles.reduce((total, file) => total + statSync(file).size, 0);
+  const packageBudgetBytes = 4 * 1024 * 1024;
+  if (packageBytes > packageBudgetBytes) {
+    throw new Error(`Simulated package exceeds ${packageBudgetBytes} byte budget: ${packageBytes}`);
+  }
 
   const forbiddenPatterns = [
     /(^|[\\/])node_modules([\\/]|$)/,
@@ -268,6 +276,7 @@ try {
 
   console.log("Package smoke PASS");
   console.log(`Simulated package files: ${copiedFiles.length}`);
+  console.log(`Simulated package bytes: ${packageBytes}`);
   console.log(`Package directory: ${packageDir}`);
 } finally {
   const resolved = resolve(workspace);
@@ -319,6 +328,16 @@ function assertContains(files, relative) {
   const normalized = relative.replaceAll("\\", "/");
   if (!files.some((file) => relativePath(packageDir, file).replaceAll("\\", "/") === normalized)) {
     throw new Error(`Simulated package is missing ${relative}`);
+  }
+}
+
+function assertNotContainsPrefix(files, prefix) {
+  const normalized = prefix.replaceAll("\\", "/");
+  const match = files
+    .map((file) => relativePath(packageDir, file).replaceAll("\\", "/"))
+    .find((relative) => relative.startsWith(normalized));
+  if (match) {
+    throw new Error(`Simulated package unexpectedly includes ${match}`);
   }
 }
 

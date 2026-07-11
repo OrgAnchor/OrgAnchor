@@ -12,7 +12,7 @@ Milestone definition:
 
 ```text
 Stage 3 = self-pilot ready
-Stage 5 = v1 complete
+Stage 5 = v1 functional scope complete; stable v1 remains a separate release decision
 ```
 
 The self-pilot does not mean OrgAnchor v1 is complete.

@@ -151,12 +151,12 @@ test("90-second public video release pack is publishable without overclaiming", 
   const chineseCaptions = readText("public-assets/video-90s/organchor-90s.zh-Hans.srt");
   const packageJson = JSON.parse(readText("package.json")) as { files?: string[] };
 
-  assert.equal(packageJson.files?.includes("public-assets/"), true);
+  assert.equal(packageJson.files?.includes("public-assets/"), false);
 
   for (const phrase of [
-    "Rendered local draft asset pack for OrgAnchor as CivitasX Project 01",
-    "Publish a 90-second OrgAnchor concept video after CivitasX parent-channel context is established",
-    "CivitasX Project 01: OrgAnchor",
+    "Rendered local draft asset pack for OrgAnchor",
+    "Publish a 90-second OrgAnchor concept video only after the OrgAnchor video quality gate is met",
+    "OrgAnchor does not depend on a CivitasX parent-channel launch",
     "OrgAnchor is Fireseed Alpha, not stable v1",
     "OrgAnchor is not a trust badge",
     "Recommended Title",

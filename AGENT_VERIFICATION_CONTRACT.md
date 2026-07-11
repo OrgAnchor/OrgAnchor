@@ -304,6 +304,13 @@ These checks do not prove product quality by themselves. They reduce the cost of
   "identity_status": "PASS",
   "value_status": "PASS",
   "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+  "status_scope": {
+    "identity_status": "CRYPTOGRAPHIC_AUTHORITY_AND_CONTINUITY",
+    "value_status": "REPORT_INTEGRITY_AND_DECLARED_RELATION_CHECKS",
+    "conformance_status": "ORGANCHOR_PROTOCOL_COMPATIBILITY",
+    "evidence_sufficiency": "EXTERNAL_POLICY_DECISION",
+    "claim_truth": "NOT_PROVEN_BY_ORGANCHOR_STATUS"
+  },
   "evidence_summary": {
     "claims": "PASS",
     "evidence": "PASS",
@@ -406,6 +413,13 @@ These checks do not prove product quality by themselves. They reduce the cost of
   "identity_status": "PASS",
   "value_status": "PASS",
   "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+  "status_scope": {
+    "identity_status": "CRYPTOGRAPHIC_AUTHORITY_AND_CONTINUITY",
+    "value_status": "REPORT_INTEGRITY_AND_DECLARED_RELATION_CHECKS",
+    "conformance_status": "ORGANCHOR_PROTOCOL_COMPATIBILITY",
+    "evidence_sufficiency": "EXTERNAL_POLICY_DECISION",
+    "claim_truth": "NOT_PROVEN_BY_ORGANCHOR_STATUS"
+  },
   "policy_route": {
     "route": "EXTERNAL_POLICY_REVIEW",
     "policy_owner": "EXTERNAL_AGENT",
@@ -418,10 +432,13 @@ These checks do not prove product quality by themselves. They reduce the cost of
 The result separates:
 
 - `identity_status`: cryptographic and root-authority verification.
-- `value_status`: claims/evidence/value-continuity review surface.
+- `value_status`: integrity and declared-relation checks for the claims/evidence/value-continuity report. `PASS` does not mean that evidence is sufficient or that a claim is true.
 - `overall_status`: CLI summary for automation.
 - `trust_decision`: always not assigned by OrgAnchor.
 - `policy_route`: a non-binding routing hint for the external agent's own policy.
+- `status_scope`: machine-readable limits for interpreting each status. Evidence sufficiency remains an external policy decision, and OrgAnchor status does not prove claim truth.
+
+For older value reports that do not contain current claim-level support details, the verifier must remain conservative: expose the missing detail as a risk gap, preserve visible manual-check and first-party-only limitations, and recommend regenerating the report. Legacy verification must not turn absent fields into an apparent zero-risk result.
 
 External agents should treat this result as input, not as the final answer.
 

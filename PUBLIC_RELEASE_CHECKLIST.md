@@ -104,14 +104,14 @@ changing project purpose, misuse boundaries, or trust-authority boundaries.
 Use this order unless there is a specific reason to deviate:
 
 ```text
-1. Keep GitHub repository, README, public explainer, docs index, and package checks green.
-2. Publish the 90-second concept video.
-3. Publish the 6-8 minute visible demo video.
-4. Publish the deck or deck PDF.
-5. Open the Fireseed Wave 1 GitHub tracking issue.
-6. Invite a small named batch of reviewers.
-7. Open sponsorship only if there is clear support interest or a concrete funding need for the validation wave.
-8. Record external feedback, failures, and roadmap changes before wider promotion.
+1. Align the source version, installable npm candidate, public `/verify` package, Agent contract, and release notes.
+2. Keep GitHub repository, README, public explainer, docs index, and package checks green.
+3. Keep the existing Fireseed Wave 1 GitHub issue as the canonical feedback record.
+4. Publish the Bluesky discussion thread after the release-alignment gate passes.
+5. Publish the LinkedIn post and invite a small named batch of reviewers.
+6. Record external feedback, failures, and roadmap changes before wider promotion.
+7. Publish the concept video, visible demo video, or deck only after each asset passes its own quality gate.
+8. Open sponsorship only if there is clear support interest or a concrete funding need for the validation wave.
 ```
 
 ## Hold Criteria

@@ -1,14 +1,14 @@
 # Public Feedback Chain Plan
 
-Status: Active Project 01 public feedback strategy.
+Status: Active OrgAnchor public feedback strategy.
 
 ## Purpose
 
-This plan defines where the first OrgAnchor Project 01 public feedback wave should be published and why.
+This plan defines where the first OrgAnchor public feedback wave should be published and why.
 
 The goal is not maximum traffic. The goal is high-quality public feedback that can be traced, summarized, turned into issues, and used to improve Fireseed Alpha.
 
-OrgAnchor is Project 01 under CivitasX, but the first feedback wave can start from GitHub before the public video is finalized. The video path remains useful, but it is not a blocker for the first validation call.
+OrgAnchor can be cross-shared through CivitasX, but its first feedback wave is independently anchored in the OrgAnchor repository, public self-pilot, official domain, and review issue. A CivitasX post or public video may add context later; neither is a prerequisite for the first validation call.
 
 ## First-Wave Platform Roles
 

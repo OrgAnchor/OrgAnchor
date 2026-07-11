@@ -1,6 +1,6 @@
 # Public Posts: Fireseed Wave 1
 
-Status: Copyable Project 01 first-wave public post drafts.
+Status: Copyable OrgAnchor first-wave public post drafts.
 
 Use for the first GitHub-issue-led public feedback wave. This version does not require a YouTube video.
 

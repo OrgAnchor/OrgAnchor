@@ -14,10 +14,11 @@ Key milestone definitions:
 
 ```text
 Stage 3 = self-pilot ready
-Stage 5 = v1 complete
+Stage 5 = v1 functional scope complete
+Stable v1 release = Stage 5 scope + release consistency + external validation decision
 ```
 
-Stage 3 means OrgAnchor can use itself as the first public pilot. Stage 5 means the first complete v1 scope is finished.
+Stage 3 means OrgAnchor can use itself as the first public pilot. Stage 5 means the accepted v1 functional scope is covered. It does not by itself declare a stable v1 release; packaging consistency, public compatibility, operator usability, and external validation still inform that separate release decision.
 
 ## Stage 0: Foundation Documents
 
@@ -440,7 +441,7 @@ Pilot status:
 
 ## V1 Completion Definition
 
-OrgAnchor v1 is complete when Stages 1 through 5 meet their exit criteria.
+OrgAnchor's v1 functional scope is complete when Stages 1 through 5 meet their exit criteria. A stable v1 release is a separate maturity decision governed by release consistency and external validation evidence.
 
 v1 is not complete if it only signs and verifies a statement.
 

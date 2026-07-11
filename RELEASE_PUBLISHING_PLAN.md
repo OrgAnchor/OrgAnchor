@@ -1,8 +1,8 @@
 # OrgAnchor Release Publishing Plan
 
-Status: Operator plan for the `0.1.0-alpha.3` MVP launch candidate, with `0.1.0-alpha.1` kept as the published baseline.
+Status: Operator plan for the local `0.1.0-alpha.4` Fireseed release-convergence candidate, with `0.1.0-alpha.3` as the current published Alpha baseline.
 
-Last checked: 2026-05-25.
+Last checked: 2026-07-11.
 
 ## Current Readiness
 
@@ -10,7 +10,7 @@ The package is buildable and installable locally:
 
 ```text
 package name: organchor
-candidate version: 0.1.0-alpha.3
+candidate version: 0.1.0-alpha.4
 default publish tag: alpha
 public registry: https://registry.npmjs.org/
 source repository: https://github.com/OrgAnchor/OrgAnchor
@@ -26,13 +26,25 @@ npm publish --dry-run --tag alpha
 
 For `0.1.0-alpha.2` and later, run the release integrity gate in `RELEASE_INTEGRITY.md` before npm publishing or GitHub release creation. The gate keeps source state, public `/verify` state, carrier receipts, package metadata, and release notes aligned.
 
-Current `0.1.0-alpha.3` candidate status:
+Published `0.1.0-alpha.3` baseline status:
 
 ```text
 node --run release:check: PASS
 npm pack --dry-run: PASS
 npm publish --dry-run --tag alpha: PASS
 npm publish --tag alpha: PASS through GitHub Actions Trusted Publishing
+```
+
+Local `0.1.0-alpha.4` candidate status:
+
+```text
+version prepared locally: YES
+package media exclusion and size budget: PASS
+focused Agent compatibility tests: PASS
+full release:check: PASS (157 tests; release, package, and install smoke PASS)
+npm publish: NOT RUN
+Git tag or GitHub release: NOT CREATED
+public self-pilot deployment: NOT UPDATED
 ```
 
 Published baseline:
@@ -153,7 +165,7 @@ npm publish --dry-run --tag alpha
 Confirm:
 
 - Package name is `organchor`.
-- Version is `0.1.0-alpha.3`.
+- Version is `0.1.0-alpha.4`.
 - Tag is `alpha`, not `latest`.
 - `RELEASE_INTEGRITY.md` has been reviewed for the target release.
 - File list excludes private keys, provider tokens, wallets, payment data, Cloudflare handoff docs, self-pilot operational notes, and local secret files.
@@ -163,8 +175,8 @@ Confirm:
 After the source repository is pushed:
 
 ```bash
-git tag v0.1.0-alpha.3
-git push origin v0.1.0-alpha.3
+git tag v0.1.0-alpha.4
+git push origin v0.1.0-alpha.4
 ```
 
 Draft a GitHub Release using `CHANGELOG.md` as the base release notes.
@@ -211,17 +223,16 @@ Environment name: leave blank
 Allowed action: npm publish
 ```
 
-After the npm website configuration is complete, publish `0.1.0-alpha.3` from GitHub Actions:
+After owner approval and source publication, the preferred aligned release path is the `v0.1.0-alpha.4` tag push described above. The current workflow automatically publishes npm when that tag is pushed.
 
-```bash
-gh workflow run publish-npm.yml \
-  --repo OrgAnchor/OrgAnchor \
-  --ref main \
-  -f expected_version=0.1.0-alpha.3 \
-  -f publish_tag=alpha
+```text
+push v0.1.0-alpha.4 once
+-> GitHub Actions runs release checks
+-> GitHub Actions publishes organchor@0.1.0-alpha.4 under alpha
+-> operator verifies npm before creating or finalizing the GitHub prerelease
 ```
 
-Manual `alpha` publishing remains an emergency fallback only if the npm account uses 2FA and the package is dry-run checked first.
+Do not also run `workflow_dispatch` after pushing the tag; npm versions are immutable and the second publish would fail as a duplicate. Manual dispatch remains a recovery path only when the tag-triggered route was not used and the operator has checked that no publication already occurred.
 
 ## Human Approval Gates
 
@@ -231,6 +242,7 @@ Pause for explicit human approval before:
 - Entering npm credentials or 2FA.
 - Creating a public GitHub repository under a permanent owner.
 - Running real `npm publish`.
+- Pushing a `v*` Git tag. The current workflow treats that push as an npm publication trigger.
 - Moving any version to the `latest` dist-tag.
 
 ## References

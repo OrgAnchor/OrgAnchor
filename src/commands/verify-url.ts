@@ -38,6 +38,7 @@ export interface AgentVerificationResult {
   value_status: "PASS" | "WARN" | "NOT_INCLUDED";
   conformance_status: AgentConformanceStatus;
   trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
+  status_scope: AgentStatusScope;
   discovery_signal: AgentDiscoverySignal;
   organization: JsonValue;
   identity: Record<string, JsonValue>;
@@ -57,6 +58,7 @@ export interface AgentVerificationCompactResult {
   value_status: "PASS" | "WARN" | "NOT_INCLUDED";
   conformance_status: AgentConformanceStatus;
   trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
+  status_scope: AgentStatusScope;
   organization: {
     name: string;
     display_name?: string;
@@ -138,6 +140,14 @@ export interface AgentVerificationCompactResult {
   failures: string[];
   warnings: string[];
   next_step: string;
+}
+
+export interface AgentStatusScope {
+  identity_status: "CRYPTOGRAPHIC_AUTHORITY_AND_CONTINUITY";
+  value_status: "REPORT_INTEGRITY_AND_DECLARED_RELATION_CHECKS";
+  conformance_status: "ORGANCHOR_PROTOCOL_COMPATIBILITY";
+  evidence_sufficiency: "EXTERNAL_POLICY_DECISION";
+  claim_truth: "NOT_PROVEN_BY_ORGANCHOR_STATUS";
 }
 
 export type AgentPolicyRouteName =
@@ -321,6 +331,7 @@ export async function verifyUrlTarget(
     value_status: valueStatus,
     conformance_status: conformanceStatus,
     trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR",
+    status_scope: statusScope(),
     discovery_signal: index.signal,
     organization: statement.organization,
     identity: {
@@ -349,6 +360,41 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
   const s2Summary = optionalRecord(valueContinuity.s2_summary);
   const s3Summary = optionalRecord(valueContinuity.s3_summary);
   const s4Summary = optionalRecord(valueContinuity.s4_summary);
+  const manualChecks = numberValue(summary.MANUAL_CHECK_REQUIRED);
+  const totalClaims = numberValue(summary.total_claims);
+  const firstPartyEvidenceItems = numberValue(summary.first_party_evidence_items);
+  const thirdPartyClaims = numberValue(summary.third_party_claims);
+  const compactSupportLevels = compactClaimSupportLevels(claimSupportLevels);
+  const supportLevelTotal = Object.values(compactSupportLevels).reduce((total, count) => total + count, 0);
+  const riskGaps = arrayStrings(claimSupportSummary.top_risk_gaps);
+  const nextBestActions = arrayStrings(claimSupportSummary.next_best_actions);
+  let riskGapCount = numberValue(claimSupportSummary.risk_gap_count);
+
+  const addRiskGap = (gap: string): void => {
+    if (riskGaps.includes(gap)) return;
+    riskGaps.push(gap);
+    riskGapCount += 1;
+  };
+  const addNextAction = (action: string): void => {
+    if (!nextBestActions.includes(action)) nextBestActions.push(action);
+  };
+
+  if (manualChecks > 0) {
+    addRiskGap(`Evidence includes ${manualChecks} manual check(s).`);
+    addNextAction("Complete or route the remaining manual evidence checks before relying on the claims.");
+  }
+  if (totalClaims > 0 && thirdPartyClaims === 0 && firstPartyEvidenceItems > 0) {
+    addRiskGap("Only first-party evidence is linked.");
+    addNextAction("Add an independent attestation or external evidence source for the exact claim when the decision requires independence.");
+  }
+  if (totalClaims > 0 && supportLevelTotal === 0) {
+    addRiskGap("Claim-level support details are unavailable in this report.");
+    addNextAction("Regenerate the value report with the current OrgAnchor CLI to expose claim-level support details.");
+  }
+
+  const compactS2 = compactS2Summary(s2Summary);
+  const compactS3 = compactS3Summary(s3Summary);
+  const compactS4 = compactS4Summary(s4Summary);
 
   return {
     type: "OrgAnchorAgentVerificationCompactResult",
@@ -359,6 +405,7 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
     value_status: result.value_status,
     conformance_status: result.conformance_status,
     trust_decision: result.trust_decision,
+    status_scope: result.status_scope,
     organization: compactOrganization(organization),
     root_authority_hash: String(result.identity.root_authority_hash ?? ""),
     statement_hash: String(result.identity.statement_hash ?? ""),
@@ -368,19 +415,19 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
       value: checkStatus(result.checks, "value_continuity"),
       unsupported_claims: numberValue(summary.unsupported_claims),
       total_evidence_items: numberValue(summary.total_evidence_items),
-      third_party_claims: numberValue(summary.third_party_claims),
+      third_party_claims: thirdPartyClaims,
       reproducible_claims: numberValue(summary.reproducible_claims),
-      manual_checks: numberValue(summary.MANUAL_CHECK_REQUIRED),
+      manual_checks: manualChecks,
       profile_declared_claims: numberValue(summary.profile_declared_claims),
       profile_pass_claims: numberValue(summary.profile_pass_claims),
       profile_gap_claims: numberValue(summary.profile_gap_claims),
-      claim_support_levels: compactClaimSupportLevels(claimSupportLevels),
-      risk_gaps: numberValue(claimSupportSummary.risk_gap_count),
-      top_risk_gaps: arrayStrings(claimSupportSummary.top_risk_gaps),
-      next_best_actions: arrayStrings(claimSupportSummary.next_best_actions),
-      s2_summary: compactS2Summary(s2Summary),
-      s3_summary: compactS3Summary(s3Summary),
-      s4_summary: compactS4Summary(s4Summary)
+      claim_support_levels: compactSupportLevels,
+      risk_gaps: riskGapCount,
+      top_risk_gaps: uniqueFirst(riskGaps, 5),
+      next_best_actions: uniqueFirst(nextBestActions, 5),
+      s2_summary: compactS2,
+      s3_summary: compactS3,
+      s4_summary: compactS4
     },
     history_summary: {
       lockfile: strongestCheckStatus(result.checks, ["lockfile_signature", "lockfile_hash"]),
@@ -394,7 +441,21 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
     warnings: result.checks
       .filter((check) => check.status === "WARN")
       .map((check) => `${check.id}: ${check.detail}`),
-    next_step: result.recommended_next_steps[0] ?? "Use the verified artifacts as inputs to your own policy."
+    next_step:
+      nextBestActions[0] ??
+      result.policy_route.guidance ??
+      result.recommended_next_steps[0] ??
+      "Use the verified artifacts as inputs to your own policy."
+  };
+}
+
+function statusScope(): AgentStatusScope {
+  return {
+    identity_status: "CRYPTOGRAPHIC_AUTHORITY_AND_CONTINUITY",
+    value_status: "REPORT_INTEGRITY_AND_DECLARED_RELATION_CHECKS",
+    conformance_status: "ORGANCHOR_PROTOCOL_COMPATIBILITY",
+    evidence_sufficiency: "EXTERNAL_POLICY_DECISION",
+    claim_truth: "NOT_PROVEN_BY_ORGANCHOR_STATUS"
   };
 }
 
@@ -900,9 +961,15 @@ function compactClaimSupportLevels(value: Record<string, JsonValue>): Record<str
 
 function compactS2Summary(value: Record<string, JsonValue>): AgentVerificationCompactResult["evidence_summary"]["s2_summary"] {
   const stateCounts = optionalRecord(value.s2_state_counts);
+  const effectiveCount = numberValue(value.effective_s2_count);
+  const candidateCount = numberValue(value.candidate_unverified_external_material_count);
+  const nextActions = arrayStrings(value.next_actions);
+  if (effectiveCount === 0 && candidateCount === 0 && nextActions.length === 0) {
+    nextActions.push("No S2 material is declared; request S2 only if the target purpose requires external support.");
+  }
   return {
-    effective_s2_count: numberValue(value.effective_s2_count),
-    candidate_unverified_external_material_count: numberValue(value.candidate_unverified_external_material_count),
+    effective_s2_count: effectiveCount,
+    candidate_unverified_external_material_count: candidateCount,
     s2_state_counts: {
       S2_1_GENERIC_ROUTE_PROVIDED: numberValue(stateCounts.S2_1_GENERIC_ROUTE_PROVIDED),
       S2_2_VERIFIED_ROUTE_CHECKED: numberValue(stateCounts.S2_2_VERIFIED_ROUTE_CHECKED),
@@ -914,16 +981,24 @@ function compactS2Summary(value: Record<string, JsonValue>): AgentVerificationCo
     unknown_sample_source_count: numberValue(value.unknown_sample_source_count),
     unknown_relationship_count: numberValue(value.unknown_relationship_count),
     top_s2_gaps: arrayStrings(value.top_s2_gaps),
-    next_actions: arrayStrings(value.next_actions),
-    not_a_trust_decision: value.not_a_trust_decision === true
+    next_actions: nextActions,
+    not_a_trust_decision: value.not_a_trust_decision !== false
   };
 }
 
 function compactS3Summary(value: Record<string, JsonValue>): AgentVerificationCompactResult["evidence_summary"]["s3_summary"] {
   const stateCounts = optionalRecord(value.s3_state_counts);
+  const effectiveCount = numberValue(value.effective_s3_count);
+  const candidateCount = numberValue(value.candidate_unverified_sampling_count);
+  const nextActions = arrayStrings(value.next_actions);
+  if (effectiveCount === 0 && candidateCount === 0 && nextActions.length === 0) {
+    nextActions.push(
+      "No S3 sampling evidence is declared; request S3 only if the target purpose requires random sampling or anti-hand-picked-sample support."
+    );
+  }
   return {
-    effective_s3_count: numberValue(value.effective_s3_count),
-    candidate_unverified_sampling_count: numberValue(value.candidate_unverified_sampling_count),
+    effective_s3_count: effectiveCount,
+    candidate_unverified_sampling_count: candidateCount,
     s3_state_counts: {
       S3_1_SAMPLING_ROUTE_PROVIDED: numberValue(stateCounts.S3_1_SAMPLING_ROUTE_PROVIDED),
       S3_2_CUSTODY_DOCUMENTED: numberValue(stateCounts.S3_2_CUSTODY_DOCUMENTED),
@@ -945,16 +1020,24 @@ function compactS3Summary(value: Record<string, JsonValue>): AgentVerificationCo
     missing_custody_count: numberValue(value.missing_custody_count),
     manual_check_s3_count: numberValue(value.manual_check_s3_count),
     top_s3_gaps: arrayStrings(value.top_s3_gaps),
-    next_actions: arrayStrings(value.next_actions),
-    not_a_trust_decision: value.not_a_trust_decision === true
+    next_actions: nextActions,
+    not_a_trust_decision: value.not_a_trust_decision !== false
   };
 }
 
 function compactS4Summary(value: Record<string, JsonValue>): AgentVerificationCompactResult["evidence_summary"]["s4_summary"] {
   const stateCounts = optionalRecord(value.s4_state_counts);
+  const effectiveCount = numberValue(value.effective_s4_count);
+  const candidateCount = numberValue(value.candidate_unverified_observation_count);
+  const nextActions = arrayStrings(value.next_actions);
+  if (effectiveCount === 0 && candidateCount === 0 && nextActions.length === 0) {
+    nextActions.push(
+      "No S4 observation evidence is declared; request S4 only if the target purpose requires real-use, delivery, or time-window continuity evidence."
+    );
+  }
   return {
-    effective_s4_count: numberValue(value.effective_s4_count),
-    candidate_unverified_observation_count: numberValue(value.candidate_unverified_observation_count),
+    effective_s4_count: effectiveCount,
+    candidate_unverified_observation_count: candidateCount,
     s4_state_counts: {
       S4_1_OBSERVATION_SUMMARY_PROVIDED: numberValue(stateCounts.S4_1_OBSERVATION_SUMMARY_PROVIDED),
       S4_2_RAW_BUNDLE_AVAILABLE: numberValue(stateCounts.S4_2_RAW_BUNDLE_AVAILABLE),
@@ -966,8 +1049,8 @@ function compactS4Summary(value: Record<string, JsonValue>): AgentVerificationCo
     missing_subject_binding_count: numberValue(value.missing_subject_binding_count),
     manual_check_s4_count: numberValue(value.manual_check_s4_count),
     top_s4_gaps: arrayStrings(value.top_s4_gaps),
-    next_actions: arrayStrings(value.next_actions),
-    not_a_trust_decision: value.not_a_trust_decision === true
+    next_actions: nextActions,
+    not_a_trust_decision: value.not_a_trust_decision !== false
   };
 }
 

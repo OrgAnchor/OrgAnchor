@@ -37,9 +37,9 @@ Best public starting points:
 - `OUTREACH_PLAN.md`: public understanding, publishing order, target audiences, and sponsorship-entry plan.
 - `PUBLIC_RELEASE_CHECKLIST.md`: practical release gate for public assets, local checks, owner approvals, and hold criteria.
 - `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: latest release-preparation check results for local gates, capability audit, public self-pilot, and public root-signed lockfile verification.
-- `PUBLIC_VIDEO_90S_RELEASE_PACK.md`: Project 01 OrgAnchor video draft/release pack with shot list, publishing copy, captions, and upload checklist.
-- `PUBLIC_FEEDBACK_CHAIN_PLAN.md`: Project 01 first-wave platform strategy, to be used after CivitasX parent-channel context is established.
-- `PUBLIC_POSTS_FIRESEED_WAVE_1.md`: copyable Project 01 post drafts for GitHub, Bluesky, LinkedIn, X, and optional Fediverse mirrors.
+- `PUBLIC_VIDEO_90S_RELEASE_PACK.md`: OrgAnchor video draft/release pack with shot list, publishing copy, captions, and upload checklist.
+- `PUBLIC_FEEDBACK_CHAIN_PLAN.md`: OrgAnchor first-wave platform strategy. CivitasX may cross-share it, but OrgAnchor review does not depend on a parent-channel launch.
+- `PUBLIC_POSTS_FIRESEED_WAVE_1.md`: copyable OrgAnchor post drafts for GitHub, Bluesky, LinkedIn, X, and optional Fediverse mirrors.
 - `VIDEO_SCRIPT_SHORT.md`: bilingual 90-second concept video review script with English as the canonical voiceover.
 - `VIDEO_SCRIPT_90S.md`: public English 90-second concept video script.
 - `VIDEO_SCRIPT_DEMO.md`: practical demo video script.
@@ -48,6 +48,7 @@ Best public starting points:
 - `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Fireseed Wave 1.
 - `FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
 - `FIRESEED_ALPHA_COMPLETION_AUDIT_2026-07-06.md`: requirement-by-requirement completion audit for Fireseed Alpha public-release preparation.
+- `FIRESEED_ALPHA4_LOCAL_CONVERGENCE_2026-07-11.md`: local Alpha.4 release-convergence record; no npm, GitHub, website, or public-post action is implied.
 - `AI_OPERATING_MODEL.md`: project operating model for human-owner and AI-execution-lead collaboration.
 
 ## What It Is
@@ -107,7 +108,7 @@ The accepted but not yet implemented `COMMERCIAL_FIT_LAYER.md` defines how price
 
 ## Current Status
 
-OrgAnchor has a published MVP alpha: `organchor@0.1.0-alpha.3` under the npm `alpha` dist-tag, with Git tag `v0.1.0-alpha.3` and a published GitHub prerelease. Fireseed Alpha has a GO decision for named early adopter, technical, and evidence/governance outreach in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`. The current focus is to keep the CLI installable, keep the public self-pilot verifiable, collect focused Fireseed feedback, and avoid treating S4/S5 design previews as finished governance systems. The core alpha surface now includes root authority records, signed official-presence records, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
+The current published package remains `organchor@0.1.0-alpha.3` under the npm `alpha` dist-tag, with Git tag `v0.1.0-alpha.3` and a published GitHub prerelease. This source checkout is preparing the local `0.1.0-alpha.4` release-convergence candidate; it must not be described as publicly released until npm, GitHub, and the public self-pilot are deliberately aligned. Fireseed Alpha has a GO decision for named early adopter, technical, and evidence/governance review, while wider outreach remains subject to the current release gate. The core alpha surface includes root authority records, signed official-presence records, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
 
 OrgAnchor's own public self-pilot is active at `https://organchor.org/verify/`. Its real operational artifacts live outside this source repository so that the publishable project remains clean: no private keys, provider tokens, payment records, or deployment credentials are stored here.
 

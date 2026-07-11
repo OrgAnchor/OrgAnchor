@@ -32,6 +32,9 @@ test("agent compact example is a valid first-pass result", () => {
   assert.equal(result.value_status, "PASS");
   assert.equal(result.conformance_status, "FULL_COMPATIBLE");
   assert.equal(result.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
+  assert.equal(result.status_scope.value_status, "REPORT_INTEGRITY_AND_DECLARED_RELATION_CHECKS");
+  assert.equal(result.status_scope.evidence_sufficiency, "EXTERNAL_POLICY_DECISION");
+  assert.equal(result.status_scope.claim_truth, "NOT_PROVEN_BY_ORGANCHOR_STATUS");
   assert.match(result.root_authority_hash, /^sha256:[0-9a-f]{64}$/);
   assert.match(result.statement_hash, /^sha256:[0-9a-f]{64}$/);
   assert.equal(result.evidence_summary.claims, "PASS");

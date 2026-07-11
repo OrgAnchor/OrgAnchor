@@ -221,6 +221,13 @@ Example:
   "identity_status": "PASS",
   "value_status": "PASS",
   "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+  "status_scope": {
+    "identity_status": "CRYPTOGRAPHIC_AUTHORITY_AND_CONTINUITY",
+    "value_status": "REPORT_INTEGRITY_AND_DECLARED_RELATION_CHECKS",
+    "conformance_status": "ORGANCHOR_PROTOCOL_COMPATIBILITY",
+    "evidence_sufficiency": "EXTERNAL_POLICY_DECISION",
+    "claim_truth": "NOT_PROVEN_BY_ORGANCHOR_STATUS"
+  },
   "organization": {
     "name": "OrgAnchor",
     "display_name": "OrgAnchor"

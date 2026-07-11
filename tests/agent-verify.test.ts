@@ -14,6 +14,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { sha256CanonicalJson } from "../src/core/hash.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const cliPath = join(repoRoot, "src", "cli.ts");
@@ -63,6 +64,9 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(compact.value_status, "PASS");
       assert.equal(compact.conformance_status, "FULL_COMPATIBLE");
       assert.equal(compact.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
+      assert.equal(compact.status_scope.value_status, "REPORT_INTEGRITY_AND_DECLARED_RELATION_CHECKS");
+      assert.equal(compact.status_scope.evidence_sufficiency, "EXTERNAL_POLICY_DECISION");
+      assert.equal(compact.status_scope.claim_truth, "NOT_PROVEN_BY_ORGANCHOR_STATUS");
       assert.equal(compact.evidence_summary.claims, "PASS");
       assert.equal(compact.evidence_summary.evidence, "PASS");
       assert.equal(compact.evidence_summary.value, "PASS");
@@ -70,19 +74,67 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(compact.evidence_summary.total_evidence_items, 1);
       assert.equal(compact.evidence_summary.claim_support_levels.L3_REPRODUCIBLE_METHOD, 1);
       assert.equal(compact.evidence_summary.claim_support_levels.L0_UNSUPPORTED, 0);
-      assert.equal(compact.evidence_summary.risk_gaps, 1);
+      assert.equal(compact.evidence_summary.risk_gaps >= 2, true);
       assert.equal(compact.evidence_summary.profile_declared_claims, 0);
       assert.equal(compact.evidence_summary.profile_pass_claims, 0);
       assert.equal(compact.evidence_summary.profile_gap_claims, 0);
       assert.equal(compact.evidence_summary.top_risk_gaps.includes("Only first-party evidence is linked."), true);
+      assert.equal(compact.evidence_summary.top_risk_gaps.some((gap: string) => gap.includes("manual check")), true);
       assert.equal(
-        compact.evidence_summary.next_best_actions.includes("Add an independent attestation or external evidence source for the exact claim."),
+        compact.evidence_summary.next_best_actions.some((action: string) => action.startsWith("Add an independent attestation")),
         true
       );
+      assert.equal(compact.evidence_summary.s2_summary.not_a_trust_decision, true);
+      assert.equal(compact.evidence_summary.s2_summary.next_actions.length > 0, true);
+      assert.equal(compact.evidence_summary.s3_summary.not_a_trust_decision, true);
+      assert.equal(compact.evidence_summary.s3_summary.next_actions.length > 0, true);
       assert.equal(compact.policy_route.route, "EXTERNAL_POLICY_REVIEW");
       assert.equal(compact.policy_route.policy_owner, "EXTERNAL_AGENT");
       assert.equal(compact.policy_route.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
       assert.equal(compact.failures.length, 0);
+    });
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test("verify url exposes conservative gaps for legacy value reports without claim-level support details", async () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-agent-legacy-value-"));
+  try {
+    createAgentFixture(workspace);
+    const reportPath = join(workspace, "public", "verify", "reports", "value-continuity-report.json");
+    const report = JSON.parse(readFileSync(reportPath, "utf8"));
+    delete report.claims;
+    delete report.s2_summary;
+    delete report.s3_summary;
+    delete report.s4_summary;
+    writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+
+    const indexPath = join(workspace, "public", "verify", "organchor.json");
+    const index = JSON.parse(readFileSync(indexPath, "utf8"));
+    index.value_continuity.hash = sha256CanonicalJson(report);
+    writeFileSync(indexPath, `${JSON.stringify(index, null, 2)}\n`, "utf8");
+
+    await withStaticServer(join(workspace, "public"), async (origin) => {
+      rewriteBeaconOrigin(workspace, origin);
+      const compactVerify = await runAsync(workspace, ["verify", "url", origin, "--compact"]);
+      const compact = JSON.parse(compactVerify.stdout);
+      assert.equal(compact.value_status, "PASS");
+      assert.equal(compact.status_scope.value_status, "REPORT_INTEGRITY_AND_DECLARED_RELATION_CHECKS");
+      assert.equal(compact.evidence_summary.risk_gaps >= 3, true);
+      assert.equal(
+        compact.evidence_summary.top_risk_gaps.includes("Claim-level support details are unavailable in this report."),
+        true
+      );
+      assert.equal(compact.evidence_summary.top_risk_gaps.includes("Only first-party evidence is linked."), true);
+      assert.equal(compact.evidence_summary.top_risk_gaps.some((gap: string) => gap.includes("manual check")), true);
+      assert.equal(
+        compact.evidence_summary.next_best_actions.some((action: string) => action.startsWith("Regenerate the value report")),
+        true
+      );
+      assert.equal(compact.evidence_summary.s2_summary.next_actions.length, 1);
+      assert.equal(compact.evidence_summary.s3_summary.next_actions.length, 1);
+      assert.equal(compact.next_step.includes("manual evidence checks"), true);
     });
   } finally {
     rmSync(workspace, { recursive: true, force: true });

@@ -42,7 +42,7 @@ It does:
 - runs `npm pack --dry-run`;
 - publishes with `npm publish --tag alpha`.
 
-For the current `0.1.0-alpha.3` release, use manual dispatch so the workflow, package version, Git tag, GitHub release, and npm package can be aligned on the same source state.
+For the local `0.1.0-alpha.4` candidate, the preferred path after owner approval is a single matching tag push. The workflow verifies that `v0.1.0-alpha.4` matches `package.json`, runs the release gates, and publishes through trusted OIDC. Do not combine the tag-triggered path with a manual dispatch for the same immutable npm version.
 
 ## NPM Website Configuration
 
@@ -65,16 +65,13 @@ Important details:
 - The workflow must exist in `.github/workflows/` on GitHub before the npm configuration is saved.
 - Use GitHub-hosted runners; npm trusted publishing does not support self-hosted runners for this path.
 
-## Alpha.3 Publish Command
+## Alpha.4 Tag-Triggered Publish
 
-After npm Trusted Publishing is configured, trigger:
+After the source commit is approved and pushed, create and push the matching tag:
 
 ```bash
-gh workflow run publish-npm.yml \
-  --repo OrgAnchor/OrgAnchor \
-  --ref main \
-  -f expected_version=0.1.0-alpha.3 \
-  -f publish_tag=alpha
+git tag v0.1.0-alpha.4
+git push origin v0.1.0-alpha.4
 ```
 
 Then watch:
@@ -82,6 +79,8 @@ Then watch:
 ```bash
 gh run list --repo OrgAnchor/OrgAnchor --workflow publish-npm.yml --limit 5
 ```
+
+`workflow_dispatch` is an explicit recovery mechanism, not a second normal publish step. Use it only when the tag-triggered route was not used and npm confirms that `0.1.0-alpha.4` does not already exist.
 
 ## Post-Publish Verification
 

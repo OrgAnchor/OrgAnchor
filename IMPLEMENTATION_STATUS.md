@@ -92,6 +92,8 @@ Release hygiene:
 
 ## Current Fireseed Launch Focus
 
+The source tree is currently preparing the local `0.1.0-alpha.4` release-convergence candidate. The public npm package remains `0.1.0-alpha.3` until owner-approved publication. Wider outreach should wait until the installable package, public self-pilot, Agent result contract, and release notes describe the same source state.
+
 The current launch path is Fireseed Alpha, defined in `FIRESEED_ALPHA_PLAN.md`, with the operational GO/HOLD decision in `FIRESEED_READINESS_GATE.md` and the first GO decision in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 
 Fireseed Alpha is the minimum necessary public collaboration loop:

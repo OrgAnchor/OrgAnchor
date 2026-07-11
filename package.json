@@ -1,6 +1,6 @@
 {
   "name": "organchor",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "description": "Signed organizational identity continuity toolchain.",
   "type": "module",
   "main": "dist/cli.js",
@@ -24,7 +24,6 @@
     "scripts/visible-acceptance-demo.mjs",
     "templates/",
     "examples/",
-    "public-assets/",
     "README.md",
     "CAPABILITY_TRACEABILITY_MATRIX.md",
     "CAPABILITY_AUDIT_SCENARIOS.md",
@@ -60,6 +59,7 @@
     "EXTERNAL_PILOT_RUNBOOK.md",
     "FIRESEED_ALPHA_PLAN.md",
     "FIRESEED_ALPHA_COMPLETION_AUDIT_2026-07-06.md",
+    "FIRESEED_ALPHA4_LOCAL_CONVERGENCE_2026-07-11.md",
     "FIRESEED_DECK_OUTLINE.md",
     "FIRESEED_OUTREACH_KIT.md",
     "FIRESEED_LAUNCH_DECISION_2026-06-01.md",

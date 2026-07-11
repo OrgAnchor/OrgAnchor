@@ -12,10 +12,11 @@ Milestone definitions:
 
 ```text
 Stage 3 = self-pilot ready
-Stage 5 = v1 complete
+Stage 5 = v1 functional scope complete
+Stable v1 release = Stage 5 scope + release consistency + external validation decision
 ```
 
-The OrgAnchor self-pilot is required after Stage 3, but v1 completion requires Stage 5.
+The OrgAnchor self-pilot is required after Stage 3, while v1 functional-scope completion requires Stage 5. Stable-v1 publication is a separate decision: meeting the functional checklist does not replace package alignment, compatibility checks, operator usability review, or external validation.
 
 Release packaging and publication hygiene are tracked separately in `V1_RELEASE_CHECKLIST.md`.
 

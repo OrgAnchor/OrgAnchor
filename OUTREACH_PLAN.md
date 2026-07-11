@@ -103,17 +103,18 @@ Action-facing materials:
 
 ## Publishing Order
 
-1. Keep the GitHub repository, README, public `/verify` page, and `FIRESEED_OUTREACH_KIT.md` ready.
-2. Open GitHub tracking issue: "Fireseed Alpha External Validation Wave 1".
-3. Coordinate with the CivitasX parent-channel plan so OrgAnchor is introduced as Project 01, not as an unexplained standalone channel identity.
-4. Publish the reframed 90-second OrgAnchor Project 01 concept video.
-5. Publish the 6-8 minute demo video.
-6. Publish the 12-15 slide PPT / deck for sponsors, collaborators, and serious reviewers.
-7. Publish or pin the AI-agent quick path: `npm run visible:demo -- --out ./visible-demo --serve`, `npm run agent:demo`, and `organchor verify url <local-or-public-organchor-url> --compact`.
-8. Invite technical reviewers, AI-agent builders, Directory builders, and evidence/governance reviewers.
-9. Open a sponsorship entry only after the problem, demo, review path, and Fireseed boundary are public.
-10. Send sponsor letters and targeted invitations.
-11. Collect external review results, record friction points, and update the Fireseed gate.
+1. Align the installable Alpha package, GitHub source, public `/verify` package, and Agent contract.
+2. Keep the existing GitHub tracking issue as the canonical Fireseed feedback record.
+3. Publish the first Bluesky discussion thread from an OrgAnchor-specific account and link it to the GitHub issue.
+4. Publish the LinkedIn post with a professional supply-chain, AI-agent, and open-infrastructure framing.
+5. Record all public post URLs and material feedback in the GitHub tracking issue.
+6. Publish the 90-second concept video, 6-8 minute demo, and deck only after their separate quality gates are met.
+7. Pin the AI-agent quick path: `npm run visible:demo -- --out ./visible-demo --serve`, `npm run agent:demo`, and `organchor verify url <local-or-public-organchor-url> --compact`.
+8. Invite technical reviewers, AI-agent builders, Directory builders, adopting organizations, and evidence/governance reviewers.
+9. Open a sponsorship entry only after a concrete validation need and public review path exist.
+10. Collect external review results, record friction points, and update the Fireseed gate before wider promotion.
+
+CivitasX may cross-share OrgAnchor material as part of its broader project portfolio. That distribution relationship does not make CivitasX an identity root, protocol authority, prerequisite account, or launch dependency for OrgAnchor.
 
 ## Target Audiences
 

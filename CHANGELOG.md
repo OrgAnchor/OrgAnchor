@@ -8,6 +8,36 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 
 No unreleased changes yet.
 
+## 0.1.0-alpha.4 - 2026-07-11
+
+Fireseed Alpha release-convergence candidate. This release aligns the installable CLI with the current source, public self-pilot contract, evidence baseline, and protocol-evolution policy before wider external review.
+
+### Added
+
+- S2 organization-submitted third-party material templates, attachment flow, mechanical gap checks, and compact summaries.
+- S3 random purchase and sampling templates, bounded-pool declarations, sample identity and duplicate-control checks, raw-evidence references, and compact summaries.
+- Initial S4 observation routing, templates, attachment flow, and explicit Design Preview boundaries.
+- Root-signed lockfile hashing, signing, verification, and public `/verify` integrity publication.
+- Visible acceptance, capability traceability, scenario audit, adopter quick-start, Fireseed review, and public understanding materials.
+- Protocol evolution policy for legacy verification, historical package preservation, additive evolution, and signed migration.
+
+### Changed
+
+- Compact Agent verification results now state what each status covers and conservatively expose manual checks, first-party-only support, and missing claim-level details in legacy reports.
+- Empty S2, S3, and S4 summaries now provide purpose-conditional next actions and explicitly remain outside OrgAnchor trust decisions.
+- Fireseed public material distinguishes implemented S1-S3 baseline capabilities from partial or design-only S4/S5 work.
+- The npm package excludes video, audio, thumbnails, and other outreach media that are not required by the CLI.
+
+### Compatibility
+
+- Existing signed records remain verifiable under the schema, authority, algorithm, and verifier rules that created them.
+- The new compact-result fields are additive. Consumers should continue ignoring unknown fields and must not interpret `PASS` as evidence sufficiency, claim truth, endorsement, or final trust.
+
+### Release Boundary
+
+- This is an Alpha release candidate, not stable v1.
+- No npm publish, GitHub release, website deployment, or public outreach action is implied by this local changelog entry.
+
 ## 0.1.0-alpha.3 - 2026-05-25
 
 Release alignment candidate for npm Trusted Publishing.

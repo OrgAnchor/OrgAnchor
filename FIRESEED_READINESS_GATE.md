@@ -93,6 +93,10 @@ The compact result must expose enough information for a third-party AI agent to 
 - risk gaps;
 - next verification steps.
 
+The compact result must also expose the scope of its status values. In particular, `value_status: PASS` means report integrity and declared-relation checks passed; it must not be presented as evidence sufficiency or claim truth.
+
+When a legacy value report lacks current claim-level support fields, the verifier must expose that absence conservatively. Manual checks or first-party-only evidence must not collapse into zero visible risk gaps merely because the legacy report predates newer fields.
+
 If compact output hides material gaps, Fireseed is `HOLD`.
 
 ### 6. S1-S3 Evidence Baseline

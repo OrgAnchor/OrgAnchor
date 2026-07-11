@@ -284,6 +284,9 @@ test("Arweave manual package records receipt and verifies packaged artifact hash
     assert.equal(existsSync(join(workspace, "arweave-package", "root-authority.json")), true);
     assert.equal(existsSync(join(workspace, "arweave-package", "verify", "organchor.json")), true);
     assert.equal(existsSync(join(workspace, "arweave-package", "verify", "index.html")), true);
+    assert.equal(existsSync(join(workspace, "arweave-package", "verify", "root-authority.json")), true);
+    assert.equal(existsSync(join(workspace, "arweave-package", "verify", "official-endpoints.json")), true);
+    assert.equal(existsSync(join(workspace, "arweave-package", "verify", "official-endpoints.json.sig")), true);
 
     const manifest = JSON.parse(readFileSync(join(workspace, "arweave-manifest.json"), "utf8"));
     assert.equal(manifest.type, "OrgAnchorArweaveManifest");
@@ -293,6 +296,23 @@ test("Arweave manual package records receipt and verifies packaged artifact hash
     const roles = manifest.artifacts.map((artifact: { role: string }) => artifact.role);
     assert.equal(roles.includes("verify-index"), true);
     assert.equal(roles.includes("verify-page"), true);
+    assert.equal(roles.includes("verify-artifact"), true);
+    assert.equal(
+      manifest.artifacts.every((artifact: { source_path: string }) => !artifact.source_path.includes("\\")),
+      true
+    );
+    assert.equal(
+      manifest.artifacts.every((artifact: { package_path: string }) =>
+        !artifact.package_path.startsWith("arweave-package/") &&
+        existsSync(join(workspace, "arweave-package", artifact.package_path))
+      ),
+      true
+    );
+
+    const packagedManifest = JSON.parse(
+      readFileSync(join(workspace, "arweave-package", "arweave-manifest.json"), "utf8")
+    );
+    assert.deepEqual(packagedManifest, manifest);
 
     const lockfile = JSON.parse(readFileSync(join(workspace, "organchor.lock.json"), "utf8"));
     assert.equal(lockfile.artifacts[manifestHash].kind, "arweave-manual-package");
@@ -326,6 +346,50 @@ test("Arweave manual package records receipt and verifies packaged artifact hash
       1
     );
     assert.match(mismatch.stdout, /FAIL/);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test("Arweave manual package refuses stale output directory unless overwrite is explicit", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-arweave-stale-"));
+  try {
+    createVerifyDirectory(workspace);
+    mkdirSync(join(workspace, "arweave-package"), { recursive: true });
+    writeFileSync(join(workspace, "arweave-package", "stale.txt"), "old package residue", "utf8");
+
+    const rejected = run(
+      workspace,
+      [
+        "archive",
+        "arweave",
+        "publish",
+        "--statement",
+        "statements/official-endpoints.json",
+        "--sig",
+        "statements/official-endpoints.json.sig",
+        "--authority",
+        "root-authority.json"
+      ],
+      1
+    );
+    assert.match(rejected.stderr, /Arweave package directory is not empty/);
+    assert.equal(existsSync(join(workspace, "arweave-package", "stale.txt")), true);
+
+    run(workspace, [
+      "archive",
+      "arweave",
+      "publish",
+      "--statement",
+      "statements/official-endpoints.json",
+      "--sig",
+      "statements/official-endpoints.json.sig",
+      "--authority",
+      "root-authority.json",
+      "--overwrite"
+    ]);
+    assert.equal(existsSync(join(workspace, "arweave-package", "stale.txt")), false);
+    assert.equal(existsSync(join(workspace, "arweave-package", "arweave-manifest.json")), true);
   } finally {
     rmSync(workspace, { recursive: true, force: true });
   }

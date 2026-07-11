@@ -329,6 +329,8 @@ organchor migrate verify --old-authority root-authority.json --new-authority roo
 organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority-next.json --migration statements/migration-2026-001.json --migration-sig statements/migration-2026-001.json.sig
 ```
 
+`archive arweave publish` refuses to reuse a non-empty package directory by default, so stale files are not accidentally archived. Use `--overwrite` only when you intentionally want to replace the existing `arweave-package` directory.
+
 After packaging, the intended command name is:
 
 ```bash

@@ -1,4 +1,4 @@
-import { copyFile } from "node:fs/promises";
+import { copyFile, readdir, rm, stat } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 import { hashFile } from "../core/artifacts.ts";
 import { validateClaimsManifest, validateEvidenceManifest } from "../core/evidence-validate.ts";
@@ -39,7 +39,7 @@ export async function arweavePublishCommand(options: Record<string, string | boo
     throw new Error(`Cannot prepare Arweave package for invalid artifacts: ${errors.join("; ")}`);
   }
 
-  await ensureDir(packageDir);
+  await preparePackageDir(packageDir, options.overwrite === true);
 
   const inputs = [
     { role: "statement", source: statementPath, target: "official-endpoints.json" },
@@ -68,19 +68,10 @@ export async function arweavePublishCommand(options: Record<string, string | boo
     validate: validateEvidenceManifest,
     explicit: typeof options.evidence === "string" || typeof options["evidence-sig"] === "string"
   });
-  await includeOptionalPublicArtifact(inputs, {
-    label: "Verify index",
-    role: "verify-index",
-    source: verifyIndexPath,
-    target: "verify/organchor.json",
-    explicit: typeof options["verify-index"] === "string"
-  });
-  await includeOptionalPublicArtifact(inputs, {
-    label: "Verify page",
-    role: "verify-page",
-    source: verifyPagePath,
-    target: "verify/index.html",
-    explicit: typeof options["verify-page"] === "string"
+  await includeVerifyDirectory(inputs, {
+    indexSource: verifyIndexPath,
+    pageSource: verifyPagePath,
+    explicit: typeof options["verify-index"] === "string" || typeof options["verify-page"] === "string"
   });
 
   const artifacts: JsonValue[] = [];
@@ -91,8 +82,8 @@ export async function arweavePublishCommand(options: Record<string, string | boo
     await copyFile(input.source, target);
     artifacts.push({
       role: input.role,
-      source_path: input.source,
-      package_path: `${packageDir}/${input.target}`,
+      source_path: input.source.replaceAll("\\", "/"),
+      package_path: input.target.replaceAll("\\", "/"),
       file_name: basename(input.target),
       hash: artifact.hash,
       size: artifact.size
@@ -111,7 +102,7 @@ export async function arweavePublishCommand(options: Record<string, string | boo
   const manifestCanonicalHash = sha256CanonicalJson(manifest);
   await writeJsonFile(manifestPath, manifest);
   const manifestFileArtifact = await hashFile(manifestPath);
-  await copyFile(manifestPath, join(packageDir, basename(manifestPath)));
+  await copyFile(manifestPath, join(packageDir, "arweave-manifest.json"));
 
   await appendLockReceipt({
     artifactHash: manifestCanonicalHash,
@@ -184,23 +175,78 @@ async function includeOptionalSignedManifest(
   );
 }
 
-async function includeOptionalPublicArtifact(
+async function preparePackageDir(packageDir: string, overwrite: boolean): Promise<void> {
+  try {
+    const info = await stat(packageDir);
+    if (!info.isDirectory()) {
+      throw new Error(`Arweave package output exists and is not a directory: ${packageDir}`);
+    }
+  } catch (error) {
+    if (isMissingPathError(error)) {
+      await ensureDir(packageDir);
+      return;
+    }
+    throw error;
+  }
+
+  const existingEntries = await readdir(packageDir);
+  if (existingEntries.length === 0) return;
+  if (!overwrite) {
+    throw new Error(
+      `Arweave package directory is not empty: ${packageDir}. Remove it or pass --overwrite to replace it.`
+    );
+  }
+
+  await rm(packageDir, { recursive: true, force: true });
+  await ensureDir(packageDir);
+}
+
+async function includeVerifyDirectory(
   inputs: Array<{ role: string; source: string; target: string }>,
   options: {
-    label: string;
-    role: string;
-    source: string;
-    target: string;
+    indexSource: string;
+    pageSource: string;
     explicit: boolean;
   }
 ): Promise<void> {
-  const exists = await pathExists(options.source);
-  if (!exists && !options.explicit) return;
-  if (!exists) throw new Error(`Missing ${options.label}: ${options.source}`);
+  const verifyDir = dirname(options.indexSource);
+  if (dirname(options.pageSource) !== verifyDir) {
+    throw new Error("Verify index and verify page must be in the same directory");
+  }
 
-  inputs.push({
-    role: options.role,
-    source: options.source,
-    target: options.target
-  });
+  const indexExists = await pathExists(options.indexSource);
+  const pageExists = await pathExists(options.pageSource);
+  if (!indexExists && !pageExists && !options.explicit) return;
+  if (!indexExists) throw new Error(`Missing Verify index: ${options.indexSource}`);
+  if (!pageExists) throw new Error(`Missing Verify page: ${options.pageSource}`);
+
+  const relativePaths = await listFilesRecursively(verifyDir);
+  for (const relativePath of relativePaths) {
+    const normalizedPath = relativePath.replaceAll("\\", "/");
+    const role = normalizedPath === basename(options.indexSource) ?
+      "verify-index" :
+      normalizedPath === basename(options.pageSource) ?
+        "verify-page" :
+        "verify-artifact";
+    inputs.push({
+      role,
+      source: join(verifyDir, relativePath),
+      target: `verify/${normalizedPath}`
+    });
+  }
+}
+
+async function listFilesRecursively(root: string, relativeDir = ""): Promise<string[]> {
+  const entries = await readdir(join(root, relativeDir), { withFileTypes: true });
+  const files: string[] = [];
+  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
+    const relativePath = join(relativeDir, entry.name);
+    if (entry.isDirectory()) files.push(...await listFilesRecursively(root, relativePath));
+    else if (entry.isFile()) files.push(relativePath);
+  }
+  return files;
+}
+
+function isMissingPathError(error: unknown): boolean {
+  return typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT";
 }

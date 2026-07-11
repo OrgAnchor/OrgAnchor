@@ -248,7 +248,7 @@ Usage:
   organchor anchor opentimestamps verify --file statements/official-endpoints.json --proof anchors/opentimestamps/official-endpoints.json.ots
   organchor archive arweave estimate --dir arweave-package
   organchor archive arweave estimate --dir arweave-package --offline
-  organchor archive arweave publish --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json
+  organchor archive arweave publish --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --overwrite
   organchor archive arweave upload --provider turbo --dir arweave-package --wallet-file arweave-wallet.local.json
   organchor archive arweave verify --file arweave-package/official-endpoints.json --expected-hash sha256:...
   organchor archive arweave verify --tx ARWEAVE_TX_ID --gateway https://arweave.net --expected-hash sha256:...

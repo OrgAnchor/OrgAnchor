@@ -29,9 +29,10 @@ If you are reviewing evidence quality, abuse risk, or real-world usefulness:
 - Treat S1-S3 as the current Fireseed Alpha evidence baseline.
 - Treat S4/S5 as design-preview territory unless a specific implemented command, schema, and test is cited.
 
-If you are helping with Fireseed outreach, sponsorship, video, or presentation material:
+If you are preparing publication material:
 
-- Start with `OUTREACH_PLAN.md`, `PUBLIC_RELEASE_CHECKLIST.md`, `FIRESEED_DECK_OUTLINE.md`, `VIDEO_SCRIPT_90S.md`, `VIDEO_SCRIPT_DEMO.md`, and `SPONSOR_LETTER.md`.
+- Use this source repository for verified project facts, boundaries, and reproducible commands.
+- Keep video scripts, rendered media, platform post drafts, presentation outlines, and sponsorship letters outside the source repository and npm package.
 - Keep the boundary clear: OrgAnchor is not a trust badge, certification authority, marketplace, official registry, or final ranking system.
 
 If you are reviewing how the project is operated by a human owner and AI execution lead:
@@ -56,21 +57,11 @@ If you are reviewing how the project is operated by a human owner and AI executi
 - `PUBLIC_EXPLAINER.md`: public entrance explanation for first-time readers, non-specialist reviewers, and first-pass AI summaries.
 - `DESIGN_RATIONALE.md`: full explanatory design rationale connecting the core goal to required properties, mechanisms, expected effects, and limits.
 - `AI_OPERATING_MODEL.md`: active project operating model for human-owner and AI-execution-lead collaboration, including default execution authority and required owner decision gates.
-- `OUTREACH_PLAN.md`: public understanding plan covering publishing order, target audiences, funding-entry options, and Fireseed Wave 1 acceptance.
 - `PUBLIC_RELEASE_CHECKLIST.md`: active public-release operating gate for local checks, public self-pilot checks, asset alignment, owner intervention gates, publishing order, and hold criteria.
 - `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: latest local release gate, capability audit, public self-pilot, public root-signed lockfile, and diff-hygiene precheck snapshot.
 - `CURRENT_PROJECT_STATE_2026-07-02.md`: current source-repository state snapshot, Fireseed boundary, repository boundary, next-work order, and hold conditions.
 - `ADOPTER_QUICKSTART.md`: shortest practical path for an adopting organization to create a root authority, signed official-presence statement, public `/verify` package, and first adoption status.
 - `PILOT_MINIMAL_PATH.md`: minimal external pilot definition, required artifacts, approval gates, independent verification path, and pilot feedback record.
-- `PUBLIC_VIDEO_90S_RELEASE_PACK.md`: Project 01 OrgAnchor video draft/release pack with production timeline, platform copy, captions, and upload checklist.
-- `PUBLIC_FEEDBACK_CHAIN_PLAN.md`: Project 01 public feedback-chain strategy with Bluesky as a core discussion surface, used after CivitasX parent-channel context is established.
-- `PUBLIC_POSTS_FIRESEED_WAVE_1.md`: copyable Project 01 public posts for GitHub, Bluesky, LinkedIn, X, and optional Fediverse mirrors.
-- `FIRESEED_DECK_OUTLINE.md`: slide outline for presenting OrgAnchor as a Fireseed Alpha seed project.
-- `VIDEO_SCRIPT_SHORT.md`: bilingual 90-second concept video review script with English as the canonical voiceover.
-- `VIDEO_SCRIPT_90S.md`: public English 90-second concept video script for problem-led outreach.
-- `VIDEO_SCRIPT_DEMO.md`: practical demo video script showing visible and AI-agent verification flows.
-- `VIDEO_SCRIPT_DEEP_DIVE.md`: 20-minute deep-dive script for architecture, evidence, S1-S3, Directory, and commercial-fit explanation.
-- `SPONSOR_LETTER.md`: sponsor/supporter letter template with explicit non-pay-for-trust boundaries.
 - `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Fireseed Alpha External Validation Wave 1.
 - `ROADMAP.md`: implementation stages and current project direction.
 - `V1_ACCEPTANCE.md`: definition of v1 completeness.

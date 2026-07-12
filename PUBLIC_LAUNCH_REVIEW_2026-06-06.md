@@ -25,7 +25,7 @@ The review found and fixed these issues:
 - Public launch documents still contained a few legacy official-entry phrases. These were changed to "official-presence records" where the context is public positioning.
 - Several public demo commands still pointed directly at `https://organchor.org --compact` or used the shorter visible-demo command. These were changed to the local-first public path: `npm run visible:demo -- --out ./visible-demo --serve` plus `organchor verify url <local-or-public-organchor-url> --compact`.
 - `FIRESEED_OUTREACH_KIT.md` contained mojibake in the Chinese invitation block. The block was replaced with readable Chinese text.
-- `VIDEO_SCRIPT_DEEP_DIVE.md` had a corrupted Chinese title line. It was replaced with an ASCII explanation line to avoid public encoding risk in the English canonical script.
+- Publication production materials are now kept outside the source repository and npm package. This includes video scripts, rendered media, platform post drafts, presentation outlines, and sponsorship letters.
 - `tests/language-compatibility.test.ts` still asserted old and mojibake Chinese strings. It now asserts the current readable Chinese wording and rejects common mojibake markers.
 - `DOCS_INDEX.md` now has recommended reading paths for first-time readers, AI-agent builders, evidence reviewers, and Fireseed outreach participants.
 
@@ -96,5 +96,5 @@ Proceed to public-asset production.
 Recommended next step:
 
 ```text
-Create the first public deck from FIRESEED_DECK_OUTLINE.md, then use it as the source spine for the reframed OrgAnchor Project 01 concept video, 6-8 minute demo video, and targeted Fireseed outreach. If publishing through the CivitasX channel, establish the CivitasX parent frame first.
+Use the source repository as the factual base for external material, then prepare decks, videos, posts, and sponsorship messages in an off-repository publication workspace. If publishing through the CivitasX channel, establish the CivitasX parent frame first.
 ```

@@ -60,14 +60,11 @@ PUBLIC_EXPLAINER.md
 DESIGN_RATIONALE.md
 FIRESEED_OUTREACH_KIT.md
 CALL_FOR_FIRESEED_REVIEW.md
-FIRESEED_DECK_OUTLINE.md
-VIDEO_SCRIPT_SHORT.md
-VIDEO_SCRIPT_DEMO.md
-VIDEO_SCRIPT_DEEP_DIVE.md
-SPONSOR_LETTER.md
 FIRESEED_VALIDATION_TRACKING_ISSUE.md
 CAPABILITY_TRACEABILITY_MATRIX.md
 ```
+
+Video scripts, rendered media, platform post drafts, presentation outlines, and sponsorship letters are publication production materials. They should remain outside the source repository and npm package unless they become stable project documentation.
 
 Each public asset must preserve these boundaries:
 

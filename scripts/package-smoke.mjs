@@ -61,13 +61,6 @@ try {
   assertContains(copiedFiles, "CONTRIBUTING.md");
   assertContains(copiedFiles, "DOCS_INDEX.md");
   assertContains(copiedFiles, "PUBLIC_EXPLAINER.md");
-  assertContains(copiedFiles, "OUTREACH_PLAN.md");
-  assertContains(copiedFiles, "FIRESEED_DECK_OUTLINE.md");
-  assertContains(copiedFiles, "VIDEO_SCRIPT_SHORT.md");
-  assertContains(copiedFiles, "VIDEO_SCRIPT_90S.md");
-  assertContains(copiedFiles, "VIDEO_SCRIPT_DEMO.md");
-  assertContains(copiedFiles, "VIDEO_SCRIPT_DEEP_DIVE.md");
-  assertContains(copiedFiles, "SPONSOR_LETTER.md");
   assertContains(copiedFiles, "FIRESEED_VALIDATION_TRACKING_ISSUE.md");
   assertContains(copiedFiles, "FIRESEED_LAUNCH_DECISION_2026-06-01.md");
   assertContains(copiedFiles, "FIRESEED_ALPHA4_LOCAL_CONVERGENCE_2026-07-11.md");

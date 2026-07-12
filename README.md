@@ -33,23 +33,15 @@ Best public starting points:
 - `ADOPTER_QUICKSTART.md`: shortest practical path for an adopting organization.
 - `PILOT_MINIMAL_PATH.md`: minimal external pilot definition and verification gate.
 - `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`: current external-view review of OrgAnchor's own public self-pilot against the minimal path.
-- `FIRESEED_DECK_OUTLINE.md`: slide outline for a public introduction deck.
-- `OUTREACH_PLAN.md`: public understanding, publishing order, target audiences, and sponsorship-entry plan.
 - `PUBLIC_RELEASE_CHECKLIST.md`: practical release gate for public assets, local checks, owner approvals, and hold criteria.
 - `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: latest release-preparation check results for local gates, capability audit, public self-pilot, and public root-signed lockfile verification.
-- `PUBLIC_VIDEO_90S_RELEASE_PACK.md`: OrgAnchor video draft/release pack with shot list, publishing copy, captions, and upload checklist.
-- `PUBLIC_FEEDBACK_CHAIN_PLAN.md`: OrgAnchor first-wave platform strategy. CivitasX may cross-share it, but OrgAnchor review does not depend on a parent-channel launch.
-- `PUBLIC_POSTS_FIRESEED_WAVE_1.md`: copyable OrgAnchor post drafts for GitHub, Bluesky, LinkedIn, X, and optional Fediverse mirrors.
-- `VIDEO_SCRIPT_SHORT.md`: bilingual 90-second concept video review script with English as the canonical voiceover.
-- `VIDEO_SCRIPT_90S.md`: public English 90-second concept video script.
-- `VIDEO_SCRIPT_DEMO.md`: practical demo video script.
-- `VIDEO_SCRIPT_DEEP_DIVE.md`: 20-minute architecture/evidence/discovery/commercial-fit script.
-- `SPONSOR_LETTER.md`: sponsor / supporter letter template.
 - `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Fireseed Wave 1.
 - `FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
 - `FIRESEED_ALPHA_COMPLETION_AUDIT_2026-07-06.md`: requirement-by-requirement completion audit for Fireseed Alpha public-release preparation.
 - `FIRESEED_ALPHA4_LOCAL_CONVERGENCE_2026-07-11.md`: local Alpha.4 release-convergence record; no npm, GitHub, website, or public-post action is implied.
 - `AI_OPERATING_MODEL.md`: project operating model for human-owner and AI-execution-lead collaboration.
+
+Publication production materials such as video scripts, rendered media, platform post drafts, presentation outlines, and sponsorship letters are intentionally kept outside the source repository and npm package. This repository is for the software, protocol, examples, verification artifacts, and external-review boundaries.
 
 ## What It Is
 

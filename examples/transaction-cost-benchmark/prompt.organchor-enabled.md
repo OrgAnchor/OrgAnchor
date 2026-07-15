@@ -31,6 +31,13 @@ Return these exact keys:
 - `manual_checks`
 - `risk_gaps`
 
+Value contract:
+
+- `organization_name`, `official_origin`, `root_authority_hash`, and `statement_hash`: exact string or `null`.
+- `overall_status`, `identity_status`, `value_status`, and `conformance_status`: exact machine-contract status string or `null`; do not paraphrase human-readable labels or prose.
+- `trust_decision`: exact machine-contract value or `null`; do not paraphrase a human-readable policy sentence.
+- `third_party_claims`, `manual_checks`, and `risk_gaps`: non-negative numeric count or `null`; do not substitute descriptions.
+
 ## Output
 
 Return JSON only:

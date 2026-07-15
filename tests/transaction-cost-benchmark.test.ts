@@ -34,6 +34,9 @@ test("cold-start prompts do not expose pinned benchmark answers", () => {
   const benchmarkCase = JSON.parse(readFileSync(join(exampleDir, "benchmark-case.alpha4.json"), "utf8"));
 
   for (const prompt of prompts) {
+    assert.match(prompt, /exact machine-contract status string or `null`/);
+    assert.match(prompt, /non-negative numeric count or `null`/);
+    assert.match(prompt, /do not substitute descriptions/);
     for (const fact of benchmarkCase.facts) {
       if (["organization_name", "official_origin"].includes(fact.id)) continue;
       if (fact.expected === null || typeof fact.expected === "number") continue;

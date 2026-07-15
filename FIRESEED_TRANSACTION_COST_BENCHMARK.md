@@ -137,6 +137,12 @@ The scorer may report:
 
 Even `OBSERVED_IMPROVEMENT` is one observation, not a universal claim. Fireseed should aggregate multiple independent runs before making any public cost-reduction claim.
 
+## Internal Calibration Record: 2026-07-15
+
+The first fresh-context internal pair was rejected before scoring. The website-only Agent obeyed its access boundary but returned homepage prose in machine-status fields and a textual description in the numeric `risk_gaps` field. The OrgAnchor-enabled Agent returned a contract-valid 12-field result and preserved the final-trust boundary.
+
+This exposed an experiment-interface defect rather than evidence for or against OrgAnchor: the initial prompts named the fields but did not state their value types or prohibit prose substitution. Both prompts now declare the same type and status semantics without revealing expected values. The rejected pair is calibration evidence only and does not count toward the Fireseed target.
+
 ## First Fireseed Target
 
 The initial target is deliberately modest:

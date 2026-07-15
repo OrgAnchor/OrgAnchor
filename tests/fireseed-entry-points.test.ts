@@ -83,6 +83,10 @@ test("Fireseed outreach kit gives external reviewers concrete tasks and boundari
   assert.equal(packageJson.files?.includes("FIRESEED_OUTREACH_KIT.md"), true);
   assert.match(docsIndex, /FIRESEED_OUTREACH_KIT\.md/);
   assert.match(call, /FIRESEED_OUTREACH_KIT\.md/);
+  assert.match(kit, /https:\/\/github\.com\/OrgAnchor\/OrgAnchor\/issues\/4/);
+  assert.match(kit, /FIRESEED_TRANSACTION_COST_BENCHMARK\.md/);
+  assert.match(kit, /COLD_START_RUNBOOK\.md/);
+  assert.match(kit, /not a claim that OrgAnchor has already proven lower transaction cost/i);
 
   for (const phrase of [
     "Adopting Organization Trial",

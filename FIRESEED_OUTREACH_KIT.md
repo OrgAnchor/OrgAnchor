@@ -50,11 +50,10 @@ finished marketplace or directory ecosystem.
 Confirm these are true:
 
 ```bash
-npm run typecheck
-npm test
-npm run package:smoke
+npm run release:check
 npm run agent:demo
 npm run visible:demo -- --cleanup
+npm run benchmark:transaction -- --collect https://organchor.org
 ```
 
 Public reference surfaces should also be available:
@@ -63,6 +62,7 @@ Public reference surfaces should also be available:
 https://organchor.org/verify/
 https://organchor.org/.well-known/organchor.json
 https://github.com/OrgAnchor/OrgAnchor
+https://github.com/OrgAnchor/OrgAnchor/issues/4
 ```
 
 If the public self-pilot is temporarily unavailable, outreach should be limited to local technical review.
@@ -244,6 +244,8 @@ Minimum task list:
 
 ```text
 run npm run agent:demo;
+run the isolated paired prompts in examples/transaction-cost-benchmark/COLD_START_RUNBOOK.md;
+submit the pair for scoring without exposing the pinned answers to either Agent context;
 inspect beacon sweep NDJSON;
 build a local Beacon index;
 query by need and capability;
@@ -270,6 +272,14 @@ Evidence / Governance Review
 ```
 
 Choose based on whether the issue is implementation-level or model/governance-level.
+
+Post the paired-run summary and links to preserved raw outputs in the canonical Wave 1 issue:
+
+```text
+https://github.com/OrgAnchor/OrgAnchor/issues/4
+```
+
+The benchmark is an observation protocol, not a claim that OrgAnchor has already proven lower transaction cost. See `FIRESEED_TRANSACTION_COST_BENCHMARK.md` for interpretation boundaries.
 
 ## What Counts As Useful Feedback
 
@@ -309,6 +319,8 @@ reviewers can distinguish identity verification from trust decisions;
 reviewers can see S1-S3 strengths and gaps;
 S4/S5 are understood as design previews;
 commercial-fit gaps are recognized without expanding into marketplace scope;
+at least one isolated website-only versus OrgAnchor-enabled pair is scored;
+an Agent does not convert OrgAnchor verification into a final trust decision;
 feedback produces actionable issues or pull requests.
 ```
 
@@ -336,17 +348,23 @@ OrgAnchor is in Fireseed Alpha. It helps organizations publish signed, recheckab
 We are looking for a small number of named early reviewers: adopting organizations, technical reviewers, and evidence/governance critics. The goal is not endorsement or promotion. The goal is to find concrete friction, misleading outputs, abuse cases, and missing boundaries before v1.
 
 Start here:
+https://github.com/OrgAnchor/OrgAnchor/issues/4
+
+Review kit:
 https://github.com/OrgAnchor/OrgAnchor/blob/main/FIRESEED_OUTREACH_KIT.md
 ```
 
 Chinese:
 
 ```text
-OrgAnchor 现在处于 Fireseed Alpha 阶段。它帮助组织发布经过签名、可复查的公开资料，将身份、官方入口、主张、证据和迁移历史串联起来，使外部 AI Agent 和人能够以更低成本发现、初筛、验证、理解和比较候选组织，同时不把 OrgAnchor 当成最终信任权威。
+OrgAnchor 现在处于 Fireseed Alpha 阶段。它帮助组织发布经过签名、可复查的公开资料，将身份、官方存在位置、主张、证据和迁移历史串联起来，使外部 AI Agent 和人能够以更低成本发现、初筛、验证、理解和比较候选组织，同时不把 OrgAnchor 当成最终信任权威。
 
 我们正在邀请少量具名早期验证者：试用组织、技术审查者、证据/治理批评者。目标不是背书或宣传，而是在 v1 之前找出真实摩擦、误导性输出、滥用场景和缺失边界。
 
 从这里开始：
+https://github.com/OrgAnchor/OrgAnchor/issues/4
+
+复核材料：
 https://github.com/OrgAnchor/OrgAnchor/blob/main/FIRESEED_OUTREACH_KIT.md
 ```
 

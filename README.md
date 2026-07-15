@@ -34,7 +34,8 @@ Best public starting points:
 - `PILOT_MINIMAL_PATH.md`: minimal external pilot definition and verification gate.
 - `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`: current external-view review of OrgAnchor's own public self-pilot against the minimal path.
 - `PUBLIC_RELEASE_CHECKLIST.md`: practical release gate for public assets, local checks, owner approvals, and hold criteria.
-- `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: latest release-preparation check results for local gates, capability audit, public self-pilot, and public root-signed lockfile verification.
+- `PUBLIC_SELF_VERIFICATION_2026-07-15.md`: current Alpha.4 public release-linkage, endpoint, clean-install, Beacon, CLI, and disclosed-limit verification result; a Chinese translation is provided alongside it.
+- `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: historical pre-Alpha.4 release-preparation check for local gates, capability audit, public self-pilot, and public root-signed lockfile verification.
 - `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Fireseed Wave 1.
 - `FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
 - `FIRESEED_ALPHA_COMPLETION_AUDIT_2026-07-06.md`: requirement-by-requirement completion audit for Fireseed Alpha public-release preparation.

@@ -95,6 +95,8 @@ Release hygiene:
 
 The `0.1.0-alpha.4` release-convergence batch is published and publicly verified. The current task is no longer release preparation; it is Fireseed external falsification: measure whether independent reviewers and Agents can reproduce the loop, preserve the trust boundary, and lower fact-recovery and screening cost compared with ordinary website-only review.
 
+Post-Alpha.4 benchmark tooling is present on `main` but has not been republished to npm. It is evaluation infrastructure rather than a change to the Alpha.4 signed-artifact or verification protocol.
+
 The current launch path is Fireseed Alpha, defined in `FIRESEED_ALPHA_PLAN.md`, with the operational GO/HOLD decision in `FIRESEED_READINESS_GATE.md` and the first GO decision in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 
 Fireseed Alpha is the minimum necessary public collaboration loop:

@@ -21,6 +21,8 @@ test("transaction-cost benchmark is packaged and documented as a Fireseed experi
   assert.match(docsIndex, /FIRESEED_TRANSACTION_COST_BENCHMARK\.md/);
   assert.match(readme, /## Transaction-Cost Benchmark/);
   assert.match(readme, /does not prove a general transaction-cost reduction claim/i);
+  assert.match(readme, /post-Alpha\.4 Fireseed benchmark tooling/);
+  assert.match(readme, /Use a source checkout for the benchmark commands below/);
 });
 
 test("cold-start prompts do not expose pinned benchmark answers", () => {

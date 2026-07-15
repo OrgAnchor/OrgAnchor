@@ -104,6 +104,8 @@ The accepted but not yet implemented `COMMERCIAL_FIT_LAYER.md` defines how price
 
 The current published package is `organchor@0.1.0-alpha.4` under the npm `alpha` dist-tag, with Git tag `v0.1.0-alpha.4`, a public GitHub prerelease, and an aligned public self-pilot at `https://organchor.org`. The source, npm package, GitHub Release, homepage, `/verify` page, Beacon, machine index, and installed-CLI verification path were publicly rechecked on 2026-07-15. Fireseed Alpha has a GO decision for named early adopter, technical, Agent, and evidence/governance review. It is not stable v1, and broader promotion remains subject to the current release gate. The core alpha surface includes root authority records, signed official-presence records, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
 
+The `main` branch also contains post-Alpha.4 Fireseed benchmark tooling. That evaluation tooling has not been republished to npm and does not change the Alpha.4 signed-artifact or verification protocol. Use a source checkout for the benchmark commands below.
+
 OrgAnchor's own public self-pilot is active at `https://organchor.org/verify/`. Its real operational artifacts live outside this source repository so that the publishable project remains clean: no private keys, provider tokens, payment records, or deployment credentials are stored here.
 
 Implemented so far:
@@ -201,7 +203,7 @@ Use the explicit `@alpha` tag until OrgAnchor has a stable release. The npm regi
 
 The Fireseed benchmark compares two fresh-context review conditions for the same organization: ordinary homepage-only review and OrgAnchor-enabled discovery plus verification. It measures exact fact coverage, unsupported assertions, trust-boundary handling, and observable review cost without assuming that OrgAnchor wins.
 
-Run the deterministic reference collector:
+From a source checkout, run the deterministic reference collector:
 
 ```bash
 npm run benchmark:transaction -- --collect https://organchor.org

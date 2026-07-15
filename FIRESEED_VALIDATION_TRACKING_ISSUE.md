@@ -109,6 +109,12 @@ npm install -g organchor@alpha
 organchor doctor https://organchor.org
 organchor beacon inspect https://organchor.org
 organchor verify url https://organchor.org --compact
+```
+
+From a source checkout, run the local demos and post-Alpha.4 benchmark tooling:
+
+```bash
+npm ci
 npm run visible:demo -- --out ./visible-demo --serve
 npm run agent:demo
 npm run benchmark:transaction -- --collect https://organchor.org

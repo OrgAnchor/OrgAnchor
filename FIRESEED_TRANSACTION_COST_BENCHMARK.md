@@ -62,6 +62,8 @@ The expected values are pinned to the Alpha.4 public self-pilot. A later self-pi
 
 The reference collector checks that the benchmark mechanics and OrgAnchor machine contract work. It is not an independent AI-Agent result.
 
+The benchmark is currently post-Alpha.4 source-repository tooling. Run these commands from a source checkout; do not assume they are present in the already published Alpha.4 npm package.
+
 ```bash
 npm run benchmark:transaction -- --collect https://organchor.org
 ```

@@ -1,0 +1,74 @@
+{
+  "type": "OrgAnchorTransactionCostBenchmarkSubmission",
+  "version": "0.1",
+  "case_id": "organchor-self-pilot-alpha4-2026-07-15",
+  "evidence_class": "REFERENCE_FIXTURE",
+  "runner": {
+    "name": "reference-fixture",
+    "version": "0.1",
+    "run_id": "not-an-empirical-run"
+  },
+  "runs": [
+    {
+      "condition": "WEBSITE_ONLY",
+      "metrics": {
+        "elapsed_ms": null,
+        "http_requests": null,
+        "bytes_read": null,
+        "command_count": null,
+        "output_bytes": null,
+        "prompt_tokens": null,
+        "completion_tokens": null
+      },
+      "facts": {
+        "organization_name": "OrgAnchor",
+        "official_origin": "https://organchor.org",
+        "root_authority_hash": null,
+        "statement_hash": null,
+        "overall_status": null,
+        "identity_status": null,
+        "value_status": null,
+        "conformance_status": null,
+        "trust_decision": null,
+        "third_party_claims": null,
+        "manual_checks": null,
+        "risk_gaps": null
+      },
+      "evidence_urls": [
+        "https://organchor.org/"
+      ],
+      "notes": "Synthetic shape fixture. No cost measurements are claimed."
+    },
+    {
+      "condition": "ORGANCHOR_ENABLED",
+      "metrics": {
+        "elapsed_ms": null,
+        "http_requests": null,
+        "bytes_read": null,
+        "command_count": null,
+        "output_bytes": null,
+        "prompt_tokens": null,
+        "completion_tokens": null
+      },
+      "facts": {
+        "organization_name": "OrgAnchor",
+        "official_origin": "https://organchor.org",
+        "root_authority_hash": "sha256:7d720aa028e4b3b94d47b8e8789b0d7f5c8bb0564e80fac7f0ad7b275718e1b9",
+        "statement_hash": "sha256:5811e45488c093e8820b35edf144a8dbae0c20a79063a44993043bfdf26a0a36",
+        "overall_status": "PASS",
+        "identity_status": "PASS",
+        "value_status": "PASS",
+        "conformance_status": "FULL_COMPATIBLE",
+        "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+        "third_party_claims": 0,
+        "manual_checks": 37,
+        "risk_gaps": 3
+      },
+      "evidence_urls": [
+        "https://organchor.org/.well-known/organchor.json",
+        "https://organchor.org/verify/organchor.json"
+      ],
+      "notes": "Synthetic shape fixture. Exact facts test scoring only."
+    }
+  ]
+}

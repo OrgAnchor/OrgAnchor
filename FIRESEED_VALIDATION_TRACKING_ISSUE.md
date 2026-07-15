@@ -100,13 +100,18 @@ Focus:
 - Directory snapshot;
 - compact verification result;
 - risk gaps and next actions.
+- paired website-only versus OrgAnchor-enabled fact recovery using `FIRESEED_TRANSACTION_COST_BENCHMARK.md`.
 
 ## Fast Local Checks
 
 ```bash
+npm install -g organchor@alpha
+organchor doctor https://organchor.org
+organchor beacon inspect https://organchor.org
+organchor verify url https://organchor.org --compact
 npm run visible:demo -- --out ./visible-demo --serve
 npm run agent:demo
-organchor verify url <local-or-public-organchor-url> --compact
+npm run benchmark:transaction -- --collect https://organchor.org
 ```
 
 ## Useful Public Docs
@@ -114,6 +119,8 @@ organchor verify url <local-or-public-organchor-url> --compact
 - `README.md`
 - `PUBLIC_EXPLAINER.md`
 - `FIRESEED_OUTREACH_KIT.md`
+- `PUBLIC_SELF_VERIFICATION_2026-07-15.md`
+- `FIRESEED_TRANSACTION_COST_BENCHMARK.md`
 - `CAPABILITY_TRACEABILITY_MATRIX.md`
 - `VISIBLE_ACCEPTANCE.md`
 - `CLAIMS_EVIDENCE_PROTOCOL.md`
@@ -130,6 +137,7 @@ Wave 1 is useful if it produces:
 - at least one independent technical review;
 - at least one evidence/governance review;
 - at least one AI-agent or Directory discovery experiment;
+- at least one paired website-only versus OrgAnchor-enabled benchmark submission;
 - at least one documented failure, confusion, or gap that changes the roadmap.
 
 ## Hold Criteria

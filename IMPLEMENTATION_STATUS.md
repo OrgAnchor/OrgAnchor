@@ -86,13 +86,14 @@ Release hygiene:
 - Install smoke.
 - Package inclusion checks that reject private keys, local credentials, wallets, Cloudflare notes, and self-pilot private artifacts.
 - Alpha-line release-state matrix and checklist alignment merged into `main`.
-- `organchor@0.1.0-alpha.3` published through npm Trusted Publishing under the `alpha` dist-tag.
+- `organchor@0.1.0-alpha.4` published through npm Trusted Publishing under the `alpha` dist-tag, with npm provenance metadata and an aligned GitHub prerelease.
 - Public self-pilot release-state hashes and carrier receipts recorded in `RELEASE_STATE_2026-05-25.md`.
 - Public self-pilot minimal review recorded in `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`, including public compact verification, doctor readiness, signed statement verification, signed claims/evidence verification, and root-signed lockfile verification.
+- Alpha.4 public release linkage, clean npm install, homepage, `/verify`, Beacon, machine index, and installed-CLI verification recorded in `PUBLIC_SELF_VERIFICATION_2026-07-15.md`.
 
 ## Current Fireseed Launch Focus
 
-The source tree is currently preparing the local `0.1.0-alpha.4` release-convergence candidate. The public npm package remains `0.1.0-alpha.3` until owner-approved publication. Wider outreach should wait until the installable package, public self-pilot, Agent result contract, and release notes describe the same source state.
+The `0.1.0-alpha.4` release-convergence batch is published and publicly verified. The current task is no longer release preparation; it is Fireseed external falsification: measure whether independent reviewers and Agents can reproduce the loop, preserve the trust boundary, and lower fact-recovery and screening cost compared with ordinary website-only review.
 
 The current launch path is Fireseed Alpha, defined in `FIRESEED_ALPHA_PLAN.md`, with the operational GO/HOLD decision in `FIRESEED_READINESS_GATE.md` and the first GO decision in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 
@@ -118,6 +119,7 @@ The shortest useful launch path is now:
 6. Invite named early adopting organizations, technical reviewers, and evidence/governance critics according to `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 7. Run the first low-risk external pilot using `PILOT_MINIMAL_PATH.md` first, then `EXTERNAL_PILOT_RUNBOOK.md` if the pilot needs the full path.
 8. Feed pilot lessons back into onboarding, evidence, and agent-facing verification outputs.
+9. Use `FIRESEED_TRANSACTION_COST_BENCHMARK.md` to compare website-only and OrgAnchor-enabled review before making any public transaction-cost reduction claim.
 
 ## Not Yet Complete
 

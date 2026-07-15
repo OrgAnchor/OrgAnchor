@@ -4,7 +4,7 @@
   "description": "Signed organizational identity continuity toolchain.",
   "type": "module",
   "main": "dist/cli.js",
-  "homepage": "https://organchor.org/verify/",
+  "homepage": "https://organchor.org/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OrgAnchor/OrgAnchor.git"
@@ -21,6 +21,7 @@
     "scripts/agent-discovery-demo.mjs",
     "scripts/capability-audit.mjs",
     "scripts/capability-scenarios.mjs",
+    "scripts/transaction-cost-benchmark.mjs",
     "scripts/visible-acceptance-demo.mjs",
     "templates/",
     "examples/",
@@ -63,6 +64,7 @@
     "FIRESEED_OUTREACH_KIT.md",
     "FIRESEED_LAUNCH_DECISION_2026-06-01.md",
     "FIRESEED_READINESS_GATE.md",
+    "FIRESEED_TRANSACTION_COST_BENCHMARK.md",
     "FIRESEED_VALIDATION_TRACKING_ISSUE.md",
     "IMPLEMENTATION_STATUS.md",
     "LANGUAGE_COMPATIBILITY.md",
@@ -108,6 +110,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "agent:demo": "node scripts/agent-discovery-demo.mjs",
+    "benchmark:transaction": "node scripts/transaction-cost-benchmark.mjs",
     "capability:audit": "node scripts/capability-audit.mjs",
     "capability:scenarios": "node scripts/capability-scenarios.mjs",
     "check": "node --run typecheck && node --run test",

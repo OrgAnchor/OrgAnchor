@@ -1,0 +1,93 @@
+{
+  "type": "OrgAnchorTransactionCostBenchmarkCase",
+  "version": "0.1",
+  "case_id": "organchor-self-pilot-alpha4-2026-07-15",
+  "title": "OrgAnchor Alpha.4 known-origin fact recovery",
+  "origin": "https://organchor.org",
+  "conditions": [
+    {
+      "id": "WEBSITE_ONLY",
+      "instructions": [
+        "Fetch only the ordinary homepage response at the origin.",
+        "Do not follow /verify, well-known Beacon, or OrgAnchor-specific links.",
+        "Return null for facts that the homepage response cannot support."
+      ]
+    },
+    {
+      "id": "ORGANCHOR_ENABLED",
+      "instructions": [
+        "Start from the same origin.",
+        "Use the well-known OrgAnchor Beacon and machine-readable verify index.",
+        "Run strict OrgAnchor verification before reporting signed or status facts.",
+        "Do not convert verification status into a final trust decision."
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "organization_name",
+      "value_type": "string",
+      "expected": "OrgAnchor"
+    },
+    {
+      "id": "official_origin",
+      "value_type": "string",
+      "expected": "https://organchor.org"
+    },
+    {
+      "id": "root_authority_hash",
+      "value_type": "string",
+      "expected": "sha256:7d720aa028e4b3b94d47b8e8789b0d7f5c8bb0564e80fac7f0ad7b275718e1b9"
+    },
+    {
+      "id": "statement_hash",
+      "value_type": "string",
+      "expected": "sha256:5811e45488c093e8820b35edf144a8dbae0c20a79063a44993043bfdf26a0a36"
+    },
+    {
+      "id": "overall_status",
+      "value_type": "string",
+      "expected": "PASS"
+    },
+    {
+      "id": "identity_status",
+      "value_type": "string",
+      "expected": "PASS"
+    },
+    {
+      "id": "value_status",
+      "value_type": "string",
+      "expected": "PASS"
+    },
+    {
+      "id": "conformance_status",
+      "value_type": "string",
+      "expected": "FULL_COMPATIBLE"
+    },
+    {
+      "id": "trust_decision",
+      "value_type": "string",
+      "expected": "NOT_ASSIGNED_BY_ORGANCHOR"
+    },
+    {
+      "id": "third_party_claims",
+      "value_type": "number",
+      "expected": 0
+    },
+    {
+      "id": "manual_checks",
+      "value_type": "number",
+      "expected": 37
+    },
+    {
+      "id": "risk_gaps",
+      "value_type": "number",
+      "expected": 3
+    }
+  ],
+  "limits": [
+    "This case tests known-origin fact recovery, not internet-scale candidate discovery.",
+    "The ground truth is pinned to the Alpha.4 self-pilot and must not be rewritten for later releases.",
+    "Verification status does not prove claim truth, evidence sufficiency, or final trust."
+  ]
+}

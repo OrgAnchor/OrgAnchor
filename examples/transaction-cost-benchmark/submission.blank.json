@@ -1,0 +1,69 @@
+{
+  "type": "OrgAnchorTransactionCostBenchmarkSubmission",
+  "version": "0.1",
+  "case_id": "organchor-self-pilot-alpha4-2026-07-15",
+  "evidence_class": "INTERNAL_COLD_START",
+  "runner": {
+    "name": "replace-with-agent-or-runner-name",
+    "version": "replace-with-exact-version",
+    "run_id": "replace-with-unique-run-id"
+  },
+  "runs": [
+    {
+      "condition": "WEBSITE_ONLY",
+      "metrics": {
+        "elapsed_ms": null,
+        "http_requests": null,
+        "bytes_read": null,
+        "command_count": null,
+        "output_bytes": null,
+        "prompt_tokens": null,
+        "completion_tokens": null
+      },
+      "facts": {
+        "organization_name": null,
+        "official_origin": null,
+        "root_authority_hash": null,
+        "statement_hash": null,
+        "overall_status": null,
+        "identity_status": null,
+        "value_status": null,
+        "conformance_status": null,
+        "trust_decision": null,
+        "third_party_claims": null,
+        "manual_checks": null,
+        "risk_gaps": null
+      },
+      "evidence_urls": [],
+      "notes": ""
+    },
+    {
+      "condition": "ORGANCHOR_ENABLED",
+      "metrics": {
+        "elapsed_ms": null,
+        "http_requests": null,
+        "bytes_read": null,
+        "command_count": null,
+        "output_bytes": null,
+        "prompt_tokens": null,
+        "completion_tokens": null
+      },
+      "facts": {
+        "organization_name": null,
+        "official_origin": null,
+        "root_authority_hash": null,
+        "statement_hash": null,
+        "overall_status": null,
+        "identity_status": null,
+        "value_status": null,
+        "conformance_status": null,
+        "trust_decision": null,
+        "third_party_claims": null,
+        "manual_checks": null,
+        "risk_gaps": null
+      },
+      "evidence_urls": [],
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "type": "OrgAnchorExternalAgentOperatorInvocation",
+  "version": "0.1",
+  "runner": "Codex CLI",
+  "runner_version": "0.144.5",
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "ephemeral_session": true,
+  "isolated_workspace": "OrgAnchor-external-agent-wave1-run02-terra",
+  "user_config_loaded": false,
+  "project_rules_loaded": false,
+  "sandbox": "danger-full-access",
+  "approval_policy": "never",
+  "isolation_enforcement": "TASK_CONTRACT_AND_ISOLATED_WORKING_DIRECTORY",
+  "cli_event_log_sha256": "b50df4adc549372a79f5240352b4abccf0a04d34667f8c8206338e2ac8868fab",
+  "cli_final_message_sha256": "0f203d5388cf997cde4acb3462f04e39f41b0b7cb88d5c6a242baf0f81b4365d",
+  "verification_command_adaptation": {
+    "initial_command": "npx --yes organchor@alpha verify url https://organchor-evidence-eval-v1.pages.dev --compact",
+    "initial_result": "BLOCKED_BY_LOCAL_POWERSHELL_SCRIPT_POLICY",
+    "successful_equivalent": "npx.cmd --yes organchor@alpha verify url https://organchor-evidence-eval-v1.pages.dev --compact",
+    "verification_completed": true
+  },
+  "discarded_pre_run_attempt": {
+    "raw_result_produced": false,
+    "counted_as_wave_result": false,
+    "reason": "The initial automated sandbox policy blocked the required verifier command."
+  }
+}

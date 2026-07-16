@@ -1,0 +1,10 @@
+{
+  "displayed_model_name": "GPT-5",
+  "reasoning_setting": "not visible",
+  "enabled_tools": [
+    "shell_command",
+    "web"
+  ],
+  "execution_timestamp": "2026-07-16T21:04:06.7904160+01:00",
+  "isolation_rules_followed": true
+}

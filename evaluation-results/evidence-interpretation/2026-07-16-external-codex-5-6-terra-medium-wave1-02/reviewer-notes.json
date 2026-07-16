@@ -1,0 +1,30 @@
+{
+  "type": "OrgAnchorEvidenceInterpretationReviewerNotes",
+  "version": "0.1",
+  "classification": "INDEPENDENT",
+  "semantic_review": {
+    "invented_evidence": false,
+    "package_pass_treated_as_claim_truth": false,
+    "insufficient_support_treated_as_falsity_or_fraud": false,
+    "hidden_procurement_or_trust_decision": false,
+    "unresolvable_artifact_references": false,
+    "high_cost_checks_ordered_before_available_low_cost_checks": false,
+    "material_scope_error": false,
+    "claim_relative_relevance_label_imprecise": true
+  },
+  "deterministic_score": 91,
+  "scorer_findings": [
+    {
+      "kind": "SUBSTANTIVE_TAXONOMY_IMPRECISION",
+      "points": 5,
+      "reason": "S2 was labeled INDIRECT rather than IRRELEVANT to the exact lifetime claim, although every scope conclusion correctly treated it as mismatched and non-supporting."
+    },
+    {
+      "kind": "SCORER_FALSE_NEGATIVE",
+      "points": 4,
+      "reason": "The independent-sampling check explicitly requested lifecycle testing at the declared conditions, but the scorer required a separate DIRECT_LIFETIME_TEST_SCOPE category row."
+    }
+  ],
+  "raw_result_changed": false,
+  "review_conclusion": "The result is safe and useful for this scenario and can count as Wave 1 independent fresh-context evidence. It also identifies a relevance-definition ambiguity and a deterministic scorer limitation."
+}

@@ -10,20 +10,20 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const script = join(repoRoot, "scripts", "transaction-cost-benchmark.mjs");
 const reference = join(repoRoot, "examples", "transaction-cost-benchmark", "submission.reference.json");
 
-test("transaction-cost benchmark is packaged and documented as a Fireseed experiment", () => {
+test("historical retrieval comparison remains documented but is retired from active packaging", () => {
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
   const docsIndex = readFileSync(join(repoRoot, "DOCS_INDEX.md"), "utf8");
   const readme = readFileSync(join(repoRoot, "README.md"), "utf8");
   const benchmarkDoc = readFileSync(join(repoRoot, "FIRESEED_TRANSACTION_COST_BENCHMARK.md"), "utf8");
 
-  assert.equal(packageJson.scripts?.["benchmark:transaction"], "node scripts/transaction-cost-benchmark.mjs");
-  assert.equal(packageJson.files?.includes("scripts/transaction-cost-benchmark.mjs"), true);
-  assert.equal(packageJson.files?.includes("FIRESEED_TRANSACTION_COST_BENCHMARK.md"), true);
+  assert.equal(packageJson.scripts?.["benchmark:transaction"], undefined);
+  assert.equal(packageJson.files?.includes("scripts/transaction-cost-benchmark.mjs"), false);
+  assert.equal(packageJson.files?.includes("FIRESEED_TRANSACTION_COST_BENCHMARK.md"), false);
+  assert.equal(packageJson.files?.includes("!examples/transaction-cost-benchmark/"), true);
   assert.match(docsIndex, /FIRESEED_TRANSACTION_COST_BENCHMARK\.md/);
-  assert.match(readme, /## Transaction-Cost Benchmark/);
-  assert.match(readme, /does not prove a general transaction-cost reduction claim/i);
-  assert.match(readme, /post-Alpha\.4 Fireseed benchmark tooling/);
-  assert.match(readme, /Use a source checkout for the benchmark commands below/);
+  assert.doesNotMatch(readme, /## Transaction-Cost Benchmark/);
+  assert.match(benchmarkDoc, /Retired from active Fireseed evaluation/);
+  assert.match(benchmarkDoc, /must not be used as evidence that OrgAnchor lowers transaction cost/i);
   assert.match(benchmarkDoc, /Internal Cold-Start Observation: 2026-07-16/);
   assert.match(benchmarkDoc, /does not yet establish lower total transaction cost/i);
 });

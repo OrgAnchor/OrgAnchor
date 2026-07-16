@@ -59,7 +59,8 @@ If you are reviewing how the project is operated by a human owner and AI executi
 - `AI_OPERATING_MODEL.md`: active project operating model for human-owner and AI-execution-lead collaboration, including default execution authority and required owner decision gates.
 - `PUBLIC_RELEASE_CHECKLIST.md`: active public-release operating gate for local checks, public self-pilot checks, asset alignment, owner intervention gates, publishing order, and hold criteria.
 - `PUBLIC_SELF_VERIFICATION_2026-07-15.md`: current Alpha.4 public release-linkage, endpoint, clean-install, Beacon, CLI, and disclosed-limit verification result; `PUBLIC_SELF_VERIFICATION_2026-07-15.zh-CN.md` is its Chinese translation.
-- `FIRESEED_TRANSACTION_COST_BENCHMARK.md`: executable paired-test protocol and scoring boundary for website-only versus OrgAnchor-enabled fact recovery and review-cost observation.
+- `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: active Fireseed design for testing whether an unfamiliar Agent separates valid identity/package integrity from insufficient product-claim evidence.
+- `FIRESEED_TRANSACTION_COST_BENCHMARK.md`: retired internal retrieval-calibration record; preserved for history but no longer an active Fireseed target or packaged npm document.
 - `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: historical pre-Alpha.4 local release gate, capability audit, public self-pilot, public root-signed lockfile, and diff-hygiene snapshot.
 - `CURRENT_PROJECT_STATE_2026-07-02.md`: historical source-repository state snapshot as of 2026-07-02, including the Fireseed boundary, repository boundary, next-work order, and hold conditions at that date.
 - `ADOPTER_QUICKSTART.md`: shortest practical path for an adopting organization to create a root authority, signed official-presence statement, public `/verify` package, and first adoption status.

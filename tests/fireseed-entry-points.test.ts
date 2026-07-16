@@ -84,13 +84,12 @@ test("Fireseed outreach kit gives external reviewers concrete tasks and boundari
   assert.match(docsIndex, /FIRESEED_OUTREACH_KIT\.md/);
   assert.match(call, /FIRESEED_OUTREACH_KIT\.md/);
   assert.match(kit, /https:\/\/github\.com\/OrgAnchor\/OrgAnchor\/issues\/4/);
-  assert.match(kit, /FIRESEED_TRANSACTION_COST_BENCHMARK\.md/);
-  assert.match(kit, /COLD_START_RUNBOOK\.md/);
-  assert.match(kit, /not a claim that OrgAnchor has already proven lower transaction cost/i);
+  assert.match(kit, /EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION\.md/);
+  assert.match(kit, /distinguishes valid identity\/package integrity from insufficient claim support/i);
 
   const trackingIssue = readText("FIRESEED_VALIDATION_TRACKING_ISSUE.md");
-  assert.match(trackingIssue, /Current Internal Reference/);
-  assert.match(trackingIssue, /does not count as independent external evidence/i);
+  assert.match(trackingIssue, /Retired Internal Calibration/);
+  assert.match(trackingIssue, /no longer a Wave 1 success criterion/i);
 
   for (const phrase of [
     "Adopting Organization Trial",

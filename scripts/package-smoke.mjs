@@ -12,11 +12,15 @@ import {
   writeFileSync
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { basename, join, resolve } from "node:path";
+import { basename, isAbsolute, join, relative as pathRelative, resolve } from "node:path";
 
 const repoRoot = resolve(process.cwd());
 const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
 const packageFiles = packageJson.files ?? [];
+const packageIncludes = packageFiles.filter((entry) => !entry.startsWith("!"));
+const packageExclusions = packageFiles
+  .filter((entry) => entry.startsWith("!"))
+  .map((entry) => entry.slice(1).replace(/\/$/, ""));
 const tscPath = join(repoRoot, "node_modules", "typescript", "bin", "tsc");
 
 if (!existsSync(tscPath)) {
@@ -33,7 +37,7 @@ try {
   copyRequiredFile("package.json");
   copyRequiredFile("LICENSE");
 
-  for (const entry of packageFiles) {
+  for (const entry of packageIncludes) {
     if (entry === "*.md") {
       for (const file of readdirSync(repoRoot).filter((name) => name.endsWith(".md"))) {
         copyRequiredFile(file);
@@ -45,6 +49,10 @@ try {
       continue;
     }
     copyRequiredFile(entry);
+  }
+
+  for (const entry of packageExclusions) {
+    removeExcludedEntry(entry);
   }
 
   const copiedFiles = collectFiles(packageDir);
@@ -93,6 +101,7 @@ try {
   assertContains(copiedFiles, join("examples", "directory", "directory-origins.json"));
   assertContains(copiedFiles, join("examples", "directory", "directory-snapshot.json"));
   assertContains(copiedFiles, join("examples", "complete", "statements", "official-endpoints.json"));
+  assertNotContainsPrefix(copiedFiles, join("examples", "transaction-cost-benchmark"));
   assertContains(copiedFiles, join("examples", "complete", "statements", "official-endpoints.json.sig"));
   assertContains(copiedFiles, join("src", "schema", "directory-snapshot.schema.json"));
   assertContains(copiedFiles, join("src", "schema", "official-endpoints.schema.json"));
@@ -295,6 +304,16 @@ function copyRequiredDirectory(relative) {
     throw new Error(`Missing package directory: ${relative}`);
   }
   cpSync(source, join(packageDir, relative), { recursive: true });
+}
+
+function removeExcludedEntry(relative) {
+  const root = resolve(packageDir);
+  const target = resolve(root, relative);
+  const relativeTarget = pathRelative(root, target);
+  if (relativeTarget === "" || relativeTarget.startsWith("..") || isAbsolute(relativeTarget)) {
+    throw new Error(`Package exclusion escapes package directory: ${relative}`);
+  }
+  rmSync(target, { recursive: true, force: true });
 }
 
 function run(command, args, cwd) {

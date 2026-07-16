@@ -53,7 +53,6 @@ Confirm these are true:
 npm run release:check
 npm run agent:demo
 npm run visible:demo -- --cleanup
-npm run benchmark:transaction -- --collect https://organchor.org
 ```
 
 Public reference surfaces should also be available:
@@ -244,8 +243,7 @@ Minimum task list:
 
 ```text
 run npm run agent:demo;
-run the isolated paired prompts in examples/transaction-cost-benchmark/COLD_START_RUNBOOK.md;
-submit the pair for scoring without exposing the pinned answers to either Agent context;
+review the active evidence-interpretation scenario and its trust-boundary requirements;
 inspect beacon sweep NDJSON;
 build a local Beacon index;
 query by need and capability;
@@ -273,13 +271,13 @@ Evidence / Governance Review
 
 Choose based on whether the issue is implementation-level or model/governance-level.
 
-Post the paired-run summary and links to preserved raw outputs in the canonical Wave 1 issue:
+Post evidence-interpretation findings and links to preserved raw outputs in the canonical Wave 1 issue:
 
 ```text
 https://github.com/OrgAnchor/OrgAnchor/issues/4
 ```
 
-The benchmark is an observation protocol, not a claim that OrgAnchor has already proven lower transaction cost. See `FIRESEED_TRANSACTION_COST_BENCHMARK.md` for interpretation boundaries.
+Use `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md` when reviewing whether a valid package can still expose insufficient product-claim support.
 
 ## What Counts As Useful Feedback
 
@@ -319,8 +317,8 @@ reviewers can distinguish identity verification from trust decisions;
 reviewers can see S1-S3 strengths and gaps;
 S4/S5 are understood as design previews;
 commercial-fit gaps are recognized without expanding into marketplace scope;
-at least one isolated website-only versus OrgAnchor-enabled pair is scored;
-an Agent does not convert OrgAnchor verification into a final trust decision;
+at least one unfamiliar Agent distinguishes valid identity/package integrity from insufficient claim support;
+an Agent does not convert OrgAnchor verification into product truth or a final trust decision;
 feedback produces actionable issues or pull requests.
 ```
 

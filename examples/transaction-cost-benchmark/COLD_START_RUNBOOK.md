@@ -1,5 +1,7 @@
 # Cold-Start Paired Agent Run
 
+Status: Retired internal calibration. Do not use this runbook as an active transaction-cost experiment or Fireseed external target. See `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md` for the active falsifiable evaluation direction.
+
 Use this kit to compare the same Agent under two information conditions without leaking the benchmark ground truth.
 
 ## Isolation Rules

@@ -13,11 +13,15 @@ import {
   writeFileSync
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { delimiter, join, resolve } from "node:path";
+import { delimiter, isAbsolute, join, relative as pathRelative, resolve } from "node:path";
 
 const repoRoot = resolve(process.cwd());
 const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
 const packageFiles = packageJson.files ?? [];
+const packageIncludes = packageFiles.filter((entry) => !entry.startsWith("!"));
+const packageExclusions = packageFiles
+  .filter((entry) => entry.startsWith("!"))
+  .map((entry) => entry.slice(1).replace(/\/$/, ""));
 const tscPath = join(repoRoot, "node_modules", "typescript", "bin", "tsc");
 
 if (!existsSync(tscPath)) {
@@ -38,7 +42,7 @@ try {
 
   copyRequiredFile("package.json");
   copyRequiredFile("LICENSE");
-  for (const entry of packageFiles) {
+  for (const entry of packageIncludes) {
     if (entry === "*.md") {
       for (const file of readdirSync(repoRoot).filter((name) => name.endsWith(".md"))) {
         copyRequiredFile(file);
@@ -50,6 +54,9 @@ try {
       continue;
     }
     copyRequiredFile(entry);
+  }
+  for (const entry of packageExclusions) {
+    removeExcludedEntry(entry);
   }
 
   const binPath = createBinShim();
@@ -178,6 +185,16 @@ function copyRequiredDirectory(relative) {
     throw new Error(`Missing package directory: ${relative}`);
   }
   cpSync(source, join(packageDir, relative), { recursive: true });
+}
+
+function removeExcludedEntry(relative) {
+  const root = resolve(packageDir);
+  const target = resolve(root, relative);
+  const relativeTarget = pathRelative(root, target);
+  if (relativeTarget === "" || relativeTarget.startsWith("..") || isAbsolute(relativeTarget)) {
+    throw new Error(`Package exclusion escapes package directory: ${relative}`);
+  }
+  rmSync(target, { recursive: true, force: true });
 }
 
 function run(command, args, cwd, env = process.env) {

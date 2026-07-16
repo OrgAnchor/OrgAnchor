@@ -93,11 +93,11 @@ Release hygiene:
 
 ## Current Fireseed Launch Focus
 
-The `0.1.0-alpha.4` release-convergence batch is published and publicly verified. The current task is no longer release preparation; it is Fireseed external falsification: measure whether independent reviewers and Agents can reproduce the loop, preserve the trust boundary, and lower fact-recovery and screening cost compared with ordinary website-only review.
+The `0.1.0-alpha.4` release-convergence batch is published and publicly verified. The current task is no longer release preparation; it is Fireseed external falsification: test whether unfamiliar Agents preserve the boundary between valid identity/package integrity and actual claim support when evidence is weak, scoped incorrectly, stale, missing, or adversarial.
 
-Post-Alpha.4 benchmark tooling is present on `main` but has not been republished to npm. It is evaluation infrastructure rather than a change to the Alpha.4 signed-artifact or verification protocol.
+The former homepage-only versus OrgAnchor retrieval comparison has been retired as an active benchmark. It remains a historical integration calibration because structured machine data being easier to retrieve than homepage prose is a design premise, not a useful transaction-cost experiment.
 
-The first contract-valid internal cold-start pair completed on 2026-07-16: website-only recovery was 2/12, OrgAnchor-enabled recovery was 12/12, both had zero incorrect assertions, and the enhanced result preserved the external trust boundary. Cost metrics were unavailable, so the result is preparation for external runs rather than proof of lower transaction cost.
+The active first scenario is defined in `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: a fictional manufacturer has a valid signed package, a limited S1 test, an authentic but out-of-scope S2 report, no S3 support, and an insufficiently supported 10,000-hour product-life claim.
 
 The current launch path is Fireseed Alpha, defined in `FIRESEED_ALPHA_PLAN.md`, with the operational GO/HOLD decision in `FIRESEED_READINESS_GATE.md` and the first GO decision in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 
@@ -123,7 +123,7 @@ The shortest useful launch path is now:
 6. Invite named early adopting organizations, technical reviewers, and evidence/governance critics according to `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 7. Run the first low-risk external pilot using `PILOT_MINIMAL_PATH.md` first, then `EXTERNAL_PILOT_RUNBOOK.md` if the pilot needs the full path.
 8. Feed pilot lessons back into onboarding, evidence, and agent-facing verification outputs.
-9. Use `FIRESEED_TRANSACTION_COST_BENCHMARK.md` to compare website-only and OrgAnchor-enabled review before making any public transaction-cost reduction claim.
+9. Build and run the first adversarial evidence-interpretation scenario before making claims that OrgAnchor helps Agents resist polished but insufficient evidence.
 
 ## Not Yet Complete
 

@@ -100,13 +100,13 @@ Focus:
 - Directory snapshot;
 - compact verification result;
 - risk gaps and next actions.
-- paired website-only versus OrgAnchor-enabled fact recovery using `FIRESEED_TRANSACTION_COST_BENCHMARK.md`.
+- adversarial evidence interpretation where identity and package integrity pass but a product claim remains insufficiently supported.
 
-## Current Internal Reference
+## Retired Internal Calibration
 
-On 2026-07-16, two fresh-context internal Codex tasks completed the corrected paired run. Website-only recovery was 2/12 and OrgAnchor-enabled recovery was 12/12, with zero incorrect assertions and a preserved external trust boundary.
+The former homepage-only versus OrgAnchor retrieval comparison is preserved as an internal integration calibration, not as a transaction-cost experiment. Structured machine data being easier to retrieve than homepage prose is a design premise and is no longer a Wave 1 success criterion.
 
-This is `INTERNAL_COLD_START` evidence. It does not count as independent external evidence and does not prove lower total transaction cost because provider cost metrics were unavailable. See `FIRESEED_TRANSACTION_COST_BENCHMARK.md` for the method, calibration failure, result boundary, and external target.
+The active uncertainty is whether an unfamiliar Agent can keep valid identity and package integrity separate from insufficient, mismatched, stale, or missing claim evidence. See `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`.
 
 ## Fast Local Checks
 
@@ -117,13 +117,12 @@ organchor beacon inspect https://organchor.org
 organchor verify url https://organchor.org --compact
 ```
 
-From a source checkout, run the local demos and post-Alpha.4 benchmark tooling:
+From a source checkout, run the local demos:
 
 ```bash
 npm ci
 npm run visible:demo -- --out ./visible-demo --serve
 npm run agent:demo
-npm run benchmark:transaction -- --collect https://organchor.org
 ```
 
 ## Useful Public Docs
@@ -132,7 +131,7 @@ npm run benchmark:transaction -- --collect https://organchor.org
 - `PUBLIC_EXPLAINER.md`
 - `FIRESEED_OUTREACH_KIT.md`
 - `PUBLIC_SELF_VERIFICATION_2026-07-15.md`
-- `FIRESEED_TRANSACTION_COST_BENCHMARK.md`
+- `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`
 - `CAPABILITY_TRACEABILITY_MATRIX.md`
 - `VISIBLE_ACCEPTANCE.md`
 - `CLAIMS_EVIDENCE_PROTOCOL.md`
@@ -149,7 +148,7 @@ Wave 1 is useful if it produces:
 - at least one independent technical review;
 - at least one evidence/governance review;
 - at least one AI-agent or Directory discovery experiment;
-- at least one paired website-only versus OrgAnchor-enabled benchmark submission;
+- at least one adversarial evidence-interpretation result that distinguishes package validity from claim support;
 - at least one documented failure, confusion, or gap that changes the roadmap.
 
 ## Hold Criteria

@@ -1,6 +1,10 @@
-# Fireseed Transaction-Cost Benchmark
+# Historical Fireseed Retrieval Comparison
 
-Status: Initial executable benchmark protocol for Fireseed external validation.
+Status: Retired from active Fireseed evaluation on 2026-07-16. Preserved as an internal Agent-contract retrieval calibration and historical correction record.
+
+This comparison must not be used as evidence that OrgAnchor lowers transaction cost. The website-only condition was artificially restricted, the requested facts were tailored to the OrgAnchor machine contract, and provider cost metrics were unavailable. Structured machine data being easier to retrieve than homepage prose is a design premise, not a useful causal experiment.
+
+The active falsifiable evaluation is now `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`, which tests whether an Agent can distinguish valid identity/package integrity from insufficient product-claim evidence.
 
 ## Purpose
 
@@ -151,7 +155,9 @@ The scored status is `READY_FOR_EXTERNAL_RUNS`, not `OBSERVED_IMPROVEMENT`, beca
 
 The raw outputs, submission, and scored report are retained with the Alpha.4 self-pilot operational artifacts outside the public source repository.
 
-## First Fireseed Target
+## Withdrawn External Target
+
+The following target was part of the original design and is retained only to show what was withdrawn. Fireseed should not recruit external reviewers to repeat this comparison.
 
 The initial target is deliberately modest:
 

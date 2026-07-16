@@ -35,7 +35,7 @@ Best public starting points:
 - `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`: current external-view review of OrgAnchor's own public self-pilot against the minimal path.
 - `PUBLIC_RELEASE_CHECKLIST.md`: practical release gate for public assets, local checks, owner approvals, and hold criteria.
 - `PUBLIC_SELF_VERIFICATION_2026-07-15.md`: current Alpha.4 public release-linkage, endpoint, clean-install, Beacon, CLI, and disclosed-limit verification result; a Chinese translation is provided alongside it.
-- `FIRESEED_TRANSACTION_COST_BENCHMARK.md`: executable paired-test protocol for comparing ordinary website-only review with OrgAnchor-enabled review without treating internal reference runs as external evidence.
+- `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: active design for testing whether an Agent can keep valid identity and package verification separate from insufficient product-claim evidence.
 - `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: historical pre-Alpha.4 release-preparation check for local gates, capability audit, public self-pilot, and public root-signed lockfile verification.
 - `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Fireseed Wave 1.
 - `FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
@@ -104,7 +104,7 @@ The accepted but not yet implemented `COMMERCIAL_FIT_LAYER.md` defines how price
 
 The current published package is `organchor@0.1.0-alpha.4` under the npm `alpha` dist-tag, with Git tag `v0.1.0-alpha.4`, a public GitHub prerelease, and an aligned public self-pilot at `https://organchor.org`. The source, npm package, GitHub Release, homepage, `/verify` page, Beacon, machine index, and installed-CLI verification path were publicly rechecked on 2026-07-15. Fireseed Alpha has a GO decision for named early adopter, technical, Agent, and evidence/governance review. It is not stable v1, and broader promotion remains subject to the current release gate. The core alpha surface includes root authority records, signed official-presence records, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
 
-The `main` branch also contains post-Alpha.4 Fireseed benchmark tooling. That evaluation tooling has not been republished to npm and does not change the Alpha.4 signed-artifact or verification protocol. Use a source checkout for the benchmark commands below.
+The `main` branch also contains post-Alpha.4 evidence-interpretation evaluation design. This work has not been republished to npm, does not change the Alpha.4 signed-artifact or verification protocol, and is explicitly marked as not yet implemented where runnable artifacts are still missing.
 
 OrgAnchor's own public self-pilot is active at `https://organchor.org/verify/`. Its real operational artifacts live outside this source repository so that the publishable project remains clean: no private keys, provider tokens, payment records, or deployment credentials are stored here.
 
@@ -198,20 +198,6 @@ organchor --help
 ```
 
 Use the explicit `@alpha` tag until OrgAnchor has a stable release. The npm registry still exposes an older alpha under `latest`, but that is not a stability claim and should not be used in public install instructions.
-
-## Transaction-Cost Benchmark
-
-The Fireseed benchmark compares two fresh-context review conditions for the same organization: ordinary homepage-only review and OrgAnchor-enabled discovery plus verification. It measures exact fact coverage, unsupported assertions, trust-boundary handling, and observable review cost without assuming that OrgAnchor wins.
-
-From a source checkout, run the deterministic reference collector:
-
-```bash
-npm run benchmark:transaction -- --collect https://organchor.org
-```
-
-This internal reference validates the benchmark mechanics. It is not independent Agent evidence and does not prove a general transaction-cost reduction claim. See `FIRESEED_TRANSACTION_COST_BENCHMARK.md` for paired-run discipline and the external submission format.
-
-Use `examples/transaction-cost-benchmark/COLD_START_RUNBOOK.md` when running the pair with an Agent. Its isolated prompts omit the pinned answers and keep the two conditions separate.
 
 ## Local Agent Discovery Demo
 

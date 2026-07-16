@@ -103,6 +103,8 @@ The first internal fresh-context Agent run was completed on 2026-07-16 with conv
 
 The resulting machine-contract gap is now addressed: the Agent task explicitly requires cost-progressive next checks. `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` and the dedicated GitHub issue form define isolation, raw-result preservation, scoring, semantic review, and comparable external submission requirements.
 
+The first public challenge deployment also exposed and corrected two overclaim risks: compact verification now defines `unsupported_claims` as a structural-linkage-gap metric rather than evidence sufficiency, and Directory fetch no longer raises candidate priority merely because third-party material or a declared recheck method exists.
+
 The current launch path is Fireseed Alpha, defined in `FIRESEED_ALPHA_PLAN.md`, with the operational GO/HOLD decision in `FIRESEED_READINESS_GATE.md` and the first GO decision in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 
 Fireseed Alpha is the minimum necessary public collaboration loop:

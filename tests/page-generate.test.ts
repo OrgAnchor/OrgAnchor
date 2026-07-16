@@ -85,7 +85,8 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.match(html, /Evidence Manifest/);
     assert.match(html, /Value Continuity/);
     assert.match(html, /Evidence-linked/);
-    assert.match(html, /Unsupported/);
+    assert.match(html, /Structural link gaps/);
+    assert.match(html, /Recheck method/);
     assert.match(html, /Agent Verification View/);
     assert.match(html, /Overall status/);
     assert.match(html, /Identity status/);

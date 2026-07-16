@@ -509,7 +509,7 @@ test("directory inspect discovers and verifies an origin-published Directory", a
       assert.equal(fetchReport.candidates.length, 2);
       assert.equal(fetchReport.candidates[0].record_id, "self");
       assert.equal(fetchReport.candidates[0].origin, origin);
-      assert.equal(fetchReport.candidates[0].candidate_priority, "HIGH");
+      assert.equal(fetchReport.candidates[0].candidate_priority, "MEDIUM");
       assert.equal(fetchReport.candidates[0].verification_summary.identity_status, "PASS");
       assert.equal(fetchReport.candidates[0].match_explanation.summary.includes("not a trust root"), true);
       assert.equal(fetchReport.candidates[0].risk_gaps.some((risk: { code: string }) => risk.code === "MANUAL_CHECKS_PRESENT"), true);

@@ -25,7 +25,7 @@ export async function valueAuditCommand(options: Record<string, string | boolean
   console.log(`Self-asserted claims: ${report.summary.self_asserted_claims}`);
   console.log(`Evidence-linked claims: ${report.summary.evidence_linked_claims}`);
   console.log(`Third-party claims: ${report.summary.third_party_claims}`);
-  console.log(`Reproducible claims: ${report.summary.reproducible_claims}`);
+  console.log(`Claims with recheck methods: ${report.summary.reproducible_claims}`);
   console.log(`Report JSON: ${outputDir}/value-continuity-report.json`);
   console.log(`Report Markdown: ${outputDir}/value-continuity-report.md`);
 }

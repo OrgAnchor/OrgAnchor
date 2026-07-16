@@ -353,7 +353,7 @@ function candidatePriority(record: DirectoryRecord): DirectoryFetchCandidate["ca
   if (record.verification_summary.value_status === "NOT_INCLUDED" || record.verification_summary.value_status === "NOT_VERIFIED") {
     return "LOW";
   }
-  if (record.evidence_summary.third_party_claims > 0 || record.evidence_summary.reproducible_claims > 0) return "HIGH";
+  // Evidence counts describe package structure, not purpose-fit sufficiency or supplier quality.
   return "MEDIUM";
 }
 
@@ -430,8 +430,8 @@ function riskGapsForRecord(record: DirectoryRecord): DirectoryFetchCandidate["ri
     risks.push({
       code: "UNSUPPORTED_CLAIMS",
       severity: "WARN",
-      detail: `${record.evidence_summary.unsupported_claims} unsupported claim(s) are summarized.`,
-      next_action: "Review unsupported claims before using this candidate in a recommendation."
+      detail: `${record.evidence_summary.unsupported_claims} structurally unsupported claim(s) are summarized.`,
+      next_action: "Review structural evidence links and claim-specific sufficiency before using this candidate in a recommendation."
     });
   }
   if (record.evidence_summary.manual_checks > 0) {

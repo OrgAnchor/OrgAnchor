@@ -218,12 +218,14 @@ next_step
 `candidate_priority` is an execution hint, not a ranking promise:
 
 ```text
-HIGH = strong discovery match with verified identity and value status in the local observation
+HIGH = reserved for a strong purpose-specific discovery match under an explicitly disclosed Directory policy
 MEDIUM = usable discovery match, but less complete than HIGH
 REVIEW = relevant but requires value-layer or compatibility review
 LOW = signal exists but is incomplete or weak
 REJECT = failed or unsafe local observation; recheck only if the origin has been repaired
 ```
+
+`third_party_claims`, `reproducible_claims`, evidence volume, or `unsupported_claims == 0` must not by themselves produce `HIGH`. They describe structure and declared relations, not claim-scope fit, evidence sufficiency, product quality, or supplier trust.
 
 `need_match.status` is also non-binding:
 
@@ -319,6 +321,10 @@ These checks do not prove product quality by themselves. They reduce the cost of
     "total_evidence_items": 34,
     "third_party_claims": 0,
     "reproducible_claims": 1,
+    "metric_semantics": {
+      "unsupported_claims": "STRUCTURAL_LINKAGE_GAP_COUNT_NOT_EVIDENCE_SUFFICIENCY",
+      "reproducible_claims": "DECLARED_RECHECK_METHOD_COUNT_NOT_VERIFIED_OUTCOME"
+    },
     "manual_checks": 34,
     "profile_declared_claims": 0,
     "profile_pass_claims": 0,
@@ -492,8 +498,11 @@ no identity FAIL checks
 value continuity FAIL count == 0
 unsupported_claims == 0
 at least one external evidence location for product claims
+claim-to-evidence scope and purpose-fit sufficiency reviewed under the agent owner's policy
 manual checks reviewed for high-value transactions
 ```
+
+`unsupported_claims == 0` means the local audit found no missing declared evidence links or self-asserted-only claim state. It does not mean the linked evidence is scientifically sufficient, in scope, independent, current, or true.
 
 A lower-risk discovery agent might only require:
 

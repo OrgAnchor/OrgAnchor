@@ -406,7 +406,7 @@ export function renderVerifyPage(model: VerifyPageModel): string {
       title: "Evidence limits",
       status: agentReview.valueStatus,
       detail: agentReview.valueStatus === "PASS" ?
-        "The claims/evidence package is present and no unsupported claims were found by the local value audit. External policy may still require stronger evidence." :
+        "The claims/evidence package is present and no structural evidence-link gaps were found by the local value audit. This does not establish evidence sufficiency or claim truth." :
         "Evidence is missing, incomplete, stale, or warning-bearing. Treat this as a request for more review, not as a product-quality pass."
     },
     {
@@ -977,11 +977,11 @@ ${keyTerms}
           <span class="summary-value">${escapeHtml(formatMetric(valueSummary.third_party_claims))}</span>
         </div>
         <div class="summary-item">
-          <span class="summary-label">Reproducible</span>
+          <span class="summary-label">Recheck method</span>
           <span class="summary-value">${escapeHtml(formatMetric(valueSummary.reproducible_claims))}</span>
         </div>
         <div class="summary-item">
-          <span class="summary-label">Unsupported</span>
+          <span class="summary-label">Structural link gaps</span>
           <span class="summary-value">${escapeHtml(formatMetric(valueSummary.unsupported_claims))}</span>
         </div>
         <div class="summary-item">

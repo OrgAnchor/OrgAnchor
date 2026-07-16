@@ -28,6 +28,10 @@
     "total_evidence_items": 34,
     "third_party_claims": 0,
     "reproducible_claims": 1,
+    "metric_semantics": {
+      "unsupported_claims": "STRUCTURAL_LINKAGE_GAP_COUNT_NOT_EVIDENCE_SUFFICIENCY",
+      "reproducible_claims": "DECLARED_RECHECK_METHOD_COUNT_NOT_VERIFIED_OUTCOME"
+    },
     "manual_checks": 34,
     "profile_declared_claims": 0,
     "profile_pass_claims": 0,

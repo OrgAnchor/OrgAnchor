@@ -73,6 +73,10 @@ export interface AgentVerificationCompactResult {
     total_evidence_items: number;
     third_party_claims: number;
     reproducible_claims: number;
+    metric_semantics: {
+      unsupported_claims: "STRUCTURAL_LINKAGE_GAP_COUNT_NOT_EVIDENCE_SUFFICIENCY";
+      reproducible_claims: "DECLARED_RECHECK_METHOD_COUNT_NOT_VERIFIED_OUTCOME";
+    };
     manual_checks: number;
     profile_declared_claims: number;
     profile_pass_claims: number;
@@ -417,6 +421,10 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
       total_evidence_items: numberValue(summary.total_evidence_items),
       third_party_claims: thirdPartyClaims,
       reproducible_claims: numberValue(summary.reproducible_claims),
+      metric_semantics: {
+        unsupported_claims: "STRUCTURAL_LINKAGE_GAP_COUNT_NOT_EVIDENCE_SUFFICIENCY",
+        reproducible_claims: "DECLARED_RECHECK_METHOD_COUNT_NOT_VERIFIED_OUTCOME"
+      },
       manual_checks: manualChecks,
       profile_declared_claims: numberValue(summary.profile_declared_claims),
       profile_pass_claims: numberValue(summary.profile_pass_claims),
@@ -827,8 +835,8 @@ async function verifyValueContinuity(options: {
     "value_continuity",
     status,
     status === "PASS"
-      ? "Value continuity report is present and has no FAIL/WARN/unsupported claim summary counts."
-      : `Value continuity report requires review: FAIL ${failCount}, WARN ${warnCount}, unsupported claims ${unsupportedClaims}.`
+      ? "Value continuity report is present and has no FAIL/WARN/structural-linkage-gap summary counts; evidence sufficiency remains external."
+      : `Value continuity report requires review: FAIL ${failCount}, WARN ${warnCount}, structural linkage gaps ${unsupportedClaims}.`
   );
   return {
     status,

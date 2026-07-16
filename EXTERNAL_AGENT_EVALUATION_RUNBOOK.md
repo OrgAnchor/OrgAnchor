@@ -38,6 +38,34 @@ A result counts as an independent Fireseed run only when all of these conditions
 
 If isolation is uncertain, retain the result as diagnostic feedback but mark it `NON_INDEPENDENT`.
 
+## Hosted Wave 1 Origin
+
+Operators who do not need to rebuild the fictional package may use the public Wave 1 carrier:
+
+```text
+https://organchor-evidence-eval-v1.pages.dev
+```
+
+Preferred custom alias after local DNS propagation:
+
+```text
+https://weak-evidence-v1.eval.organchor.org
+```
+
+Ordinary verification command:
+
+```bash
+npx --yes organchor@alpha verify url https://organchor-evidence-eval-v1.pages.dev --compact
+```
+
+The hosted carrier exposes only the generated `public/` directory. It does not expose the Agent task, reference answer, scorer key, operator truth, prior results, or private keys. The fictional package directory hash recorded at deployment is:
+
+```text
+sha256:cf05c96c292706cb83eaf6c3824f55e574022ab36c4cf114d7c7eb5daf31890e
+```
+
+Download the Agent task and schema yourself, then attach or paste them into a fresh Agent session. Do not give that Agent the GitHub repository URL. The canonical Wave 1 issue records the active source commit and any later carrier replacement.
+
 ## Operator Setup
 
 Use a clean source checkout and record its commit:

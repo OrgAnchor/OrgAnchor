@@ -445,9 +445,9 @@ Evidence: \`${report.evidence_path}\`
 | Self-asserted claims | ${report.summary.self_asserted_claims} |
 | Evidence-linked claims | ${report.summary.evidence_linked_claims} |
 | Third-party claims | ${report.summary.third_party_claims} |
-| Reproducible claims | ${report.summary.reproducible_claims} |
+| Claims with recheck methods | ${report.summary.reproducible_claims} |
 | Time-proven claims | ${report.summary.time_proven_claims} |
-| Unsupported claims | ${report.summary.unsupported_claims} |
+| Structurally unsupported claims | ${report.summary.unsupported_claims} |
 | Total evidence items | ${report.summary.total_evidence_items} |
 | External evidence items | ${report.summary.external_evidence_items} |
 | First-party evidence items | ${report.summary.first_party_evidence_items} |
@@ -2066,7 +2066,7 @@ function claimNextBestActions(riskGaps: string[]): string[] {
     actions.push("Publish a correction or replacement claim that explains the current state.");
   }
   if (actions.length === 0) {
-    actions.push("Route this supported claim to the consuming agent's external policy for final trust evaluation.");
+    actions.push("Route this signed, evidence-linked claim to the consuming agent's external policy; OrgAnchor has not established evidence sufficiency or claim truth.");
   }
   return actions;
 }

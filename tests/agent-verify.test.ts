@@ -71,6 +71,14 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(compact.evidence_summary.evidence, "PASS");
       assert.equal(compact.evidence_summary.value, "PASS");
       assert.equal(compact.evidence_summary.unsupported_claims, 0);
+      assert.equal(
+        compact.evidence_summary.metric_semantics.unsupported_claims,
+        "STRUCTURAL_LINKAGE_GAP_COUNT_NOT_EVIDENCE_SUFFICIENCY"
+      );
+      assert.equal(
+        compact.evidence_summary.metric_semantics.reproducible_claims,
+        "DECLARED_RECHECK_METHOD_COUNT_NOT_VERIFIED_OUTCOME"
+      );
       assert.equal(compact.evidence_summary.total_evidence_items, 1);
       assert.equal(compact.evidence_summary.claim_support_levels.L3_REPRODUCIBLE_METHOD, 1);
       assert.equal(compact.evidence_summary.claim_support_levels.L0_UNSUPPORTED, 0);

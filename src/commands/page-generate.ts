@@ -561,7 +561,7 @@ function pageNextBestActions(
     actions.push("Ask the organization for signed claims/evidence manifests if product or service evaluation matters.");
   }
   if (numberMetric(summary.unsupported_claims) > 0) {
-    actions.push("Ask the organization to link unsupported claims to hash-bound evidence or mark them as limitations.");
+    actions.push("Ask the organization to link structurally unsupported claims to hash-bound evidence or mark them as limitations.");
   }
   if (numberMetric(summary.WARN) > 0 || numberMetric(summary.FAIL) > 0) {
     actions.push("Review the value continuity report before using claims in a transaction decision.");

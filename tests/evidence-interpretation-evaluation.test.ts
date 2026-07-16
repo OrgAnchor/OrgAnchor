@@ -82,6 +82,13 @@ test("runnable scenario builds a valid public package without private keys", () 
     assert.equal(evidence.evidence.find((item: { id: string }) => item.id === "evidence-s1-internal-800h")?.s_class, "S1_FIRST_PARTY_MATERIALS");
     assert.equal(evidence.evidence.find((item: { id: string }) => item.id === "evidence-s2-material-dimensions")?.s2.state, "S2_3_ISSUER_BACKED");
 
+    const valueReport = JSON.parse(
+      readFileSync(join(workspace, "public", "verify", "reports", "value-continuity-report.json"), "utf8")
+    );
+    const claimActions = valueReport.claims.flatMap((claim: { next_best_actions?: string[] }) => claim.next_best_actions ?? []);
+    assert.equal(claimActions.some((action: string) => action.includes("Route this supported claim")), false);
+    assert.equal(claimActions.some((action: string) => action.includes("has not established evidence sufficiency")), true);
+
     const exercise = run(["exercise", "--package", workspace]);
     const exerciseReport = JSON.parse(exercise.stdout);
     assert.equal(exerciseReport.status, "PASS");

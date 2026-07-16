@@ -114,6 +114,8 @@ The first isolated internal Agent run completed on 2026-07-16 and scored `96/100
 
 This baseline does not satisfy the independent external review criteria by itself.
 
+The public fictional Wave 1 package is available at `https://organchor-evidence-eval-v1.pages.dev`; `https://weak-evidence-v1.eval.organchor.org` is its custom alias. Only the public package is deployed. Agent tasks, scoring, and raw-result submission follow `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`.
+
 ## Fast Local Checks
 
 ```bash

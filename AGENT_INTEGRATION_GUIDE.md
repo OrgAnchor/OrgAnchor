@@ -130,6 +130,8 @@ next_step
 
 Agents should read `match_report.boundary.discovery_match_is_not_recommendation == true` as a hard rule. A discovery match means "worth checking next", not "best supplier", "safe vendor", or "trusted organization".
 
+Directory or Beacon implementations must not raise a candidate to `HIGH` solely because third-party material, a declared recheck method, many evidence items, or zero structural-linkage gaps are present. Those signals do not establish that evidence covers the buyer's exact claim or purpose.
+
 Recommended agent behavior:
 
 ```text
@@ -242,6 +244,10 @@ Example:
     "total_evidence_items": 34,
     "third_party_claims": 0,
     "reproducible_claims": 1,
+    "metric_semantics": {
+      "unsupported_claims": "STRUCTURAL_LINKAGE_GAP_COUNT_NOT_EVIDENCE_SUFFICIENCY",
+      "reproducible_claims": "DECLARED_RECHECK_METHOD_COUNT_NOT_VERIFIED_OUTCOME"
+    },
     "manual_checks": 34,
     "profile_declared_claims": 0,
     "profile_pass_claims": 0,
@@ -394,7 +400,10 @@ identity_status == PASS
 value_status == PASS
 failures.length == 0
 evidence_summary.unsupported_claims == 0
+claim-to-evidence scope reviewed for the concrete decision purpose
 ```
+
+The `unsupported_claims` metric is a structural-linkage-gap count. Zero is not an evidence-sufficiency or truth result. Likewise, `reproducible_claims` counts declared recheck methods; it does not say the method was independently run or that the claimed outcome was reproduced.
 
 For high-value or safety-sensitive decisions, the agent should additionally require its own review of:
 

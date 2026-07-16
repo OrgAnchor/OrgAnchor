@@ -97,7 +97,7 @@ The `0.1.0-alpha.4` release-convergence batch is published and publicly verified
 
 The former homepage-only versus OrgAnchor retrieval comparison has been retired as an active benchmark. It remains a historical integration calibration because structured machine data being easier to retrieve than homepage prose is a design premise, not a useful transaction-cost experiment.
 
-The active first scenario is defined in `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: a fictional manufacturer has a valid signed package, a limited S1 test, an authentic but out-of-scope S2 report, no S3 support, and an insufficiently supported 10,000-hour product-life claim.
+The active first scenario is implemented in `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: a fictional manufacturer has a valid signed package, a limited S1 test, an independently signed but out-of-scope S2 report, no S3 support, and an insufficiently supported 10,000-hour product-life claim. The local builder, package verifier, isolated-origin exercise, constrained Agent submission contract, deterministic first-pass scorer, 100-point reference fixture, and unsafe counterexample are executable. No fresh-context independent Agent result has been collected yet.
 
 The current launch path is Fireseed Alpha, defined in `FIRESEED_ALPHA_PLAN.md`, with the operational GO/HOLD decision in `FIRESEED_READINESS_GATE.md` and the first GO decision in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 
@@ -123,7 +123,7 @@ The shortest useful launch path is now:
 6. Invite named early adopting organizations, technical reviewers, and evidence/governance critics according to `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 7. Run the first low-risk external pilot using `PILOT_MINIMAL_PATH.md` first, then `EXTERNAL_PILOT_RUNBOOK.md` if the pilot needs the full path.
 8. Feed pilot lessons back into onboarding, evidence, and agent-facing verification outputs.
-9. Build and run the first adversarial evidence-interpretation scenario before making claims that OrgAnchor helps Agents resist polished but insufficient evidence.
+9. Run the implemented adversarial evidence-interpretation scenario with fresh-context Agents, preserve uncorrected outputs, and use failures to improve the machine contract before making claims that OrgAnchor helps Agents resist polished but insufficient evidence.
 
 ## Not Yet Complete
 

@@ -1,6 +1,6 @@
 # Evidence Interpretation Adversarial Evaluation
 
-Status: Active Fireseed evaluation design. Scenario specification is complete; the signed runnable package and Agent scorer are not yet implemented.
+Status: Active Fireseed runnable local evaluation. Signed scenario generation, isolated-origin exercise, deterministic first-pass scoring, and safety fixtures are implemented. Fresh-context independent Agent results have not yet been collected.
 
 ## Purpose
 
@@ -83,6 +83,8 @@ The exact prompt contract is stored in:
 examples/evidence-interpretation-adversarial/agent-task.md
 ```
 
+The task contract is accompanied by a JSON Schema and a blank submission file. The operator-only ground truth, scoring key, and reference answer must not be supplied to the Agent.
+
 ## Required Interpretation
 
 A safe, useful result should distinguish all of these statements:
@@ -144,15 +146,58 @@ The Agent does not need to demand every possible test. Strong next actions inclu
 
 An expensive destructive test is not automatically the first action. The goal is to reduce uncertainty at the lowest proportionate cost.
 
-## Implementation Boundary
+## Runnable Local Evaluation
 
-This document defines the scenario and acceptance logic only. The next implementation batch must:
+Build a fresh package with synthetic organization and issuer keys:
 
-1. generate a fully valid fictional OrgAnchor package with synthetic keys;
-2. include scoped S1 and S2 artifacts without leaking the scoring key;
-3. serve the package from an isolated local origin;
-4. implement a scorer for the Agent JSON result;
-5. run fresh-context internal Agents and preserve raw failures;
-6. seek independent external runs only after the internal task contract is stable.
+```bash
+npm run evaluation:evidence -- build --out .local/evidence-interpretation-run
+```
 
-Until those steps are complete, this evaluation is a design specification, not evidence that OrgAnchor handles the scenario correctly.
+The builder retains no private key in the output. It writes three separated surfaces:
+
+```text
+public/    safe-to-serve signed package and evidence artifacts
+agent/     isolated task, output schema, and blank submission
+operator/  hidden ground truth, scoring key, reference answer, and build verification
+```
+
+Verify the local artifacts, including the independent fictional issuer signature:
+
+```bash
+npm run evaluation:evidence -- verify --package .local/evidence-interpretation-run
+```
+
+Exercise the package through an ephemeral isolated HTTP origin and the ordinary `organchor verify url` path:
+
+```bash
+npm run evaluation:evidence -- exercise --package .local/evidence-interpretation-run
+```
+
+Serve the public package for a fresh-context Agent:
+
+```bash
+npm run evaluation:evidence -- serve --package .local/evidence-interpretation-run
+```
+
+Score a returned Agent JSON result:
+
+```bash
+npm run evaluation:evidence -- score --submission agent-result.json
+```
+
+The deterministic scorer checks the structured decision boundary, evidence ids/classes, claim-scope interpretation, uncertainty calibration, next-check categories, and artifact traceability. Free-text meaning still requires operator review; the score must not be represented as a general model benchmark or supplier trust rating.
+
+In this Alpha scenario, ordinary URL verification can report identity, conformance, and linked-value structure as `PASS` even though the specific lifetime claim remains insufficiently supported. That is deliberate and exposes the exact boundary under test: structural verification does not perform scientific claim-scope reasoning. The Agent must inspect the signed claim, evidence scopes, limitations, and absences instead of promoting a package-level `PASS` into product truth.
+
+## Remaining Evidence Boundary
+
+The runnable package proves that the test fixture, signatures, hashes, isolated serving path, submission contract, and hard-failure scorer operate as designed. The bundled reference answer scoring 100 is a scorer calibration, not independent evidence that an unfamiliar Agent succeeds.
+
+The next evidence-producing step is therefore:
+
+1. give only `agent/agent-task.md`, the served origin, and ordinary OrgAnchor tools to a fresh-context Agent;
+2. preserve the raw Agent JSON before correction;
+3. score it automatically and review free-text claims for hallucination;
+4. retain failures as design feedback;
+5. seek independent external runs after the internal task contract remains stable.

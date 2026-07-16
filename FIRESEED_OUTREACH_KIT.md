@@ -279,6 +279,15 @@ https://github.com/OrgAnchor/OrgAnchor/issues/4
 
 Use `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md` when reviewing whether a valid package can still expose insufficient product-claim support.
 
+From a source checkout, build and exercise the isolated scenario before assigning it to an Agent:
+
+```bash
+npm run evaluation:evidence -- build --out ./.local/evidence-interpretation-run
+npm run evaluation:evidence -- exercise --package ./.local/evidence-interpretation-run
+```
+
+Give the Agent only the served origin and `agent/agent-task.md`. Keep `operator/` hidden until the raw Agent JSON has been preserved.
+
 ## What Counts As Useful Feedback
 
 Useful feedback is concrete.

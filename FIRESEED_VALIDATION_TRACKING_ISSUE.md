@@ -123,6 +123,8 @@ From a source checkout, run the local demos:
 npm ci
 npm run visible:demo -- --out ./visible-demo --serve
 npm run agent:demo
+npm run evaluation:evidence -- build --out ./.local/evidence-interpretation-run
+npm run evaluation:evidence -- exercise --package ./.local/evidence-interpretation-run
 ```
 
 ## Useful Public Docs

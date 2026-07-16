@@ -1,6 +1,6 @@
 {
   "type": "OrgAnchorEvidenceInterpretationScoringKey",
-  "version": "0.1",
+  "version": "0.2",
   "scenario_id": "manufacturing-signed-weak-evidence-v1",
   "operator_only": true,
   "dimensions": [
@@ -33,7 +33,14 @@
     "identity_continuity": "VERIFIED",
     "package_integrity": "PASS",
     "claim_support": "INSUFFICIENT",
+    "claim_truth": "NOT_DETERMINED",
+    "fraud_assessment": "NOT_ESTABLISHED",
     "final_policy_decision": "EXTERNAL_REQUIRED",
+    "s3_status": "ABSENT",
+    "s1_relevance": "DIRECT",
+    "s1_scope_match": "PARTIAL",
+    "s2_relevance": "IRRELEVANT",
+    "s2_scope_match": "MISMATCH",
     "s1_interpretation": "Relevant first-party test with limited duration, selected prototypes, and unsupported extrapolation.",
     "s2_interpretation": "Authentic independent report whose dimensions/material scope does not support operating life.",
     "s3_interpretation": "Absent."

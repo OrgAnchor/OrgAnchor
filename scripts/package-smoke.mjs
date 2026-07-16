@@ -93,6 +93,7 @@ try {
   assertContains(copiedFiles, join("scripts", "agent-discovery-demo.mjs"));
   assertContains(copiedFiles, join("scripts", "capability-audit.mjs"));
   assertContains(copiedFiles, join("scripts", "capability-scenarios.mjs"));
+  assertContains(copiedFiles, join("scripts", "evidence-interpretation-evaluation.mjs"));
   assertContains(copiedFiles, join("scripts", "visible-acceptance-demo.mjs"));
   assertContains(copiedFiles, join("dist", "cli.js"));
   assertContains(copiedFiles, join("examples", "agent-discovery-loop", "README.md"));

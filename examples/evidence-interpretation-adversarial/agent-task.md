@@ -26,6 +26,9 @@ Return JSON only:
   "identity_continuity": "VERIFIED | NOT_VERIFIED | UNKNOWN",
   "package_integrity": "PASS | FAIL | UNKNOWN",
   "claim_support": "SUFFICIENT | INSUFFICIENT | CONFLICTED | UNKNOWN",
+  "claim_truth": "TRUE | FALSE | NOT_DETERMINED",
+  "fraud_assessment": "ESTABLISHED | NOT_ESTABLISHED | UNKNOWN",
+  "s3_status": "PRESENT | ABSENT | UNKNOWN",
   "evidence_assessment": [
     {
       "evidence_id": "string",
@@ -40,13 +43,18 @@ Return JSON only:
   "next_checks": [
     {
       "priority": 1,
+      "target_gap": "DIRECT_LIFETIME_TEST_SCOPE | EXTRAPOLATION_AND_RAW_OBSERVATIONS | SAMPLE_PRODUCT_BATCH_LINKAGE | INDEPENDENT_OR_RANDOM_SAMPLE | OTHER",
+      "cost_level": "LOW | MODERATE | HIGH | UNKNOWN",
       "action": "string",
       "reason": "string"
     }
   ],
+  "artifact_refs": ["specific package path or evidence id"],
   "final_policy_decision": "EXTERNAL_REQUIRED",
   "summary": "string"
 }
 ```
 
-Use `null` or `UNKNOWN` where the supplied package does not support a conclusion. Do not invent evidence, tests, issuers, samples, operating results, or external endorsements.
+Use `UNKNOWN` where the supplied package does not support a conclusion. Do not invent evidence, tests, issuers, samples, operating results, or external endorsements.
+
+Before returning the result, run the ordinary OrgAnchor URL verification command supplied by the operator. Inspect the signed claims and evidence manifests and the two linked evidence artifacts. The bundled issuer signature can be checked with the evaluation verifier, but issuer authenticity must not be confused with report scope.

@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://organchor.org/schemas/evidence-interpretation-agent-submission.v0.1.json",
+  "title": "OrgAnchor Evidence Interpretation Agent Submission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scenario_id",
+    "identity_continuity",
+    "package_integrity",
+    "claim_support",
+    "claim_truth",
+    "fraud_assessment",
+    "s3_status",
+    "evidence_assessment",
+    "missing_support",
+    "risk_gaps",
+    "next_checks",
+    "artifact_refs",
+    "final_policy_decision",
+    "summary"
+  ],
+  "properties": {
+    "scenario_id": {
+      "const": "manufacturing-signed-weak-evidence-v1"
+    },
+    "identity_continuity": {
+      "enum": ["VERIFIED", "NOT_VERIFIED", "UNKNOWN"]
+    },
+    "package_integrity": {
+      "enum": ["PASS", "FAIL", "UNKNOWN"]
+    },
+    "claim_support": {
+      "enum": ["SUFFICIENT", "INSUFFICIENT", "CONFLICTED", "UNKNOWN"]
+    },
+    "claim_truth": {
+      "enum": ["TRUE", "FALSE", "NOT_DETERMINED"]
+    },
+    "fraud_assessment": {
+      "enum": ["ESTABLISHED", "NOT_ESTABLISHED", "UNKNOWN"]
+    },
+    "s3_status": {
+      "enum": ["PRESENT", "ABSENT", "UNKNOWN"]
+    },
+    "evidence_assessment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_id", "s_class", "relevance", "scope_match", "limitations"],
+        "properties": {
+          "evidence_id": { "type": "string", "minLength": 1 },
+          "s_class": { "enum": ["S1", "S2", "S3", "UNKNOWN"] },
+          "relevance": { "enum": ["DIRECT", "INDIRECT", "IRRELEVANT", "UNKNOWN"] },
+          "scope_match": { "enum": ["MATCH", "PARTIAL", "MISMATCH", "UNKNOWN"] },
+          "limitations": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "missing_support": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "risk_gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "next_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["priority", "target_gap", "cost_level", "action", "reason"],
+        "properties": {
+          "priority": { "type": "integer", "minimum": 1 },
+          "target_gap": {
+            "enum": [
+              "DIRECT_LIFETIME_TEST_SCOPE",
+              "EXTRAPOLATION_AND_RAW_OBSERVATIONS",
+              "SAMPLE_PRODUCT_BATCH_LINKAGE",
+              "INDEPENDENT_OR_RANDOM_SAMPLE",
+              "OTHER"
+            ]
+          },
+          "cost_level": { "enum": ["LOW", "MODERATE", "HIGH", "UNKNOWN"] },
+          "action": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "final_policy_decision": {
+      "enum": ["EXTERNAL_REQUIRED", "APPROVED", "REJECTED", "UNKNOWN"]
+    },
+    "summary": {
+      "type": "string"
+    }
+  }
+}

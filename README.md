@@ -35,7 +35,7 @@ Best public starting points:
 - `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`: current external-view review of OrgAnchor's own public self-pilot against the minimal path.
 - `PUBLIC_RELEASE_CHECKLIST.md`: practical release gate for public assets, local checks, owner approvals, and hold criteria.
 - `PUBLIC_SELF_VERIFICATION_2026-07-15.md`: current Alpha.4 public release-linkage, endpoint, clean-install, Beacon, CLI, and disclosed-limit verification result; a Chinese translation is provided alongside it.
-- `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: active design for testing whether an Agent can keep valid identity and package verification separate from insufficient product-claim evidence.
+- `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent can keep valid identity and package verification separate from insufficient product-claim evidence.
 - `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: historical pre-Alpha.4 release-preparation check for local gates, capability audit, public self-pilot, and public root-signed lockfile verification.
 - `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Fireseed Wave 1.
 - `FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
@@ -208,6 +208,17 @@ npm run agent:demo
 ```
 
 The demo creates a temporary adopting organization, serves its `/verify` package on localhost, then runs Beacon sweep, local indexing, Directory snapshot export, need-match query, and direct compact verification. It writes observable outputs under a temporary workspace so people can inspect what actually happened.
+
+## Evidence Interpretation Evaluation
+
+To build a fictional but cryptographically valid manufacturing package whose 10,000-hour lifetime claim has relevant but insufficient evidence, run:
+
+```bash
+npm run evaluation:evidence -- build --out ./.local/evidence-interpretation-run
+npm run evaluation:evidence -- exercise --package ./.local/evidence-interpretation-run
+```
+
+The output separates the safe-to-serve public package, the fresh-context Agent task, and operator-only ground truth. Synthetic private keys are removed after build. Use the scorer only for this scenario; it is not a general model benchmark or supplier trust rating. See `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md` for the isolation and interpretation rules.
 
 ## Visible Acceptance Demo
 

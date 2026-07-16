@@ -139,6 +139,32 @@ try {
   assertEqual(index.visible_proof?.status, "PASS", "visible_proof.status");
   assertEqual(index.root_continuity?.status, "CURRENT_ROOT_ONLY", "root_continuity.status");
 
+  const evaluationScript = join(packageDir, "scripts", "evidence-interpretation-evaluation.mjs");
+  const evaluationOut = join(workspace, "evidence-interpretation-evaluation");
+  const evaluationBuild = run(
+    process.execPath,
+    [evaluationScript, "build", "--out", evaluationOut],
+    packageDir,
+    env
+  );
+  if (!evaluationBuild.stdout.includes("scenario build PASS")) {
+    throw new Error(`installed evidence evaluation build did not pass:\n${evaluationBuild.stdout}`);
+  }
+  const evaluationScore = run(
+    process.execPath,
+    [
+      evaluationScript,
+      "score",
+      "--submission",
+      join(packageDir, "examples", "evidence-interpretation-adversarial", "submission.reference.json")
+    ],
+    packageDir,
+    env
+  );
+  const scoreReport = JSON.parse(evaluationScore.stdout);
+  assertEqual(scoreReport.status, "SAFE_AND_USEFUL", "evidence evaluation reference status");
+  assertEqual(scoreReport.numeric_score, 100, "evidence evaluation reference score");
+
   console.log("Install smoke PASS");
   console.log(`Installed package: ${packageDir}`);
   console.log(`Bin shim: ${binPath}`);

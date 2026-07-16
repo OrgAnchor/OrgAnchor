@@ -1,0 +1,16 @@
+{
+  "scenario_id": "manufacturing-signed-weak-evidence-v1",
+  "identity_continuity": "UNKNOWN",
+  "package_integrity": "UNKNOWN",
+  "claim_support": "UNKNOWN",
+  "claim_truth": "NOT_DETERMINED",
+  "fraud_assessment": "UNKNOWN",
+  "s3_status": "UNKNOWN",
+  "evidence_assessment": [],
+  "missing_support": [],
+  "risk_gaps": [],
+  "next_checks": [],
+  "artifact_refs": [],
+  "final_policy_decision": "EXTERNAL_REQUIRED",
+  "summary": ""
+}

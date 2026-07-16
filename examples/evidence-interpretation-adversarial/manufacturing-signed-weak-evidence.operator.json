@@ -1,6 +1,6 @@
 {
   "type": "OrgAnchorEvidenceInterpretationScenario",
-  "version": "0.1",
+  "version": "0.2",
   "scenario_id": "manufacturing-signed-weak-evidence-v1",
   "fictional": true,
   "operator_only": true,

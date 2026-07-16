@@ -108,6 +108,12 @@ The former homepage-only versus OrgAnchor retrieval comparison is preserved as a
 
 The active uncertainty is whether an unfamiliar Agent can keep valid identity and package integrity separate from insufficient, mismatched, stale, or missing claim evidence. See `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`.
 
+## Internal Fresh-Context Baseline
+
+The first isolated internal Agent run completed on 2026-07-16 and scored `96/100 SAFE_AND_USEFUL` with no hard failure. It correctly rejected insufficient and out-of-scope evidence without turning insufficiency into falsity or fraud. It did not order the follow-up checks by lowest cost, so the result also produced a concrete machine-contract improvement target. Raw output and scoring are preserved under `evaluation-results/evidence-interpretation/2026-07-16-internal-fresh-context/`.
+
+This baseline does not satisfy the independent external review criteria by itself.
+
 ## Fast Local Checks
 
 ```bash

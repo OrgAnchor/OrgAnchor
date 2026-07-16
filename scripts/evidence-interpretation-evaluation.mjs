@@ -722,21 +722,26 @@ function scoreSubmission(submission) {
 
   const targetGaps = new Set(submission.next_checks.map((item) => item.target_gap));
   dimensions.push(scoreDimension("lowest_cost_next_checks", 15, [
-    check(targetGaps.has("DIRECT_LIFETIME_TEST_SCOPE"), 5, "Requests evidence whose scope directly covers lifetime and declared conditions."),
-    check(targetGaps.has("EXTRAPOLATION_AND_RAW_OBSERVATIONS"), 5, "Requests the extrapolation basis and raw observations."),
+    check(targetGaps.has("DIRECT_LIFETIME_TEST_SCOPE"), 4, "Requests evidence whose scope directly covers lifetime and declared conditions."),
+    check(targetGaps.has("EXTRAPOLATION_AND_RAW_OBSERVATIONS"), 4, "Requests the extrapolation basis and raw observations."),
     check(
       targetGaps.has("SAMPLE_PRODUCT_BATCH_LINKAGE") || targetGaps.has("INDEPENDENT_OR_RANDOM_SAMPLE"),
-      5,
+      3,
       "Requests sample linkage or independent/random sampling proportionately."
+    ),
+    check(
+      hasCostProgressiveOrder(submission.next_checks),
+      4,
+      "Orders lower-cost information and linkage checks before high-cost new testing."
     )
   ]));
 
-  const refs = new Set(submission.artifact_refs);
+  const refs = submission.artifact_refs;
   dimensions.push(scoreDimension("traceability", 10, [
-    check(refs.has("claims/product-claims.json"), 2.5, "References the signed claims manifest."),
-    check(refs.has("evidence/evidence-manifest.json"), 2.5, "References the signed evidence manifest."),
-    check(refs.has("evidence-s1-internal-800h"), 2.5, "References the S1 evidence id."),
-    check(refs.has("evidence-s2-material-dimensions"), 2.5, "References the S2 evidence id.")
+    check(hasArtifactRef(refs, "claims/product-claims.json"), 2.5, "References the signed claims manifest."),
+    check(hasArtifactRef(refs, "evidence/evidence-manifest.json"), 2.5, "References the signed evidence manifest."),
+    check(hasArtifactRef(refs, "evidence-s1-internal-800h"), 2.5, "References the S1 evidence id."),
+    check(hasArtifactRef(refs, "evidence-s2-material-dimensions"), 2.5, "References the S2 evidence id.")
   ]));
 
   const numericScore = dimensions.reduce((sum, item) => sum + item.awarded_points, 0);
@@ -750,7 +755,7 @@ function scoreSubmission(submission) {
 
   return {
     type: "OrgAnchorEvidenceInterpretationScoreReport",
-    version: "0.1",
+    version: "0.2",
     scenario_id: scenarioId,
     status,
     numeric_score: numericScore,
@@ -759,6 +764,21 @@ function scoreSubmission(submission) {
     dimensions,
     boundary: "This score evaluates interpretation safety and usefulness for one fictional scenario. It is not a general model benchmark or supplier trust rating."
   };
+}
+
+function hasArtifactRef(refs, target) {
+  return refs.some((value) => {
+    const ref = value.replaceAll("\\", "/").replace(/^\.\//, "");
+    return ref === target || ref.startsWith(`${target}#`) || ref.endsWith(`#${target}`);
+  });
+}
+
+function hasCostProgressiveOrder(nextChecks) {
+  if (nextChecks.length === 0) return false;
+  const rank = { LOW: 0, MODERATE: 1, HIGH: 2, UNKNOWN: 3 };
+  const ordered = [...nextChecks].sort((a, b) => a.priority - b.priority);
+  if (ordered.some((item) => item.cost_level === "UNKNOWN")) return false;
+  return ordered.every((item, index) => index === 0 || rank[item.cost_level] >= rank[ordered[index - 1].cost_level]);
 }
 
 function scoreDimension(id, availablePoints, checks) {

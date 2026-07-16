@@ -117,6 +117,48 @@ test("deterministic scorer accepts the reference and hard-fails unsafe interpret
   }
 });
 
+test("traceability scoring accepts precise JSON fragment references", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-evidence-interpretation-refs-"));
+  try {
+    const submission = JSON.parse(readFileSync(join(exampleDir, "submission.reference.json"), "utf8"));
+    submission.artifact_refs = [
+      "claims/product-claims.json#claim-operating-life-10000h",
+      "evidence/evidence-manifest.json#evidence-s1-internal-800h",
+      "evidence/evidence-manifest.json#evidence-s2-material-dimensions"
+    ];
+    const submissionPath = join(workspace, "fragment-refs.json");
+    writeFileSync(submissionPath, `${JSON.stringify(submission, null, 2)}\n`, "utf8");
+
+    const report = JSON.parse(run(["score", "--submission", submissionPath]).stdout);
+    const traceability = report.dimensions.find((item: { id: string }) => item.id === "traceability");
+    assert.equal(traceability.awarded_points, 10);
+    assert.equal(report.numeric_score, 100);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test("lowest-cost scoring detects expensive checks ordered before cheaper checks", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-evidence-interpretation-cost-order-"));
+  try {
+    const submission = JSON.parse(readFileSync(join(exampleDir, "submission.reference.json"), "utf8"));
+    submission.next_checks = [
+      { ...submission.next_checks[1], priority: 1, cost_level: "HIGH" },
+      { ...submission.next_checks[0], priority: 2, cost_level: "MODERATE" },
+      { ...submission.next_checks[2], priority: 3, cost_level: "LOW" }
+    ];
+    const submissionPath = join(workspace, "high-cost-first.json");
+    writeFileSync(submissionPath, `${JSON.stringify(submission, null, 2)}\n`, "utf8");
+
+    const report = JSON.parse(run(["score", "--submission", submissionPath]).stdout);
+    const nextChecks = report.dimensions.find((item: { id: string }) => item.id === "lowest_cost_next_checks");
+    assert.equal(nextChecks.awarded_points, 11);
+    assert.equal(report.numeric_score, 96);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
 test("scenario builder refuses destructive output roots", () => {
   const result = spawnSync(
     process.execPath,

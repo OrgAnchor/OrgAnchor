@@ -143,6 +143,14 @@ The first fresh-context internal pair was rejected before scoring. The website-o
 
 This exposed an experiment-interface defect rather than evidence for or against OrgAnchor: the initial prompts named the fields but did not state their value types or prohibit prose substitution. Both prompts now declare the same type and status semantics without revealing expected values. The rejected pair is calibration evidence only and does not count toward the Fireseed target.
 
+## Internal Cold-Start Observation: 2026-07-16
+
+After the value contract was corrected, two new fresh-context Codex tasks ran the isolated pair. The website-only condition recovered 2 of 12 pinned facts and left 10 unknown. The OrgAnchor-enabled condition recovered all 12 facts. Neither condition made an incorrect assertion, and the enhanced condition preserved `NOT_ASSIGNED_BY_ORGANCHOR` as the trust boundary.
+
+The scored status is `READY_FOR_EXTERNAL_RUNS`, not `OBSERVED_IMPROVEMENT`, because this is `INTERNAL_COLD_START` evidence. Provider cost metrics were unavailable and remain `null`. The observation supports only a narrower statement: for this known origin and fact set, the OrgAnchor machine path increased exact fact recovery without introducing false assertions or a false final-trust decision. It does not yet establish lower total transaction cost, unknown-candidate discovery, or general performance across organizations and Agent systems.
+
+The raw outputs, submission, and scored report are retained with the Alpha.4 self-pilot operational artifacts outside the public source repository.
+
 ## First Fireseed Target
 
 The initial target is deliberately modest:

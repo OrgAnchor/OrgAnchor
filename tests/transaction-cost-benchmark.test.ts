@@ -14,6 +14,7 @@ test("transaction-cost benchmark is packaged and documented as a Fireseed experi
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
   const docsIndex = readFileSync(join(repoRoot, "DOCS_INDEX.md"), "utf8");
   const readme = readFileSync(join(repoRoot, "README.md"), "utf8");
+  const benchmarkDoc = readFileSync(join(repoRoot, "FIRESEED_TRANSACTION_COST_BENCHMARK.md"), "utf8");
 
   assert.equal(packageJson.scripts?.["benchmark:transaction"], "node scripts/transaction-cost-benchmark.mjs");
   assert.equal(packageJson.files?.includes("scripts/transaction-cost-benchmark.mjs"), true);
@@ -23,6 +24,8 @@ test("transaction-cost benchmark is packaged and documented as a Fireseed experi
   assert.match(readme, /does not prove a general transaction-cost reduction claim/i);
   assert.match(readme, /post-Alpha\.4 Fireseed benchmark tooling/);
   assert.match(readme, /Use a source checkout for the benchmark commands below/);
+  assert.match(benchmarkDoc, /Internal Cold-Start Observation: 2026-07-16/);
+  assert.match(benchmarkDoc, /does not yet establish lower total transaction cost/i);
 });
 
 test("cold-start prompts do not expose pinned benchmark answers", () => {

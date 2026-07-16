@@ -97,6 +97,8 @@ The `0.1.0-alpha.4` release-convergence batch is published and publicly verified
 
 Post-Alpha.4 benchmark tooling is present on `main` but has not been republished to npm. It is evaluation infrastructure rather than a change to the Alpha.4 signed-artifact or verification protocol.
 
+The first contract-valid internal cold-start pair completed on 2026-07-16: website-only recovery was 2/12, OrgAnchor-enabled recovery was 12/12, both had zero incorrect assertions, and the enhanced result preserved the external trust boundary. Cost metrics were unavailable, so the result is preparation for external runs rather than proof of lower transaction cost.
+
 The current launch path is Fireseed Alpha, defined in `FIRESEED_ALPHA_PLAN.md`, with the operational GO/HOLD decision in `FIRESEED_READINESS_GATE.md` and the first GO decision in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 
 Fireseed Alpha is the minimum necessary public collaboration loop:

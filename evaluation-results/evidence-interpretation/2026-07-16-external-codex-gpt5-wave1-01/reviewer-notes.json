@@ -2,6 +2,12 @@
   "type": "OrgAnchorEvidenceInterpretationReviewerNotes",
   "version": "0.1",
   "classification": "INDEPENDENT",
+  "operator_observation": {
+    "model": "5.6 Sol",
+    "reasoning_effort": "LIGHT",
+    "source": "COMPLETED_TASK_UI",
+    "agent_authored_metadata_was_generic": true
+  },
   "semantic_review": {
     "invented_evidence": false,
     "package_pass_treated_as_claim_truth": false,

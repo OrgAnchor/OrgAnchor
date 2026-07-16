@@ -1,4 +1,4 @@
-# External Fresh-Context Run: Codex GPT-5, Wave 1 Run 01
+# External Fresh-Context Run: Codex 5.6 Sol Light, Wave 1 Run 01
 
 This directory preserves the first independent external-task result for the fictional manufacturing evidence-interpretation scenario.
 
@@ -18,8 +18,8 @@ The classification means the run was isolated from the OrgAnchor development con
 - a new Codex task was opened in the isolated `OrgAnchor-external-agent-wave1` directory;
 - the task received only `task.md`, the hosted fictional package, its linked public artifacts, and ordinary public tools;
 - the OrgAnchor repository, Git history, reference answer, scoring key, operator truth, prior Agent results, and previous project conversation were excluded by the run contract;
-- displayed model: `Codex (GPT-5)`;
-- displayed reasoning setting: not visible;
+- Agent-authored metadata used the generic label `Codex (GPT-5)` and reported the reasoning setting as not visible;
+- the operator subsequently checked the completed task UI and confirmed the actual selection as `5.6 Sol` with `Light` reasoning;
 - isolation declaration: followed;
 - execution timestamp: `2026-07-16T19:33:05.512Z`;
 - hosted scenario source commit: `de421304ab5c928183222f0d2bcfa209c14904f7`;
@@ -30,6 +30,7 @@ The classification means the run was isolated from the OrgAnchor development con
 - `task.md`: exact task visible to the Agent;
 - `agent-result.raw.json`: first completed, uncorrected Agent JSON;
 - `run-metadata.json`: model, tools, timestamp, and isolation declaration;
+- `operator-observation.json`: model and reasoning labels observed directly in the completed task UI;
 - `score.json`: corrected deterministic score report;
 - `reviewer-notes.json`: separate human semantic review and scorer finding.
 

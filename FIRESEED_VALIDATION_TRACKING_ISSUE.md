@@ -102,6 +102,12 @@ Focus:
 - risk gaps and next actions.
 - paired website-only versus OrgAnchor-enabled fact recovery using `FIRESEED_TRANSACTION_COST_BENCHMARK.md`.
 
+## Current Internal Reference
+
+On 2026-07-16, two fresh-context internal Codex tasks completed the corrected paired run. Website-only recovery was 2/12 and OrgAnchor-enabled recovery was 12/12, with zero incorrect assertions and a preserved external trust boundary.
+
+This is `INTERNAL_COLD_START` evidence. It does not count as independent external evidence and does not prove lower total transaction cost because provider cost metrics were unavailable. See `FIRESEED_TRANSACTION_COST_BENCHMARK.md` for the method, calibration failure, result boundary, and external target.
+
 ## Fast Local Checks
 
 ```bash

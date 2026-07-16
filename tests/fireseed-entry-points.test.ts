@@ -88,6 +88,10 @@ test("Fireseed outreach kit gives external reviewers concrete tasks and boundari
   assert.match(kit, /COLD_START_RUNBOOK\.md/);
   assert.match(kit, /not a claim that OrgAnchor has already proven lower transaction cost/i);
 
+  const trackingIssue = readText("FIRESEED_VALIDATION_TRACKING_ISSUE.md");
+  assert.match(trackingIssue, /Current Internal Reference/);
+  assert.match(trackingIssue, /does not count as independent external evidence/i);
+
   for (const phrase of [
     "Adopting Organization Trial",
     "Technical Review",

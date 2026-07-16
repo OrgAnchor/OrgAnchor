@@ -138,13 +138,13 @@ test("deterministic scorer accepts the reference and hard-fails unsafe interpret
   }
 });
 
-test("traceability scoring accepts precise JSON fragment references", () => {
+test("traceability scoring accepts public verify paths, URLs, and precise JSON fragments", () => {
   const workspace = mkdtempSync(join(tmpdir(), "organchor-evidence-interpretation-refs-"));
   try {
     const submission = JSON.parse(readFileSync(join(exampleDir, "submission.reference.json"), "utf8"));
     submission.artifact_refs = [
-      "claims/product-claims.json#claim-operating-life-10000h",
-      "evidence/evidence-manifest.json#evidence-s1-internal-800h",
+      "verify/claims/product-claims.json#claim-operating-life-10000h",
+      "https://example.org/verify/evidence/evidence-manifest.json#evidence-s1-internal-800h",
       "evidence/evidence-manifest.json#evidence-s2-material-dimensions"
     ];
     const submissionPath = join(workspace, "fragment-refs.json");

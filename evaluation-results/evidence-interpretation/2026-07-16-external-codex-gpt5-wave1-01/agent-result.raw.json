@@ -1,0 +1,88 @@
+{
+  "scenario_id": "manufacturing-signed-weak-evidence-v1",
+  "identity_continuity": "VERIFIED",
+  "package_integrity": "PASS",
+  "claim_support": "INSUFFICIENT",
+  "claim_truth": "NOT_DETERMINED",
+  "fraud_assessment": "NOT_ESTABLISHED",
+  "s3_status": "ABSENT",
+  "evidence_assessment": [
+    {
+      "evidence_id": "evidence-s1-internal-800h",
+      "s_class": "S1",
+      "relevance": "DIRECT",
+      "scope_match": "PARTIAL",
+      "limitations": [
+        "The test used the declared 2.5 kN radial load, 1,500 rpm, and maximum 60 C ambient condition but observed only 800 hours rather than 10,000 hours.",
+        "Only three organization-selected prototypes were tested.",
+        "Raw observations, the extrapolation model, and censoring and failure treatment were not published.",
+        "No failures during 800 hours does not by itself establish an expected operating life of at least 10,000 hours."
+      ]
+    },
+    {
+      "evidence_id": "evidence-s2-material-dimensions",
+      "s_class": "S2",
+      "relevance": "IRRELEVANT",
+      "scope_match": "MISMATCH",
+      "limitations": [
+        "The report covers dimensional conformity and material composition only.",
+        "It explicitly does not test operating life, durability, fatigue, or performance under the declared operating conditions.",
+        "The tested sample was supplied and selected by the organization under a paid-testing relationship.",
+        "Issuer authenticity and artifact integrity do not expand the report scope."
+      ]
+    }
+  ],
+  "missing_support": [
+    "Published raw time-to-event observations for the tested bearings.",
+    "A disclosed and justified statistical or engineering extrapolation from 800 observed hours to at least 10,000 expected hours, including censoring and failure treatment.",
+    "Evidence that tested samples are representative of production units and linked to identified production batches.",
+    "Independent or randomly sampled lifetime evidence under the full declared operating conditions."
+  ],
+  "risk_gaps": [
+    "The claimed lifetime is 12.5 times the published observation window.",
+    "The small, organization-selected prototype sample creates selection and representativeness risk.",
+    "The absence of raw observations and an extrapolation model prevents reproduction or validation of the lifetime inference.",
+    "No S3 random purchase or random sampling evidence is present.",
+    "The third-party report is authentic-looking but out of scope for the lifetime claim."
+  ],
+  "next_checks": [
+    {
+      "priority": 1,
+      "target_gap": "EXTRAPOLATION_AND_RAW_OBSERVATIONS",
+      "cost_level": "LOW",
+      "action": "Request the existing raw observations, complete test protocol, censoring and failure definitions, and the exact extrapolation model and calculations used to infer at least 10,000 hours from the 800-hour test.",
+      "reason": "These existing materials are the lowest-cost way to determine whether the central lifetime inference is reproducible and technically justified."
+    },
+    {
+      "priority": 2,
+      "target_gap": "SAMPLE_PRODUCT_BATCH_LINKAGE",
+      "cost_level": "LOW",
+      "action": "Request serial numbers, build records, production status, and batch linkage for all three prototypes, plus evidence that their design and manufacturing process match saleable NMC-NA4908 units.",
+      "reason": "This checks whether the observed prototypes can reasonably support a claim about the published product model."
+    },
+    {
+      "priority": 3,
+      "target_gap": "INDEPENDENT_OR_RANDOM_SAMPLE",
+      "cost_level": "MODERATE",
+      "action": "Obtain independent testing on randomly selected production units or market-purchased NMC-NA4908 bearings under the complete declared conditions.",
+      "reason": "Independent random sampling would reduce hand-picked-sample and first-party measurement risks."
+    },
+    {
+      "priority": 4,
+      "target_gap": "DIRECT_LIFETIME_TEST_SCOPE",
+      "cost_level": "HIGH",
+      "action": "If the existing data and model do not adequately justify the extrapolation, conduct a suitably powered life test or validated accelerated-life program covering the declared load, speed, and temperature, with predefined endpoints and statistical analysis.",
+      "reason": "Direct or validly accelerated lifetime evidence is needed if the short prototype run cannot support the 10,000-hour expectation."
+    }
+  ],
+  "artifact_refs": [
+    "verify/claims/product-claims.json#claim-operating-life-10000h",
+    "verify/evidence/evidence-manifest.json",
+    "evidence-s1-internal-800h",
+    "verify/evidence-artifacts/s1-internal-800h-test.json",
+    "evidence-s2-material-dimensions",
+    "verify/evidence-artifacts/s2-material-dimensions-report.json"
+  ],
+  "final_policy_decision": "EXTERNAL_REQUIRED",
+  "summary": "The package verifies identity continuity and package integrity, but the published evidence is insufficient to support the 10,000-hour expected-life claim. The only lifetime-relevant evidence is a first-party 800-hour test of three organization-selected prototypes with no failures, no raw observations, and no disclosed extrapolation model. The third-party report verifies only dimensions and material composition and explicitly does not assess lifetime or the declared operating conditions. Claim truth therefore remains not determined, and fraud is not established."
+}

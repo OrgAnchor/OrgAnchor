@@ -768,8 +768,19 @@ function scoreSubmission(submission) {
 
 function hasArtifactRef(refs, target) {
   return refs.some((value) => {
-    const ref = value.replaceAll("\\", "/").replace(/^\.\//, "");
-    return ref === target || ref.startsWith(`${target}#`) || ref.endsWith(`#${target}`);
+    let ref = value.trim().replaceAll("\\", "/");
+    try {
+      const url = new URL(ref);
+      if (url.protocol === "http:" || url.protocol === "https:") {
+        ref = `${url.pathname}${url.hash}`;
+      }
+    } catch {
+      // Relative package paths and evidence ids are expected here.
+    }
+    ref = ref.replace(/^\.\//, "").replace(/^\/+/, "");
+    const packagePaths = [target, `verify/${target}`];
+    return packagePaths.some((path) => ref === path || ref.startsWith(`${path}#`))
+      || ref.endsWith(`#${target}`);
   });
 }
 

@@ -1,0 +1,7 @@
+{
+  "displayed_model_name": "Codex (GPT-5)",
+  "reasoning_setting": "not visible",
+  "enabled_tools": ["shell_command", "wait", "apply_patch"],
+  "execution_timestamp": "2026-07-16T20:10:28.5696870Z",
+  "isolation_rules_followed": true
+}

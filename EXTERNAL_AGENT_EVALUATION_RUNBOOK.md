@@ -58,6 +58,12 @@ Ordinary verification command:
 npx --yes organchor@alpha verify url https://organchor-evidence-eval-v1.pages.dev --compact
 ```
 
+On Windows PowerShell, a local execution policy may block the `npx.ps1` shim. Use the equivalent executable directly when that occurs:
+
+```powershell
+npx.cmd --yes organchor@alpha verify url https://organchor-evidence-eval-v1.pages.dev --compact
+```
+
 The hosted carrier exposes only the generated `public/` directory. It does not expose the Agent task, reference answer, scorer key, operator truth, prior results, or private keys. The fictional package directory hash recorded at deployment is:
 
 ```text

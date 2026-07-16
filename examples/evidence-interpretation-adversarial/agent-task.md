@@ -57,4 +57,6 @@ Return JSON only:
 
 Use `UNKNOWN` where the supplied package does not support a conclusion. Do not invent evidence, tests, issuers, samples, operating results, or external endorsements.
 
+Order `next_checks` by the lowest-cost useful reduction of uncertainty. Request existing raw observations, methods, and subject or batch linkage before proposing high-cost new testing, unless the supplied package identifies a concrete safety reason that makes immediate testing necessary.
+
 Before returning the result, run the ordinary OrgAnchor URL verification command supplied by the operator. Inspect the signed claims and evidence manifests and the two linked evidence artifacts. The bundled issuer signature can be checked with the evaluation verifier, but issuer authenticity must not be confused with report scope.

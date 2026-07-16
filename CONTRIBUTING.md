@@ -120,6 +120,27 @@ Report the smallest concrete scenario that breaks clarity, creates misleading co
 
 Use `FIRESEED_READINESS_GATE.md` to separate S1-S3 acceptance-gate issues from S4/S5 design-preview issues.
 
+### 4. External Agent Evidence Evaluation
+
+Use this path to test whether an unfamiliar Agent can interpret one fictional signed evidence package without seeing OrgAnchor's answer key or previous discussion.
+
+Follow `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`. The essential requirements are:
+
+- start the Agent without inherited OrgAnchor context;
+- expose only the Agent task, schema, public origin, and ordinary verification command;
+- keep the source scenario, operator files, scoring key, reference result, and previous raw runs hidden;
+- preserve the exact Agent JSON before scoring or feedback;
+- submit both the raw result and scorer report;
+- mark any contaminated or uncertain run `NON_INDEPENDENT`.
+
+Useful issue type:
+
+```text
+External Agent Evaluation / Fireseed
+```
+
+This path tests one evidence-interpretation boundary. It does not rank Agent products or establish that OrgAnchor evidence is true.
+
 ## Pull Request Checklist
 
 Before opening a pull request:

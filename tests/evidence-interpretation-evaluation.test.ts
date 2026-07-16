@@ -14,14 +14,23 @@ test("adversarial evidence interpretation design is package-facing and indexed",
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
   const docsIndex = readFileSync(join(repoRoot, "DOCS_INDEX.md"), "utf8");
   const evaluation = readFileSync(join(repoRoot, "EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md"), "utf8");
+  const externalRunbook = readFileSync(join(repoRoot, "EXTERNAL_AGENT_EVALUATION_RUNBOOK.md"), "utf8");
+  const externalIssueForm = readFileSync(join(repoRoot, ".github", "ISSUE_TEMPLATE", "external-agent-evaluation.yml"), "utf8");
 
   assert.equal(packageJson.files?.includes("EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md"), true);
+  assert.equal(packageJson.files?.includes("EXTERNAL_AGENT_EVALUATION_RUNBOOK.md"), true);
   assert.equal(packageJson.files?.includes("scripts/evidence-interpretation-evaluation.mjs"), true);
   assert.equal(packageJson.scripts?.["evaluation:evidence"], "node scripts/evidence-interpretation-evaluation.mjs");
   assert.match(docsIndex, /EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION\.md/);
   assert.match(evaluation, /valid but the evidence is weak/i);
   assert.match(evaluation, /Hard Failures/);
   assert.match(evaluation, /runnable local evaluation/i);
+  assert.match(docsIndex, /EXTERNAL_AGENT_EVALUATION_RUNBOOK\.md/);
+  assert.match(externalRunbook, /uncorrected Agent JSON/i);
+  assert.match(externalRunbook, /NON_INDEPENDENT/);
+  assert.doesNotMatch(externalRunbook, /800-hour internal prototype test/i);
+  assert.match(externalIssueForm, /Isolation declaration/);
+  assert.match(externalIssueForm, /Uncorrected Agent JSON/);
 });
 
 test("first scenario separates valid identity from insufficient product support", () => {
@@ -38,6 +47,7 @@ test("first scenario separates valid identity from insufficient product support"
   assert.equal(scoring.dimensions.reduce((sum: number, item: { points: number }) => sum + item.points, 0), 100);
   assert.ok(scoring.hard_failures.length >= 5);
   assert.match(prompt, /Do not treat valid identity, signatures, hashes, or package structure as proof/);
+  assert.match(prompt, /lowest-cost useful reduction of uncertainty/i);
   assert.doesNotMatch(prompt, /800-hour internal prototype test/);
   assert.doesNotMatch(prompt, /Dimensions and material composition/);
 });
@@ -61,6 +71,10 @@ test("runnable scenario builds a valid public package without private keys", () 
     assert.equal(existsSync(join(workspace, "public", "verify", "evidence-artifacts", "s1-internal-800h-test.json")), true);
     assert.equal(existsSync(join(workspace, "public", "verify", "issuer", "root-authority.json")), true);
     assert.equal(existsSync(join(workspace, "public", "operator")), false);
+    assert.match(
+      readFileSync(join(workspace, "agent", "agent-task.md"), "utf8"),
+      /lowest-cost useful reduction of uncertainty/i
+    );
 
     const evidence = JSON.parse(
       readFileSync(join(workspace, "public", "verify", "evidence", "evidence-manifest.json"), "utf8")

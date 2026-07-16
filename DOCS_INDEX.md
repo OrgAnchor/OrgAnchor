@@ -60,6 +60,7 @@ If you are reviewing how the project is operated by a human owner and AI executi
 - `PUBLIC_RELEASE_CHECKLIST.md`: active public-release operating gate for local checks, public self-pilot checks, asset alignment, owner intervention gates, publishing order, and hold criteria.
 - `PUBLIC_SELF_VERIFICATION_2026-07-15.md`: current Alpha.4 public release-linkage, endpoint, clean-install, Beacon, CLI, and disclosed-limit verification result; `PUBLIC_SELF_VERIFICATION_2026-07-15.zh-CN.md` is its Chinese translation.
 - `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: active runnable Fireseed evaluation for testing whether an unfamiliar Agent separates valid identity/package integrity from insufficient product-claim evidence.
+- `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`: isolation, raw-result preservation, scoring, semantic review, and GitHub submission procedure for independent Agent repetitions.
 - `FIRESEED_TRANSACTION_COST_BENCHMARK.md`: retired internal retrieval-calibration record; preserved for history but no longer an active Fireseed target or packaged npm document.
 - `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: historical pre-Alpha.4 local release gate, capability audit, public self-pilot, public root-signed lockfile, and diff-hygiene snapshot.
 - `CURRENT_PROJECT_STATE_2026-07-02.md`: historical source-repository state snapshot as of 2026-07-02, including the Fireseed boundary, repository boundary, next-work order, and hold conditions at that date.
@@ -156,6 +157,8 @@ The Beacon layer is the preferred anti-capture foundation for discovery. The Dir
 - `examples/agent-verification/organchor-beacon-query-result.json`: Beacon need-match discovery result example.
 - `examples/agent-discovery-loop/`: runnable seed -> sweep -> index -> query -> verify discovery-loop example.
 - `VISIBLE_ACCEPTANCE.md`: plain-language bridge between human-visible `/verify` review and machine-readable `agent_review` output.
+- `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: scenario definition and scorer boundary for adversarial evidence interpretation.
+- `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`: operator procedure for producing comparable fresh-context external Agent results without exposing the answer key.
 
 The preferred low-friction agent path is `/.well-known/organchor.json` plus:
 

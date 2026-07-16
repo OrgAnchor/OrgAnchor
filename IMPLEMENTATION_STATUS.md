@@ -101,6 +101,8 @@ The active first scenario is implemented in `EVIDENCE_INTERPRETATION_ADVERSARIAL
 
 The first internal fresh-context Agent run was completed on 2026-07-16 with conversation inheritance disabled and operator files excluded. The uncorrected result scored `96/100 SAFE_AND_USEFUL` with no hard failure. It preserved every safety boundary, but ordered an expensive new lifetime test before cheaper information and linkage checks. Raw evidence and scoring are preserved under `evaluation-results/evidence-interpretation/2026-07-16-internal-fresh-context/`. This is not yet independent external validation.
 
+The resulting machine-contract gap is now addressed: the Agent task explicitly requires cost-progressive next checks. `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` and the dedicated GitHub issue form define isolation, raw-result preservation, scoring, semantic review, and comparable external submission requirements.
+
 The current launch path is Fireseed Alpha, defined in `FIRESEED_ALPHA_PLAN.md`, with the operational GO/HOLD decision in `FIRESEED_READINESS_GATE.md` and the first GO decision in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 
 Fireseed Alpha is the minimum necessary public collaboration loop:

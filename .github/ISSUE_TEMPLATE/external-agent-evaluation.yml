@@ -1,0 +1,93 @@
+name: External Agent Evaluation / Fireseed
+description: Submit an uncorrected fresh-context Agent result for the evidence-interpretation scenario.
+title: "[External Agent Evaluation] "
+labels:
+  - fireseed
+  - agent-evaluation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`. Submit only fictional public evaluation data. Never include credentials, private keys, personal data, or confidential organization evidence.
+  - type: input
+    id: source_commit
+    attributes:
+      label: OrgAnchor source commit
+      description: Full commit SHA used to build and score the run.
+      placeholder: 40-character Git commit SHA
+    validations:
+      required: true
+  - type: input
+    id: agent_product
+    attributes:
+      label: Agent product and displayed model/version
+      description: Use the exact label shown by the provider. Do not guess hidden model details.
+    validations:
+      required: true
+  - type: textarea
+    id: agent_environment
+    attributes:
+      label: Agent environment and enabled tools
+      description: State the Agent application, operating environment, network access, browser/search access, and tools it could use.
+    validations:
+      required: true
+  - type: dropdown
+    id: classification
+    attributes:
+      label: Run classification
+      options:
+        - INDEPENDENT
+        - NON_INDEPENDENT
+        - INVALID
+    validations:
+      required: true
+  - type: checkboxes
+    id: isolation
+    attributes:
+      label: Isolation declaration
+      options:
+        - label: The Agent started without inherited OrgAnchor conversation history.
+          required: true
+        - label: The Agent could not inspect the source repository, Git history, operator files, scoring key, reference answer, or prior raw results.
+          required: true
+        - label: Only the public origin, Agent task, output schema, and ordinary OrgAnchor verification command were supplied.
+          required: true
+        - label: The raw JSON below was preserved before scoring, correction, or feedback.
+          required: true
+  - type: textarea
+    id: deviations
+    attributes:
+      label: Isolation deviations or uncertainty
+      description: If none, write `None`. If any condition is uncertain, classify the run as NON_INDEPENDENT.
+    validations:
+      required: true
+  - type: textarea
+    id: raw_result
+    attributes:
+      label: Uncorrected Agent JSON
+      description: Paste the exact raw result before scoring or correction.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: score_report
+    attributes:
+      label: Deterministic score report
+      description: Paste the unmodified scorer output.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: reviewer_notes
+    attributes:
+      label: Human semantic review
+      description: Record hallucinations, unsupported conclusions, cost-order problems, scorer errors, or other material observations.
+    validations:
+      required: true
+  - type: checkboxes
+    id: publication
+    attributes:
+      label: Publication declaration
+      options:
+        - label: This submission contains only fictional public evaluation material and may be retained as an OrgAnchor Fireseed result.
+          required: true

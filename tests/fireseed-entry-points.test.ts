@@ -18,6 +18,7 @@ test("README exposes the Fireseed public entry points", () => {
   assert.match(readme, /FIRESEED_READINESS_GATE\.md/);
   assert.match(readme, /CONTRIBUTING\.md/);
   assert.match(readme, /CALL_FOR_FIRESEED_REVIEW\.md/);
+  assert.match(readme, /EXTERNAL_AGENT_EVALUATION_RUNBOOK\.md/);
 });
 
 test("Fireseed contributor guide keeps participation paths and safety boundaries visible", () => {
@@ -27,6 +28,7 @@ test("Fireseed contributor guide keeps participation paths and safety boundaries
     "Adopting Organization Trial",
     "Technical Review",
     "Evidence And Governance Review",
+    "External Agent Evidence Evaluation",
     "FIRESEED_READINESS_GATE.md",
     "Do not submit private keys",
     "Do not describe OrgAnchor compatibility as a trust badge",
@@ -49,11 +51,12 @@ test("Fireseed public review brief does not overclaim maturity", () => {
   assert.match(call, /Fireseed Success Condition/);
 });
 
-test("GitHub issue templates route Fireseed feedback into the three review paths", () => {
+test("GitHub issue templates route Fireseed feedback into broad and focused review paths", () => {
   const templates = [
     ".github/ISSUE_TEMPLATE/adopter-trial.yml",
     ".github/ISSUE_TEMPLATE/technical-review.yml",
     ".github/ISSUE_TEMPLATE/evidence-governance-review.yml",
+    ".github/ISSUE_TEMPLATE/external-agent-evaluation.yml",
     ".github/ISSUE_TEMPLATE/config.yml"
   ];
 
@@ -67,7 +70,10 @@ test("GitHub issue templates route Fireseed feedback into the three review paths
   assert.match(readText(".github/ISSUE_TEMPLATE/technical-review.yml"), /Fireseed gate impact/);
   assert.match(readText(".github/ISSUE_TEMPLATE/evidence-governance-review.yml"), /Evidence \/ Governance Review/);
   assert.match(readText(".github/ISSUE_TEMPLATE/evidence-governance-review.yml"), /Fireseed gate impact/);
+  assert.match(readText(".github/ISSUE_TEMPLATE/external-agent-evaluation.yml"), /External Agent Evaluation \/ Fireseed/);
+  assert.match(readText(".github/ISSUE_TEMPLATE/external-agent-evaluation.yml"), /Uncorrected Agent JSON/);
   assert.match(readText(".github/ISSUE_TEMPLATE/config.yml"), /Fireseed Readiness Gate/);
+  assert.match(readText(".github/ISSUE_TEMPLATE/config.yml"), /External Agent Evaluation Runbook/);
 });
 
 function readText(path: string): string {

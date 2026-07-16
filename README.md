@@ -240,13 +240,14 @@ Language policy: machine-readable JSON keys, status enums, policy route codes, s
 
 ## Fireseed Review Tracks
 
-Fireseed Alpha has three practical review paths:
+Fireseed Alpha has three broad review paths and one focused Agent-evaluation path:
 
 - Adopting organization trial: test whether a real or realistic organization can publish a useful OrgAnchor package without excessive effort.
 - Technical review: test signatures, canonicalization, threshold authority, migration, `/verify`, Beacon, package safety, and release checks.
 - Evidence/governance review: test S1-S3 abuse cases, S3 sampling assumptions, S4/S5 design gaps, Directory risks, and stale or misleading evidence.
+- External Agent evaluation: give an unfamiliar Agent the isolated fictional package, preserve its uncorrected JSON, and test whether it separates valid package structure from actual claim support.
 
-Use `CONTRIBUTING.md` for contribution rules and `CALL_FOR_FIRESEED_REVIEW.md` for the public review brief.
+Use `CONTRIBUTING.md` for contribution rules, `CALL_FOR_FIRESEED_REVIEW.md` for the public review brief, and `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` for the controlled fresh-context procedure.
 
 Use `FIRESEED_OUTREACH_KIT.md` as the practical starter kit for named external outreach. It includes track-specific task lists, useful commands, feedback routing, success criteria, hold criteria, and copyable invitation text.
 

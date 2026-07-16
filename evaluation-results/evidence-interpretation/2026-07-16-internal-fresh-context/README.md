@@ -23,6 +23,8 @@ The Agent correctly separated valid identity and package integrity from claim su
 
 The four-point deduction is substantive: it requested all useful follow-up categories but placed a high-cost new lifetime test before lower-cost requests for raw observations, extrapolation details, and product/batch linkage.
 
+The run also exposed an instruction gap: the original Agent task requested priorities and cost levels but did not explicitly say that lower-cost useful checks should come first. The task contract was clarified after this raw result was preserved. The four-point deduction should therefore be read as joint feedback about Agent sequencing and contract clarity, not as a standalone model-quality conclusion.
+
 ## Scorer Finding During The Run
 
 The first scoring pass incorrectly rejected precise JSON fragment references such as `claims/product-claims.json#claim-operating-life-10000h`. The scorer was corrected to accept canonical artifact paths with fragments, and a regression test was added before the official score was recorded. The raw Agent output was not changed.

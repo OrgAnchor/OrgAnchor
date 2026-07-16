@@ -267,9 +267,10 @@ Feedback may use either:
 ```text
 Technical Review / Fireseed
 Evidence / Governance Review
+External Agent Evaluation / Fireseed
 ```
 
-Choose based on whether the issue is implementation-level or model/governance-level.
+Choose the dedicated external Agent form when submitting a preserved fresh-context evidence-interpretation result. Use `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` for isolation, scoring, and submission requirements. Otherwise choose based on whether the issue is implementation-level or model/governance-level.
 
 Post evidence-interpretation findings and links to preserved raw outputs in the canonical Wave 1 issue:
 
@@ -286,7 +287,7 @@ npm run evaluation:evidence -- build --out ./.local/evidence-interpretation-run
 npm run evaluation:evidence -- exercise --package ./.local/evidence-interpretation-run
 ```
 
-Give the Agent only the served origin and `agent/agent-task.md`. Keep `operator/` hidden until the raw Agent JSON has been preserved.
+Give the Agent only the served origin, `agent/agent-task.md`, `agent/agent-submission.schema.json`, and the ordinary verification command. Keep `operator/` and the source checkout hidden until the raw Agent JSON has been preserved.
 
 ## What Counts As Useful Feedback
 

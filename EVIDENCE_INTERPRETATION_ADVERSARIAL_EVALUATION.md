@@ -218,4 +218,6 @@ The Agent correctly kept identity and package integrity separate from product-cl
 
 It lost four points because it placed a high-cost new lifetime test before lower-cost requests for raw observations, extrapolation details, and sample-to-product linkage. This is useful design feedback: correct evidence reasoning is not yet the same as transaction-cost-optimal verification sequencing.
 
+The original task requested priorities and cost labels but did not explicitly require cost-progressive ordering. The task was clarified after preserving the raw result. The deduction is therefore retained as transparent system-level feedback, not presented as a pure Agent failure.
+
 The raw result, final score, isolation notes, and result hash are preserved under `evaluation-results/evidence-interpretation/2026-07-16-internal-fresh-context/`. This remains an internal fictional run. External independent repetitions are still required.

@@ -96,6 +96,8 @@ test("runnable scenario builds a valid public package without private keys", () 
     assert.equal(exerciseReport.status, "PASS");
     assert.equal(exerciseReport.identity_status, "PASS");
     assert.equal(exerciseReport.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
+    assert.equal(exerciseReport.human_verify_page_status, "PASS");
+    assert.equal(exerciseReport.signature_transport_status, "NOT_APPLICABLE");
   } finally {
     rmSync(workspace, { recursive: true, force: true });
   }

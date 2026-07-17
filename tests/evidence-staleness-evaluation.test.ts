@@ -52,6 +52,9 @@ test("stale-evidence scenario builds a valid package that exposes expiry without
     );
     assert.equal(valueReport.summary.stale_evidence_items, 1);
     assert.equal(valueReport.s2_summary.expired_s2_count, 1);
+    const claimAudit = valueReport.claims.find((claim: { id: string }) => claim.id === "claim-current-production-conformity");
+    assert.equal(claimAudit.subject_coverage.status, "PASS");
+    assert.equal(claimAudit.subject_coverage.relations.EXACT_SUBJECT_MATCH, 1);
     assert.equal(
       existsSync(join(workspace, "public", "verify", "evidence-artifacts", "s2-expired-conformity-certificate.json")),
       true
@@ -64,6 +67,9 @@ test("stale-evidence scenario builds a valid package that exposes expiry without
     assert.equal(exercise.scenario_id, "manufacturing-expired-s2-current-claim-v1");
     assert.equal(exercise.identity_status, "PASS");
     assert.equal(exercise.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
+    assert.equal(exercise.human_verify_page_status, "PASS");
+    assert.equal(exercise.signature_transport_status, "PASS");
+    assert.match(exercise.signature_content_type, /^application\/json/);
   } finally {
     rmSync(workspace, { recursive: true, force: true });
   }

@@ -606,6 +606,11 @@ function createStaleClaimsAndEvidence(workspace) {
   };
   claims.claims[0] = {
     ...claims.claims[0],
+    subject: {
+      subject_type: "product_model",
+      subject_id: "NMC-NA4908",
+      scope_text: "Current production conformity coverage for model NMC-NA4908"
+    },
     claim_kind: "current_production_conformity_coverage",
     evaluation_time: staleEvaluationTime,
     certificate_id: "APC-NMC-2025-044",
@@ -1062,14 +1067,30 @@ async function exerciseCommand(opts, activeScenarioId = scenarioId) {
   const server = await startStaticServer(servedRoot, numberOption(opts.port, 0));
   try {
     rewriteBeaconOrigin(servedRoot, server.origin);
+    const humanVerifyResponse = await fetch(`${server.origin}/verify/`);
+    const signatureResponse = activeScenarioId === staleScenarioId
+      ? await fetch(`${server.origin}/verify/issuer/s2-expired-conformity-certificate.json.sig`)
+      : null;
     const normal = JSON.parse((await runCliAsync(["verify", "url", server.origin], packageRoot)).stdout);
     const compact = JSON.parse((await runCliAsync(["verify", "url", server.origin, "--compact"], packageRoot)).stdout);
+    const signatureContentType = signatureResponse?.headers.get("content-type") ?? null;
+    const transportPass = humanVerifyResponse.ok
+      && (!signatureResponse || (signatureResponse.ok && signatureContentType?.startsWith("application/json")));
     const report = {
       type: "OrgAnchorEvidenceInterpretationOriginExercise",
       version: "0.1",
       scenario_id: activeScenarioId,
-      status: compact.identity_status === "PASS" && compact.trust_decision === "NOT_ASSIGNED_BY_ORGANCHOR" ? "PASS" : "FAIL",
+      status: compact.identity_status === "PASS"
+        && compact.trust_decision === "NOT_ASSIGNED_BY_ORGANCHOR"
+        && transportPass
+        ? "PASS"
+        : "FAIL",
       origin: server.origin,
+      human_verify_page_status: humanVerifyResponse.ok ? "PASS" : "FAIL",
+      signature_transport_status: signatureResponse
+        ? signatureResponse.ok && signatureContentType?.startsWith("application/json") ? "PASS" : "FAIL"
+        : "NOT_APPLICABLE",
+      signature_content_type: signatureContentType,
       overall_status: compact.overall_status,
       identity_status: compact.identity_status,
       value_status: compact.value_status,
@@ -1549,7 +1570,8 @@ async function startStaticServer(root, port) {
     try {
       const requestUrl = new URL(request.url ?? "/", "http://127.0.0.1");
       const pathname = requestUrl.pathname === "/" ? "index.html" : decodeURIComponent(requestUrl.pathname).replace(/^\/+/, "");
-      const filePath = resolve(join(resolvedRoot, pathname));
+      let filePath = resolve(join(resolvedRoot, pathname));
+      if (existsSync(filePath) && statSync(filePath).isDirectory()) filePath = resolve(join(filePath, "index.html"));
       const relativePath = relative(resolvedRoot, filePath);
       if (relativePath.startsWith("..") || isAbsolute(relativePath)) {
         response.writeHead(403).end("Forbidden");
@@ -1594,7 +1616,7 @@ function closeServer(server) {
 
 function contentType(path) {
   const extension = extname(path).toLowerCase();
-  if (extension === ".json") return "application/json; charset=utf-8";
+  if (extension === ".json" || extension === ".sig") return "application/json; charset=utf-8";
   if (extension === ".html") return "text/html; charset=utf-8";
   if (extension === ".xml") return "application/xml; charset=utf-8";
   if (extension === ".md" || extension === ".txt") return "text/plain; charset=utf-8";

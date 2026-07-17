@@ -1,22 +1,39 @@
 # OrgAnchor Release Publishing Plan
 
-Status: Operator plan for the local `0.1.0-alpha.4` Fireseed release-convergence candidate, with `0.1.0-alpha.3` as the current published Alpha baseline.
+Status: local `0.1.0-alpha.5` candidate preparation; publication requires the human-owner gate.
 
-Last checked: 2026-07-11.
+Last checked: 2026-07-17.
 
-## Current Readiness
-
-The package is buildable and installable locally:
+## Current State
 
 ```text
 package name: organchor
-candidate version: 0.1.0-alpha.4
-default publish tag: alpha
-public registry: https://registry.npmjs.org/
+local candidate: 0.1.0-alpha.5
+current npm alpha: 0.1.0-alpha.4
+current GitHub prerelease: v0.1.0-alpha.4
+publish dist-tag: alpha
 source repository: https://github.com/OrgAnchor/OrgAnchor
+public self-pilot: https://organchor.org
 ```
 
-Local checks already expected before publishing:
+The npm `latest` tag still points to the historical `0.1.0-alpha.1`. Public Alpha installation instructions must use `organchor@alpha`; no prerelease should be promoted as stable.
+
+## Candidate Purpose
+
+Alpha.5 packages the work learned from Fireseed Agent falsification after Alpha.4:
+
+- ordinary brief-first URL verification for low-friction Agents;
+- generic hash-bound verification of declared external evidence signatures;
+- explicit separation of cryptographic provenance, evidence sufficiency, claim truth, and external policy;
+- runnable weak-evidence, stale-evidence, and conflicting-current-evidence scenarios;
+- deterministic scorers, unsafe hard failures, preserved raw results, and regression tests;
+- fixture arithmetic and overclaim corrections found by those evaluations.
+
+This is a protocol and Agent-interface Alpha. It is not stable v1, a trust badge, a certification decision, or a supplier ranking.
+
+## Local Gate
+
+Before requesting publication approval, all of these must pass against the exact candidate commit:
 
 ```bash
 npm run release:check
@@ -24,229 +41,56 @@ npm pack --dry-run
 npm publish --dry-run --tag alpha
 ```
 
-For `0.1.0-alpha.2` and later, run the release integrity gate in `RELEASE_INTEGRITY.md` before npm publishing or GitHub release creation. The gate keeps source state, public `/verify` state, carrier receipts, package metadata, and release notes aligned.
-
-Published `0.1.0-alpha.3` baseline status:
+Also confirm:
 
 ```text
-node --run release:check: PASS
-npm pack --dry-run: PASS
-npm publish --dry-run --tag alpha: PASS
-npm publish --tag alpha: PASS through GitHub Actions Trusted Publishing
+package.json and package-lock.json both say 0.1.0-alpha.5;
+CHANGELOG.md describes the candidate without implying stable maturity;
+the npm file list contains no private key, token, wallet, payment data, production media, or local operator notes;
+the public self-pilot remains reachable and verifies, or any unrelated carrier gap is recorded explicitly;
+main is clean and pushed;
+no v0.1.0-alpha.5 tag or npm version already exists.
 ```
 
-Local `0.1.0-alpha.4` candidate status:
+## Human-Owner Gate
 
-```text
-version prepared locally: YES
-package media exclusion and size budget: PASS
-focused Agent compatibility tests: PASS
-full release:check: PASS (157 tests; release, package, and install smoke PASS)
-npm publish: NOT RUN
-Git tag or GitHub release: NOT CREATED
-public self-pilot deployment: NOT UPDATED
-```
+Stop for explicit approval before pushing `v0.1.0-alpha.5`.
 
-Published baseline:
+That tag push is not reversible as an ordinary edit: the GitHub Actions Trusted Publishing workflow runs the release checks and publishes `organchor@0.1.0-alpha.5` to npm under `alpha`. Npm versions are immutable.
 
-```text
-organchor@0.1.0-alpha.1: published
-organchor@0.1.0-alpha.3: published under alpha dist-tag
-v0.1.0-alpha.1: pushed
-v0.1.0-alpha.3: pushed
-GitHub prerelease for v0.1.0-alpha.1: draft prerelease
-GitHub prerelease for v0.1.0-alpha.3: published prerelease
-```
+Do not run local `npm publish` and do not trigger the manual workflow after a successful tag-triggered publication.
 
-## Current External State
+## Publication Sequence
 
-As of 2026-05-25:
+After owner approval:
 
-- `npm view organchor` against the public npm registry returns `0.1.0-alpha.1` because the registry `latest` dist-tag is intentionally not promoted to the newest alpha.
-- `npm view organchor@alpha` returns `0.1.0-alpha.3`.
-- NPM package `organchor@0.1.0-alpha.1` is published.
-- NPM package `organchor@0.1.0-alpha.3` is published.
-- NPM dist-tags currently show `alpha` pointing to `0.1.0-alpha.3` and `latest` pointing to `0.1.0-alpha.1`.
-- The `latest` dist-tag should not be advertised as stable; public install instructions should use `organchor@alpha` until a stable release exists.
-- Long-lived npm credentials are not stored in this repository.
-- `E:\CivX\OrgAnchor` is initialized as a local Git repository.
-- `main` is pushed to `https://github.com/OrgAnchor/OrgAnchor`.
-- `v0.1.0-alpha.1` is pushed to GitHub.
-- A GitHub prerelease draft exists for `v0.1.0-alpha.1`.
+1. Freeze and record the candidate commit.
+2. Push the signed or annotated `v0.1.0-alpha.5` tag once.
+3. Watch `.github/workflows/publish-npm.yml` through completion.
+4. Verify `npm view organchor@alpha version` returns `0.1.0-alpha.5`.
+5. Install `organchor@alpha` in a clean temporary workspace and run `organchor --help` plus one URL verification.
+6. Create the GitHub prerelease from the Alpha.5 changelog section and link the exact tag and npm package.
+7. Recheck `https://organchor.org`, `/verify/`, `/.well-known/organchor.json`, and installed-CLI verification.
+8. Record whether the website package was regenerated. A package-version release alone does not silently rewrite the organization's signed identity history.
 
-This means the first public alpha is available. It is still not a v1 stable release.
+## Hold Conditions
 
-## Recommended Release Order
+Do not publish if:
 
-### 1. Create The Source Repository
+- any release, package, install, secret, or public-self-pilot check fails;
+- package, tag, changelog, and release notes do not name the same version;
+- public material describes signature validity as claim truth or real-world issuer identity;
+- the release implies external Agent results are universal benchmarks;
+- the tag already exists or npm already contains the candidate version;
+- GitHub Trusted Publishing configuration is unavailable or points at a different repository/workflow.
 
-Completed.
+## Recovery Rule
 
-Recommended repository name:
-
-```text
-OrgAnchor
-```
-
-Recommended owner:
-
-```text
-OrgAnchor project account or organization
-```
-
-Avoid publishing first only to npm. For an open-source identity toolchain, source review matters.
-
-### 2. Prepare Local Git
-
-Completed.
-
-```bash
-git add .
-git commit -m "Prepare 0.1.0-alpha.1 release candidate"
-git branch -M main
-git remote add origin <GITHUB_REPOSITORY_URL>
-git push -u origin main
-```
-
-Before `git add .`, run a secret scan and review the files manually.
-
-The public repository should not include local operations notes such as:
-
-```text
-CLOUDFLARE_*.md
-SELF_PILOT_*.md
-DOMAIN_CANDIDATE_REPORT.md
-```
-
-Those files are useful local project memory, but they are not part of the clean public source release.
-
-Previously found `vps-entry-layout-*.svg` mockups were unrelated to OrgAnchor and
-have been moved to `_review_non_organchor_2026-07-02/` for human review before
-deletion.
-
-### 3. Create NPM Publisher Identity
-
-Use a project-controlled npm account rather than a personal account.
-
-Recommended account email:
-
-```text
-organchor.admin@proton.me
-```
-
-Security settings:
-
-- Enable 2FA.
-- Prefer `auth-and-writes` protection.
-- Save recovery codes offline.
-- Do not store npm password, recovery codes, or long-lived tokens in this repository.
-
-### 4. Local Login Fallback
-
-Normal alpha publishing now uses GitHub Actions Trusted Publishing. A local npm session is not required for the standard release path.
-
-Use npm's normal login flow only as an emergency fallback:
-
-```bash
-npm login --registry=https://registry.npmjs.org/
-npm whoami --registry=https://registry.npmjs.org/
-```
-
-This is a human approval gate. The operator should type credentials and 2FA directly. Do not treat local `npm whoami` failure as a release blocker when Trusted Publishing is configured and verified.
-
-### 5. Dry-Run Publish
-
-Run:
-
-```bash
-npm publish --dry-run --tag alpha
-```
-
-Confirm:
-
-- Package name is `organchor`.
-- Version is `0.1.0-alpha.4`.
-- Tag is `alpha`, not `latest`.
-- `RELEASE_INTEGRITY.md` has been reviewed for the target release.
-- File list excludes private keys, provider tokens, wallets, payment data, Cloudflare handoff docs, self-pilot operational notes, and local secret files.
-
-### 6. Tag Git And Draft GitHub Release
-
-After the source repository is pushed:
-
-```bash
-git tag v0.1.0-alpha.4
-git push origin v0.1.0-alpha.4
-```
-
-Draft a GitHub Release using `CHANGELOG.md` as the base release notes.
-
-### 7. Publish To NPM
-
-Only after the previous steps pass:
-
-```bash
-npm publish --tag alpha
-```
-
-After publishing, verify:
-
-```bash
-npm view organchor dist-tags version
-npm install -g organchor@alpha
-organchor --help
-```
-
-Do not intentionally promote the package as stable until after at least one external pilot has run through the documented adoption path.
-
-Current caveat: npm's first published version is also visible under `latest`. Treat this as a registry tag hygiene issue, not a stability claim. Correct it later when npm write authentication allows dist-tag cleanup, or let the first stable release replace `latest` with a non-prerelease version.
-
-## Trusted Publishing Later
-
-NPM trusted publishing can publish from GitHub Actions or GitLab CI/CD using OIDC and can generate provenance attestations. This is now the preferred path for `0.1.0-alpha.3` and later because it avoids repeated local npm login and avoids storing a long-lived npm publish token.
-
-Repository workflow:
-
-```text
-.github/workflows/publish-npm.yml
-```
-
-NPM website configuration:
-
-```text
-Package: organchor
-Provider: GitHub Actions
-Organization or user: OrgAnchor
-Repository: OrgAnchor
-Workflow filename: publish-npm.yml
-Environment name: leave blank
-Allowed action: npm publish
-```
-
-After owner approval and source publication, the preferred aligned release path is the `v0.1.0-alpha.4` tag push described above. The current workflow automatically publishes npm when that tag is pushed.
-
-```text
-push v0.1.0-alpha.4 once
--> GitHub Actions runs release checks
--> GitHub Actions publishes organchor@0.1.0-alpha.4 under alpha
--> operator verifies npm before creating or finalizing the GitHub prerelease
-```
-
-Do not also run `workflow_dispatch` after pushing the tag; npm versions are immutable and the second publish would fail as a duplicate. Manual dispatch remains a recovery path only when the tag-triggered route was not used and the operator has checked that no publication already occurred.
-
-## Human Approval Gates
-
-Pause for explicit human approval before:
-
-- Creating an npm account.
-- Entering npm credentials or 2FA.
-- Creating a public GitHub repository under a permanent owner.
-- Running real `npm publish`.
-- Pushing a `v*` Git tag. The current workflow treats that push as an npm publication trigger.
-- Moving any version to the `latest` dist-tag.
+If the tag workflow fails before npm publication, diagnose and fix the workflow, then use the documented recovery path only after checking npm state. If npm publication succeeded but a later GitHub Release or website check failed, never republish the same npm version; record the partial state and repair the remaining carrier separately.
 
 ## References
 
-- NPM publish command: https://docs.npmjs.com/cli/v11/commands/npm-publish/
-- NPM two-factor authentication: https://docs.npmjs.com/about-two-factor-authentication/
-- NPM trusted publishing: https://docs.npmjs.com/trusted-publishers/
+- `RELEASE_INTEGRITY.md`
+- `PUBLIC_RELEASE_CHECKLIST.md`
+- `NPM_TRUSTED_PUBLISHING.md`
+- `.github/workflows/publish-npm.yml`

@@ -6,6 +6,10 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 
 ## Unreleased
 
+## 0.1.0-alpha.5 - 2026-07-17
+
+Fireseed Agent-verification candidate. This release makes the ordinary URL-verification path more useful for low-cost external Agents and adds reproducible adversarial evidence-interpretation checks.
+
 ### Changed
 
 - Ordinary full and brief Agent verification now reports hash-bound external JSON evidence signatures without treating signature validity as claim truth or real-world issuer identity.
@@ -13,12 +17,30 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - Evidence-interpretation evaluation fields now define relevance and scope against the exact claim under review rather than general product relevance.
 - New evaluation submissions use structured `target_gaps` arrays so one proportionate action can address multiple uncertainty gaps without free-text category guessing.
 - The deterministic scorer remains backward-compatible with preserved Wave 1 `target_gap` submissions and keeps their archived scores reproducible.
+- Compact Agent results distinguish structural linkage gaps from external evidence-sufficiency decisions, and Directory candidate ordering no longer treats declared third-party material as automatic priority.
 
 ### Added
 
 - A runnable Wave 3 conflicting-current-evidence scenario, retained raw Agent results, reproducible scoring, and regression coverage for conflict preservation, bounded scope, fixture arithmetic, and ordinary external-signature verification.
 - A runnable fixed-time Wave 2 scenario for testing whether fresh-context Agents preserve expired S2 evidence as verifiable history without treating it as current claim support.
 - Scenario-specific build, verification, origin exercise, deterministic scoring, unsafe-result hard failures, and release regression coverage for evidence staleness.
+- A runnable Wave 1 weak-evidence scenario that tests whether valid identity and package integrity remain separate from insufficient product-claim support.
+- A brief-first Agent verification contract, external evaluation runbook, constrained response schemas, and preserved raw evaluation results across low- and medium-cost OpenAI Agent configurations.
+
+### Fixed
+
+- Wave 3 scenario verification now recomputes sample arithmetic and rejects a report whose declared out-of-tolerance count does not match its measurements.
+- External evidence verification fails closed on artifact, signature-file, authority-file, or detached-signature mismatch and rejects paths that escape the public `/verify` artifact root.
+
+### Compatibility
+
+- The `external_signatures` route and Agent-result fields are additive. Legacy packages with no declared external routes remain verifiable.
+- Signature validity remains separate from real-world issuer identity, evidence sufficiency, claim truth, endorsement, and the consuming Agent's final policy.
+
+### Release Boundary
+
+- This is an Alpha release candidate, not stable v1.
+- Preparing this source version does not publish npm, create a Git tag, create a GitHub Release, deploy the website, or begin public outreach.
 
 ## 0.1.0-alpha.4 - 2026-07-11
 

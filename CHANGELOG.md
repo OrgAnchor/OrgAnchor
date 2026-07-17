@@ -6,7 +6,11 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 
 ## Unreleased
 
-No unreleased changes yet.
+### Changed
+
+- Evidence-interpretation evaluation fields now define relevance and scope against the exact claim under review rather than general product relevance.
+- New evaluation submissions use structured `target_gaps` arrays so one proportionate action can address multiple uncertainty gaps without free-text category guessing.
+- The deterministic scorer remains backward-compatible with preserved Wave 1 `target_gap` submissions and keeps their archived scores reproducible.
 
 ## 0.1.0-alpha.4 - 2026-07-11
 

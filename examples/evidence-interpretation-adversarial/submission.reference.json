@@ -39,21 +39,21 @@
   "next_checks": [
     {
       "priority": 1,
-      "target_gap": "EXTRAPOLATION_AND_RAW_OBSERVATIONS",
+      "target_gaps": ["EXTRAPOLATION_AND_RAW_OBSERVATIONS"],
       "cost_level": "LOW",
       "action": "Request the S1 raw observations, failure and censoring treatment, and the model used to extrapolate 800 hours to 10,000 hours.",
       "reason": "This first tests whether the existing low-cost evidence has a defensible lifetime inference."
     },
     {
       "priority": 2,
-      "target_gap": "DIRECT_LIFETIME_TEST_SCOPE",
+      "target_gaps": ["DIRECT_LIFETIME_TEST_SCOPE"],
       "cost_level": "MODERATE",
       "action": "Request a test or report whose declared scope covers operating life under the stated load, speed, temperature, lubrication, and failure criteria.",
       "reason": "The current S2 report is authentic but does not address the claim."
     },
     {
       "priority": 3,
-      "target_gap": "SAMPLE_PRODUCT_BATCH_LINKAGE",
+      "target_gaps": ["SAMPLE_PRODUCT_BATCH_LINKAGE"],
       "cost_level": "MODERATE",
       "action": "Establish sample-to-model and batch linkage, then seek independent or random sampling if buyer policy requires it.",
       "reason": "This reduces hand-picked sample risk without demanding unlimited testing."

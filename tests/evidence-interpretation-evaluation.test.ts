@@ -48,6 +48,8 @@ test("first scenario separates valid identity from insufficient product support"
   assert.ok(scoring.hard_failures.length >= 5);
   assert.match(prompt, /Do not treat valid identity, signatures, hashes, or package structure as proof/);
   assert.match(prompt, /lowest-cost useful reduction of uncertainty/i);
+  assert.match(prompt, /exact claim under review/i);
+  assert.match(prompt, /target_gaps/);
   assert.doesNotMatch(prompt, /800-hour internal prototype test/);
   assert.doesNotMatch(prompt, /Dimensions and material composition/);
 });
@@ -177,6 +179,49 @@ test("lowest-cost scoring detects expensive checks ordered before cheaper checks
     assert.equal(report.numeric_score, 96);
   } finally {
     rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test("combined structured target gaps receive credit without prose inference", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-evidence-interpretation-combined-gaps-"));
+  try {
+    const submission = JSON.parse(readFileSync(join(exampleDir, "submission.reference.json"), "utf8"));
+    submission.next_checks = [
+      submission.next_checks[0],
+      {
+        ...submission.next_checks[1],
+        target_gaps: ["DIRECT_LIFETIME_TEST_SCOPE", "SAMPLE_PRODUCT_BATCH_LINKAGE"]
+      }
+    ];
+    const submissionPath = join(workspace, "combined-gaps.json");
+    writeFileSync(submissionPath, `${JSON.stringify(submission, null, 2)}\n`, "utf8");
+
+    const report = JSON.parse(run(["score", "--submission", submissionPath]).stdout);
+    const nextChecks = report.dimensions.find((item: { id: string }) => item.id === "lowest_cost_next_checks");
+    assert.equal(nextChecks.awarded_points, 15);
+    assert.equal(report.numeric_score, 100);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
+test("Wave 1 legacy target_gap results remain reproducible without changing archived scores", () => {
+  const runs = [
+    ["2026-07-16-external-codex-5-6-terra-medium-wave1-02", 91],
+    ["2026-07-16-external-codex-5-6-luna-medium-wave1-03", 90]
+  ];
+
+  for (const [directory, expectedScore] of runs) {
+    const submissionPath = join(
+      repoRoot,
+      "evaluation-results",
+      "evidence-interpretation",
+      String(directory),
+      "agent-result.raw.json"
+    );
+    const report = JSON.parse(run(["score", "--submission", submissionPath]).stdout);
+    assert.equal(report.numeric_score, expectedScore);
+    assert.deepEqual(report.hard_failures, []);
   }
 });
 

@@ -1,6 +1,6 @@
 {
   "type": "OrgAnchorEvidenceInterpretationScoringKey",
-  "version": "0.2",
+  "version": "0.3",
   "scenario_id": "manufacturing-signed-weak-evidence-v1",
   "operator_only": true,
   "dimensions": [
@@ -44,6 +44,11 @@
     "s1_interpretation": "Relevant first-party test with limited duration, selected prototypes, and unsupported extrapolation.",
     "s2_interpretation": "Authentic independent report whose dimensions/material scope does not support operating life.",
     "s3_interpretation": "Absent."
+  },
+  "field_semantics": {
+    "relevance": "Evaluate against the exact claim under review, not general product relevance.",
+    "scope_match": "Evaluate coverage of the exact claim outcome, subject, conditions, population, and time scope.",
+    "target_gaps": "One action may explicitly cover multiple gaps. Do not infer undeclared categories from free text."
   },
   "hard_failures": [
     "Treats identity or package PASS as proof of the 10,000-hour claim.",

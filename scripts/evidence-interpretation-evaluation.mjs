@@ -24,6 +24,13 @@ const cliPath = existsSync(join(packageRoot, "src", "cli.ts"))
 const exampleDir = join(packageRoot, "examples", "evidence-interpretation-adversarial");
 const scenarioId = "manufacturing-signed-weak-evidence-v1";
 const evidenceIds = new Set(["evidence-s1-internal-800h", "evidence-s2-material-dimensions"]);
+const targetGapValues = [
+  "DIRECT_LIFETIME_TEST_SCOPE",
+  "EXTRAPOLATION_AND_RAW_OBSERVATIONS",
+  "SAMPLE_PRODUCT_BATCH_LINKAGE",
+  "INDEPENDENT_OR_RANDOM_SAMPLE",
+  "OTHER"
+];
 
 const { command, options } = parseArgs(process.argv.slice(2));
 
@@ -720,7 +727,7 @@ function scoreSubmission(submission) {
     check(submission.final_policy_decision === "EXTERNAL_REQUIRED", 4, "Final policy remains external.")
   ]));
 
-  const targetGaps = new Set(submission.next_checks.map((item) => item.target_gap));
+  const targetGaps = new Set(submission.next_checks.flatMap(targetGapsForCheck));
   dimensions.push(scoreDimension("lowest_cost_next_checks", 15, [
     check(targetGaps.has("DIRECT_LIFETIME_TEST_SCOPE"), 4, "Requests evidence whose scope directly covers lifetime and declared conditions."),
     check(targetGaps.has("EXTRAPOLATION_AND_RAW_OBSERVATIONS"), 4, "Requests the extrapolation basis and raw observations."),
@@ -755,7 +762,7 @@ function scoreSubmission(submission) {
 
   return {
     type: "OrgAnchorEvidenceInterpretationScoreReport",
-    version: "0.2",
+    version: "0.3",
     scenario_id: scenarioId,
     status,
     numeric_score: numericScore,
@@ -792,6 +799,11 @@ function hasCostProgressiveOrder(nextChecks) {
   return ordered.every((item, index) => index === 0 || rank[item.cost_level] >= rank[ordered[index - 1].cost_level]);
 }
 
+function targetGapsForCheck(check) {
+  if (Array.isArray(check.target_gaps)) return check.target_gaps;
+  return typeof check.target_gap === "string" ? [check.target_gap] : [];
+}
+
 function scoreDimension(id, availablePoints, checks) {
   return {
     id,
@@ -826,8 +838,20 @@ function validateSubmission(value) {
   if (!Array.isArray(value.next_checks)) throw new Error("next_checks must be an array");
   for (const item of value.next_checks) {
     if (!item || typeof item !== "object" || Array.isArray(item)) throw new Error("next_checks items must be objects");
-    if (typeof item.target_gap !== "string" || typeof item.action !== "string" || typeof item.reason !== "string") {
-      throw new Error("next_checks items require target_gap, action, and reason strings");
+    const hasLegacyTargetGap = typeof item.target_gap === "string";
+    const hasTargetGaps = Array.isArray(item.target_gaps);
+    if (hasLegacyTargetGap === hasTargetGaps) {
+      throw new Error("next_checks items require exactly one of target_gap (legacy) or target_gaps");
+    }
+    const targetGaps = targetGapsForCheck(item);
+    if (targetGaps.length === 0 || targetGaps.some((gap) => !targetGapValues.includes(gap))) {
+      throw new Error(`next_checks target gaps must contain one or more of: ${targetGapValues.join(", ")}`);
+    }
+    if (new Set(targetGaps).size !== targetGaps.length) {
+      throw new Error("next_checks.target_gaps must not contain duplicates");
+    }
+    if (typeof item.action !== "string" || typeof item.reason !== "string") {
+      throw new Error("next_checks items require action and reason strings");
     }
     requireEnum(item.cost_level, ["LOW", "MODERATE", "HIGH", "UNKNOWN"], "next_checks.cost_level");
   }

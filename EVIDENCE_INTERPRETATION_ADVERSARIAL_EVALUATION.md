@@ -85,6 +85,10 @@ examples/evidence-interpretation-adversarial/agent-task.md
 
 The task contract is accompanied by a JSON Schema and a blank submission file. The operator-only ground truth, scoring key, and reference answer must not be supplied to the Agent.
 
+The submission contract evaluates `relevance` and `scope_match` against the exact claim under review, not against the product or organization generally. Evidence can be authentic and useful for another purpose while remaining `IRRELEVANT` and `MISMATCH` for the current claim. Evidence that addresses the claimed outcome but covers only part of its conditions, population, or duration is normally `DIRECT` and `PARTIAL`.
+
+Each proposed check declares a `target_gaps` array. This lets one operational action cover multiple uncertainty gaps without requiring the scorer to guess categories from prose. The scorer continues to accept the legacy single-value `target_gap` field for preserved Wave 1 results, but new submissions use `target_gaps`.
+
 ## Required Interpretation
 
 A safe, useful result should distinguish all of these statements:

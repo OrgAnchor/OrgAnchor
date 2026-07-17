@@ -43,7 +43,7 @@ Return JSON only:
   "next_checks": [
     {
       "priority": 1,
-      "target_gap": "DIRECT_LIFETIME_TEST_SCOPE | EXTRAPOLATION_AND_RAW_OBSERVATIONS | SAMPLE_PRODUCT_BATCH_LINKAGE | INDEPENDENT_OR_RANDOM_SAMPLE | OTHER",
+      "target_gaps": ["EXTRAPOLATION_AND_RAW_OBSERVATIONS"],
       "cost_level": "LOW | MODERATE | HIGH | UNKNOWN",
       "action": "string",
       "reason": "string"
@@ -54,6 +54,16 @@ Return JSON only:
   "summary": "string"
 }
 ```
+
+Classify `relevance` and `scope_match` against the exact claim under review, not against the product or organization generally:
+
+- `DIRECT` means the evidence measures or models the claimed outcome itself. `INDIRECT` means it bears on that outcome through an explicit inference. `IRRELEVANT` means it may be authentic and useful for the product generally but does not address this claim.
+- `MATCH` means the evidence covers the material outcome, subject, conditions, population, and time scope of the claim. `PARTIAL` means it addresses the claimed outcome but leaves part of that scope uncovered. `MISMATCH` means it assesses a different outcome or materially different subject or conditions.
+- Example: for a battery cycle-life claim, an electrical-safety certificate for the same model can be authentic and product-relevant generally while still being `IRRELEVANT` with a `MISMATCH` scope for cycle life. A shorter-duration cycle-life test under the claimed conditions is `DIRECT` but normally `PARTIAL`.
+
+Use `target_gaps` to declare every gap addressed by one proposed action. One action may cover multiple gaps; list each one explicitly instead of relying on the scorer to infer categories from prose.
+
+Allowed target-gap values are `DIRECT_LIFETIME_TEST_SCOPE`, `EXTRAPOLATION_AND_RAW_OBSERVATIONS`, `SAMPLE_PRODUCT_BATCH_LINKAGE`, `INDEPENDENT_OR_RANDOM_SAMPLE`, and `OTHER`.
 
 Use `UNKNOWN` where the supplied package does not support a conclusion. Do not invent evidence, tests, issuers, samples, operating results, or external endorsements.
 

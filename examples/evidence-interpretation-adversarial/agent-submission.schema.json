@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://organchor.org/schemas/evidence-interpretation-agent-submission.v0.1.json",
+  "$id": "https://organchor.org/schemas/evidence-interpretation-agent-submission.v0.2.json",
   "title": "OrgAnchor Evidence Interpretation Agent Submission",
   "type": "object",
   "additionalProperties": false,
@@ -51,8 +51,14 @@
         "properties": {
           "evidence_id": { "type": "string", "minLength": 1 },
           "s_class": { "enum": ["S1", "S2", "S3", "UNKNOWN"] },
-          "relevance": { "enum": ["DIRECT", "INDIRECT", "IRRELEVANT", "UNKNOWN"] },
-          "scope_match": { "enum": ["MATCH", "PARTIAL", "MISMATCH", "UNKNOWN"] },
+          "relevance": {
+            "description": "Relevance to the exact claim under review, not to the product or organization generally. DIRECT measures or models the claimed outcome; INDIRECT bears on it through an explicit inference; IRRELEVANT does not address that claim.",
+            "enum": ["DIRECT", "INDIRECT", "IRRELEVANT", "UNKNOWN"]
+          },
+          "scope_match": {
+            "description": "Coverage of the exact claim's material outcome, subject, conditions, population, and time scope. PARTIAL addresses the claimed outcome but leaves part uncovered; MISMATCH assesses a different outcome or materially different scope.",
+            "enum": ["MATCH", "PARTIAL", "MISMATCH", "UNKNOWN"]
+          },
           "limitations": {
             "type": "array",
             "items": { "type": "string" }
@@ -73,17 +79,23 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["priority", "target_gap", "cost_level", "action", "reason"],
+        "required": ["priority", "target_gaps", "cost_level", "action", "reason"],
         "properties": {
           "priority": { "type": "integer", "minimum": 1 },
-          "target_gap": {
-            "enum": [
-              "DIRECT_LIFETIME_TEST_SCOPE",
-              "EXTRAPOLATION_AND_RAW_OBSERVATIONS",
-              "SAMPLE_PRODUCT_BATCH_LINKAGE",
-              "INDEPENDENT_OR_RANDOM_SAMPLE",
-              "OTHER"
-            ]
+          "target_gaps": {
+            "description": "Every uncertainty gap addressed by this one action. Multiple values are allowed so combined actions remain explicit and machine-scorable.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "DIRECT_LIFETIME_TEST_SCOPE",
+                "EXTRAPOLATION_AND_RAW_OBSERVATIONS",
+                "SAMPLE_PRODUCT_BATCH_LINKAGE",
+                "INDEPENDENT_OR_RANDOM_SAMPLE",
+                "OTHER"
+              ]
+            }
           },
           "cost_level": { "enum": ["LOW", "MODERATE", "HIGH", "UNKNOWN"] },
           "action": { "type": "string", "minLength": 1 },

@@ -2068,8 +2068,18 @@ function scoreConflictSubmission(submission) {
   dimensions.push(scoreDimension("traceability", 10, [
     check(hasArtifactRef(refs, "claims/product-claims.json"), 2, "References the claims manifest."),
     check(hasArtifactRef(refs, "evidence/evidence-manifest.json"), 2, "References the evidence manifest."),
-    check(hasArtifactRef(refs, "evidence-s2-current-conformity"), 3, "References the S2 evidence id."),
-    check(hasArtifactRef(refs, "evidence-s3-market-sample"), 3, "References the S3 evidence id.")
+    check(
+      hasArtifactRef(refs, "evidence-s2-current-conformity")
+        || hasArtifactRef(refs, "evidence-artifacts/s2-current-conformity-report.json"),
+      3,
+      "References the S2 evidence id or its exact artifact path."
+    ),
+    check(
+      hasArtifactRef(refs, "evidence-s3-market-sample")
+        || hasArtifactRef(refs, "evidence-artifacts/s3-random-market-sample-report.json"),
+      3,
+      "References the S3 evidence id or its exact artifact path."
+    )
   ]));
 
   const numericScore = dimensions.reduce((sum, item) => sum + item.awarded_points, 0);

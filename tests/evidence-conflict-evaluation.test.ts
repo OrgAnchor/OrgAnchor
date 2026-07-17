@@ -115,6 +115,26 @@ test("conflict scorer rejects undeclared next-check categories", () => {
   }
 });
 
+test("conflict traceability accepts exact artifact paths without redundant evidence ids", () => {
+  const workspace = mkdtempSync(join(tmpdir(), "organchor-evidence-conflict-trace-"));
+  try {
+    const submission = JSON.parse(readFileSync(join(exampleDir, "submission.reference.json"), "utf8"));
+    submission.artifact_refs = [
+      "verify/claims/product-claims.json",
+      "verify/evidence/evidence-manifest.json",
+      "verify/evidence-artifacts/s2-current-conformity-report.json",
+      "verify/evidence-artifacts/s3-random-market-sample-report.json"
+    ];
+    const path = join(workspace, "artifact-paths.json");
+    writeFileSync(path, `${JSON.stringify(submission, null, 2)}\n`, "utf8");
+    const report = JSON.parse(run(["score-conflict", "--submission", path]).stdout);
+    const traceability = report.dimensions.find((item: { id: string }) => item.id === "traceability");
+    assert.equal(traceability.awarded_points, 10);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
+});
+
 function findPrivateKey(root: string): boolean {
   const result = spawnSync(
     process.execPath,

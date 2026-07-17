@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { spawn, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { createServer } from "node:http";
 import {
   cpSync,
@@ -1209,6 +1210,15 @@ function createConflictClaimsAndEvidence(workspace) {
     authority_path: "issuers/atlas/root-authority.json",
     verification_command: "node scripts/evidence-interpretation-evaluation.mjs verify-conflict --package <scenario-output>"
   };
+  s2.external_signatures = [{
+    id: "atlas-issuer-signature",
+    role: "issuer",
+    artifact_path: "evidence-artifacts/s2-current-conformity-report.json",
+    signature_path: "issuers/atlas/s2-current-conformity-report.json.sig",
+    signature_hash: sha256FileDigest(join(workspace, "issuers", "atlas", "s2-current-conformity-report.json.sig")),
+    authority_path: "issuers/atlas/root-authority.json",
+    authority_hash: sha256FileDigest(join(workspace, "issuers", "atlas", "root-authority.json"))
+  }];
   s3.package_path = "evidence-artifacts/s3-random-market-sample-report.json";
   s3.locations.push({ type: "package_relative", uri: "evidence-artifacts/s3-random-market-sample-report.json" });
   s3.sampler_backing = {
@@ -1217,6 +1227,15 @@ function createConflictClaimsAndEvidence(workspace) {
     authority_path: "issuers/meridian/root-authority.json",
     verification_command: "node scripts/evidence-interpretation-evaluation.mjs verify-conflict --package <scenario-output>"
   };
+  s3.external_signatures = [{
+    id: "meridian-sampler-signature",
+    role: "sampler",
+    artifact_path: "evidence-artifacts/s3-random-market-sample-report.json",
+    signature_path: "issuers/meridian/s3-random-market-sample-report.json.sig",
+    signature_hash: sha256FileDigest(join(workspace, "issuers", "meridian", "s3-random-market-sample-report.json.sig")),
+    authority_path: "issuers/meridian/root-authority.json",
+    authority_hash: sha256FileDigest(join(workspace, "issuers", "meridian", "root-authority.json"))
+  }];
   manifest.ai_policy = {
     summary_policy: "Expose both current evidence directions, preserve their scopes, and do not resolve the conflict by issuer prestige, sample count alone, or arithmetic averaging.",
     evaluation_time: conflictEvaluationTime,
@@ -2463,6 +2482,10 @@ function collectFiles(root) {
 
 function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
+}
+
+function sha256FileDigest(path) {
+  return `sha256:${createHash("sha256").update(readFileSync(path)).digest("hex")}`;
 }
 
 function writeJson(path, value) {

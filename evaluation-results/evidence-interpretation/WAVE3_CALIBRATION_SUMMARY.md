@@ -38,7 +38,7 @@ The evaluation produced engineering findings before and during the retained runs
 
 The excluded diagnostic run is not counted in the result table because its scenario data was internally inconsistent.
 
-## Product Finding
+## Product Finding And Remediation
 
 The highest-value next implementation is a standard machine-readable external-evidence signature result in the ordinary Agent verification path. An Agent should not need scenario-specific commands or manual cryptographic work to distinguish:
 
@@ -49,6 +49,8 @@ The highest-value next implementation is a standard machine-readable external-ev
 - and the separate question of whether signed evidence is sufficient or true.
 
 Adding this surface reduces both false confidence and unnecessary Agent work. Signature validity must still never be presented as claim truth.
+
+After the retained runs were archived, the source implementation added a generic hash-bound `external_signatures` route and ordinary full/brief verification output. Tests now cover two valid routes, artifact tampering, an unavailable authority file, and legacy packages with no declared routes. The archived Agent outputs remain unchanged because they record behavior before this remediation.
 
 ## What This Does Not Establish
 
@@ -67,4 +69,4 @@ The current priority remains scenario and interface quality, not provider-count 
 
 ## Conclusion
 
-Wave 3 shows that two isolated configurations can preserve a difficult current-evidence conflict without making a hidden trust or policy decision. More importantly, it found one fixture-integrity defect and one ordinary-verifier capability gap. The next step is to make external evidence signature status a standard low-friction machine result, then test that interface against the same archived reasoning boundary.
+Wave 3 shows that two isolated configurations can preserve a difficult current-evidence conflict without making a hidden trust or policy decision. More importantly, it found one fixture-integrity defect and one ordinary-verifier capability gap, and both now have mechanical regression coverage. The next evaluation step is to test the remediated ordinary interface without changing the archived pre-remediation results.

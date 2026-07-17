@@ -218,7 +218,7 @@ Supported filters are category, capability, region, language, identity status, v
 
 ## Brief Result
 
-The brief result is the preferred machine first-pass object. It intentionally omits empty S-layer detail and exposes direct URLs for the signed claims manifest, evidence manifest, and value report.
+The brief result is the preferred machine first-pass object. It intentionally omits empty S-layer detail and exposes direct URLs for the signed claims manifest, evidence manifest, and value report. When the signed evidence manifest declares supported `external_signatures`, the brief result also reports exact-file hash and detached-signature verification for each route.
 
 ```bash
 organchor verify url https://example.org --brief
@@ -231,6 +231,15 @@ OrgAnchorAgentVerificationBriefResult
 ```
 
 Use `access_guidance.human_html_required == false` to avoid downloading the human verify page during ordinary Agent review. Use `artifacts` to fetch only the machine files needed for the concrete claim or policy decision.
+
+Read `external_evidence_signatures` conservatively:
+
+- `VERIFIED` means the exact evidence artifact is signed by keys in the exact hash-bound authority document;
+- `INVALID` means a declared hash, document, or signature failed and the affected package check fails;
+- `UNAVAILABLE` or `UNSUPPORTED` means provenance remains unverified and the result is downgraded;
+- none of these statuses identifies the institution in the real world, proves evidence sufficiency, proves claim truth, or makes the transaction decision.
+
+Older packages with no declared external signature routes remain valid inputs and return `total_declared: 0`.
 
 ## Compact Result
 

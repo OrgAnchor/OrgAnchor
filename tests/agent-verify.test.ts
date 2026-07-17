@@ -73,6 +73,11 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(brief.access_guidance.machine_first, true);
       assert.equal(brief.access_guidance.human_html_required, false);
       assert.match(brief.access_guidance.next_step, /claim-relevant JSON/);
+      assert.equal(brief.external_evidence_signatures.total_declared, 0);
+      assert.equal(brief.external_evidence_signatures.not_checked_due_to_limit, 0);
+      assert.equal(brief.external_evidence_signatures.verified, 0);
+      assert.equal(brief.external_evidence_signatures.results.length, 0);
+      assert.equal(brief.external_evidence_signatures.truncated, false);
 
       const compactVerify = await runAsync(workspace, ["verify", "url", origin, "--compact"]);
       const compact = JSON.parse(compactVerify.stdout);

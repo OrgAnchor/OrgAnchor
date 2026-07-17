@@ -1,4 +1,8 @@
 import { validateClaimsManifest, validateEvidenceManifest } from "../core/evidence-validate.ts";
+import {
+  verifyExternalEvidenceSignatures,
+  type ExternalEvidenceSignatureSummary
+} from "../core/external-evidence-signatures.ts";
 import { sha256CanonicalJson } from "../core/hash.ts";
 import { parseStrictJson, type JsonValue } from "../core/json.ts";
 import { validateLockfile } from "../core/lockfile.ts";
@@ -45,6 +49,7 @@ export interface AgentVerificationResult {
   identity: Record<string, JsonValue>;
   history: Record<string, JsonValue>;
   value_continuity: Record<string, JsonValue>;
+  external_evidence_signatures: ExternalEvidenceSignatureSummary;
   policy_route: AgentPolicyRoute;
   checks: AgentCheck[];
   recommended_next_steps: string[];
@@ -93,6 +98,9 @@ export interface AgentVerificationBriefResult {
     };
     risk_gaps: string[];
     next_best_actions: string[];
+  };
+  external_evidence_signatures: ExternalEvidenceSignatureSummary & {
+    truncated: boolean;
   };
   policy_route: AgentPolicyRoute;
   artifacts: AgentArtifactUrls;
@@ -344,6 +352,30 @@ export async function verifyUrlTarget(
     );
   }
 
+  const externalEvidenceSignatures = await verifyExternalEvidenceSignatures({
+    evidenceManifest: evidence.value,
+    artifactBaseUrl,
+    timeoutMs
+  });
+  for (const signatureResult of externalEvidenceSignatures.results) {
+    addCheck(
+      checks,
+      `external_evidence_signature:${signatureResult.evidence_id}:${signatureResult.signature_id}`,
+      signatureResult.check_status,
+      signatureResult.status === "VERIFIED"
+        ? `External ${signatureResult.role} signature verified for evidence ${signatureResult.evidence_id}; this does not establish claim truth or real-world signer identity.`
+        : signatureResult.errors.join("; ") || `External signature status is ${signatureResult.status}.`
+    );
+  }
+  if (externalEvidenceSignatures.not_checked_due_to_limit > 0) {
+    addCheck(
+      checks,
+      "external_evidence_signature_limit",
+      "WARN",
+      `${externalEvidenceSignatures.not_checked_due_to_limit} declared external signature route(s) were not auto-fetched because the ordinary verifier limit is ${externalEvidenceSignatures.auto_verify_limit}; inspect only claim-relevant routes next.`
+    );
+  }
+
   const valueContinuity = await verifyValueContinuity({
     checks,
     indexValueContinuity: optionalRecord(indexObject.value_continuity),
@@ -412,6 +444,7 @@ export async function verifyUrlTarget(
     },
     history: history.publicHistory,
     value_continuity: valueContinuity.publicValue,
+    external_evidence_signatures: externalEvidenceSignatures,
     policy_route: policyRoute,
     checks,
     recommended_next_steps: recommendedNextSteps(checks, valueContinuity.status)
@@ -463,6 +496,11 @@ function briefResult(result: AgentVerificationResult): AgentVerificationBriefRes
       },
       risk_gaps: uniqueFirst(riskGaps, 3),
       next_best_actions: uniqueFirst(nextActions, 3)
+    },
+    external_evidence_signatures: {
+      ...result.external_evidence_signatures,
+      results: result.external_evidence_signatures.results.slice(0, 20),
+      truncated: result.external_evidence_signatures.results.length > 20
     },
     policy_route: result.policy_route,
     artifacts: result.artifacts,

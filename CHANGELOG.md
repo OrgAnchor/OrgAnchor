@@ -8,12 +8,15 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 
 ### Changed
 
+- Ordinary full and brief Agent verification now reports hash-bound external JSON evidence signatures without treating signature validity as claim truth or real-world issuer identity.
+- Declared external signature routes fail on artifact, signature-file, authority-file, or cryptographic-signature mismatch; unavailable and unsupported routes downgrade conservatively, while legacy packages remain compatible.
 - Evidence-interpretation evaluation fields now define relevance and scope against the exact claim under review rather than general product relevance.
 - New evaluation submissions use structured `target_gaps` arrays so one proportionate action can address multiple uncertainty gaps without free-text category guessing.
 - The deterministic scorer remains backward-compatible with preserved Wave 1 `target_gap` submissions and keeps their archived scores reproducible.
 
 ### Added
 
+- A runnable Wave 3 conflicting-current-evidence scenario, retained raw Agent results, reproducible scoring, and regression coverage for conflict preservation, bounded scope, fixture arithmetic, and ordinary external-signature verification.
 - A runnable fixed-time Wave 2 scenario for testing whether fresh-context Agents preserve expired S2 evidence as verifiable history without treating it as current claim support.
 - Scenario-specific build, verification, origin exercise, deterministic scoring, unsafe-result hard failures, and release regression coverage for evidence staleness.
 

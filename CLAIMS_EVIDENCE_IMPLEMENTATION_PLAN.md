@@ -117,7 +117,7 @@ Next CLI/schema work should add:
    - Add P1-P5 purpose-profile validators.
    - Add remaining S1/S4/S5 observation source-class fields.
    - Extend the implemented local S2 checks into bounded network verified-route adapters for `VR-S2-001 ISSUER_ORIGIN_CONFIRMATION` and `VR-S2-002 PUBLIC_REGISTRY_CONFIRMATION`.
-   - Add issuer-backed S2 signatures for institutions that adopt OrgAnchor or host compatible signed records.
+   - Extend the implemented same-origin, hash-bound external JSON evidence signature routes into institution-origin adapters and real-world issuer identity/reputation checks where policy requires them.
    - Extend the implemented local S3 checks into custody and independent-test route adapters.
    - Add challenge/correction lifecycle states across all purpose profiles.
    - Treat public challenge review as a horizontal lifecycle mode, not as a sixth ascending purpose profile.

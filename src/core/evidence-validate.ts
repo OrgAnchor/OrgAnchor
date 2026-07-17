@@ -43,6 +43,7 @@ export function validateEvidenceManifest(value: JsonValue): JsonValue {
     requireString(itemObject, "media_type", "evidence item");
     requireSha256Digest(itemObject, "hash", "evidence item");
     validateOptionalSClass(itemObject);
+    validateExternalSignatures(itemObject);
     if (typeof itemObject.size !== "number" || itemObject.size < 0) {
       fail("VALIDATION_ERROR", "evidence item.size must be a non-negative number");
     }
@@ -56,6 +57,29 @@ export function validateEvidenceManifest(value: JsonValue): JsonValue {
     }
   }
   return value;
+}
+
+function validateExternalSignatures(itemObject: Record<string, JsonValue>): void {
+  if (itemObject.external_signatures === undefined) return;
+  if (!Array.isArray(itemObject.external_signatures) || itemObject.external_signatures.length === 0) {
+    fail("VALIDATION_ERROR", "evidence item.external_signatures must be a non-empty array");
+  }
+  if (itemObject.external_signatures.length > 32) {
+    fail("VALIDATION_ERROR", "evidence item.external_signatures must contain no more than 32 routes");
+  }
+  const ids = new Set<string>();
+  for (const value of itemObject.external_signatures) {
+    const route = asObject(value, "external signature");
+    const id = requireString(route, "id", "external signature");
+    if (ids.has(id)) fail("VALIDATION_ERROR", `Duplicate external signature id "${id}"`);
+    ids.add(id);
+    requireString(route, "role", "external signature");
+    requireString(route, "artifact_path", "external signature");
+    requireString(route, "signature_path", "external signature");
+    requireSha256Digest(route, "signature_hash", "external signature");
+    requireString(route, "authority_path", "external signature");
+    requireSha256Digest(route, "authority_hash", "external signature");
+  }
 }
 
 function validateOptionalSClass(itemObject: Record<string, JsonValue>): void {

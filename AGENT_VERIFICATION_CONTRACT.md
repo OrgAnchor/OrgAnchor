@@ -296,9 +296,33 @@ value continuity summary has no hidden PASS-only interpretation
 
 These checks do not prove product quality by themselves. They reduce the cost of finding what is claimed, what supports it, what is missing, and what needs human or policy-level review.
 
+### External Evidence Signatures
+
+For evidence items that declare `external_signatures`, the ordinary verifier also checks the exact evidence-file hash, detached-signature-file hash, authority-document hash, and Ed25519 threshold signature. The full and brief results expose `external_evidence_signatures` with per-route status and summary counts.
+
+Stable route statuses are:
+
+```text
+VERIFIED     Exact files are hash-bound and the detached signature meets the supplied authority threshold.
+INVALID      A declared hash, document shape, or cryptographic signature failed.
+UNAVAILABLE  One or more declared same-origin package files could not be fetched.
+UNSUPPORTED  The route uses an artifact format the current verifier cannot safely process.
+```
+
+Required interpretation boundary:
+
+```text
+VERIFIED external signature != real-world issuer identity verified
+VERIFIED external signature != evidence sufficient
+VERIFIED external signature != claim true
+VERIFIED external signature != organization trusted
+```
+
+An invalid route fails the affected package check while preserving a separately valid organization identity result. An unavailable or unsupported route produces a warning and remains unverified. Packages that predate this optional field remain verifiable and report zero declared routes. Ordinary verification auto-checks at most 64 routes; `not_checked_due_to_limit` tells the Agent when it must select claim-relevant routes instead of downloading an unbounded package surface.
+
 ## Result Object
 
-`organchor verify url --brief` emits the preferred first-pass routing object. It contains the verified status boundary, the highest-value gaps, active evidence-layer counts, and direct machine-artifact URLs without requiring the human HTML page.
+`organchor verify url --brief` emits the preferred first-pass routing object. It contains the verified status boundary, the highest-value gaps, active evidence-layer counts, external evidence signature results, and direct machine-artifact URLs without requiring the human HTML page.
 
 `organchor verify url --compact` remains available as the more detailed compatibility object:
 
@@ -447,6 +471,7 @@ The result separates:
 - `trust_decision`: always not assigned by OrgAnchor.
 - `policy_route`: a non-binding routing hint for the external agent's own policy.
 - `status_scope`: machine-readable limits for interpreting each status. Evidence sufficiency remains an external policy decision, and OrgAnchor status does not prove claim truth.
+- `external_evidence_signatures`: exact-file and cryptographic-signature results for declared external JSON evidence routes. Its trust boundary explicitly excludes real-world issuer identity, evidence sufficiency, and claim truth.
 
 For older value reports that do not contain current claim-level support details, the verifier must remain conservative: expose the missing detail as a risk gap, preserve visible manual-check and first-party-only limitations, and recommend regenerating the report. Legacy verification must not turn absent fields into an apparent zero-risk result.
 

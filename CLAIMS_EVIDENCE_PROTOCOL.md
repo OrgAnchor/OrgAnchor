@@ -154,6 +154,28 @@ Required evidence fields:
 - reproducibility metadata;
 - freshness metadata.
 
+When a JSON evidence artifact carries an external detached signature, the signed evidence item may declare reusable `external_signatures` routes:
+
+```json
+{
+  "external_signatures": [
+    {
+      "id": "issuer-signature-001",
+      "role": "issuer",
+      "artifact_path": "evidence-artifacts/report.json",
+      "signature_path": "issuers/example/report.json.sig",
+      "signature_hash": "sha256:<exact-file-hash>",
+      "authority_path": "issuers/example/root-authority.json",
+      "authority_hash": "sha256:<exact-file-hash>"
+    }
+  ]
+}
+```
+
+The evidence item's own `hash` binds the exact artifact bytes. `signature_hash` and `authority_hash` bind the exact published signature and authority-document bytes. Paths must remain under the package's same-origin `/verify` artifact base, and one evidence item may declare at most 32 routes in the alpha contract. To bound network and token cost, an ordinary verification run auto-checks at most 64 routes and reports `not_checked_due_to_limit` for claim-specific follow-up.
+
+The ordinary Agent verifier reports artifact-hash, signature-file-hash, authority-file-hash, and cryptographic-signature status separately. A passing result proves only that the published artifact is signed by keys in the hash-bound authority document. It does not establish the signer's real-world institutional identity, the evidence's sufficiency, the claim's truth, or a transaction decision.
+
 ### 3. Method
 
 A method explains how a claim or evidence item can be checked.
@@ -196,7 +218,7 @@ Attesters may be:
 - domain experts;
 - independent directories.
 
-OrgAnchor verifies attestation signatures and linkage. It does not automatically decide that the attester is trustworthy.
+OrgAnchor verifies declared attestation or external-evidence signatures and linkage where a supported route is available. It does not automatically decide that the attester is trustworthy, correctly identified in the real world, or factually correct.
 
 ### 5. Challenge
 

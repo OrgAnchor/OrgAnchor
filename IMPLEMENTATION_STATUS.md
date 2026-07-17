@@ -2,7 +2,7 @@
 
 Status: active alpha implementation snapshot
 
-Last updated: 2026-07-06
+Last updated: 2026-07-17
 
 This document records what is already implemented, what remains external or future work, and what OrgAnchor intentionally does not do. It exists to keep development aligned with the project north star: lower the cost for third-party AI agents, organizations, and people to discover, verify, understand, and compare organization-controlled identity and value evidence without turning OrgAnchor into a central trust authority.
 
@@ -103,7 +103,9 @@ Wave 1 completed on 2026-07-16 with three isolated fresh-context configurations 
 
 The second scenario is implemented in `EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md`. It tests whether an Agent preserves an expired certificate as historical evidence without extending it into current product coverage. Internal brief-first calibration scored `100/100` with no hard failure. Compared with the controlled compact baseline, it reduced commands, command output, and model input by roughly half while avoiding the human HTML page. This is internal engineering calibration, not independent external proof; the result and boundaries are recorded in `evaluation-results/evidence-interpretation/WAVE2_CALIBRATION_SUMMARY.md`.
 
-Two independent Wave 2 fresh-context configurations now score `97.5` and `100`, both with no hard failure. They preserved the historical-versus-current boundary, kept claim truth undetermined, avoided unsupported fraud conclusions, and proposed cost-progressive next checks. The remaining evaluation priority is provider diversity and a new failure-oriented scenario. `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` defines isolation, raw-result preservation, scoring, semantic review, and comparable submission requirements.
+Two independent Wave 2 fresh-context configurations now score `97.5` and `100`, both with no hard failure. They preserved the historical-versus-current boundary, kept claim truth undetermined, avoided unsupported fraud conclusions, and proposed cost-progressive next checks. The current priority is scenario diversity, beginning with conflicting current evidence. Cross-provider repetition is useful later as an interface-portability check, but it is not a Fireseed Alpha release gate. `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` defines isolation, raw-result preservation, scoring, semantic review, and comparable submission requirements.
+
+The third scenario is implemented in `EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md`. It publishes current issuer-backed S2 evidence and current independently signed S3 market-sampling evidence for the same model and overlapping time window, with the two artifacts pointing in opposite directions. The builder, package verifier, origin exercise, constrained submission schema, deterministic scorer, answer key, and unsafe-result checks are runnable. Independent fresh-context runs are not yet archived.
 
 The first public challenge deployment also exposed and corrected two overclaim risks: compact verification now defines `unsupported_claims` as a structural-linkage-gap metric rather than evidence sufficiency, and Directory fetch no longer raises candidate priority merely because third-party material or a declared recheck method exists.
 

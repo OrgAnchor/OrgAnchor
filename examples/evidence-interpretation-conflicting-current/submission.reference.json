@@ -1,0 +1,66 @@
+{
+  "scenario_id": "manufacturing-conflicting-current-evidence-v1",
+  "evaluation_time": "2026-07-17T00:00:00Z",
+  "identity_continuity": "VERIFIED",
+  "package_integrity": "PASS",
+  "package_health_status": "FRESH",
+  "conflict_status": "ACTIVE_CONFLICT",
+  "claim_support": "CONFLICTED",
+  "claim_truth": "NOT_DETERMINED",
+  "fraud_assessment": "NOT_ESTABLISHED",
+  "evidence_assessment": [
+    {
+      "evidence_id": "evidence-s2-current-conformity",
+      "s_class": "S2",
+      "provenance": "VERIFIED",
+      "freshness": "CURRENT",
+      "subject_scope": "MATCH",
+      "direction": "SUPPORTS",
+      "population_scope": "LIMITED",
+      "limitations": ["The current issuer-backed report covers a scheduled process assessment and eight units, not every released unit."]
+    },
+    {
+      "evidence_id": "evidence-s3-market-sample",
+      "s_class": "S3",
+      "provenance": "VERIFIED",
+      "freshness": "CURRENT",
+      "subject_scope": "MATCH",
+      "direction": "CONTRADICTS",
+      "population_scope": "LIMITED",
+      "limitations": ["Four of twelve sampled units fall outside tolerance, but the sample cannot establish a population-wide failure rate."]
+    }
+  ],
+  "conflict_analysis": {
+    "same_subject": true,
+    "overlapping_time_window": true,
+    "resolution_status": "UNRESOLVED",
+    "why_not_resolved": ["Both artifacts verify and are current, but they use different selection frames and cover bounded samples.", "The package does not contain enough independent evidence to estimate current population conformity or explain the sampled failures."]
+  },
+  "risk_gaps": ["The S2 assessment and S3 market sample point in opposite directions for the same model and overlapping current period.", "The source of the difference between assessed factory units and market units is not resolved."],
+  "next_checks": [
+    {
+      "priority": 1,
+      "target_gaps": ["S2_ISSUER_SCOPE_AND_METHOD", "S3_PROVENANCE_AND_CUSTODY", "SUBJECT_BATCH_AND_TIME_ALIGNMENT"],
+      "cost_level": "LOW",
+      "action": "Verify both external signatures, product identifiers, lot and time coverage, custody record, measurement method, and tolerance arithmetic.",
+      "reason": "Existing artifact verification can first determine whether the apparent conflict is genuine or caused by provenance, scope, or calculation mismatch."
+    },
+    {
+      "priority": 2,
+      "target_gaps": ["ORGANIZATION_RESPONSE_OR_CORRECTION"],
+      "cost_level": "MODERATE",
+      "action": "Request a signed organization response linking the sampled lots to production records and any investigation, correction, or withdrawal.",
+      "reason": "Lot records may explain whether the market failures are isolated, already corrected, or still unresolved."
+    },
+    {
+      "priority": 3,
+      "target_gaps": ["BOUNDED_REPEAT_SAMPLING"],
+      "cost_level": "HIGH",
+      "action": "If the conflict remains, commission a bounded independent repeat sample across the affected and newer lots.",
+      "reason": "Additional sampling is costly and should follow cheaper provenance, scope, and production-record checks."
+    }
+  ],
+  "artifact_refs": ["claims/product-claims.json#claim-current-dimensional-conformity", "evidence/evidence-manifest.json#evidence-s2-current-conformity", "evidence/evidence-manifest.json#evidence-s3-market-sample", "evidence-artifacts/s2-current-conformity-report.json", "evidence-artifacts/s3-random-market-sample-report.json"],
+  "final_policy_decision": "EXTERNAL_REQUIRED",
+  "summary": "Identity and package integrity pass. Current S2 evidence supports conformity within its assessed scope, while current S3 evidence contradicts the broad claim for four sampled units. The conflict remains unresolved; claim truth and fraud are not established, and final policy stays external."
+}

@@ -37,6 +37,7 @@ Best public starting points:
 - `PUBLIC_SELF_VERIFICATION_2026-07-15.md`: current Alpha.4 public release-linkage, endpoint, clean-install, Beacon, CLI, and disclosed-limit verification result; a Chinese translation is provided alongside it.
 - `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent can keep valid identity and package verification separate from insufficient product-claim evidence.
 - `EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent preserves expired evidence as history without treating it as current support.
+- `EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent preserves conflicting current S2/S3 evidence instead of forcing a trust decision.
 - `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: historical pre-Alpha.4 release-preparation check for local gates, capability audit, public self-pilot, and public root-signed lockfile verification.
 - `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Fireseed Wave 1.
 - `FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
@@ -229,6 +230,15 @@ npm run evaluation:evidence -- exercise-stale --package ./.local/evidence-stalen
 ```
 
 See `EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md` for the decision question, hard failures, and scorer boundary.
+
+To run the Wave 3 scenario where current issuer-backed S2 evidence and current market-sampling S3 evidence point in opposite directions:
+
+```bash
+npm run evaluation:evidence -- build-conflict --out ./.local/evidence-conflict-run
+npm run evaluation:evidence -- exercise-conflict --package ./.local/evidence-conflict-run
+```
+
+See `EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md` for scope rules, hard failures, and the unresolved-conflict boundary.
 
 ## Visible Acceptance Demo
 

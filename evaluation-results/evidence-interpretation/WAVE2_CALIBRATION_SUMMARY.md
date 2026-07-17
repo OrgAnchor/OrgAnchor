@@ -1,6 +1,6 @@
 # External Agent Evidence Interpretation: Wave 2 Summary
 
-Status: two-configuration independent target complete on 2026-07-17; cross-provider diversity remains open.
+Status: two-configuration independent target complete on 2026-07-17; cross-provider portability sampling is optional follow-up, not a release gate.
 
 ## Question Tested
 
@@ -94,11 +94,11 @@ Wave 2 does not establish that:
 
 ## Next Evidence Needed
 
-1. run the same scenario through at least one different model provider or independently implemented client;
-2. add a different failure-oriented scenario, such as conflicting current records or a signed correction/withdrawal;
-3. add claim-addressable value-report retrieval so one-claim review does not require the full value report;
-4. begin a low-risk real-organization pilot only after the fictional findings are incorporated.
+1. add a different failure-oriented scenario with conflicting current evidence;
+2. add claim-addressable value-report retrieval so one-claim review does not require the full value report;
+3. begin a low-risk real-organization pilot only after the fictional findings are incorporated;
+4. sample a different provider or independently implemented client later when a practical access path exists.
 
 ## Conclusion
 
-The controlled calibration shows that the brief-first interface can reduce machine-reading overhead without lowering interpretation quality in this scenario. Two additional isolated configurations then preserved every safety boundary with no hard failure. This supports proceeding to provider diversity and scenario diversity; it does not establish general Agent reliability or real-world trust.
+The controlled calibration shows that the brief-first interface can reduce machine-reading overhead without lowering interpretation quality in this scenario. Two additional isolated configurations then preserved every safety boundary with no hard failure. This supports proceeding to scenario diversity. A different provider remains useful for later portability sampling, but repeating the same scenario is now lower-value than testing a new epistemic failure mode. The results do not establish general Agent reliability or real-world trust.

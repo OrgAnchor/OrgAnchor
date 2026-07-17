@@ -14,7 +14,7 @@ sufficient support for one specific product claim
 
 It is an evidence-interpretation exercise, not a supplier rating, model leaderboard, certification, procurement decision, or proof that OrgAnchor guarantees truth.
 
-The current scenario is fictional. Do not substitute a real organization or real product into this first run.
+All current scenarios are fictional. Do not substitute a real organization or real product into these calibration runs.
 
 ## Roles
 
@@ -101,6 +101,28 @@ npx.cmd --yes organchor@alpha verify url https://organchor-evidence-stale-v1.pag
 For Wave 2, give the fresh-context Agent the task and response schema from `examples/evidence-interpretation-stale-evidence/`. Start with the brief machine result and inspect only the claim-relevant artifacts it links. The human verify HTML is optional for human review and is not required for the Agent decision.
 
 The hosted carrier exposes only the fictional generated `public/` directory. It does not expose the Agent task, schema, scoring key, operator truth, prior results, repository, credentials, or private keys. The non-sensitive deployment receipt is preserved with the Wave 2 internal calibration result.
+
+## Wave 3: Conflicting Current Evidence
+
+Wave 3 tests a different failure mode: current issuer-backed S2 evidence and current independently signed S3 market-sampling evidence cover the same model and overlapping time window but point in opposite directions.
+
+Build and verify locally:
+
+```bash
+npm run evaluation:evidence -- build-conflict --out ../organchor-evidence-conflict-run
+npm run evaluation:evidence -- verify-conflict --package ../organchor-evidence-conflict-run
+npm run evaluation:evidence -- exercise-conflict --package ../organchor-evidence-conflict-run
+```
+
+Give the fresh-context Agent only the task and schema under `examples/evidence-interpretation-conflicting-current/`, the isolated public origin, and the ordinary `organchor verify url <origin> --brief` command. Do not disclose which evidence direction is expected, the sample results, the operator scenario, or the scorer.
+
+Score the preserved raw output with:
+
+```bash
+npm run evaluation:evidence -- score-conflict --submission ../organchor-evidence-conflict-run/operator/agent-result.raw.json
+```
+
+The correct boundary is not a forced verdict. The Agent must preserve both evidence directions, their bounded scopes, the unresolved conflict, and the need for cost-progressive checks. Cross-provider repetition is optional portability sampling and does not block Fireseed Alpha.
 
 ## Operator Setup
 

@@ -1,0 +1,25 @@
+{
+  "type": "OrgAnchorEvidenceConflictOperatorScenario",
+  "version": "0.1",
+  "scenario_id": "manufacturing-conflicting-current-evidence-v1",
+  "fictional": true,
+  "evaluation_time": "2026-07-17T00:00:00Z",
+  "decision_question": "Does the package sufficiently support the broad current dimensional-conformity claim when current S2 and S3 evidence conflict?",
+  "ground_truth": {
+    "identity_continuity": "VERIFIED",
+    "package_integrity": "PASS",
+    "s2_issuer_signature": "PASS",
+    "s3_sampler_signature": "PASS",
+    "evidence_freshness": "CURRENT",
+    "same_product_model": true,
+    "overlapping_time_window": true,
+    "s2_direction": "SUPPORTS",
+    "s3_direction": "CONTRADICTS",
+    "claim_support": "CONFLICTED",
+    "claim_truth": "NOT_DETERMINED",
+    "fraud_assessment": "NOT_ESTABLISHED",
+    "resolution_status": "UNRESOLVED",
+    "final_policy_decision": "EXTERNAL_REQUIRED"
+  },
+  "boundary": "The scenario tests conflict preservation and scope reasoning only. It is not a real supplier rating, population estimate, fraud determination, or procurement decision."
+}

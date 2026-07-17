@@ -1,0 +1,18 @@
+{
+  "scenario_id": "manufacturing-conflicting-current-evidence-v1",
+  "evaluation_time": "2026-07-17T00:00:00Z",
+  "identity_continuity": "UNKNOWN",
+  "package_integrity": "UNKNOWN",
+  "package_health_status": "UNKNOWN",
+  "conflict_status": "UNKNOWN",
+  "claim_support": "UNKNOWN",
+  "claim_truth": "NOT_DETERMINED",
+  "fraud_assessment": "UNKNOWN",
+  "evidence_assessment": [],
+  "conflict_analysis": { "same_subject": false, "overlapping_time_window": false, "resolution_status": "UNKNOWN", "why_not_resolved": [] },
+  "risk_gaps": [],
+  "next_checks": [],
+  "artifact_refs": [],
+  "final_policy_decision": "EXTERNAL_REQUIRED",
+  "summary": ""
+}

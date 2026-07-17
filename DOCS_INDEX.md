@@ -165,6 +165,7 @@ The Beacon layer is the preferred anti-capture foundation for discovery. The Dir
 - `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`: operator procedure for producing comparable fresh-context external Agent results without exposing the answer key.
 - `evaluation-results/evidence-interpretation/WAVE1_SUMMARY.md`: bounded results and limitations from the first three isolated Agent evidence-interpretation runs.
 - `evaluation-results/evidence-interpretation/WAVE2_CALIBRATION_SUMMARY.md`: internal stale-evidence calibration, low-friction machine-path comparison, and remaining external-validation requirement.
+- `evaluation-results/evidence-interpretation/WAVE3_CALIBRATION_SUMMARY.md`: retained conflicting-current-evidence results, corrected defects, and the ordinary external-signature verification gap.
 
 The preferred low-friction agent path is `/.well-known/organchor.json` plus:
 

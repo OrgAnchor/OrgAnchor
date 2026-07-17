@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -134,6 +135,43 @@ test("conflict traceability accepts exact artifact paths without redundant evide
     rmSync(workspace, { recursive: true, force: true });
   }
 });
+
+test("archived Wave 3 results remain hash-bound and reproducibly scored", () => {
+  const archives = [
+    {
+      directory: "2026-07-17-internal-codex-5-6-sol-low-wave3-conflict-calibration",
+      classification: "INTERNAL_CALIBRATION",
+      expectedScore: 100
+    },
+    {
+      directory: "2026-07-17-independent-codex-5-6-terra-medium-wave3-01",
+      classification: "INDEPENDENT",
+      expectedScore: 95
+    }
+  ];
+
+  for (const archive of archives) {
+    const directory = join(repoRoot, "evaluation-results", "evidence-interpretation", archive.directory);
+    const invocation = JSON.parse(readFileSync(join(directory, "operator-invocation.json"), "utf8"));
+    const retainedScore = JSON.parse(readFileSync(join(directory, "score.json"), "utf8"));
+    const rescored = JSON.parse(
+      run(["score-conflict", "--submission", join(directory, "agent-result.raw.json")]).stdout
+    );
+
+    assert.equal(invocation.classification, archive.classification);
+    assert.equal(invocation.raw_result_sha256, sha256(join(directory, "agent-result.raw.json")));
+    assert.equal(invocation.score_sha256, sha256(join(directory, "score.json")));
+    assert.equal(invocation.run_metadata_sha256, sha256(join(directory, "run-metadata.json")));
+    assert.equal(retainedScore.numeric_score, archive.expectedScore);
+    assert.equal(rescored.numeric_score, archive.expectedScore);
+    assert.deepEqual(retainedScore.hard_failures, []);
+    assert.deepEqual(rescored.hard_failures, []);
+  }
+});
+
+function sha256(path: string): string {
+  return createHash("sha256").update(readFileSync(path)).digest("hex");
+}
 
 function findPrivateKey(root: string): boolean {
   const result = spawnSync(

@@ -1,0 +1,12 @@
+{
+  "displayed_model_name": "5.6 Terra",
+  "reasoning_setting": "medium",
+  "enabled_tools": [
+    "PowerShell shell command",
+    "OrgAnchor CLI",
+    "local HTTP artifact retrieval",
+    "apply_patch"
+  ],
+  "execution_timestamp": "2026-07-17T03:30:21.8964182Z",
+  "isolation_rules_followed": true
+}

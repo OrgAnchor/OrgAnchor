@@ -171,6 +171,8 @@ Give the fresh Agent only:
 
 Tell it to save JSON only. Do not explain the expected conclusion, evidence weakness, S1/S2 interpretation, absent S3 result, scorer dimensions, or previous run scores.
 
+For Wave 3, use `build-conflict`, `verify-conflict`, and `score-conflict` with the task and response schema from `examples/evidence-interpretation-conflicting-current/`. The retained local runs intentionally have no public carrier. Do not classify external artifact signatures as verified unless the Agent actually verifies them or the ordinary verifier reports that verification mechanically.
+
 The task now explicitly requires `next_checks` to be ordered by the lowest-cost useful uncertainty reduction. Existing raw observations, methods, and subject linkage should normally be checked before commissioning expensive new testing.
 
 ## Preserve Before Scoring

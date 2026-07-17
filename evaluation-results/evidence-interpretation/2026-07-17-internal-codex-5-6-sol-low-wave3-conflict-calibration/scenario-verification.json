@@ -1,0 +1,21 @@
+{
+  "type": "OrgAnchorEvidenceConflictPackageVerification",
+  "version": "0.1",
+  "scenario_id": "manufacturing-conflicting-current-evidence-v1",
+  "evaluation_time": "2026-07-17T00:00:00Z",
+  "status": "PASS",
+  "organization_identity": "PASS",
+  "claims_manifest": "PASS",
+  "evidence_manifest": "PASS",
+  "s2_issuer_signature": "PASS",
+  "s3_sampler_signature": "PASS",
+  "required_evidence_present": true,
+  "conflict_declared": true,
+  "effective_s3_detected": true,
+  "s3_recalculated_outside_tolerance": 4,
+  "s3_sample_arithmetic_matches": true,
+  "public_private_key_count": 0,
+  "trust_decision": "NOT_ASSIGNED_BY_ORGANCHOR",
+  "claim_truth": "NOT_DETERMINED",
+  "evidence_sufficiency": "CONFLICT_REQUIRES_EXTERNAL_RESOLUTION"
+}

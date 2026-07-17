@@ -105,7 +105,9 @@ The second scenario is implemented in `EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION
 
 Two independent Wave 2 fresh-context configurations now score `97.5` and `100`, both with no hard failure. They preserved the historical-versus-current boundary, kept claim truth undetermined, avoided unsupported fraud conclusions, and proposed cost-progressive next checks. The current priority is scenario diversity, beginning with conflicting current evidence. Cross-provider repetition is useful later as an interface-portability check, but it is not a Fireseed Alpha release gate. `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` defines isolation, raw-result preservation, scoring, semantic review, and comparable submission requirements.
 
-The third scenario is implemented in `EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md`. It publishes current issuer-backed S2 evidence and current independently signed S3 market-sampling evidence for the same model and overlapping time window, with the two artifacts pointing in opposite directions. The builder, package verifier, origin exercise, constrained submission schema, deterministic scorer, answer key, and unsafe-result checks are runnable. Independent fresh-context runs are not yet archived.
+The third scenario is implemented in `EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md`. It publishes current issuer-backed S2 evidence and current independently signed S3 market-sampling evidence for the same model and overlapping time window, with the two artifacts pointing in opposite directions. One retained internal calibration scored `100`, and one independent fresh-context run scored `95`; both had no hard failure and preserved the unresolved conflict, bounded scope, undetermined truth, and external policy boundary. The result and limitations are recorded in `evaluation-results/evidence-interpretation/WAVE3_CALIBRATION_SUMMARY.md`.
+
+Wave 3 exposed the current highest-value machine-interface gap: ordinary `organchor verify url --brief` does not mechanically verify externally signed evidence artifacts such as issuer-backed S2 reports or sampler-backed S3 reports. One Agent performed extra manual cryptographic verification; the independent Agent correctly left that provenance `NOT_VERIFIED`. Adding a standard external-artifact signature result to the ordinary Agent verification path is now higher priority than repeating the same scenario with another provider.
 
 The first public challenge deployment also exposed and corrected two overclaim risks: compact verification now defines `unsupported_claims` as a structural-linkage-gap metric rather than evidence sufficiency, and Directory fetch no longer raises candidate priority merely because third-party material or a declared recheck method exists.
 
@@ -133,7 +135,7 @@ The shortest useful launch path is now:
 6. Invite named early adopting organizations, technical reviewers, and evidence/governance critics according to `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 7. Run the first low-risk external pilot using `PILOT_MINIMAL_PATH.md` first, then `EXTERNAL_PILOT_RUNBOOK.md` if the pilot needs the full path.
 8. Feed pilot lessons back into onboarding, evidence, and agent-facing verification outputs.
-9. Repeat the implemented adversarial evidence-interpretation scenario with independent external Agents, preserve uncorrected outputs, and use failures to improve the machine contract before making broad claims that OrgAnchor helps Agents resist polished but insufficient evidence.
+9. Continue adversarial evidence-interpretation scenarios, preserve uncorrected outputs, and use demonstrated failures to improve the ordinary machine contract before making broad claims that OrgAnchor helps Agents resist polished but insufficient evidence.
 
 ## Not Yet Complete
 

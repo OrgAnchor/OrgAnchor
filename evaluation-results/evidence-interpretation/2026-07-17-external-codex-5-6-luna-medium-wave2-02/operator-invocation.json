@@ -1,0 +1,43 @@
+{
+  "type": "OrgAnchorExternalAgentOperatorInvocation",
+  "version": "0.1",
+  "classification": "INDEPENDENT",
+  "runner": "Codex CLI",
+  "runner_version": "0.144.5",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "ephemeral_session": true,
+  "user_config_loaded": false,
+  "project_rules_loaded": false,
+  "sandbox": "danger-full-access",
+  "evaluation_contract_commit": "b50d09b9e2eb3f85a25ea87d8069d7ecedb9c48e",
+  "package_source_commit": "c369ebfccf3b1f939f3b0a927c8e7cd9df0c4c27",
+  "package_tarball_sha256": "0cbda16db6e72702828484981c46db8e837812c2697469222d2ca8e88a5cfdb7",
+  "source_public_composite_sha256": "bca1feb1413300ea1db51fbfad21eea35f25cfa6a6c41ba8c846e8b206b7df45",
+  "served_origin": "http://127.0.0.1:58419",
+  "public_equivalent_origin": "https://organchor-evidence-stale-v1.pages.dev",
+  "verification_mode": "brief",
+  "human_verify_html_required": false,
+  "raw_result_sha256": "965e73396618ce2e3ea329612d8eb9d0a2dae0f6bc3d141e56aa55b92898265f",
+  "score_sha256": "07625a2468ff8b25ea5e028e4376f2cb5b498c53d137a44add7799c1b15480bd",
+  "run_metadata_sha256": "10ee12fd17c15544495801f93b4f315adf044785a1950dc88c28d1abea682d57",
+  "cli_event_log_sha256": "7eb15d7dee9e1c910ff1645bc20a4735622073653df01d5248f4ba8df87a0865",
+  "isolation": {
+    "previous_conversation_available": false,
+    "repository_source_available": false,
+    "operator_ground_truth_available": false,
+    "scoring_key_available": false,
+    "prior_agent_results_available": false,
+    "rules_and_user_config_loaded": false
+  },
+  "transport_metrics": {
+    "command_count": 9,
+    "command_output_characters": 74322,
+    "largest_command_output_characters": 47638,
+    "cumulative_input_tokens": 316985,
+    "cached_input_tokens": 250112,
+    "noncached_input_tokens": 66873,
+    "output_tokens": 5428,
+    "reasoning_output_tokens": 1190
+  }
+}

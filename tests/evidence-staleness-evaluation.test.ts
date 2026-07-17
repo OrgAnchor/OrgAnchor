@@ -154,6 +154,34 @@ test("archived Wave 2 brief-first calibration remains reproducible", () => {
   assert.ok(operatorInvocation.transport_metrics.noncached_input_tokens < 66808);
 });
 
+test("archived independent Wave 2 results remain reproducible and free of hard failures", () => {
+  const results = [
+    {
+      directory: "2026-07-17-external-codex-5-6-terra-medium-wave2-01",
+      score: 97.5
+    },
+    {
+      directory: "2026-07-17-external-codex-5-6-luna-medium-wave2-02",
+      score: 100
+    }
+  ];
+
+  for (const result of results) {
+    const archiveDir = join(repoRoot, "evaluation-results", "evidence-interpretation", result.directory);
+    const archivedScore = JSON.parse(readFileSync(join(archiveDir, "score.json"), "utf8"));
+    const invocation = JSON.parse(readFileSync(join(archiveDir, "operator-invocation.json"), "utf8"));
+    const reproduced = JSON.parse(
+      run(["score-stale", "--submission", join(archiveDir, "agent-result.raw.json")]).stdout
+    );
+
+    assert.equal(invocation.classification, "INDEPENDENT");
+    assert.equal(archivedScore.numeric_score, result.score);
+    assert.deepEqual(archivedScore.hard_failures, []);
+    assert.equal(reproduced.numeric_score, result.score);
+    assert.deepEqual(reproduced.hard_failures, []);
+  }
+});
+
 function findPrivateKey(root: string): boolean {
   const result = spawnSync(
     process.execPath,

@@ -1,0 +1,68 @@
+{
+  "scenario_id": "manufacturing-expired-s2-current-claim-v1",
+  "evaluation_time": "2026-07-17T00:00:00Z",
+  "identity_continuity": "VERIFIED",
+  "package_integrity": "PASS",
+  "package_health_status": "EXPIRED_EVIDENCE",
+  "historical_record_status": "PRESERVED",
+  "claim_support": "INSUFFICIENT",
+  "claim_truth": "NOT_DETERMINED",
+  "fraud_assessment": "NOT_ESTABLISHED",
+  "evidence_assessment": [
+    {
+      "evidence_id": "evidence-s2-expired-conformity",
+      "s_class": "S2",
+      "relevance": "DIRECT",
+      "scope_match": "MISMATCH",
+      "freshness": "EXPIRED",
+      "historical_support": "SUPPORTED_DURING_VALIDITY",
+      "current_support": "NOT_ESTABLISHED",
+      "limitations": [
+        "Exact product model matches, but the certificate expressly covers production only through 2026-03-31T23:59:59Z.",
+        "The certificate excludes production after the validity window and any renewal, supersession, or extension not separately issued.",
+        "No renewal, supersession, withdrawal, or current issuer status record is included in the package.",
+        "The issuer recheck anchor is a manual-check URL and was not reachable from the isolated evaluation environment."
+      ]
+    }
+  ],
+  "missing_support": [
+    "Current issuer status for APC-NMC-2025-044.",
+    "A currently valid certificate, renewal, or separately issued extension.",
+    "Published supersession or withdrawal status.",
+    "Current issuer-confirmed linkage between NMC-NA4908 production and active certificate coverage."
+  ],
+  "risk_gaps": [
+    "The sole evidence item expired before the evaluation time.",
+    "The package contains no renewal or supersession reference.",
+    "The S2 issuer-backed status is not independently verified by a reachable issuer-hosted record in this package.",
+    "OrgAnchor reports value warnings and routes the decision to external policy review."
+  ],
+  "next_checks": [
+    {
+      "priority": 1,
+      "target_gaps": ["CURRENT_ISSUER_STATUS", "CURRENT_CERTIFICATE_OR_RENEWAL", "SUPERSESSION_OR_WITHDRAWAL"],
+      "cost_level": "LOW",
+      "action": "Check the Atlas Production Conformity Institute public registry or issuer record for APC-NMC-2025-044, including active status, renewal, supersession, or withdrawal.",
+      "reason": "This is the lowest-cost way to resolve whether the expired certificate has a valid continuation or adverse status."
+    },
+    {
+      "priority": 2,
+      "target_gaps": ["CURRENT_PRODUCT_SCOPE_LINKAGE"],
+      "cost_level": "LOW",
+      "action": "Obtain a current issuer-confirmed record explicitly linking NMC-NA4908 current production to an active APC-NMC-2025-044 certificate or successor.",
+      "reason": "The historical certificate has exact product scope but expressly does not establish coverage after expiry."
+    }
+  ],
+  "artifact_refs": [
+    "/verify/claims/product-claims.json",
+    "/verify/claims/product-claims.json.sig",
+    "/verify/evidence/evidence-manifest.json",
+    "/verify/evidence/evidence-manifest.json.sig",
+    "/verify/reports/value-continuity-report.json",
+    "/verify/evidence-artifacts/s2-expired-conformity-certificate.json",
+    "evidence-s2-expired-conformity",
+    "APC-NMC-2025-044"
+  ],
+  "final_policy_decision": "EXTERNAL_REQUIRED",
+  "summary": "The package identity and signed artifact integrity verify, and the historical certificate record is preserved for NMC-NA4908 during 2025-04-01 through 2026-03-31. It does not sufficiently support current production coverage at 2026-07-17 because the sole S2 evidence is expired and no current renewal, supersession, withdrawal, issuer status, or current scope linkage is published. The claim is not determined false and fraud is not established; external policy checks are required."
+}

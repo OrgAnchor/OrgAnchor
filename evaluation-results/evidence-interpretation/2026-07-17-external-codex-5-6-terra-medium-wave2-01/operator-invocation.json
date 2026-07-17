@@ -1,0 +1,43 @@
+{
+  "type": "OrgAnchorExternalAgentOperatorInvocation",
+  "version": "0.1",
+  "classification": "INDEPENDENT",
+  "runner": "Codex CLI",
+  "runner_version": "0.144.5",
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "medium",
+  "ephemeral_session": true,
+  "user_config_loaded": false,
+  "project_rules_loaded": false,
+  "sandbox": "danger-full-access",
+  "evaluation_contract_commit": "b50d09b9e2eb3f85a25ea87d8069d7ecedb9c48e",
+  "package_source_commit": "c369ebfccf3b1f939f3b0a927c8e7cd9df0c4c27",
+  "package_tarball_sha256": "0cbda16db6e72702828484981c46db8e837812c2697469222d2ca8e88a5cfdb7",
+  "source_public_composite_sha256": "bca1feb1413300ea1db51fbfad21eea35f25cfa6a6c41ba8c846e8b206b7df45",
+  "served_origin": "http://127.0.0.1:58419",
+  "public_equivalent_origin": "https://organchor-evidence-stale-v1.pages.dev",
+  "verification_mode": "brief",
+  "human_verify_html_required": false,
+  "raw_result_sha256": "b1e51b308d44b1d04b3c95988fe3577056054f72981e1935d83f58abf9348c3c",
+  "score_sha256": "24a8ffd8e52e5fb98d0999958db92f15b2dd284bae0085d135972dffd80f823e",
+  "run_metadata_sha256": "4fb18693985ae8d52ed136297971e56546d3b8ebdf97fab5a9a812ff1cde7174",
+  "cli_event_log_sha256": "1b64317d8c17b7086b277aeb881eed3ad2cab8931dd7e46f457105c3779e8f69",
+  "isolation": {
+    "previous_conversation_available": false,
+    "repository_source_available": false,
+    "operator_ground_truth_available": false,
+    "scoring_key_available": false,
+    "prior_agent_results_available": false,
+    "rules_and_user_config_loaded": false
+  },
+  "transport_metrics": {
+    "command_count": 22,
+    "command_output_characters": 133361,
+    "largest_command_output_characters": 41793,
+    "cumulative_input_tokens": 466845,
+    "cached_input_tokens": 422400,
+    "noncached_input_tokens": 44445,
+    "output_tokens": 7561,
+    "reasoning_output_tokens": 1633
+  }
+}

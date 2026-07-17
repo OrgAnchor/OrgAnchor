@@ -5,7 +5,7 @@ This directory preserves bounded Agent evaluation evidence. Each retained run se
 ## Summaries
 
 - `WAVE1_SUMMARY.md`: three isolated fresh-context configurations evaluated signed-but-weak product-lifetime evidence.
-- `WAVE2_CALIBRATION_SUMMARY.md`: internal fixed-time stale-evidence calibration and the controlled `--compact` versus `--brief` machine-friction comparison.
+- `WAVE2_CALIBRATION_SUMMARY.md`: two isolated fixed-time stale-evidence runs, the internal `--compact` versus `--brief` machine-friction comparison, and remaining provider-diversity limits.
 
 ## Classification Rule
 

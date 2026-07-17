@@ -1,0 +1,72 @@
+{
+  "scenario_id": "manufacturing-expired-s2-current-claim-v1",
+  "evaluation_time": "2026-07-17T00:00:00Z",
+  "identity_continuity": "VERIFIED",
+  "package_integrity": "PASS",
+  "package_health_status": "EXPIRED_EVIDENCE",
+  "historical_record_status": "PRESERVED",
+  "claim_support": "INSUFFICIENT",
+  "claim_truth": "NOT_DETERMINED",
+  "fraud_assessment": "NOT_ESTABLISHED",
+  "evidence_assessment": [
+    {
+      "evidence_id": "evidence-s2-expired-conformity",
+      "s_class": "S2",
+      "relevance": "DIRECT",
+      "scope_match": "MISMATCH",
+      "freshness": "EXPIRED",
+      "historical_support": "SUPPORTED_DURING_VALIDITY",
+      "current_support": "NOT_ESTABLISHED",
+      "limitations": [
+        "Certificate APC-NMC-2025-044 expired on 2026-03-31T23:59:59Z before the evaluation time.",
+        "The certificate limits coverage to its declared validity window and excludes later production unless separately issued.",
+        "No renewal or superseding certificate is included in the published package.",
+        "Issuer-backed status remains a manual external check."
+      ]
+    }
+  ],
+  "missing_support": [
+    "A current issuer-issued certificate or renewal covering NMC-NA4908 at the evaluation time.",
+    "Current issuer confirmation of APC-NMC-2025-044 status.",
+    "A published renewal, supersession, extension, or withdrawal record.",
+    "Current product-scope linkage for production after 2026-03-31."
+  ],
+  "risk_gaps": [
+    "The sole linked S2 evidence is expired.",
+    "The package has no renewal or supersession record and requires manual issuer-status verification.",
+    "No correction or supersession policy is published."
+  ],
+  "next_checks": [
+    {
+      "priority": 1,
+      "target_gaps": [
+        "CURRENT_ISSUER_STATUS",
+        "CURRENT_CERTIFICATE_OR_RENEWAL",
+        "SUPERSESSION_OR_WITHDRAWAL"
+      ],
+      "cost_level": "LOW",
+      "action": "Check the issuer's public registry for APC-NMC-2025-044 and any renewal, extension, supersession, or withdrawal entry.",
+      "reason": "This is the lowest-cost way to determine whether the expired certificate was replaced, extended, or withdrawn."
+    },
+    {
+      "priority": 2,
+      "target_gaps": [
+        "CURRENT_CERTIFICATE_OR_RENEWAL",
+        "CURRENT_PRODUCT_SCOPE_LINKAGE"
+      ],
+      "cost_level": "MODERATE",
+      "action": "Obtain and verify an issuer-signed current certificate or renewal explicitly covering current production of NMC-NA4908.",
+      "reason": "A current, model-specific issuer record is needed to support the claim after the stated expiry."
+    }
+  ],
+  "artifact_refs": [
+    "verify/claims/product-claims.json",
+    "verify/evidence/evidence-manifest.json",
+    "verify/evidence-artifacts/s2-expired-conformity-certificate.json",
+    "verify/issuer/s2-expired-conformity-certificate.json.sig",
+    "verify/issuer/root-authority.json",
+    "verify/reports/value-continuity-report.json"
+  ],
+  "final_policy_decision": "EXTERNAL_REQUIRED",
+  "summary": "Identity and package verification pass, and the issuer-signed S2 certificate preserves historical support for NMC-NA4908 during its validity window. It expired before evaluation, with no published renewal or supersession; therefore it does not sufficiently support the current-production claim. Claim truth and fraud are not determined."
+}

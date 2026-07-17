@@ -1,6 +1,6 @@
-# External Agent Evidence Interpretation: Wave 2 Calibration Summary
+# External Agent Evidence Interpretation: Wave 2 Summary
 
-Status: internal calibration complete; independent external validation remains open.
+Status: two-configuration independent target complete on 2026-07-17; cross-provider diversity remains open.
 
 ## Question Tested
 
@@ -33,6 +33,17 @@ These findings produced transport, subject-binding, and schema compatibility fix
 | Codex 5.6 Sol, low reasoning, ephemeral CLI | `--brief` | 100 | 0 | INTERNAL_CALIBRATION |
 
 The raw answer, exact task, schema, score, hashes, model configuration, and bounded reviewer notes are preserved in the adjacent `2026-07-17-internal-codex-5-6-sol-low-wave2-brief-calibration` directory.
+
+## Preserved Independent Runs
+
+| Run | Configuration | Score | Hard failures | Classification |
+| --- | --- | ---: | ---: | --- |
+| 01 | Codex 5.6 Terra, medium reasoning, ephemeral CLI | 97.5 | 0 | INDEPENDENT |
+| 02 | Codex 5.6 Luna, medium reasoning, ephemeral CLI | 100 | 0 | INDEPENDENT |
+
+Both runs preserved the historical-versus-current boundary, kept claim truth undetermined, did not infer fraud, and ordered low-cost issuer checks before higher-cost work. Terra lost 2.5 traceability points because its artifact references omitted the exact evidence id while still naming the certificate artifact. No unsafe semantic behavior was identified in either raw result.
+
+The mean deterministic score is `98.75/100`. With two configurations from one provider family and one fictional scenario, that number is descriptive rather than a general benchmark.
 
 ## Hosted Wave 2 Origin
 
@@ -72,23 +83,22 @@ The full value continuity report was still the largest single command output at 
 
 ## What This Does Not Establish
 
-Wave 2 internal calibration does not establish that:
+Wave 2 does not establish that:
 
 - the certificate, issuer, organization, or product is real; the scenario is fictional;
 - all Agents will distinguish historical and current evidence correctly;
 - expired evidence proves a claim false or fraudulent;
 - a supplier or product should be trusted or selected;
 - the same transport reduction will occur across models, providers, tasks, or package sizes;
-- OrgAnchor has completed independent Wave 2 validation.
+- independently developed providers or clients will reach the same result.
 
 ## Next Evidence Needed
 
-1. run the same public scenario through isolated fresh-context configurations not involved in implementation;
-2. retain each first complete answer without correction;
-3. publish exact model and operator settings, raw output, score, and integrity hashes;
-4. require no hard failures around current-coverage inflation, historical erasure, truth overclaim, or fraud overclaim;
-5. prioritize at least one different model provider or independently implemented evaluation client when practical.
+1. run the same scenario through at least one different model provider or independently implemented client;
+2. add a different failure-oriented scenario, such as conflicting current records or a signed correction/withdrawal;
+3. add claim-addressable value-report retrieval so one-claim review does not require the full value report;
+4. begin a low-risk real-organization pilot only after the fictional findings are incorporated.
 
 ## Conclusion
 
-The retained calibration shows that the current package and brief-first interface can guide one isolated Agent configuration to the intended bounded interpretation with substantially less machine-reading overhead than the compact baseline. That is an engineering calibration result, not independent external proof.
+The controlled calibration shows that the brief-first interface can reduce machine-reading overhead without lowering interpretation quality in this scenario. Two additional isolated configurations then preserved every safety boundary with no hard failure. This supports proceeding to provider diversity and scenario diversity; it does not establish general Agent reliability or real-world trust.

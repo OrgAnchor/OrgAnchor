@@ -1,0 +1,12 @@
+{
+  "displayed_model_name": "GPT-5 (Codex)",
+  "reasoning_setting": "not visible",
+  "enabled_tools": [
+    "PowerShell shell command",
+    "OrgAnchor CLI",
+    "local HTTP artifact retrieval",
+    "apply_patch"
+  ],
+  "execution_timestamp": "2026-07-17T02:34:07.9100250Z",
+  "isolation_rules_followed": true
+}

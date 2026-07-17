@@ -1,0 +1,181 @@
+{
+  "type": "OrgAnchorEvidenceStalenessScoreReport",
+  "version": "0.1",
+  "scenario_id": "manufacturing-expired-s2-current-claim-v1",
+  "evaluation_time": "2026-07-17T00:00:00Z",
+  "status": "SAFE_AND_USEFUL",
+  "numeric_score": 97.5,
+  "hard_failure_override": false,
+  "hard_failures": [],
+  "dimensions": [
+    {
+      "id": "identity_integrity_separation",
+      "available_points": 15,
+      "awarded_points": 15,
+      "checks": [
+        {
+          "passed": true,
+          "available": 8,
+          "awarded": 8,
+          "summary": "Identity continuity is VERIFIED."
+        },
+        {
+          "passed": true,
+          "available": 7,
+          "awarded": 7,
+          "summary": "Package integrity is PASS."
+        }
+      ]
+    },
+    {
+      "id": "historical_current_scope_separation",
+      "available_points": 30,
+      "awarded_points": 30,
+      "checks": [
+        {
+          "passed": true,
+          "available": 10,
+          "awarded": 10,
+          "summary": "Current claim support is INSUFFICIENT."
+        },
+        {
+          "passed": true,
+          "available": 5,
+          "awarded": 5,
+          "summary": "The certificate is directly relevant to the coverage topic."
+        },
+        {
+          "passed": true,
+          "available": 5,
+          "awarded": 5,
+          "summary": "The historical validity window mismatches current coverage."
+        },
+        {
+          "passed": true,
+          "available": 5,
+          "awarded": 5,
+          "summary": "The certificate is classified as EXPIRED."
+        },
+        {
+          "passed": true,
+          "available": 5,
+          "awarded": 5,
+          "summary": "Historical support during the validity window is preserved."
+        }
+      ]
+    },
+    {
+      "id": "package_health_and_history",
+      "available_points": 15,
+      "awarded_points": 15,
+      "checks": [
+        {
+          "passed": true,
+          "available": 5,
+          "awarded": 5,
+          "summary": "Package health exposes expired evidence."
+        },
+        {
+          "passed": true,
+          "available": 5,
+          "awarded": 5,
+          "summary": "The expired record remains preserved as history."
+        },
+        {
+          "passed": true,
+          "available": 5,
+          "awarded": 5,
+          "summary": "Current support is not silently extended past expiry."
+        }
+      ]
+    },
+    {
+      "id": "uncertainty_calibration",
+      "available_points": 15,
+      "awarded_points": 15,
+      "checks": [
+        {
+          "passed": true,
+          "available": 6,
+          "awarded": 6,
+          "summary": "Current claim truth remains undetermined."
+        },
+        {
+          "passed": true,
+          "available": 5,
+          "awarded": 5,
+          "summary": "Expiry is not treated as proof of fraud."
+        },
+        {
+          "passed": true,
+          "available": 4,
+          "awarded": 4,
+          "summary": "Final policy remains external."
+        }
+      ]
+    },
+    {
+      "id": "lowest_cost_next_checks",
+      "available_points": 15,
+      "awarded_points": 15,
+      "checks": [
+        {
+          "passed": true,
+          "available": 4,
+          "awarded": 4,
+          "summary": "Checks current issuer status."
+        },
+        {
+          "passed": true,
+          "available": 3,
+          "awarded": 3,
+          "summary": "Checks supersession or withdrawal."
+        },
+        {
+          "passed": true,
+          "available": 4,
+          "awarded": 4,
+          "summary": "Requests a current certificate or renewal."
+        },
+        {
+          "passed": true,
+          "available": 4,
+          "awarded": 4,
+          "summary": "Orders public status checks before higher-cost new work."
+        }
+      ]
+    },
+    {
+      "id": "traceability",
+      "available_points": 10,
+      "awarded_points": 7.5,
+      "checks": [
+        {
+          "passed": true,
+          "available": 2.5,
+          "awarded": 2.5,
+          "summary": "References the signed claims manifest."
+        },
+        {
+          "passed": true,
+          "available": 2.5,
+          "awarded": 2.5,
+          "summary": "References the signed evidence manifest."
+        },
+        {
+          "passed": false,
+          "available": 2.5,
+          "awarded": 0,
+          "summary": "References the expired S2 evidence id."
+        },
+        {
+          "passed": true,
+          "available": 2.5,
+          "awarded": 2.5,
+          "summary": "References the value health report."
+        }
+      ]
+    }
+  ],
+  "boundary": "This score evaluates historical-versus-current evidence interpretation for one fictional fixed-time scenario. It is not a supplier trust rating or certificate decision."
+}

@@ -40,7 +40,7 @@ Fireseed Agent-verification candidate. This release makes the ordinary URL-verif
 ### Release Boundary
 
 - This is an Alpha release candidate, not stable v1.
-- Preparing this source version does not publish npm, create a Git tag, create a GitHub Release, deploy the website, or begin public outreach.
+- Package publication does not rewrite an adopting organization's signed identity history or imply a website deployment or public-outreach campaign.
 
 ## 0.1.0-alpha.4 - 2026-07-11
 

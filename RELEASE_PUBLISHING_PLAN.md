@@ -1,6 +1,6 @@
 # OrgAnchor Release Publishing Plan
 
-Status: local `0.1.0-alpha.5` candidate preparation; publication requires the human-owner gate.
+Status: `0.1.0-alpha.5` owner gate approved on 2026-07-17; execute and verify the tag-triggered publication sequence once.
 
 Last checked: 2026-07-17.
 
@@ -54,7 +54,7 @@ no v0.1.0-alpha.5 tag or npm version already exists.
 
 ## Human-Owner Gate
 
-Stop for explicit approval before pushing `v0.1.0-alpha.5`.
+Approval to publish `v0.1.0-alpha.5` was recorded on 2026-07-17. A future version still requires a new explicit approval.
 
 That tag push is not reversible as an ordinary edit: the GitHub Actions Trusted Publishing workflow runs the release checks and publishes `organchor@0.1.0-alpha.5` to npm under `alpha`. Npm versions are immutable.
 

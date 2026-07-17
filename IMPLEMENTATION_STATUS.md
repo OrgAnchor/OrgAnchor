@@ -87,14 +87,14 @@ Release hygiene:
 - Package inclusion checks that reject private keys, local credentials, wallets, Cloudflare notes, and self-pilot private artifacts.
 - Alpha-line release-state matrix and checklist alignment merged into `main`.
 - `organchor@0.1.0-alpha.4` published through npm Trusted Publishing under the `alpha` dist-tag, with npm provenance metadata and an aligned GitHub prerelease.
-- Local `0.1.0-alpha.5` candidate prepared for brief-first Agent verification, reproducible evidence-interpretation evaluation, and automatic external-evidence signature checks; npm, Git tag, and GitHub Release remain unpublished pending the owner gate.
+- `0.1.0-alpha.5` release source approved on 2026-07-17 for brief-first Agent verification, reproducible evidence-interpretation evaluation, and automatic external-evidence signature checks; authoritative publication state is determined by the matching Git tag, GitHub prerelease, and npm registry record.
 - Public self-pilot release-state hashes and carrier receipts recorded in `RELEASE_STATE_2026-05-25.md`.
 - Public self-pilot minimal review recorded in `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`, including public compact verification, doctor readiness, signed statement verification, signed claims/evidence verification, and root-signed lockfile verification.
 - Alpha.4 public release linkage, clean npm install, homepage, `/verify`, Beacon, machine index, and installed-CLI verification recorded in `PUBLIC_SELF_VERIFICATION_2026-07-15.md`.
 
 ## Current Fireseed Launch Focus
 
-The `0.1.0-alpha.4` batch is published and publicly verified. The local `0.1.0-alpha.5` candidate consolidates the resulting Fireseed external-falsification work so the installable package can catch up with the source before wider review.
+The `0.1.0-alpha.4` batch is the previously published and publicly verified baseline. Alpha.5 consolidates the resulting Fireseed external-falsification work so the installable package can expose the same Agent verification capability as the source before wider review.
 
 The former homepage-only versus OrgAnchor retrieval comparison has been retired as an active benchmark. It remains a historical integration calibration because structured machine data being easier to retrieve than homepage prose is a design premise, not a useful transaction-cost experiment.
 
@@ -108,7 +108,7 @@ Two independent Wave 2 fresh-context configurations now score `97.5` and `100`, 
 
 The third scenario is implemented in `EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md`. It publishes current issuer-backed S2 evidence and current independently signed S3 market-sampling evidence for the same model and overlapping time window, with the two artifacts pointing in opposite directions. The retained pre-remediation internal calibration scored `100`, an independent fresh-context run scored `95`, and the post-remediation low-reasoning calibration scored `96`; all had no hard failure and preserved the unresolved conflict, bounded scope, undetermined truth, and external policy boundary. The post-remediation run received both external signatures as `VERIFIED` from the ordinary brief and did not repeat manual cryptographic work. Results and limitations are recorded in `evaluation-results/evidence-interpretation/WAVE3_CALIBRATION_SUMMARY.md`.
 
-Wave 3 exposed a high-value machine-interface gap: the published alpha.4 `organchor verify url --brief` path does not mechanically verify externally signed evidence artifacts. The alpha.5 source candidate accepts hash-bound `external_signatures` routes and reports per-route artifact, signature-file, authority-file, and cryptographic-signature status in ordinary full and brief Agent results. Invalid routes fail the affected package check, unavailable or unsupported routes warn, legacy packages remain compatible, and signature validity remains explicitly separate from real-world issuer identity, evidence sufficiency, claim truth, and external policy.
+Wave 3 exposed a high-value machine-interface gap: the published alpha.4 `organchor verify url --brief` path does not mechanically verify externally signed evidence artifacts. Alpha.5 accepts hash-bound `external_signatures` routes and reports per-route artifact, signature-file, authority-file, and cryptographic-signature status in ordinary full and brief Agent results. Invalid routes fail the affected package check, unavailable or unsupported routes warn, legacy packages remain compatible, and signature validity remains explicitly separate from real-world issuer identity, evidence sufficiency, claim truth, and external policy.
 
 The first public challenge deployment also exposed and corrected two overclaim risks: compact verification now defines `unsupported_claims` as a structural-linkage-gap metric rather than evidence sufficiency, and Directory fetch no longer raises candidate priority merely because third-party material or a declared recheck method exists.
 

@@ -72,6 +72,36 @@ sha256:cf05c96c292706cb83eaf6c3824f55e574022ab36c4cf114d7c7eb5daf31890e
 
 Download the Agent task and schema yourself, then attach or paste them into a fresh Agent session. Do not give that Agent the GitHub repository URL. The canonical Wave 1 issue records the active source commit and any later carrier replacement.
 
+## Hosted Wave 2 Origin
+
+The fixed-time stale-evidence scenario is available at:
+
+```text
+https://organchor-evidence-stale-v1.pages.dev
+```
+
+Custom alias:
+
+```text
+https://stale-evidence-v1.eval.organchor.org
+```
+
+Preferred low-friction verification command:
+
+```bash
+npx --yes organchor@alpha verify url https://organchor-evidence-stale-v1.pages.dev --brief
+```
+
+Windows PowerShell equivalent when the script shim is blocked:
+
+```powershell
+npx.cmd --yes organchor@alpha verify url https://organchor-evidence-stale-v1.pages.dev --brief
+```
+
+For Wave 2, give the fresh-context Agent the task and response schema from `examples/evidence-interpretation-stale-evidence/`. Start with the brief machine result and inspect only the claim-relevant artifacts it links. The human verify HTML is optional for human review and is not required for the Agent decision.
+
+The hosted carrier exposes only the fictional generated `public/` directory. It does not expose the Agent task, schema, scoring key, operator truth, prior results, repository, credentials, or private keys. The non-sensitive deployment receipt is preserved with the Wave 2 internal calibration result.
+
 ## Operator Setup
 
 Use a clean source checkout and record its commit:

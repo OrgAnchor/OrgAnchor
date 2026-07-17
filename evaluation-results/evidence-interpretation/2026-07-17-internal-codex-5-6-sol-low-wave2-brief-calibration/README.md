@@ -39,6 +39,7 @@ This is evidence of lower machine-reading friction for this scenario, not a gene
 - `score.json`: deterministic score report;
 - `run-metadata.json`: metadata written by the Agent;
 - `operator-invocation.json`: exact operator configuration, hashes, and transport metrics;
+- `deployment-receipt.json`: non-sensitive public carrier URLs, hashes, and HTTP checks;
 - `reviewer-notes.json`: bounded review and limitations.
 
 The much larger CLI event log is retained outside the Git repository. Its SHA-256 hash is recorded in `operator-invocation.json`.

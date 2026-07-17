@@ -1,0 +1,21 @@
+{
+  "type": "OrgAnchorFictionalEvaluationCarrierReceipt",
+  "version": "0.1",
+  "scenario_id": "manufacturing-expired-s2-current-claim-v1",
+  "provider": "cloudflare-pages",
+  "project_name": "organchor-evidence-stale-v1",
+  "deployment_url": "https://8d582a3c.organchor-evidence-stale-v1.pages.dev",
+  "stable_pages_origin": "https://organchor-evidence-stale-v1.pages.dev",
+  "custom_origin": "https://stale-evidence-v1.eval.organchor.org",
+  "deployed_at": "2026-07-17T02:20:14.008Z",
+  "file_count": 18,
+  "deployment_directory_sha256": "07c8ee8ba403c7a2292b989d2854833602ccdb74554e6e62a81e4e82ac7d87a3",
+  "source_public_composite_sha256": "bca1feb1413300ea1db51fbfad21eea35f25cfa6a6c41ba8c846e8b206b7df45",
+  "checks": {
+    "stable_machine_index_http_status": 200,
+    "stable_human_verify_http_status": 200,
+    "custom_machine_index_http_status": 200,
+    "public_brief_verification": "PASS_WITH_EXPECTED_VALUE_WARNING"
+  },
+  "content_boundary": "Only the fictional generated public directory was uploaded. Agent tasks, schemas, scoring keys, operator truth, prior results, source files, credentials, and private keys were excluded."
+}

@@ -34,6 +34,22 @@ These findings produced transport, subject-binding, and schema compatibility fix
 
 The raw answer, exact task, schema, score, hashes, model configuration, and bounded reviewer notes are preserved in the adjacent `2026-07-17-internal-codex-5-6-sol-low-wave2-brief-calibration` directory.
 
+## Hosted Wave 2 Origin
+
+The fictional public package is available at:
+
+```text
+https://organchor-evidence-stale-v1.pages.dev
+```
+
+Custom alias:
+
+```text
+https://stale-evidence-v1.eval.organchor.org
+```
+
+Only the generated public package is deployed. The Agent task, response schema, scoring key, operator truth, prior results, source repository, credentials, and private keys are not served by this carrier.
+
 ## Controlled Transport Comparison
 
 Both runs used the same model family, reasoning setting, fictional scenario, and final semantic scoring target.

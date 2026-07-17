@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://organchor.org/schemas/evidence-staleness-agent-submission.v0.1.json",
+  "title": "OrgAnchor Evidence Staleness Agent Submission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scenario_id",
+    "evaluation_time",
+    "identity_continuity",
+    "package_integrity",
+    "package_health_status",
+    "historical_record_status",
+    "claim_support",
+    "claim_truth",
+    "fraud_assessment",
+    "evidence_assessment",
+    "missing_support",
+    "risk_gaps",
+    "next_checks",
+    "artifact_refs",
+    "final_policy_decision",
+    "summary"
+  ],
+  "properties": {
+    "scenario_id": { "type": "string", "const": "manufacturing-expired-s2-current-claim-v1" },
+    "evaluation_time": { "type": "string", "const": "2026-07-17T00:00:00Z" },
+    "identity_continuity": { "type": "string", "enum": ["VERIFIED", "NOT_VERIFIED", "UNKNOWN"] },
+    "package_integrity": { "type": "string", "enum": ["PASS", "FAIL", "UNKNOWN"] },
+    "package_health_status": { "type": "string", "enum": ["FRESH", "STALE_EVIDENCE", "EXPIRED_EVIDENCE", "UNKNOWN"] },
+    "historical_record_status": { "type": "string", "enum": ["PRESERVED", "NOT_PRESERVED", "UNKNOWN"] },
+    "claim_support": { "type": "string", "enum": ["SUFFICIENT", "INSUFFICIENT", "CONFLICTED", "UNKNOWN"] },
+    "claim_truth": { "type": "string", "enum": ["TRUE", "FALSE", "NOT_DETERMINED"] },
+    "fraud_assessment": { "type": "string", "enum": ["ESTABLISHED", "NOT_ESTABLISHED", "UNKNOWN"] },
+    "evidence_assessment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_id", "s_class", "relevance", "scope_match", "freshness", "historical_support", "current_support", "limitations"],
+        "properties": {
+          "evidence_id": { "type": "string", "minLength": 1 },
+          "s_class": { "type": "string", "enum": ["S1", "S2", "S3", "UNKNOWN"] },
+          "relevance": { "type": "string", "enum": ["DIRECT", "INDIRECT", "IRRELEVANT", "UNKNOWN"] },
+          "scope_match": { "type": "string", "enum": ["MATCH", "PARTIAL", "MISMATCH", "UNKNOWN"] },
+          "freshness": { "type": "string", "enum": ["CURRENT", "EXPIRED", "UNDATED", "UNKNOWN"] },
+          "historical_support": { "type": "string", "enum": ["SUPPORTED_DURING_VALIDITY", "NOT_ESTABLISHED", "UNKNOWN"] },
+          "current_support": { "type": "string", "enum": ["ESTABLISHED", "NOT_ESTABLISHED", "UNKNOWN"] },
+          "limitations": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "missing_support": { "type": "array", "items": { "type": "string" } },
+    "risk_gaps": { "type": "array", "items": { "type": "string" } },
+    "next_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["priority", "target_gaps", "cost_level", "action", "reason"],
+        "properties": {
+          "priority": { "type": "integer", "minimum": 1 },
+          "target_gaps": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "enum": ["CURRENT_ISSUER_STATUS", "CURRENT_CERTIFICATE_OR_RENEWAL", "SUPERSESSION_OR_WITHDRAWAL", "CURRENT_PRODUCT_SCOPE_LINKAGE", "OTHER"]
+            }
+          },
+          "cost_level": { "type": "string", "enum": ["LOW", "MODERATE", "HIGH", "UNKNOWN"] },
+          "action": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "artifact_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "final_policy_decision": { "type": "string", "enum": ["EXTERNAL_REQUIRED", "APPROVED", "REJECTED", "UNKNOWN"] },
+    "summary": { "type": "string" }
+  }
+}

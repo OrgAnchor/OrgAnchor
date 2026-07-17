@@ -161,6 +161,8 @@ The Beacon layer is the preferred anti-capture foundation for discovery. The Dir
 - `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: scenario definition and scorer boundary for adversarial evidence interpretation.
 - `EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md`: fixed-time scenario and scorer boundary for historical-versus-current evidence interpretation.
 - `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`: operator procedure for producing comparable fresh-context external Agent results without exposing the answer key.
+- `evaluation-results/evidence-interpretation/WAVE1_SUMMARY.md`: bounded results and limitations from the first three isolated Agent evidence-interpretation runs.
+- `evaluation-results/evidence-interpretation/WAVE2_CALIBRATION_SUMMARY.md`: internal stale-evidence calibration, low-friction machine-path comparison, and remaining external-validation requirement.
 
 The preferred low-friction agent path is `/.well-known/organchor.json` plus:
 

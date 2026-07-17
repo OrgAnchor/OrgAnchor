@@ -1,0 +1,17 @@
+{
+  "displayed_model_name": "GPT-5",
+  "reasoning_setting": "not visible",
+  "enabled_tools": [
+    "functions.exec",
+    "functions.wait",
+    "functions.request_user_input",
+    "collaboration.spawn_agent",
+    "collaboration.send_message",
+    "collaboration.followup_task",
+    "collaboration.interrupt_agent",
+    "collaboration.list_agents",
+    "collaboration.wait_agent"
+  ],
+  "execution_timestamp": "2026-07-17T02:01:58.918Z",
+  "isolation_rules_followed": true
+}

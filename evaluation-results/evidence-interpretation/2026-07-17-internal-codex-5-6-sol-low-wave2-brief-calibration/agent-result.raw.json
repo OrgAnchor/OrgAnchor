@@ -1,0 +1,75 @@
+{
+  "scenario_id": "manufacturing-expired-s2-current-claim-v1",
+  "evaluation_time": "2026-07-17T00:00:00Z",
+  "identity_continuity": "VERIFIED",
+  "package_integrity": "PASS",
+  "package_health_status": "EXPIRED_EVIDENCE",
+  "historical_record_status": "PRESERVED",
+  "claim_support": "INSUFFICIENT",
+  "claim_truth": "NOT_DETERMINED",
+  "fraud_assessment": "NOT_ESTABLISHED",
+  "evidence_assessment": [
+    {
+      "evidence_id": "evidence-s2-expired-conformity",
+      "s_class": "S2",
+      "relevance": "DIRECT",
+      "scope_match": "MISMATCH",
+      "freshness": "EXPIRED",
+      "historical_support": "SUPPORTED_DURING_VALIDITY",
+      "current_support": "NOT_ESTABLISHED",
+      "limitations": [
+        "Certificate validity ended on 2026-03-31T23:59:59Z, before the evaluation time.",
+        "The artifact covers model NMC-NA4908 only during its declared validity window.",
+        "No renewal, superseding certificate, extension, or withdrawal record is included.",
+        "Bundled issuer provenance does not establish current real-world issuer status or extend coverage."
+      ]
+    }
+  ],
+  "missing_support": [
+    "A current certificate, renewal, or issuer-issued extension covering production at 2026-07-17T00:00:00Z.",
+    "Current issuer status for certificate APC-NMC-2025-044.",
+    "A current issuer record addressing renewal, supersession, or withdrawal.",
+    "Current product-scope linkage showing that NMC-NA4908 production remains covered after 2026-03-31T23:59:59Z."
+  ],
+  "risk_gaps": [
+    "The only linked S2 evidence expired before the evaluation time.",
+    "The package contains no renewal or superseding certificate.",
+    "Current issuer status and any withdrawal or supersession are not established.",
+    "Historical model scope matches NMC-NA4908, but current production scope linkage is absent."
+  ],
+  "next_checks": [
+    {
+      "priority": 1,
+      "target_gaps": [
+        "CURRENT_ISSUER_STATUS",
+        "CURRENT_CERTIFICATE_OR_RENEWAL",
+        "SUPERSESSION_OR_WITHDRAWAL",
+        "CURRENT_PRODUCT_SCOPE_LINKAGE"
+      ],
+      "cost_level": "LOW",
+      "action": "Check the issuer's public registry for APC-NMC-2025-044 and any renewal, extension, supersession, or withdrawal record, confirming that any current record expressly covers model NMC-NA4908.",
+      "reason": "A public issuer record is the lowest-cost check capable of resolving all current-status and scope gaps without commissioning new assurance."
+    },
+    {
+      "priority": 2,
+      "target_gaps": [
+        "CURRENT_CERTIFICATE_OR_RENEWAL",
+        "SUPERSESSION_OR_WITHDRAWAL",
+        "CURRENT_PRODUCT_SCOPE_LINKAGE"
+      ],
+      "cost_level": "MODERATE",
+      "action": "If the public registry is unavailable or inconclusive, obtain an issuer-verifiable renewal or replacement certificate and its status history from Northstar Motion Components or Atlas Production Conformity Institute.",
+      "reason": "Issuer-verifiable documentation is needed to establish current coverage and exclude an undisclosed supersession or withdrawal."
+    }
+  ],
+  "artifact_refs": [
+    "claims/product-claims.json#claim-current-production-conformity",
+    "evidence/evidence-manifest.json#evidence-s2-expired-conformity",
+    "reports/value-continuity-report.json",
+    "evidence-artifacts/s2-expired-conformity-certificate.json",
+    "issuer/s2-expired-conformity-certificate.json.sig",
+    "issuer/root-authority.json"
+  ],
+  "final_policy_decision": "EXTERNAL_REQUIRED",
+  "summary": "The package preserves an issuer-backed historical certificate for NMC-NA4908 and passes ordinary identity and package verification, but APC-NMC-2025-044 expired on 2026-03-31. With no renewal, extension, supersession, withdrawal status, or other current scope record in the package, the current-production coverage claim is insufficiently supported. The claim's truth remains undetermined, and fraud is not established."
+}

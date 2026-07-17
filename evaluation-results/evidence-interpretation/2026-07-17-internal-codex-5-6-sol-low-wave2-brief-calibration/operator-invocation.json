@@ -1,0 +1,43 @@
+{
+  "type": "OrgAnchorInternalAgentCalibrationInvocation",
+  "version": "0.1",
+  "classification": "INTERNAL_CALIBRATION",
+  "independent_external_result": false,
+  "runner": "Codex CLI",
+  "runner_version": "0.144.5",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "low",
+  "ephemeral_session": true,
+  "user_config_loaded": false,
+  "project_rules_loaded": false,
+  "source_commit": "c369ebfccf3b1f939f3b0a927c8e7cd9df0c4c27",
+  "package_version": "0.1.0-alpha.4",
+  "package_tarball_sha256": "0cbda16db6e72702828484981c46db8e837812c2697469222d2ca8e88a5cfdb7",
+  "public_scenario_file_count": 18,
+  "public_scenario_composite_sha256": "bca1feb1413300ea1db51fbfad21eea35f25cfa6a6c41ba8c846e8b206b7df45",
+  "verification_mode": "brief",
+  "verification_command": ".\\node_modules\\.bin\\organchor.cmd verify url http://127.0.0.1:58419 --brief",
+  "human_verify_html_fetched": false,
+  "raw_result_sha256": "32a154c2f6092baee7f63d76281e71ea598f801e055a2aafd56f457febd443d7",
+  "score_sha256": "07625a2468ff8b25ea5e028e4376f2cb5b498c53d137a44add7799c1b15480bd",
+  "run_metadata_sha256": "3b2295d9daf2dff8ebae25fb8799ce1629b94d0f44a4c7c93c030165eefb88de",
+  "cli_event_log_sha256": "df5281c3130ce53d9b5d3a10e8713ed16f776f6d87752bee25d6323c700b0e09",
+  "prompt_isolation": {
+    "previous_conversation_available": false,
+    "repository_source_available": false,
+    "operator_ground_truth_available": false,
+    "scoring_key_available": false,
+    "prior_agent_results_available": false
+  },
+  "transport_metrics": {
+    "command_count": 7,
+    "http_fetch_command_count": 2,
+    "command_output_characters": 45052,
+    "largest_command_output_characters": 30647,
+    "cumulative_input_tokens": 198190,
+    "cached_input_tokens": 164864,
+    "noncached_input_tokens": 33326,
+    "output_tokens": 4628,
+    "reasoning_output_tokens": 526
+  }
+}

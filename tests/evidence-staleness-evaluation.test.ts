@@ -130,6 +130,30 @@ test("stale-evidence scorer credits explicit combined status checks and rejects 
   }
 });
 
+test("archived Wave 2 brief-first calibration remains reproducible", () => {
+  const archiveDir = join(
+    repoRoot,
+    "evaluation-results",
+    "evidence-interpretation",
+    "2026-07-17-internal-codex-5-6-sol-low-wave2-brief-calibration"
+  );
+  const rawResult = join(archiveDir, "agent-result.raw.json");
+  const archivedScore = JSON.parse(readFileSync(join(archiveDir, "score.json"), "utf8"));
+  const operatorInvocation = JSON.parse(readFileSync(join(archiveDir, "operator-invocation.json"), "utf8"));
+  const reproduced = JSON.parse(run(["score-stale", "--submission", rawResult]).stdout);
+
+  assert.equal(archivedScore.numeric_score, 100);
+  assert.deepEqual(archivedScore.hard_failures, []);
+  assert.equal(reproduced.numeric_score, archivedScore.numeric_score);
+  assert.deepEqual(reproduced.hard_failures, archivedScore.hard_failures);
+  assert.equal(operatorInvocation.classification, "INTERNAL_CALIBRATION");
+  assert.equal(operatorInvocation.independent_external_result, false);
+  assert.equal(operatorInvocation.verification_mode, "brief");
+  assert.equal(operatorInvocation.human_verify_html_fetched, false);
+  assert.ok(operatorInvocation.transport_metrics.command_count < 16);
+  assert.ok(operatorInvocation.transport_metrics.noncached_input_tokens < 66808);
+});
+
 function findPrivateKey(root: string): boolean {
   const result = spawnSync(
     process.execPath,

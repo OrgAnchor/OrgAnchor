@@ -95,7 +95,6 @@
             "description": "Every uncertainty gap addressed by this one action. Multiple values are allowed so combined actions remain explicit and machine-scorable.",
             "type": "array",
             "minItems": 1,
-            "uniqueItems": true,
             "items": {
               "type": "string",
               "enum": [

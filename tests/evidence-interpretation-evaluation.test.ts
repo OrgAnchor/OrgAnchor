@@ -258,6 +258,7 @@ function run(args: string[]) {
 function assertStructuredOutputTypes(node: unknown, path = "$"): void {
   if (!node || typeof node !== "object" || Array.isArray(node)) return;
   const record = node as Record<string, unknown>;
+  assert.equal(Object.hasOwn(record, "uniqueItems"), false, `${path} uses unsupported structured-output keyword uniqueItems`);
   if (Object.hasOwn(record, "const") || Object.hasOwn(record, "enum")) {
     assert.equal(typeof record.type, "string", `${path} must declare a type when using const or enum`);
   }

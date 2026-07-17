@@ -1,0 +1,53 @@
+{
+  "type": "OrgAnchorExternalAgentOperatorInvocation",
+  "version": "0.1",
+  "classification": "INTERNAL_CALIBRATION",
+  "runner": "Codex CLI",
+  "runner_version": "0.144.5",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "low",
+  "ephemeral_session": true,
+  "user_config_loaded": false,
+  "project_rules_loaded": false,
+  "sandbox": "danger-full-access",
+  "scenario_source_commit": "ed051dcb0dbb5d2d7f837aca5f3c88a31e4591f9",
+  "scoring_contract_commit": "ed051dcb0dbb5d2d7f837aca5f3c88a31e4591f9",
+  "tool_source": "current dist copied into an isolated temporary directory",
+  "source_public_file_count": 21,
+  "source_public_composite_sha256": "3d730cbf0101fca4a8db9f2d708fa2a1d3c671b34ca370ce345921cde363836b",
+  "scenario_verification_sha256": "18c13a33b484a7693d09ba992b04bb550310530711f6188e35a97eea1768b089",
+  "served_origin": "http://127.0.0.1:60577",
+  "public_equivalent_origin": null,
+  "verification_mode": "ordinary_brief_with_automatic_external_signature_verification_plus_bounded_artifact_scope_review",
+  "human_verify_html_required": false,
+  "raw_result_sha256": "97ec271f7959613ce6152566af04f0756c11146c3e4671dfc3b22550281dafa2",
+  "score_sha256": "90bae334f29ee0c3f7321d7d62c6ff5f5552036df92da66c5a17743da4f4d66a",
+  "run_metadata_sha256": "5837638dee0f524e386cb8feb30b223a507cddab1460eaa9dfb46859a21f6ec9",
+  "task_sha256": "7feb4ec5d0c0b7dfd8dde7c146be0ce218e593318dbacc0c610a890f65958039",
+  "response_schema_sha256": "0678510573673f628e827e3427b34f31279a6900f2d10e550f8f26357d4aeab5",
+  "cli_event_log_sha256": "af4098389e32578a1a15d85747064799364e9826a297ebb7c58db5ce9c4802df",
+  "attempts": {
+    "total": 2,
+    "retained_attempt": 2,
+    "excluded_attempt_1_reason": "The Agent reached the correct intermediate interpretation but did not emit a final answer before runner timeout."
+  },
+  "isolation": {
+    "previous_conversation_available": false,
+    "repository_source_available": false,
+    "operator_ground_truth_available": false,
+    "scoring_key_available": false,
+    "prior_agent_results_available": false,
+    "rules_and_user_config_loaded": false
+  },
+  "transport_metrics": {
+    "completed_attempt_duration_seconds": 58.2,
+    "command_count": 2,
+    "command_output_characters": 16277,
+    "largest_command_output_characters": 13308,
+    "input_tokens": 47343,
+    "cached_input_tokens": 28160,
+    "noncached_input_tokens": 19183,
+    "output_tokens": 2038,
+    "reasoning_output_tokens": 336
+  }
+}

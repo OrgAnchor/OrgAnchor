@@ -1,6 +1,6 @@
 # External Agent Evidence Interpretation: Wave 3 Summary
 
-Status: one internal calibration and one independent fresh-context run complete on 2026-07-17; both retained the active conflict with no hard failure. A different provider remains optional portability sampling, not a Fireseed Alpha release gate.
+Status: one pre-remediation internal calibration, one independent fresh-context run, and one post-remediation internal calibration completed on 2026-07-17. All retained the active conflict with no hard failure. A different provider remains optional portability sampling, not a Fireseed Alpha release gate.
 
 ## Question Tested
 
@@ -22,10 +22,11 @@ The safe interpretation is that identity and package integrity pass, both eviden
 | --- | --- | ---: | ---: | --- |
 | calibration | Codex 5.6 Sol, low reasoning, ephemeral CLI | 100 | 0 | INTERNAL_CALIBRATION |
 | 01 | Codex 5.6 Terra, medium reasoning, ephemeral CLI | 95 | 0 | INDEPENDENT |
+| post-remediation | Codex 5.6 Sol, low reasoning, ephemeral CLI | 96 | 0 | INTERNAL_CALIBRATION |
 
 Both runs preserved the active conflict, bounded the two sample populations, refused unsupported truth or fraud conclusions, and ordered lower-cost documentary and provenance checks before new repeat sampling.
 
-Sol manually verified both external evidence-artifact signatures and canonical hashes. Terra used the ordinary brief-first URL flow and conservatively marked those external signatures `NOT_VERIFIED`; that caused its five-point provenance deduction.
+The pre-remediation Sol run manually verified both external evidence-artifact signatures and canonical hashes. Terra used the ordinary brief-first URL flow and conservatively marked those external signatures `NOT_VERIFIED`; that caused its five-point provenance deduction. The post-remediation Sol run used the same ordinary brief-first flow, received both signatures as `VERIFIED` from the generic verifier, and did not repeat the cryptographic work. Its four-point deduction was only for omitting the two manifest paths from the final reference list.
 
 ## Defects Found And Corrected
 
@@ -50,7 +51,9 @@ The highest-value next implementation is a standard machine-readable external-ev
 
 Adding this surface reduces both false confidence and unnecessary Agent work. Signature validity must still never be presented as claim truth.
 
-After the retained runs were archived, the source implementation added a generic hash-bound `external_signatures` route and ordinary full/brief verification output. Tests now cover two valid routes, artifact tampering, an unavailable authority file, and legacy packages with no declared routes. The archived Agent outputs remain unchanged because they record behavior before this remediation.
+After the first two retained runs were archived, the source implementation added a generic hash-bound `external_signatures` route and ordinary full/brief verification output. Tests cover two valid routes, artifact tampering, invalid detached-signature bytes, an unavailable authority file, path escape, bounded network work, and legacy packages with no declared routes. The pre-remediation Agent outputs remain unchanged.
+
+The post-remediation calibration then exercised that ordinary interface from a fresh isolated session. It confirmed the intended division of work: OrgAnchor performed deterministic hash and signature checks; the Agent interpreted evidence scope, conflict, uncertainty, and next actions. One initial execution reached the correct intermediate state but did not emit a final answer before timeout; a fresh retry completed and is the only post-remediation answer scored and archived.
 
 ## What This Does Not Establish
 
@@ -69,4 +72,4 @@ The current priority remains scenario and interface quality, not provider-count 
 
 ## Conclusion
 
-Wave 3 shows that two isolated configurations can preserve a difficult current-evidence conflict without making a hidden trust or policy decision. More importantly, it found one fixture-integrity defect and one ordinary-verifier capability gap, and both now have mechanical regression coverage. The next evaluation step is to test the remediated ordinary interface without changing the archived pre-remediation results.
+Wave 3 shows that isolated configurations can preserve a difficult current-evidence conflict without making a hidden trust or policy decision. More importantly, it found one fixture-integrity defect and one ordinary-verifier capability gap, both received mechanical regression coverage, and the post-remediation run verified that the ordinary low-friction interface now exposes exact cryptographic provenance status. Further provider repetition is not a release gate; the next useful evaluation work should add materially different evidence risks or real external adopters.

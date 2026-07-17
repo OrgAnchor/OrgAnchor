@@ -150,6 +150,11 @@ test("archived Wave 3 results remain hash-bound and reproducibly scored", () => 
       directory: "2026-07-17-independent-codex-5-6-terra-medium-wave3-01",
       classification: "INDEPENDENT",
       expectedScore: 95
+    },
+    {
+      directory: "2026-07-17-internal-codex-5-6-sol-low-wave3-post-remediation",
+      classification: "INTERNAL_CALIBRATION",
+      expectedScore: 96
     }
   ];
 

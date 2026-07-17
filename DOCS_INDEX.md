@@ -58,7 +58,7 @@ If you are reviewing how the project is operated by a human owner and AI executi
 - `DESIGN_RATIONALE.md`: full explanatory design rationale connecting the core goal to required properties, mechanisms, expected effects, and limits.
 - `AI_OPERATING_MODEL.md`: active project operating model for human-owner and AI-execution-lead collaboration, including default execution authority and required owner decision gates.
 - `PUBLIC_RELEASE_CHECKLIST.md`: active public-release operating gate for local checks, public self-pilot checks, asset alignment, owner intervention gates, publishing order, and hold criteria.
-- `PUBLIC_SELF_VERIFICATION_2026-07-15.md`: current Alpha.4 public release-linkage, endpoint, clean-install, Beacon, CLI, and disclosed-limit verification result; `PUBLIC_SELF_VERIFICATION_2026-07-15.zh-CN.md` is its Chinese translation.
+- `PUBLIC_SELF_VERIFICATION_2026-07-17.md`: current Alpha.5 tag, npm provenance, clean-install, public endpoint, Agent-interface, and disclosed-limit verification result; `PUBLIC_SELF_VERIFICATION_2026-07-17.zh-CN.md` is its Chinese translation.
 - `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: active runnable Fireseed evaluation for testing whether an unfamiliar Agent separates valid identity/package integrity from insufficient product-claim evidence.
 - `EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md`: active Wave 2 evaluation for testing whether an Agent preserves expired evidence as history without treating it as current support.
 - `EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md`: active Wave 3 evaluation for testing whether an Agent preserves conflicting current S2/S3 evidence, bounded scope, and unresolved uncertainty.

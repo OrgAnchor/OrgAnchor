@@ -87,14 +87,14 @@ Release hygiene:
 - Package inclusion checks that reject private keys, local credentials, wallets, Cloudflare notes, and self-pilot private artifacts.
 - Alpha-line release-state matrix and checklist alignment merged into `main`.
 - `organchor@0.1.0-alpha.4` published through npm Trusted Publishing under the `alpha` dist-tag, with npm provenance metadata and an aligned GitHub prerelease.
-- `0.1.0-alpha.5` release source approved on 2026-07-17 for brief-first Agent verification, reproducible evidence-interpretation evaluation, and automatic external-evidence signature checks; authoritative publication state is determined by the matching Git tag, GitHub prerelease, and npm registry record.
+- `organchor@0.1.0-alpha.5` published on 2026-07-17 through npm Trusted Publishing under the `alpha` dist-tag, with SLSA provenance, matching Git tag, GitHub prerelease, clean registry-install verification, and public self-pilot verification.
 - Public self-pilot release-state hashes and carrier receipts recorded in `RELEASE_STATE_2026-05-25.md`.
 - Public self-pilot minimal review recorded in `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`, including public compact verification, doctor readiness, signed statement verification, signed claims/evidence verification, and root-signed lockfile verification.
 - Alpha.4 public release linkage, clean npm install, homepage, `/verify`, Beacon, machine index, and installed-CLI verification recorded in `PUBLIC_SELF_VERIFICATION_2026-07-15.md`.
 
 ## Current Fireseed Launch Focus
 
-The `0.1.0-alpha.4` batch is the previously published and publicly verified baseline. Alpha.5 consolidates the resulting Fireseed external-falsification work so the installable package can expose the same Agent verification capability as the source before wider review.
+The `0.1.0-alpha.5` batch is published and publicly verified. It consolidates the Fireseed external-falsification work so the installable package exposes the same Agent verification capability as the tagged source before wider review.
 
 The former homepage-only versus OrgAnchor retrieval comparison has been retired as an active benchmark. It remains a historical integration calibration because structured machine data being easier to retrieve than homepage prose is a design premise, not a useful transaction-cost experiment.
 

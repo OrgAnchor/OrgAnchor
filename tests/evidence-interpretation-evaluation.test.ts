@@ -54,6 +54,14 @@ test("first scenario separates valid identity from insufficient product support"
   assert.doesNotMatch(prompt, /Dimensions and material composition/);
 });
 
+test("Agent response schemas declare explicit types for structured-output constraints", () => {
+  const schemas = [
+    JSON.parse(readFileSync(join(exampleDir, "agent-submission.schema.json"), "utf8")),
+    JSON.parse(readFileSync(join(repoRoot, "examples", "evidence-interpretation-stale-evidence", "agent-submission.schema.json"), "utf8"))
+  ];
+  for (const schema of schemas) assertStructuredOutputTypes(schema);
+});
+
 test("runnable scenario builds a valid public package without private keys", () => {
   const workspace = mkdtempSync(join(tmpdir(), "organchor-evidence-interpretation-test-"));
   try {
@@ -245,4 +253,16 @@ function run(args: string[]) {
   });
   assert.equal(result.status, 0, `evaluation command failed\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`);
   return result;
+}
+
+function assertStructuredOutputTypes(node: unknown, path = "$"): void {
+  if (!node || typeof node !== "object" || Array.isArray(node)) return;
+  const record = node as Record<string, unknown>;
+  if (Object.hasOwn(record, "const") || Object.hasOwn(record, "enum")) {
+    assert.equal(typeof record.type, "string", `${path} must declare a type when using const or enum`);
+  }
+  for (const [key, value] of Object.entries(record)) {
+    if (key === "enum") continue;
+    assertStructuredOutputTypes(value, `${path}.${key}`);
+  }
 }

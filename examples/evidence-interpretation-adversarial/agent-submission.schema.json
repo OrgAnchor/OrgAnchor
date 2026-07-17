@@ -22,24 +22,31 @@
   ],
   "properties": {
     "scenario_id": {
+      "type": "string",
       "const": "manufacturing-signed-weak-evidence-v1"
     },
     "identity_continuity": {
+      "type": "string",
       "enum": ["VERIFIED", "NOT_VERIFIED", "UNKNOWN"]
     },
     "package_integrity": {
+      "type": "string",
       "enum": ["PASS", "FAIL", "UNKNOWN"]
     },
     "claim_support": {
+      "type": "string",
       "enum": ["SUFFICIENT", "INSUFFICIENT", "CONFLICTED", "UNKNOWN"]
     },
     "claim_truth": {
+      "type": "string",
       "enum": ["TRUE", "FALSE", "NOT_DETERMINED"]
     },
     "fraud_assessment": {
+      "type": "string",
       "enum": ["ESTABLISHED", "NOT_ESTABLISHED", "UNKNOWN"]
     },
     "s3_status": {
+      "type": "string",
       "enum": ["PRESENT", "ABSENT", "UNKNOWN"]
     },
     "evidence_assessment": {
@@ -50,12 +57,14 @@
         "required": ["evidence_id", "s_class", "relevance", "scope_match", "limitations"],
         "properties": {
           "evidence_id": { "type": "string", "minLength": 1 },
-          "s_class": { "enum": ["S1", "S2", "S3", "UNKNOWN"] },
+          "s_class": { "type": "string", "enum": ["S1", "S2", "S3", "UNKNOWN"] },
           "relevance": {
+            "type": "string",
             "description": "Relevance to the exact claim under review, not to the product or organization generally. DIRECT measures or models the claimed outcome; INDIRECT bears on it through an explicit inference; IRRELEVANT does not address that claim.",
             "enum": ["DIRECT", "INDIRECT", "IRRELEVANT", "UNKNOWN"]
           },
           "scope_match": {
+            "type": "string",
             "description": "Coverage of the exact claim's material outcome, subject, conditions, population, and time scope. PARTIAL addresses the claimed outcome but leaves part uncovered; MISMATCH assesses a different outcome or materially different scope.",
             "enum": ["MATCH", "PARTIAL", "MISMATCH", "UNKNOWN"]
           },
@@ -88,6 +97,7 @@
             "minItems": 1,
             "uniqueItems": true,
             "items": {
+              "type": "string",
               "enum": [
                 "DIRECT_LIFETIME_TEST_SCOPE",
                 "EXTRAPOLATION_AND_RAW_OBSERVATIONS",
@@ -97,7 +107,7 @@
               ]
             }
           },
-          "cost_level": { "enum": ["LOW", "MODERATE", "HIGH", "UNKNOWN"] },
+          "cost_level": { "type": "string", "enum": ["LOW", "MODERATE", "HIGH", "UNKNOWN"] },
           "action": { "type": "string", "minLength": 1 },
           "reason": { "type": "string", "minLength": 1 }
         }
@@ -108,6 +118,7 @@
       "items": { "type": "string", "minLength": 1 }
     },
     "final_policy_decision": {
+      "type": "string",
       "enum": ["EXTERNAL_REQUIRED", "APPROVED", "REJECTED", "UNKNOWN"]
     },
     "summary": {

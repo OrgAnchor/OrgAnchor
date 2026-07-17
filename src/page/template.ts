@@ -382,7 +382,7 @@ export function renderVerifyPage(model: VerifyPageModel): string {
     },
     {
       title: "4. Re-check with tools",
-      detail: `Machines should start from /.well-known/organchor.json or ${model.indexFile}, then run organchor verify url <origin> --compact.`
+      detail: `Machines should start from /.well-known/organchor.json or ${model.indexFile}, then run organchor verify url <origin> --brief.`
     }
   ].map(
     (step) => `
@@ -434,7 +434,7 @@ export function renderVerifyPage(model: VerifyPageModel): string {
     {
       title: "Recheck before relying",
       status: "RECHECK_REQUIRED",
-      detail: `Use ${model.indexFile} for machine inspection and run organchor verify url <origin> --compact against the current public origin.`
+      detail: `Use ${model.indexFile} for machine inspection and run organchor verify url <origin> --brief against the current public origin.`
     }
   ].map(
     (item) => `

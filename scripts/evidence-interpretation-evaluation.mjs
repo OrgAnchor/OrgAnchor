@@ -1072,7 +1072,7 @@ async function exerciseCommand(opts, activeScenarioId = scenarioId) {
       ? await fetch(`${server.origin}/verify/issuer/s2-expired-conformity-certificate.json.sig`)
       : null;
     const normal = JSON.parse((await runCliAsync(["verify", "url", server.origin], packageRoot)).stdout);
-    const compact = JSON.parse((await runCliAsync(["verify", "url", server.origin, "--compact"], packageRoot)).stdout);
+    const compact = JSON.parse((await runCliAsync(["verify", "url", server.origin, "--brief"], packageRoot)).stdout);
     const signatureContentType = signatureResponse?.headers.get("content-type") ?? null;
     const transportPass = humanVerifyResponse.ok
       && (!signatureResponse || (signatureResponse.ok && signatureContentType?.startsWith("application/json")));
@@ -1603,7 +1603,7 @@ function rewriteBeaconOrigin(publicRoot, origin) {
   beacon.verify_url = `${origin}/verify/`;
   beacon.well_known_url = `${origin}/.well-known/organchor.json`;
   beacon.verify_index_url = `${origin}/verify/organchor.json`;
-  beacon.agent_flow.first_pass = `organchor verify url ${origin} --compact`;
+  beacon.agent_flow.first_pass = `organchor verify url ${origin} --brief`;
   beacon.agent_flow.deep_verify = `organchor verify url ${origin}`;
   writeJson(beaconPath, beacon);
 }

@@ -10,7 +10,7 @@ test("agent integration guide defines low-friction discovery and trust boundary"
   const guide = readFileSync(join(repoRoot, "AGENT_INTEGRATION_GUIDE.md"), "utf8");
   assert.match(guide, /AI 代理接入指南/);
   assert.match(guide, /\/\.well-known\/organchor\.json/);
-  assert.match(guide, /organchor verify url https:\/\/example\.org --compact/);
+  assert.match(guide, /organchor verify url https:\/\/example\.org --brief/);
   assert.match(guide, /policy_route/);
   assert.match(guide, /EXTERNAL_POLICY_REVIEW/);
   assert.match(guide, /OrgAnchor reports verification facts, gaps, and warnings/);
@@ -86,7 +86,7 @@ test("agent Beacon query example is a valid need-match discovery result", () => 
   assert.deepEqual(result.match_report.summary.strongest_candidate_origins, ["https://example.org"]);
   assert.equal(result.candidates[0].candidate_priority, "HIGH");
   assert.equal(result.candidates[0].need_match.status, "STRONG_DISCOVERY_MATCH");
-  assert.equal(result.candidates[0].next_step, "organchor verify url https://example.org --compact");
+  assert.equal(result.candidates[0].next_step, "organchor verify url https://example.org --brief");
   assert.equal(
     result.candidates[0].risk_gaps.some((risk: { code: string }) => risk.code === "DIRECT_ORIGIN_VERIFICATION_REQUIRED"),
     true

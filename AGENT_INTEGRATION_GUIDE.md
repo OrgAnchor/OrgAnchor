@@ -41,7 +41,7 @@ trust decision = 信任决策，由外部代理自己的策略决定
 An external agent should follow this order:
 
 ```text
-discover -> compact verify -> policy route -> full verify if needed -> fetch evidence if needed
+discover -> brief verify -> policy route -> compact/full verify if needed -> fetch selected evidence if needed
 ```
 
 For an origin such as:
@@ -65,10 +65,18 @@ https://example.org/verify/organchor.json
 Then run:
 
 ```bash
+organchor verify url https://example.org --brief
+```
+
+The brief result is the lowest-cost routing object. It includes verified status, the most important gaps, and exact machine-artifact URLs. It also states that the human HTML page is not required for Agent inspection.
+
+If the brief result is insufficient for the transaction or risk level, use the compatibility-oriented compact result or the full result:
+
+```bash
 organchor verify url https://example.org --compact
 ```
 
-If the compact result is insufficient for the transaction or risk level, run:
+Then, when detailed checks are required, run:
 
 ```bash
 organchor verify url https://example.org
@@ -181,7 +189,7 @@ Some organizations may also publish a Directory discovery pointer in `/.well-kno
 Agents can use this to find candidate organizations with lower discovery cost. The Directory is not a trust root. For every selected record, the agent should still run:
 
 ```bash
-organchor verify url <origin> --compact
+organchor verify url <origin> --brief
 ```
 
 To inspect a published Directory pointer before using it:
@@ -208,9 +216,25 @@ organchor directory fetch https://example.org --capability identity-continuity -
 
 Supported filters are category, capability, region, language, identity status, value status, policy route, and limit. This keeps discovery cheap while preserving the rule that selected organizations must still be verified at their own origin.
 
+## Brief Result
+
+The brief result is the preferred machine first-pass object. It intentionally omits empty S-layer detail and exposes direct URLs for the signed claims manifest, evidence manifest, and value report.
+
+```bash
+organchor verify url https://example.org --brief
+```
+
+Its result type is:
+
+```text
+OrgAnchorAgentVerificationBriefResult
+```
+
+Use `access_guidance.human_html_required == false` to avoid downloading the human verify page during ordinary Agent review. Use `artifacts` to fetch only the machine files needed for the concrete claim or policy decision.
+
 ## Compact Result
 
-The compact result is the preferred first-pass object.
+The compact result is retained as a stable, more detailed compatibility object. Use it when the brief result does not expose enough layer-level detail.
 
 Example:
 
@@ -486,7 +510,7 @@ Agents should:
 ignore unknown fields
 respect type and version fields
 treat trust_decision as informational, not final
-prefer --compact for first-pass routing
+prefer --brief for first-pass routing
 use the full result before high-risk decisions
 cache results only with a short TTL unless a policy says otherwise
 surface failures to the user instead of hiding them
@@ -508,6 +532,7 @@ See `AGENT_COMPATIBILITY_PLAN.md` for the iteration rules.
 
 ```bash
 organchor verify url https://organchor.org --compact
+organchor verify url https://organchor.org --brief
 organchor verify url https://organchor.org
 ```
 

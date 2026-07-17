@@ -40,6 +40,7 @@ export interface AgentVerificationResult {
   trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
   status_scope: AgentStatusScope;
   discovery_signal: AgentDiscoverySignal;
+  artifacts: AgentArtifactUrls;
   organization: JsonValue;
   identity: Record<string, JsonValue>;
   history: Record<string, JsonValue>;
@@ -47,6 +48,59 @@ export interface AgentVerificationResult {
   policy_route: AgentPolicyRoute;
   checks: AgentCheck[];
   recommended_next_steps: string[];
+}
+
+export interface AgentArtifactUrls {
+  human_verify_url: string;
+  machine_index_url: string;
+  statement_url: string;
+  statement_signature_url: string;
+  root_authority_url: string;
+  claims_manifest_url: string | null;
+  evidence_manifest_url: string | null;
+  value_report_url: string | null;
+}
+
+export interface AgentVerificationBriefResult {
+  type: "OrgAnchorAgentVerificationBriefResult";
+  version: "1.0";
+  target: string;
+  overall_status: "PASS" | "WARN" | "FAIL";
+  identity_status: "PASS" | "FAIL";
+  value_status: "PASS" | "WARN" | "NOT_INCLUDED";
+  conformance_status: AgentConformanceStatus;
+  trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR";
+  decision_boundary: {
+    evidence_sufficiency: "EXTERNAL_POLICY_DECISION";
+    claim_truth: "NOT_PROVEN_BY_ORGANCHOR_STATUS";
+  };
+  organization: {
+    name: string;
+    display_name?: string;
+  };
+  evidence_health: {
+    claims: CheckStatus;
+    evidence: CheckStatus;
+    value: CheckStatus;
+    total_claims: number;
+    total_evidence_items: number;
+    stale_evidence_items: number;
+    manual_checks: number;
+    active_layers: {
+      s2: number;
+      s3: number;
+      s4: number;
+    };
+    risk_gaps: string[];
+    next_best_actions: string[];
+  };
+  policy_route: AgentPolicyRoute;
+  artifacts: AgentArtifactUrls;
+  access_guidance: {
+    machine_first: true;
+    human_html_required: false;
+    next_step: string;
+  };
 }
 
 export interface AgentVerificationCompactResult {
@@ -173,7 +227,7 @@ export interface AgentPolicyRoute {
 export async function verifyUrlCommand(options: Record<string, string | boolean>): Promise<void> {
   const target = requireTarget(options);
   const result = await verifyUrlTarget(target, { timeoutMs: parseTimeoutMs(options["timeout-ms"]) });
-  const output = options.compact === true ? compactResult(result) : result;
+  const output = options.brief === true ? briefResult(result) : options.compact === true ? compactResult(result) : result;
   console.log(JSON.stringify(output, null, 2));
   if (result.overall_status === "FAIL") process.exitCode = 1;
 }
@@ -337,6 +391,16 @@ export async function verifyUrlTarget(
     trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR",
     status_scope: statusScope(),
     discovery_signal: index.signal,
+    artifacts: {
+      human_verify_url: artifactBaseUrl.toString(),
+      machine_index_url: index.url.toString(),
+      statement_url: statementUrl.toString(),
+      statement_signature_url: signatureUrl.toString(),
+      root_authority_url: authorityUrl.toString(),
+      claims_manifest_url: optionalArtifactUrl(artifactBaseUrl, optionalRecord(linkedArtifacts.claims)),
+      evidence_manifest_url: optionalArtifactUrl(artifactBaseUrl, optionalRecord(linkedArtifacts.evidence)),
+      value_report_url: optionalArtifactUrl(artifactBaseUrl, optionalRecord(indexObject.value_continuity))
+    },
     organization: statement.organization,
     identity: {
       statement_hash: statementHash,
@@ -353,6 +417,66 @@ export async function verifyUrlTarget(
     recommended_next_steps: recommendedNextSteps(checks, valueContinuity.status)
   };
   return result;
+}
+
+function briefResult(result: AgentVerificationResult): AgentVerificationBriefResult {
+  const organization = asObject(result.organization, "organization");
+  const valueContinuity = optionalRecord(result.value_continuity);
+  const summary = optionalRecord(valueContinuity.summary);
+  const claimSupport = optionalRecord(valueContinuity.claim_support_summary);
+  const s2 = optionalRecord(valueContinuity.s2_summary);
+  const s3 = optionalRecord(valueContinuity.s3_summary);
+  const s4 = optionalRecord(valueContinuity.s4_summary);
+  const riskGaps = arrayStrings(claimSupport.top_risk_gaps);
+  const nextActions = arrayStrings(claimSupport.next_best_actions);
+  const manualChecks = numberValue(summary.MANUAL_CHECK_REQUIRED);
+  if (manualChecks > 0) {
+    riskGaps.push(`Evidence includes ${manualChecks} manual check(s).`);
+    nextActions.push("Complete or route the remaining manual evidence checks before relying on the claims.");
+  }
+  return {
+    type: "OrgAnchorAgentVerificationBriefResult",
+    version: "1.0",
+    target: result.target,
+    overall_status: result.overall_status,
+    identity_status: result.identity_status,
+    value_status: result.value_status,
+    conformance_status: result.conformance_status,
+    trust_decision: result.trust_decision,
+    decision_boundary: {
+      evidence_sufficiency: "EXTERNAL_POLICY_DECISION",
+      claim_truth: "NOT_PROVEN_BY_ORGANCHOR_STATUS"
+    },
+    organization: compactOrganization(organization),
+    evidence_health: {
+      claims: checkStatus(result.checks, "claims_manifest"),
+      evidence: checkStatus(result.checks, "evidence_manifest"),
+      value: checkStatus(result.checks, "value_continuity"),
+      total_claims: numberValue(summary.total_claims),
+      total_evidence_items: numberValue(summary.total_evidence_items),
+      stale_evidence_items: numberValue(summary.stale_evidence_items),
+      manual_checks: manualChecks,
+      active_layers: {
+        s2: numberValue(s2.effective_s2_count),
+        s3: numberValue(s3.effective_s3_count),
+        s4: numberValue(s4.effective_s4_count)
+      },
+      risk_gaps: uniqueFirst(riskGaps, 3),
+      next_best_actions: uniqueFirst(nextActions, 3)
+    },
+    policy_route: result.policy_route,
+    artifacts: result.artifacts,
+    access_guidance: {
+      machine_first: true,
+      human_html_required: false,
+      next_step: "Inspect only the claim-relevant JSON through artifacts.claims_manifest_url, artifacts.evidence_manifest_url, and artifacts.value_report_url; use the human verify page only for human review."
+    }
+  };
+}
+
+function optionalArtifactUrl(baseUrl: URL, reference: Record<string, JsonValue>): string | null {
+  const path = stringValue(reference.path);
+  return path ? resolveArtifactUrl(baseUrl, path).toString() : null;
 }
 
 function compactResult(result: AgentVerificationResult): AgentVerificationCompactResult {

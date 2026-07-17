@@ -33,7 +33,7 @@ outputs/commands.txt
 The important boundary is that the local index is only a discovery cache. A returned candidate still has to be verified at its own origin with:
 
 ```bash
-organchor verify url <origin> --compact
+organchor verify url <origin> --brief
 ```
 
 This is the core anti-monopoly path: any organization that publishes a valid OrgAnchor Beacon can be found and rechecked by independent agents, crawlers, buyers, auditors, or competing directories.

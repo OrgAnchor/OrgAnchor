@@ -47,7 +47,7 @@ export async function writeBeaconDiscoverySurfaces(options: BeaconDiscoverySurfa
       updated_at: options.generatedAt
     },
     agent_flow: {
-      first_pass: `organchor verify url ${origin} --compact`,
+      first_pass: `organchor verify url ${origin} --brief`,
       deep_verify: `organchor verify url ${origin}`,
       beacon_inspect: `organchor beacon inspect ${origin}`,
       doctor: `organchor doctor ${origin}`,

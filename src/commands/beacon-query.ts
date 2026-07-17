@@ -226,7 +226,7 @@ function candidateFromRecord(record: BeaconLocalIndexRecord, filters: BeaconQuer
     need_match: needMatch(record, filters),
     risk_gaps: riskGapsForRecord(record),
     verification_plan: verificationPlan(record),
-    next_step: `organchor verify url ${record.origin} --compact`
+    next_step: `organchor verify url ${record.origin} --brief`
   };
 }
 
@@ -282,7 +282,7 @@ function needMatch(record: BeaconLocalIndexRecord, filters: BeaconQueryFilters):
       status: priority === "REJECT" ? "REJECT_OR_RECHECK" : "NEEDS_IDENTITY_VERIFICATION",
       rationale,
       limitations,
-      next_best_action: `Run organchor verify url ${record.origin} --compact and require identity PASS before contact decisions.`
+      next_best_action: `Run organchor verify url ${record.origin} --brief and require identity PASS before contact decisions.`
     };
   }
   if (priority === "REJECT") {
@@ -359,7 +359,7 @@ function riskGapsForRecord(record: BeaconLocalIndexRecord): BeaconQueryCandidate
       code: "SIGNAL_ONLY",
       severity: "WARN",
       detail: "The origin has a discoverable signal, but strict identity verification has not passed in the index.",
-      next_action: `Run organchor verify url ${record.origin} --compact before treating it as an adopter.`
+      next_action: `Run organchor verify url ${record.origin} --brief before treating it as an adopter.`
     });
   }
   if (record.identity_status === "FAIL") {
@@ -374,7 +374,7 @@ function riskGapsForRecord(record: BeaconLocalIndexRecord): BeaconQueryCandidate
       code: "IDENTITY_NOT_VERIFIED",
       severity: "WARN",
       detail: "Strict identity verification is missing or incomplete in the indexed result.",
-      next_action: `Run organchor verify url ${record.origin} --compact.`
+      next_action: `Run organchor verify url ${record.origin} --brief.`
     });
   }
   if (record.value_status === "FAIL") {
@@ -412,7 +412,7 @@ function riskGapsForRecord(record: BeaconLocalIndexRecord): BeaconQueryCandidate
       code: "DIRECT_ORIGIN_VERIFICATION_REQUIRED",
       severity: "INFO",
       detail: "The local index has no obvious warning, but it is still only a cached observation.",
-      next_action: `Run organchor verify url ${record.origin} --compact before relying on this candidate.`
+      next_action: `Run organchor verify url ${record.origin} --brief before relying on this candidate.`
     });
   }
   return dedupeRisks(risks);
@@ -421,7 +421,7 @@ function riskGapsForRecord(record: BeaconLocalIndexRecord): BeaconQueryCandidate
 function verificationPlan(record: BeaconLocalIndexRecord): string[] {
   return [
     `Run organchor beacon inspect ${record.origin}.`,
-    `Run organchor verify url ${record.origin} --compact.`,
+    `Run organchor verify url ${record.origin} --brief.`,
     `If still relevant, run organchor verify url ${record.origin} for full checks.`,
     "Review risk_gaps and apply the requesting agent's own external policy."
   ];

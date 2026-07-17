@@ -98,8 +98,10 @@ The index should include:
     "primary_entrypoint": "/.well-known/organchor.json",
     "artifact_base_path": "/verify/",
     "command": "organchor verify url <organization-url>",
+    "brief_command": "organchor verify url <organization-url> --brief",
     "compact_command": "organchor verify url <organization-url> --compact",
     "result_type": "OrgAnchorAgentVerificationResult",
+    "brief_result_type": "OrgAnchorAgentVerificationBriefResult",
     "compact_result_type": "OrgAnchorAgentVerificationCompactResult",
     "trust_decision": "not_assigned_by_organchor"
   },
@@ -246,7 +248,7 @@ No candidate from beacon query is trusted until direct origin verification passe
 The next command for a selected candidate should usually be:
 
 ```bash
-organchor verify url <origin> --compact
+organchor verify url <origin> --brief
 ```
 
 ## Required Identity Checks
@@ -296,7 +298,9 @@ These checks do not prove product quality by themselves. They reduce the cost of
 
 ## Result Object
 
-`organchor verify url --compact` emits the preferred first-pass routing object:
+`organchor verify url --brief` emits the preferred first-pass routing object. It contains the verified status boundary, the highest-value gaps, active evidence-layer counts, and direct machine-artifact URLs without requiring the human HTML page.
+
+`organchor verify url --compact` remains available as the more detailed compatibility object:
 
 ```json
 {
@@ -518,6 +522,7 @@ The key point: OrgAnchor lowers discovery and verification cost, while the agent
 
 ```bash
 organchor verify url https://example.org
+organchor verify url https://example.org --brief
 organchor verify url https://example.org --compact
 ```
 

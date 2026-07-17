@@ -341,7 +341,7 @@ function candidateFromRecord(record: DirectoryRecord, filters: DirectoryFetchFil
     match_explanation: matchExplanation(record, filters),
     risk_gaps: riskGapsForRecord(record),
     verification_plan: verificationPlan(record),
-    next_step: `organchor verify url ${record.origin} --compact`
+    next_step: `organchor verify url ${record.origin} --brief`
   };
 }
 
@@ -447,7 +447,7 @@ function riskGapsForRecord(record: DirectoryRecord): DirectoryFetchCandidate["ri
       code: "DIRECT_ORIGIN_VERIFICATION_REQUIRED",
       severity: "INFO",
       detail: "Directory summary has no obvious warning, but it is still only a candidate index.",
-      next_action: `Run organchor verify url ${record.origin} --compact before relying on this record.`
+      next_action: `Run organchor verify url ${record.origin} --brief before relying on this record.`
     });
   }
   return risks;
@@ -456,7 +456,7 @@ function riskGapsForRecord(record: DirectoryRecord): DirectoryFetchCandidate["ri
 function verificationPlan(record: DirectoryRecord): string[] {
   return [
     `Run organchor beacon inspect ${record.origin}.`,
-    `Run organchor verify url ${record.origin} --compact.`,
+    `Run organchor verify url ${record.origin} --brief.`,
     `If still relevant, run organchor verify url ${record.origin} for full checks.`,
     "Review risk_gaps and apply the requesting agent's own external policy."
   ];

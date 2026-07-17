@@ -121,9 +121,11 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(index.agent_verification.primary_entrypoint, "/.well-known/organchor.json");
     assert.equal(index.agent_verification.artifact_base_path, "/verify/");
     assert.equal(index.agent_verification.result_type, "OrgAnchorAgentVerificationResult");
+    assert.equal(index.agent_verification.brief_command, "organchor verify url <organization-url> --brief");
+    assert.equal(index.agent_verification.brief_result_type, "OrgAnchorAgentVerificationBriefResult");
     assert.equal(index.agent_verification.compact_command, "organchor verify url <organization-url> --compact");
     assert.equal(index.agent_verification.compact_result_type, "OrgAnchorAgentVerificationCompactResult");
-    assert.equal(index.agent_verification.summary.preferred_first_pass, "compact");
+    assert.equal(index.agent_verification.summary.preferred_first_pass, "brief");
     assert.equal(index.agent_verification.summary.optional_history_checks.includes("lockfile_signature"), true);
     assert.equal(
       index.agent_verification.summary.required_identity_checks.includes("statement_signature_threshold"),
@@ -177,7 +179,7 @@ test("page generate creates static verify page and machine-readable artifacts", 
     assert.equal(index.directory_discovery.snapshot.record_count, 1);
     assert.equal(index.directory_discovery.policy.path, "/directory/directory-policy.json");
     assert.match(index.directory_discovery.policy.hash, /^sha256:[0-9a-f]{64}$/);
-    assert.equal(index.directory_discovery.agent_flow.command, "organchor verify url <origin> --compact");
+    assert.equal(index.directory_discovery.agent_flow.command, "organchor verify url <origin> --brief");
     assert.equal(
       index.visible_proof.checks.some((check: { label: string; status: string }) =>
         check.label === "Signature threshold" && check.status === "PASS"

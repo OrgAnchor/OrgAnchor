@@ -189,13 +189,18 @@ try {
   assertEqual(index.agent_verification?.contract_version, "1.0", "agent_verification.contract_version");
   assertEqual(index.agent_verification?.artifact_base_path, "/verify/", "agent_verification.artifact_base_path");
   assertEqual(
+    index.agent_verification?.brief_result_type,
+    "OrgAnchorAgentVerificationBriefResult",
+    "agent_verification.brief_result_type"
+  );
+  assertEqual(
     index.agent_verification?.compact_result_type,
     "OrgAnchorAgentVerificationCompactResult",
     "agent_verification.compact_result_type"
   );
   assertEqual(
     index.agent_verification?.summary?.preferred_first_pass,
-    "compact",
+    "brief",
     "agent_verification.summary.preferred_first_pass"
   );
   assertEqual(index.root_continuity?.status, "CURRENT_ROOT_ONLY", "root_continuity.status");

@@ -514,7 +514,7 @@ test("directory inspect discovers and verifies an origin-published Directory", a
       assert.equal(fetchReport.candidates[0].match_explanation.summary.includes("not a trust root"), true);
       assert.equal(fetchReport.candidates[0].risk_gaps.some((risk: { code: string }) => risk.code === "MANUAL_CHECKS_PRESENT"), true);
       assert.equal(fetchReport.candidates[0].verification_plan[0], `Run organchor beacon inspect ${origin}.`);
-      assert.equal(fetchReport.candidates[0].next_step, `organchor verify url ${origin} --compact`);
+      assert.equal(fetchReport.candidates[0].next_step, `organchor verify url ${origin} --brief`);
       assert.equal(existsSync(join(workspace, "downloaded-directory-snapshot.json")), true);
 
       const filteredFetch = await runAsync([

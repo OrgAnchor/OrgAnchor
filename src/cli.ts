@@ -298,6 +298,7 @@ Usage:
   organchor statement verify --authority root-authority.json --expected-authority-hash sha256:... --in statements/official-endpoints.json --sig statements/official-endpoints.json.sig
   organchor value audit --claims claims/product-claims.json --evidence evidence/evidence-manifest.json --check-files
   organchor verify url https://example.org
+  organchor verify url https://example.org --brief
   organchor verify url https://example.org --compact
 `);
 }

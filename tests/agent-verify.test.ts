@@ -56,6 +56,24 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(hasCheck(result, "evidence_manifest", "PASS"), true);
       assert.equal(hasCheck(result, "value_continuity", "PASS"), true);
 
+      const briefVerify = await runAsync(workspace, ["verify", "url", origin, "--brief"]);
+      const brief = JSON.parse(briefVerify.stdout);
+      assert.equal(brief.type, "OrgAnchorAgentVerificationBriefResult");
+      assert.equal(brief.identity_status, "PASS");
+      assert.equal(brief.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
+      assert.equal(brief.decision_boundary.evidence_sufficiency, "EXTERNAL_POLICY_DECISION");
+      assert.equal(brief.decision_boundary.claim_truth, "NOT_PROVEN_BY_ORGANCHOR_STATUS");
+      assert.equal(brief.evidence_health.total_claims, 1);
+      assert.equal(brief.evidence_health.total_evidence_items, 1);
+      assert.equal(brief.evidence_health.active_layers.s2, 0);
+      assert.equal(brief.artifacts.machine_index_url, `${origin}/verify/organchor.json`);
+      assert.equal(brief.artifacts.claims_manifest_url, `${origin}/verify/claims/product-claims.json`);
+      assert.equal(brief.artifacts.evidence_manifest_url, `${origin}/verify/evidence/evidence-manifest.json`);
+      assert.equal(brief.artifacts.value_report_url, `${origin}/verify/reports/value-continuity-report.json`);
+      assert.equal(brief.access_guidance.machine_first, true);
+      assert.equal(brief.access_guidance.human_html_required, false);
+      assert.match(brief.access_guidance.next_step, /claim-relevant JSON/);
+
       const compactVerify = await runAsync(workspace, ["verify", "url", origin, "--compact"]);
       const compact = JSON.parse(compactVerify.stdout);
       assert.equal(compact.type, "OrgAnchorAgentVerificationCompactResult");
@@ -100,6 +118,7 @@ test("verify url discovers well-known OrgAnchor index and verifies agent-readabl
       assert.equal(compact.policy_route.policy_owner, "EXTERNAL_AGENT");
       assert.equal(compact.policy_route.trust_decision, "NOT_ASSIGNED_BY_ORGANCHOR");
       assert.equal(compact.failures.length, 0);
+      assert.ok(briefVerify.stdout.length < compactVerify.stdout.length * 0.6);
     });
   } finally {
     rmSync(workspace, { recursive: true, force: true });

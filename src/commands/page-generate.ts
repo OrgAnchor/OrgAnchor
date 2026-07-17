@@ -213,8 +213,10 @@ export async function pageGenerateCommand(options: Record<string, string | boole
       verify_base_path: artifactBasePath,
       artifact_base_path: artifactBasePath,
       command: "organchor verify url <organization-url>",
+      brief_command: "organchor verify url <organization-url> --brief",
       compact_command: "organchor verify url <organization-url> --compact",
       result_type: "OrgAnchorAgentVerificationResult",
+      brief_result_type: "OrgAnchorAgentVerificationBriefResult",
       compact_result_type: "OrgAnchorAgentVerificationCompactResult",
       trust_decision: "not_assigned_by_organchor",
       summary: {
@@ -241,7 +243,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
           "carrier_receipts",
           "external_anchors"
         ],
-        preferred_first_pass: "compact"
+        preferred_first_pass: "brief"
       }
     },
     visible_proof: {
@@ -879,7 +881,7 @@ async function includeDirectoryDiscovery(options: {
       use: "candidate_discovery_only",
       first_pass: "Fetch the Directory snapshot to find candidate organizations.",
       required_next_step: "Verify selected organizations directly at their own origin before relying on any Directory record.",
-      command: "organchor verify url <origin> --compact"
+      command: "organchor verify url <origin> --brief"
     }
   };
 }

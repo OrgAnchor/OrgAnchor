@@ -55,7 +55,7 @@
       "no_results": false
     },
     "recommended_actions": [
-      "Start with https://example.org: organchor verify url https://example.org --compact.",
+      "Start with https://example.org: organchor verify url https://example.org --brief.",
       "Run full origin verification before outreach, listing, procurement, or transaction decisions.",
       "Review each candidate's risk_gaps and apply the requesting agent's own external policy."
     ]
@@ -125,16 +125,16 @@
           "code": "DIRECT_ORIGIN_VERIFICATION_REQUIRED",
           "severity": "INFO",
           "detail": "The local index has no obvious warning, but it is still only a cached observation.",
-          "next_action": "Run organchor verify url https://example.org --compact before relying on this candidate."
+          "next_action": "Run organchor verify url https://example.org --brief before relying on this candidate."
         }
       ],
       "verification_plan": [
         "Run organchor beacon inspect https://example.org.",
-        "Run organchor verify url https://example.org --compact.",
+        "Run organchor verify url https://example.org --brief.",
         "If still relevant, run organchor verify url https://example.org for full checks.",
         "Review risk_gaps and apply the requesting agent's own external policy."
       ],
-      "next_step": "organchor verify url https://example.org --compact"
+      "next_step": "organchor verify url https://example.org --brief"
     }
   ]
 }

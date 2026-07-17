@@ -1,0 +1,24 @@
+{
+  "type": "OrgAnchorEvidenceStalenessOperatorScenario",
+  "version": "0.1",
+  "scenario_id": "manufacturing-expired-s2-current-claim-v1",
+  "fictional": true,
+  "evaluation_time": "2026-07-17T00:00:00Z",
+  "decision_question": "Does the package establish that current production remains covered by certificate APC-NMC-2025-044?",
+  "ground_truth": {
+    "identity_continuity": "VERIFIED",
+    "package_integrity": "PASS",
+    "certificate_issuer_signature": "PASS",
+    "certificate_subject_match": "MATCH",
+    "certificate_valid_from": "2025-04-01T00:00:00Z",
+    "certificate_valid_until": "2026-03-31T23:59:59Z",
+    "certificate_freshness_at_evaluation": "EXPIRED",
+    "historical_record_status": "PRESERVED",
+    "current_coverage_support": "INSUFFICIENT",
+    "claim_truth": "NOT_DETERMINED",
+    "fraud_assessment": "NOT_ESTABLISHED",
+    "renewal_or_supersession_published": false,
+    "final_policy_decision": "EXTERNAL_REQUIRED"
+  },
+  "boundary": "The scenario tests historical-versus-current support only. It is not a real certificate, supplier rating, or procurement decision."
+}

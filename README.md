@@ -36,6 +36,7 @@ Best public starting points:
 - `PUBLIC_RELEASE_CHECKLIST.md`: practical release gate for public assets, local checks, owner approvals, and hold criteria.
 - `PUBLIC_SELF_VERIFICATION_2026-07-15.md`: current Alpha.4 public release-linkage, endpoint, clean-install, Beacon, CLI, and disclosed-limit verification result; a Chinese translation is provided alongside it.
 - `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent can keep valid identity and package verification separate from insufficient product-claim evidence.
+- `EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent preserves expired evidence as history without treating it as current support.
 - `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: historical pre-Alpha.4 release-preparation check for local gates, capability audit, public self-pilot, and public root-signed lockfile verification.
 - `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Fireseed Wave 1.
 - `FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
@@ -219,6 +220,15 @@ npm run evaluation:evidence -- exercise --package ./.local/evidence-interpretati
 ```
 
 The output separates the safe-to-serve public package, the fresh-context Agent task, and operator-only ground truth. Synthetic private keys are removed after build. Use the scorer only for this scenario; it is not a general model benchmark or supplier trust rating. See `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md` for the isolation and interpretation rules.
+
+To run the fixed-time Wave 2 scenario that separates an expired certificate's historical value from current claim support:
+
+```bash
+npm run evaluation:evidence -- build-stale --out ./.local/evidence-staleness-run
+npm run evaluation:evidence -- exercise-stale --package ./.local/evidence-staleness-run
+```
+
+See `EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md` for the decision question, hard failures, and scorer boundary.
 
 ## Visible Acceptance Demo
 

@@ -12,6 +12,11 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 - New evaluation submissions use structured `target_gaps` arrays so one proportionate action can address multiple uncertainty gaps without free-text category guessing.
 - The deterministic scorer remains backward-compatible with preserved Wave 1 `target_gap` submissions and keeps their archived scores reproducible.
 
+### Added
+
+- A runnable fixed-time Wave 2 scenario for testing whether fresh-context Agents preserve expired S2 evidence as verifiable history without treating it as current claim support.
+- Scenario-specific build, verification, origin exercise, deterministic scoring, unsafe-result hard failures, and release regression coverage for evidence staleness.
+
 ## 0.1.0-alpha.4 - 2026-07-11
 
 Fireseed Alpha release-convergence candidate. This release aligns the installable CLI with the current source, public self-pilot contract, evidence baseline, and protocol-evolution policy before wider external review.

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "manufacturing-expired-s2-current-claim-v1",
+  "evaluation_time": "2026-07-17T00:00:00Z",
+  "identity_continuity": "VERIFIED",
+  "package_integrity": "PASS",
+  "package_health_status": "EXPIRED_EVIDENCE",
+  "historical_record_status": "PRESERVED",
+  "claim_support": "INSUFFICIENT",
+  "claim_truth": "NOT_DETERMINED",
+  "fraud_assessment": "NOT_ESTABLISHED",
+  "evidence_assessment": [
+    {
+      "evidence_id": "evidence-s2-expired-conformity",
+      "s_class": "S2",
+      "relevance": "DIRECT",
+      "scope_match": "MISMATCH",
+      "freshness": "EXPIRED",
+      "historical_support": "SUPPORTED_DURING_VALIDITY",
+      "current_support": "NOT_ESTABLISHED",
+      "limitations": [
+        "The issuer-signed certificate covered the exact product model only during its declared validity window.",
+        "The certificate expired before the fixed evaluation time.",
+        "No renewal, superseding certificate, or current issuer record is published in the package."
+      ]
+    }
+  ],
+  "missing_support": [
+    "A current issuer record, renewal, or superseding certificate covering the product model",
+    "Current product-scope linkage if the certificate identifier or production scope changed"
+  ],
+  "risk_gaps": [
+    "The package links an expired certificate to a current-coverage claim",
+    "Issuer status after the certificate validity window is not published"
+  ],
+  "next_checks": [
+    {
+      "priority": 1,
+      "target_gaps": ["CURRENT_ISSUER_STATUS", "SUPERSESSION_OR_WITHDRAWAL"],
+      "cost_level": "LOW",
+      "action": "Check the issuer's public record for the certificate identifier, current status, renewal, supersession, or withdrawal.",
+      "reason": "A current issuer record is the lowest-cost way to determine whether coverage continued after the published expiry date."
+    },
+    {
+      "priority": 2,
+      "target_gaps": ["CURRENT_CERTIFICATE_OR_RENEWAL"],
+      "cost_level": "MODERATE",
+      "action": "Request a current issuer-signed certificate or renewal record with a validity window covering the evaluation time.",
+      "reason": "The historical certificate cannot establish current coverage by itself."
+    },
+    {
+      "priority": 3,
+      "target_gaps": ["CURRENT_PRODUCT_SCOPE_LINKAGE"],
+      "cost_level": "MODERATE",
+      "action": "Confirm that any current record covers model NMC-NA4908 and the production scope relied on by the buyer.",
+      "reason": "A current certificate still needs subject and scope linkage to support this claim."
+    }
+  ],
+  "artifact_refs": [
+    "claims/product-claims.json#claim-current-production-conformity",
+    "evidence/evidence-manifest.json#evidence-s2-expired-conformity",
+    "evidence-artifacts/s2-expired-conformity-certificate.json",
+    "reports/value-continuity-report.json"
+  ],
+  "final_policy_decision": "EXTERNAL_REQUIRED",
+  "summary": "The organization and signed package verify, and the certificate remains a valid historical record. Its declared validity window ended before the evaluation time, so it does not sufficiently establish current production coverage. Current truth remains undetermined and fraud is not established."
+}

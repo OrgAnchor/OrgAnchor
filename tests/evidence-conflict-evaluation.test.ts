@@ -46,6 +46,8 @@ test("conflicting-current scenario builds and verifies both signed evidence dire
     assert.equal(verification.required_evidence_present, true);
     assert.equal(verification.conflict_declared, true);
     assert.equal(verification.effective_s3_detected, true);
+    assert.equal(verification.s3_recalculated_outside_tolerance, 4);
+    assert.equal(verification.s3_sample_arithmetic_matches, true);
     assert.equal(verification.public_private_key_count, 0);
     assert.equal(findPrivateKey(join(workspace, "public")), false);
     assert.equal(existsSync(join(workspace, "public", "verify", "issuers", "atlas", "root-authority.json")), true);

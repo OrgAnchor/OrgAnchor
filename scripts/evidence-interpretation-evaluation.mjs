@@ -472,7 +472,7 @@ async function createConflictingCurrentEvidence(workspace) {
       nominal: 49.08,
       tolerance_plus_minus: 0.01
     },
-    measurements_mm: [49.079, 49.083, 49.076, 49.094, 49.081, 49.096, 49.078, 49.071, 49.082, 49.084, 49.067, 49.08],
+    measurements_mm: [49.079, 49.083, 49.076, 49.094, 49.081, 49.096, 49.078, 49.069, 49.082, 49.084, 49.067, 49.08],
     result: {
       sample_size: 12,
       outside_declared_tolerance: 4,
@@ -1650,6 +1650,12 @@ async function verifyConflictPackage(packagePath) {
     readJson(join(verifyDir, "issuers", "meridian", "root-authority.json"))
   );
   const publicPrivateKeys = collectFiles(publicRoot).filter((path) => path.endsWith(".private.json"));
+  const s3Report = readJson(join(verifyDir, "evidence-artifacts", "s3-random-market-sample-report.json"));
+  const lowerBound = s3Report.claimed_specification.nominal - s3Report.claimed_specification.tolerance_plus_minus;
+  const upperBound = s3Report.claimed_specification.nominal + s3Report.claimed_specification.tolerance_plus_minus;
+  const recalculatedOutsideTolerance = s3Report.measurements_mm.filter((value) => value < lowerBound || value > upperBound).length;
+  const sampleArithmeticMatches = s3Report.measurements_mm.length === s3Report.result.sample_size
+    && recalculatedOutsideTolerance === s3Report.result.outside_declared_tolerance;
   const evidenceManifest = readJson(join(verifyDir, "evidence", "evidence-manifest.json"));
   const claimManifest = readJson(join(verifyDir, "claims", "product-claims.json"));
   const valueReport = readJson(join(verifyDir, "reports", "value-continuity-report.json"));
@@ -1674,6 +1680,7 @@ async function verifyConflictPackage(packagePath) {
     && Boolean(claim)
     && conflictDeclared
     && effectiveS3
+    && sampleArithmeticMatches
     ? "PASS"
     : "FAIL";
 
@@ -1691,6 +1698,8 @@ async function verifyConflictPackage(packagePath) {
     required_evidence_present: requiredEvidencePresent,
     conflict_declared: conflictDeclared,
     effective_s3_detected: effectiveS3,
+    s3_recalculated_outside_tolerance: recalculatedOutsideTolerance,
+    s3_sample_arithmetic_matches: sampleArithmeticMatches,
     public_private_key_count: publicPrivateKeys.length,
     trust_decision: "NOT_ASSIGNED_BY_ORGANCHOR",
     claim_truth: "NOT_DETERMINED",

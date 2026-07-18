@@ -94,18 +94,18 @@ MVP launch candidate for AI-agent-facing verification, Beacon-first discovery, o
 - Arweave manual packages can now include the public verify index and HTML page with `--verify-index` and `--verify-page`.
 - Release integrity protocol documenting release-state alignment, carrier receipt self-reference limits, and release blockers.
 - Project purpose, adoption principles, and showcase policy documents clarify OrgAnchor's value stance and misuse boundaries.
-- `PROJECT_NORTH_STAR.md` defines the project alignment gate for keeping identity, evidence, AI-agent access, and discovery work focused on lowering real transaction cost without making OrgAnchor a trust authority.
+- `docs/project/PROJECT_NORTH_STAR.md` defines the project alignment gate for keeping identity, evidence, AI-agent access, and discovery work focused on lowering real transaction cost without making OrgAnchor a trust authority.
 - Value continuity model and `organchor value audit` reports for claim support levels, evidence quality, stale evidence, and unsupported claims.
 - `/verify` pages and `organchor.json` can now publish value continuity report summaries.
 - Agent verification contract, AI agent integration guide, compact verification result output, and compatibility iteration plan.
 - `DOCS_INDEX.md` as the public documentation map for current guidance, design records, adoption guides, AI agent documents, examples, and historical self-pilot notes.
 - `organchor verify url` now emits `policy_route` so external AI agents can route verified results to stop, request evidence, review warnings, or apply their own policy without treating `PASS` as a trust badge.
-- `DISCOVERY_STRATEGY.md` records why OrgAnchor needs an open discovery layer, not only post-discovery verification, to reduce real transaction cost between organizations and AI agents.
-- `ORGANCHOR_BEACON.md` records the Beacon-first discovery model so every adopter can emit origin-owned signals and be found without depending on official Directory inclusion.
-- `ORGANCHOR_BEACON.md` now records the Beacon discovery efficiency, cacheability, abuse-resistance, polite-crawler, and audit checklist requirements for future implementation checks.
-- `ORGANCHOR_BEACON.md` now defines conformance states that distinguish claimed OrgAnchor signals from strictly verified full compatibility.
-- `DIRECTORY_MODEL.md` records the proposed post-v1 open discovery index model for helping people and AI agents find OrgAnchor-enabled organizations without turning discovery into a monopoly trust platform.
-- `DIRECTORY_SNAPSHOT_SPEC.md` and `examples/directory/directory-snapshot.json` define the first static discovery snapshot shape for AI-agent candidate discovery before direct origin verification.
+- `docs/protocol/DISCOVERY_STRATEGY.md` records why OrgAnchor needs an open discovery layer, not only post-discovery verification, to reduce real transaction cost between organizations and AI agents.
+- `docs/protocol/ORGANCHOR_BEACON.md` records the Beacon-first discovery model so every adopter can emit origin-owned signals and be found without depending on official Directory inclusion.
+- `docs/protocol/ORGANCHOR_BEACON.md` now records the Beacon discovery efficiency, cacheability, abuse-resistance, polite-crawler, and audit checklist requirements for future implementation checks.
+- `docs/protocol/ORGANCHOR_BEACON.md` now defines conformance states that distinguish claimed OrgAnchor signals from strictly verified full compatibility.
+- `docs/protocol/DIRECTORY_MODEL.md` records the proposed post-v1 open discovery index model for helping people and AI agents find OrgAnchor-enabled organizations without turning discovery into a monopoly trust platform.
+- `docs/protocol/DIRECTORY_SNAPSHOT_SPEC.md` and `examples/directory/directory-snapshot.json` define the first static discovery snapshot shape for AI-agent candidate discovery before direct origin verification.
 - `organchor directory build` and `organchor directory verify` implement the first static Directory snapshot MVP without making the Directory a trust root.
 - `organchor directory build --verify-origins` can now fetch listed origin packages, reuse `organchor verify url` checks, require identity verification to pass, and write crawler-derived Directory records.
 - `/verify/organchor.json` can now expose optional `directory_discovery` pointers so AI agents can discover Directory snapshots without treating them as trust roots.
@@ -121,7 +121,7 @@ MVP launch candidate for AI-agent-facing verification, Beacon-first discovery, o
 - `organchor beacon inspect` now includes first-pass HTTP publishing hints for Beacon content type, response size, and cache metadata.
 - `organchor directory add` can maintain static Directory candidate source files without claiming that added candidates are verified.
 - Generated Directory policy files now spell out inclusion, exclusion, ranking, payment, stale-record, and mirroring boundaries.
-- `IMPLEMENTATION_STATUS.md` records the current implemented surface, remaining gaps, non-goals, and verification commands for alignment checks.
+- `docs/project/IMPLEMENTATION_STATUS.md` records the current implemented surface, remaining gaps, non-goals, and verification commands for alignment checks.
 - `organchor directory build --beacon-index` can export a local Beacon index into a static Directory snapshot.
 - `organchor directory build` now writes a machine-readable `directory-policy.json` by default.
 - `organchor directory compare` can compare independent Directory snapshots and surface conflicting origin summaries without making trust decisions.
@@ -133,7 +133,7 @@ MVP launch candidate for AI-agent-facing verification, Beacon-first discovery, o
 
 - This is still an alpha release, not stable v1.
 - OrgAnchor remains a verification and evidence-continuity toolchain, not a certification authority, marketplace, ranking engine, or final trust oracle.
-- The next product milestone is an external low-risk pilot using `EXTERNAL_PILOT_RUNBOOK.md`.
+- The next product milestone is an external low-risk pilot using `docs/guides/EXTERNAL_PILOT_RUNBOOK.md`.
 
 ### Verification
 

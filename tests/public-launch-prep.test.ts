@@ -3,14 +3,21 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 const sourceRepoPublicDocs = [
-  "PUBLIC_EXPLAINER.md",
-  "PUBLIC_RELEASE_CHECKLIST.md",
-  "FIRESEED_OUTREACH_KIT.md",
-  "FIRESEED_VALIDATION_TRACKING_ISSUE.md"
+  "docs/outreach/PUBLIC_EXPLAINER.md",
+  "docs/operations/PUBLIC_RELEASE_CHECKLIST.md",
+  "docs/outreach/FIRESEED_OUTREACH_KIT.md",
+  "docs/outreach/FIRESEED_VALIDATION_TRACKING_ISSUE.md"
+];
+
+const readmePublicDocs = [
+  "docs/outreach/PUBLIC_EXPLAINER.md",
+  "docs/operations/PUBLIC_RELEASE_CHECKLIST.md",
+  "docs/outreach/FIRESEED_OUTREACH_KIT.md"
 ];
 
 const offRepoPublicationMaterials = [
@@ -38,18 +45,20 @@ test("README exposes public source-repository entry points without hiding alpha 
   assert.match(readme, /npm run visible:demo/);
   assert.match(readme, new RegExp(`npm install -g ${escapeRegExp(packageJson.name)}@alpha`));
 
-  for (const doc of sourceRepoPublicDocs) {
+  for (const doc of readmePublicDocs) {
     assert.match(readme, new RegExp(escapeRegExp(doc)), `${doc} should be linked from README`);
   }
+  assert.match(readme, /DOCS_INDEX\.md/, "README should point to the complete two-level documentation map");
 });
 
 test("source-repository public docs are indexed and packaged", () => {
-  const docsIndex = readText("DOCS_INDEX.md");
+  const docsIndex = readDocumentationMap(repoRoot);
   const packageJson = JSON.parse(readText("package.json")) as { files?: string[] };
 
   for (const doc of sourceRepoPublicDocs) {
-    assert.match(docsIndex, new RegExp(escapeRegExp(doc)), `${doc} should be listed in DOCS_INDEX.md`);
-    assert.equal(packageJson.files?.includes(doc), true, `${doc} should be included in package.json files`);
+    const fileName = doc.split("/").at(-1) ?? doc;
+    assert.match(docsIndex, new RegExp(escapeRegExp(fileName)), `${doc} should be present in the two-level documentation map`);
+    assert.equal(packageIncludes(packageJson.files, doc), true, `${doc} should be included in the npm package`);
     assert.equal(existsSync(join(repoRoot, doc)), true, `${doc} should exist in the source repository`);
   }
 });
@@ -63,24 +72,24 @@ test("publication production materials stay outside the source repository and np
     assert.equal(existsSync(join(repoRoot, doc)), false, `${doc} should not exist in the source repository`);
     assert.doesNotMatch(readme, new RegExp(escapeRegExp(doc)), `${doc} should not be linked from README`);
     assert.doesNotMatch(docsIndex, new RegExp(escapeRegExp(doc)), `${doc} should not be listed in DOCS_INDEX.md`);
-    assert.equal(packageJson.files?.includes(doc), false, `${doc} should not be included in package.json files`);
+    assert.equal(packageIncludes(packageJson.files, doc), false, `${doc} should not be included in the npm package`);
   }
 
   assert.equal(existsSync(join(repoRoot, "public-assets", "video-90s")), false);
   assert.equal(existsSync(join(repoRoot, "scripts", "render-90s-video.mjs")), false);
   assert.equal(existsSync(join(repoRoot, "scripts", "synthesize-90s-voice.ps1")), false);
-  assert.equal(packageJson.files?.includes("public-assets/"), false);
+  assert.equal(packageIncludes(packageJson.files, "public-assets/"), false);
 });
 
 test("design rationale is public, packaged, and aligned with the core loop", () => {
   const readme = readText("README.md");
-  const docsIndex = readText("DOCS_INDEX.md");
+  const docsIndex = readDocumentationMap(repoRoot);
   const packageJson = JSON.parse(readText("package.json")) as { files?: string[] };
-  const rationale = readText("DESIGN_RATIONALE.md");
+  const rationale = readText("docs/project/DESIGN_RATIONALE.md");
 
   assert.match(readme, /DESIGN_RATIONALE\.md/);
   assert.match(docsIndex, /DESIGN_RATIONALE\.md/);
-  assert.equal(packageJson.files?.includes("DESIGN_RATIONALE.md"), true);
+  assert.equal(packageIncludes(packageJson.files, "docs/project/DESIGN_RATIONALE.md"), true);
 
   for (const phrase of [
     "core goal -> required properties -> design mechanisms -> expected effects -> limits",
@@ -112,7 +121,7 @@ test("source-repository public docs preserve the Fireseed boundary", () => {
 });
 
 test("public explainer exposes commercial fit without turning OrgAnchor into a marketplace", () => {
-  const explainer = readText("PUBLIC_EXPLAINER.md");
+  const explainer = readText("docs/outreach/PUBLIC_EXPLAINER.md");
 
   for (const phrase of [
     "Commercial Fit Without Becoming A Marketplace",
@@ -127,7 +136,7 @@ test("public explainer exposes commercial fit without turning OrgAnchor into a m
 });
 
 test("public release checklist defines owner gates and hold criteria", () => {
-  const checklist = readText("PUBLIC_RELEASE_CHECKLIST.md");
+  const checklist = readText("docs/operations/PUBLIC_RELEASE_CHECKLIST.md");
 
   for (const phrase of [
     "Local Verification Gate",

@@ -9,6 +9,7 @@ import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { verifyExternalEvidenceSignatures } from "../src/core/external-evidence-signatures.ts";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const exampleDir = join(repoRoot, "examples", "evidence-interpretation-conflicting-current");
@@ -16,14 +17,14 @@ const evaluationScript = join(repoRoot, "scripts", "evidence-interpretation-eval
 
 test("conflicting-current evaluation is package-facing, fixed-time, and indexed", () => {
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
-  const docsIndex = readFileSync(join(repoRoot, "DOCS_INDEX.md"), "utf8");
-  const evaluation = readFileSync(join(repoRoot, "EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md"), "utf8");
+  const docsIndex = readDocumentationMap(repoRoot);
+  const evaluation = readFileSync(join(repoRoot, "docs/evaluations/EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md"), "utf8");
   const scenario = JSON.parse(
     readFileSync(join(exampleDir, "manufacturing-conflicting-current-evidence.operator.json"), "utf8")
   );
   const task = readFileSync(join(exampleDir, "agent-task.md"), "utf8");
 
-  assert.equal(packageJson.files?.includes("EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md"), true);
+  assert.equal(packageIncludes(packageJson.files, "docs/evaluations/EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md"), true);
   assert.match(docsIndex, /EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION\.md/);
   assert.equal(scenario.fictional, true);
   assert.equal(scenario.evaluation_time, "2026-07-17T00:00:00Z");

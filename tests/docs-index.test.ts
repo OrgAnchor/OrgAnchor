@@ -3,71 +3,87 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("documentation index is discoverable from README and package metadata", () => {
   const readme = readFileSync(join(repoRoot, "README.md"), "utf8");
+  const docsMap = readDocumentationMap(repoRoot);
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8")) as { files?: string[] };
 
   assert.match(readme, /PROJECT_NORTH_STAR\.md/);
-  assert.match(readme, /AI_OPERATING_MODEL\.md/);
   assert.match(readme, /DOCS_INDEX\.md/);
-  assert.match(readme, /FIRESEED_ALPHA_PLAN\.md/);
-  assert.match(readme, /FIRESEED_LAUNCH_DECISION_2026-06-01\.md/);
-  assert.match(readme, /FIRESEED_READINESS_GATE\.md/);
   assert.match(readme, /CONTRIBUTING\.md/);
-  assert.match(readme, /CALL_FOR_FIRESEED_REVIEW\.md/);
-  assert.match(readme, /DISCOVERY_STRATEGY\.md/);
-  assert.match(readme, /ORGANCHOR_BEACON\.md/);
-  assert.match(readme, /DIRECTORY_MODEL\.md/);
-  assert.match(readme, /DIRECTORY_SNAPSHOT_SPEC\.md/);
-  assert.match(readme, /Operator-facing adoption and verification documents/);
-  assert.ok(packageJson.files?.includes("PROJECT_NORTH_STAR.md"), "package.json files must include PROJECT_NORTH_STAR.md");
-  assert.ok(packageJson.files?.includes("AI_OPERATING_MODEL.md"), "package.json files must include AI_OPERATING_MODEL.md");
-  assert.ok(packageJson.files?.includes("DOCS_INDEX.md"), "package.json files must include DOCS_INDEX.md");
-  assert.ok(packageJson.files?.includes("FIRESEED_ALPHA_PLAN.md"), "package.json files must include FIRESEED_ALPHA_PLAN.md");
-  assert.ok(
-    packageJson.files?.includes("FIRESEED_LAUNCH_DECISION_2026-06-01.md"),
-    "package.json files must include FIRESEED_LAUNCH_DECISION_2026-06-01.md"
+  assert.match(readme, /docs\/history\//);
+
+  for (const doc of [
+    "AI_OPERATING_MODEL.md",
+    "FIRESEED_ALPHA_PLAN.md",
+    "FIRESEED_LAUNCH_DECISION_2026-06-01.md",
+    "FIRESEED_READINESS_GATE.md",
+    "CALL_FOR_FIRESEED_REVIEW.md",
+    "DISCOVERY_STRATEGY.md",
+    "ORGANCHOR_BEACON.md",
+    "DIRECTORY_MODEL.md",
+    "DIRECTORY_SNAPSHOT_SPEC.md"
+  ]) {
+    assert.match(docsMap, new RegExp(escapeRegExp(doc)), `${doc} should be reachable through the two-level map`);
+  }
+  for (const doc of [
+    "docs/project/PROJECT_NORTH_STAR.md",
+    "docs/project/AI_OPERATING_MODEL.md",
+    "DOCS_INDEX.md",
+    "docs/operations/FIRESEED_ALPHA_PLAN.md",
+    "docs/operations/FIRESEED_READINESS_GATE.md",
+    "CONTRIBUTING.md",
+    "docs/outreach/CALL_FOR_FIRESEED_REVIEW.md",
+    "docs/protocol/DISCOVERY_STRATEGY.md",
+    "docs/protocol/ORGANCHOR_BEACON.md",
+    "docs/protocol/DIRECTORY_MODEL.md",
+    "docs/protocol/DIRECTORY_SNAPSHOT_SPEC.md"
+  ]) {
+    assert.ok(packageIncludes(packageJson.files, doc), `${doc} must be included in the npm package`);
+  }
+
+  assert.equal(
+    packageIncludes(packageJson.files, "docs/history/FIRESEED_LAUNCH_DECISION_2026-06-01.md"),
+    false,
+    "historical records must stay in the repository but out of the npm package"
   );
-  assert.ok(
-    packageJson.files?.includes("FIRESEED_READINESS_GATE.md"),
-    "package.json files must include FIRESEED_READINESS_GATE.md"
-  );
-  assert.ok(packageJson.files?.includes("CONTRIBUTING.md"), "package.json files must include CONTRIBUTING.md");
-  assert.ok(
-    packageJson.files?.includes("CALL_FOR_FIRESEED_REVIEW.md"),
-    "package.json files must include CALL_FOR_FIRESEED_REVIEW.md"
-  );
-  assert.ok(packageJson.files?.includes("DISCOVERY_STRATEGY.md"), "package.json files must include DISCOVERY_STRATEGY.md");
-  assert.ok(packageJson.files?.includes("ORGANCHOR_BEACON.md"), "package.json files must include ORGANCHOR_BEACON.md");
-  assert.ok(packageJson.files?.includes("DIRECTORY_MODEL.md"), "package.json files must include DIRECTORY_MODEL.md");
-  assert.ok(packageJson.files?.includes("DIRECTORY_SNAPSHOT_SPEC.md"), "package.json files must include DIRECTORY_SNAPSHOT_SPEC.md");
 });
 
-test("documentation index names the package-facing guidance documents", () => {
-  const docsIndex = readFileSync(join(repoRoot, "DOCS_INDEX.md"), "utf8");
-  const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8")) as { files?: string[] };
+test("documentation map separates current areas from historical records", () => {
+  const rootIndex = readFileSync(join(repoRoot, "DOCS_INDEX.md"), "utf8");
+  const docsMap = readDocumentationMap(repoRoot);
 
-  assert.match(docsIndex, /Current Public Entry Points/);
-  assert.match(docsIndex, /Discovery, Beacon, And Directory/);
-  assert.match(docsIndex, /AI Agent Documents/);
-  assert.match(docsIndex, /Historical Or Local Notes/);
-  assert.match(docsIndex, /Current Known Gaps/);
+  for (const area of [
+    "Project design and state",
+    "Protocol and data models",
+    "Adoption and operator guides",
+    "Release and project operations",
+    "Evaluations and audits",
+    "Public explanation and outreach",
+    "Historical records"
+  ]) {
+    assert.match(rootIndex, new RegExp(escapeRegExp(area)));
+  }
 
-  const packageFacingDocs = (packageJson.files ?? [])
-    .filter((entry) => entry.endsWith(".md"))
-    .filter((entry) => entry !== "LICENSE");
-
-  for (const doc of packageFacingDocs) {
-    assert.match(docsIndex, new RegExp(escapeRegExp(doc)), `${doc} should be listed in DOCS_INDEX.md`);
+  for (const doc of [
+    "AI_OPERATING_MODEL.md",
+    "ORGANCHOR_BEACON.md",
+    "AGENT_VERIFICATION_CONTRACT.md",
+    "FIRESEED_READINESS_GATE.md",
+    "IMPLEMENTATION_STATUS.md",
+    "FIRESEED_LAUNCH_DECISION_2026-06-01.md"
+  ]) {
+    assert.match(docsMap, new RegExp(escapeRegExp(doc)), `${doc} should be present in the two-level documentation map`);
   }
 });
 
 test("AI operating model defines execution authority and owner decision gates", () => {
-  const docsIndex = readFileSync(join(repoRoot, "DOCS_INDEX.md"), "utf8");
-  const model = readFileSync(join(repoRoot, "AI_OPERATING_MODEL.md"), "utf8");
+  const docsIndex = readDocumentationMap(repoRoot);
+  const model = readFileSync(join(repoRoot, "docs/project/AI_OPERATING_MODEL.md"), "utf8");
 
   assert.match(docsIndex, /AI_OPERATING_MODEL\.md/);
 
@@ -77,8 +93,8 @@ test("AI operating model defines execution authority and owner decision gates", 
     "Required Owner Decision Gates",
     "public posting, paid actions, account changes, permission expansion, or final release publication",
     "If a decision is ambiguous and could affect public trust, security, money, law, or project values",
-    "PROJECT_NORTH_STAR.md",
-    "FIRESEED_READINESS_GATE.md",
+    "docs/project/PROJECT_NORTH_STAR.md",
+    "docs/operations/FIRESEED_READINESS_GATE.md",
     "The current priority is Fireseed Alpha external validation",
     "It is not part of the OrgAnchor verification protocol"
   ]) {
@@ -93,7 +109,7 @@ test("current stage documents do not keep superseded self-pilot status wording",
     "Pages deployment pending",
     "IPFS and Arweave remain dry-run/manual-package carriers until real CIDs or TX ids are produced"
   ];
-  const files = ["PILOT_PLAN.md", "EVIDENCE_MODEL.md", "ROADMAP.md", "README.md"];
+  const files = ["docs/operations/PILOT_PLAN.md", "docs/protocol/EVIDENCE_MODEL.md", "docs/project/ROADMAP.md", "README.md"];
 
   for (const file of files) {
     const text = readFileSync(join(repoRoot, file), "utf8");

@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`. Submit only fictional public evaluation data. Never include credentials, private keys, personal data, or confidential organization evidence.
+        Use `docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`. Submit only fictional public evaluation data. Never include credentials, private keys, personal data, or confidential organization evidence.
   - type: input
     id: source_commit
     attributes:

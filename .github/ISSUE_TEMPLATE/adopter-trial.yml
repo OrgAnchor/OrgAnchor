@@ -49,7 +49,7 @@ body:
         - label: S2 third-party material attempted
         - label: S3 random purchase / sampling attempted
         - label: External AI-agent verification attempted
-        - label: Checked against FIRESEED_READINESS_GATE.md
+        - label: Checked against docs/operations/FIRESEED_READINESS_GATE.md
   - type: textarea
     id: blockers
     attributes:

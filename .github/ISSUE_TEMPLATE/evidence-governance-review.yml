@@ -50,7 +50,7 @@ body:
     id: fireseed_gate_impact
     attributes:
       label: Fireseed gate impact
-      description: Use FIRESEED_READINESS_GATE.md. S4/S5 are design preview unless the issue causes overclaiming.
+      description: Use docs/operations/FIRESEED_READINESS_GATE.md. S4/S5 are design preview unless the issue causes overclaiming.
       options:
         - Blocks Fireseed GO
         - Allows LIMITED_GO only

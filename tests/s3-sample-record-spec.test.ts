@@ -3,16 +3,17 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sha256Pattern = /^sha256:[0-9a-f]{64}$/;
 
 test("S3 sample event and sample-set schemas are package-facing and documented", () => {
-  const docsIndex = readText("DOCS_INDEX.md");
+  const docsIndex = readDocumentationMap(repoRoot);
   const packageJson = readJson("package.json") as { files?: string[] };
-  const spec = readText("S3_SAMPLE_RECORD_SPEC.md");
+  const spec = readText("docs/protocol/S3_SAMPLE_RECORD_SPEC.md");
 
-  assert.ok(packageJson.files?.includes("S3_SAMPLE_RECORD_SPEC.md"));
+  assert.ok(packageIncludes(packageJson.files, "docs/protocol/S3_SAMPLE_RECORD_SPEC.md"));
   assert.match(docsIndex, /S3_SAMPLE_RECORD_SPEC\.md/);
   assert.match(spec, /S3_EVENT/);
   assert.match(spec, /S3_SAMPLE_SET/);
@@ -77,8 +78,8 @@ test("S3 sample set example exposes sufficiency, coverage, and raw vault state",
 });
 
 test("S3 docs define claim-bound rolling sample-pool anti-abuse rules", () => {
-  const model = readText("S3_RANDOM_SAMPLING_MODEL.md");
-  const spec = readText("S3_SAMPLE_RECORD_SPEC.md");
+  const model = readText("docs/protocol/S3_RANDOM_SAMPLING_MODEL.md");
+  const spec = readText("docs/protocol/S3_SAMPLE_RECORD_SPEC.md");
 
   for (const text of [model, spec]) {
     assert.match(text, /sample_pool_id/);

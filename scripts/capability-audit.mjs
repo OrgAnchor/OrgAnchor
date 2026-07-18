@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, normalize, resolve } from "node:path";
 
 const repoRoot = resolve(process.cwd());
-const matrixPath = join(repoRoot, "CAPABILITY_TRACEABILITY_MATRIX.md");
+const matrixPath = join(repoRoot, "docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md");
 const reportsDir = join(repoRoot, "reports");
 const jsonReportPath = join(reportsDir, "capability-audit.json");
 const markdownReportPath = join(reportsDir, "capability-audit.md");
@@ -29,7 +29,7 @@ const summary = summarize(rows, findings);
 const report = {
   type: "OrgAnchorCapabilityAuditReport",
   version: "1.0",
-  matrix: "CAPABILITY_TRACEABILITY_MATRIX.md",
+  matrix: "docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md",
   generated_at: new Date().toISOString(),
   summary,
   capabilities: rows,
@@ -117,7 +117,18 @@ function validateRow(row, findings) {
     addFinding(findings, "ERROR", row, "INVALID_STATUS", `Unsupported status: ${row.status}`);
   }
   for (const doc of row.docs) {
-    if (!pathExists(doc)) addFinding(findings, "ERROR", row, "MISSING_DOC", `Referenced document does not exist: ${doc}`);
+    if (pathExists(doc)) continue;
+    if (!sourceTestsAvailable && isHistoricalDoc(doc)) {
+      addFinding(
+        findings,
+        "WARNING",
+        row,
+        "HISTORICAL_DOC_NOT_PACKAGED",
+        `Historical source record is intentionally omitted from the npm package: ${doc}`
+      );
+      continue;
+    }
+    addFinding(findings, "ERROR", row, "MISSING_DOC", `Referenced document does not exist: ${doc}`);
   }
   for (const test of row.tests) {
     if (sourceTestsAvailable && !pathExists(test)) addFinding(findings, "ERROR", row, "MISSING_TEST", `Referenced test does not exist: ${test}`);
@@ -159,6 +170,10 @@ function validateRow(row, findings) {
 function pathExists(path) {
   if (path.endsWith("/")) return existsSync(join(repoRoot, path));
   return existsSync(join(repoRoot, path));
+}
+
+function isHistoricalDoc(path) {
+  return normalize(path).replaceAll("\\", "/").startsWith("docs/history/");
 }
 
 function isKnownCommandForm(command) {

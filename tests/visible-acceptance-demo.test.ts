@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const demoScript = join(repoRoot, "scripts", "visible-acceptance-demo.mjs");
@@ -33,8 +34,8 @@ test("visible acceptance demo proves human page, agent result, and tamper failur
 
 test("visible acceptance guide is package-facing and explains boundaries", () => {
   const readme = readFileSync(join(repoRoot, "README.md"), "utf8");
-  const docsIndex = readFileSync(join(repoRoot, "DOCS_INDEX.md"), "utf8");
-  const guide = readFileSync(join(repoRoot, "VISIBLE_ACCEPTANCE.md"), "utf8");
+  const docsIndex = readDocumentationMap(repoRoot);
+  const guide = readFileSync(join(repoRoot, "docs/operations/VISIBLE_ACCEPTANCE.md"), "utf8");
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8")) as {
     files?: string[];
     scripts?: Record<string, string>;
@@ -42,8 +43,8 @@ test("visible acceptance guide is package-facing and explains boundaries", () =>
 
   assert.match(readme, /VISIBLE_ACCEPTANCE\.md/);
   assert.match(docsIndex, /VISIBLE_ACCEPTANCE\.md/);
-  assert.equal(packageJson.files?.includes("VISIBLE_ACCEPTANCE.md"), true);
-  assert.equal(packageJson.files?.includes("scripts/visible-acceptance-demo.mjs"), true);
+  assert.equal(packageIncludes(packageJson.files, "docs/operations/VISIBLE_ACCEPTANCE.md"), true);
+  assert.equal(packageIncludes(packageJson.files, "scripts/visible-acceptance-demo.mjs"), true);
   assert.equal(packageJson.scripts?.["visible:demo"], "node scripts/visible-acceptance-demo.mjs");
 
   for (const phrase of [

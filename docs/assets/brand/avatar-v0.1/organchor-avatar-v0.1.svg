@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">OrgAnchor origin anchor and multi-turn public record spiral</title>
+  <desc id="desc">A gold origin anchor joins the first o of the one-stroke OrgAnchor wordmark to an open multi-turn path carrying a finite sequence of public record nodes.</desc>
+  <defs>
+    <pattern id="signal-field" width="56" height="56" patternUnits="userSpaceOnUse">
+      <circle cx="5" cy="5" r="2.4" fill="#7f9e9a" opacity="0.24"/>
+    </pattern>
+    <clipPath id="avatar-field-clip">
+      <circle cx="512" cy="512" r="474"/>
+    </clipPath>
+  </defs>
+  <rect width="1024" height="1024" fill="#f3f0e8"/>
+  <circle cx="512" cy="512" r="474" fill="#fbfaf6" stroke="#d8e3e1" stroke-width="4"/>
+  <rect x="38" y="38" width="948" height="948" fill="url(#signal-field)" clip-path="url(#avatar-field-clip)"/>
+
+  <path
+    id="spiral-mid-shadow"
+    d="M 210 655
+       C 170 455 330 285 530 270
+       C 715 255 850 390 820 555
+       C 790 710 610 780 465 700"
+    transform="translate(0 9)"
+    fill="none"
+    stroke="#071b3f"
+    stroke-width="17"
+    stroke-linecap="round"
+    opacity="0.10"
+  />
+  <path
+    id="spiral-inner-shadow"
+    d="M 465 700
+       C 340 630 330 490 425 390
+       C 500 310 620 320 670 400
+       C 715 475 670 560 590 570
+       C 510 580 450 525 455 455
+       C 460 390 520 345 575 365
+       C 625 383 650 440 625 480
+       C 600 520 545 525 515 490
+       C 485 455 500 400 540 382"
+    transform="translate(0 14)"
+    fill="none"
+    stroke="#071b3f"
+    stroke-width="21"
+    stroke-linecap="round"
+    opacity="0.13"
+  />
+
+  <g id="information-spiral" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path
+      id="spiral-outer"
+      d="M 89 565.6
+         C 42 370 120 190 280 105
+         C 480 -5 760 55 900 260
+         C 1040 470 940 750 715 860
+         C 500 965 250 860 210 655"
+      stroke="#8bcac4"
+      stroke-width="8"
+      opacity="0.58"
+    />
+    <path
+      id="spiral-middle"
+      d="M 210 655
+         C 170 455 330 285 530 270
+         C 715 255 850 390 820 555
+         C 790 710 610 780 465 700"
+      stroke="#4eaea4"
+      stroke-width="11"
+      opacity="0.74"
+    />
+    <path
+      id="spiral-inner"
+      d="M 465 700
+         C 340 630 330 490 425 390
+         C 500 310 620 320 670 400
+         C 715 475 670 560 590 570
+         C 510 580 450 525 455 455
+         C 460 390 520 345 575 365
+         C 625 383 650 440 625 480
+         C 600 520 545 525 515 490
+         C 485 455 500 400 540 382"
+      stroke="#168f83"
+      stroke-width="14"
+      opacity="0.90"
+    />
+    <path
+      id="spiral-inner-highlight"
+      d="M 465 700
+         C 340 630 330 490 425 390
+         C 500 310 620 320 670 400
+         C 715 475 670 560 590 570
+         C 510 580 450 525 455 455
+         C 460 390 520 345 575 365
+         C 625 383 650 440 625 480
+         C 600 520 545 525 515 490
+         C 485 455 500 400 540 382"
+      transform="translate(-2 -3)"
+      stroke="#d8f0ed"
+      stroke-width="3"
+      opacity="0.72"
+    />
+  </g>
+
+  <g id="information-nodes" fill="#fbfaf6" stroke="#071b3f" stroke-width="8">
+    <circle cx="280" cy="105" r="13"/>
+    <circle cx="900" cy="260" r="14"/>
+    <circle cx="715" cy="860" r="14"/>
+    <circle cx="210" cy="655" r="15"/>
+    <circle cx="465" cy="700" r="18"/>
+  </g>
+
+  <ellipse id="elevated-node-shadow" cx="540" cy="406" rx="31" ry="10" fill="#071b3f" opacity="0.14"/>
+  <circle id="elevated-node" cx="540" cy="382" r="23" fill="#168f83" stroke="#071b3f" stroke-width="9"/>
+  <circle cx="533" cy="375" r="6" fill="#fbfaf6" opacity="0.92"/>
+
+  <path
+    id="organchor-word"
+    d="M 100 320
+       C 65 320 55 250 95 225
+       C 140 198 185 225 185 270
+       C 185 315 145 337 105 320
+       C 155 345 190 335 210 310
+       C 222 295 220 245 245 225
+       C 270 205 302 220 310 245
+       C 295 225 268 220 255 245
+       C 245 270 260 315 315 320
+       C 330 320 338 315 345 300
+       C 355 260 390 225 435 228
+       C 480 232 494 275 470 308
+       C 445 342 395 339 370 310
+       C 340 275 360 230 405 225
+       C 450 220 478 250 478 290
+       C 478 345 475 420 430 445
+       C 390 468 345 450 340 415
+       C 335 380 370 357 410 365
+       C 450 373 477 355 490 320
+       C 500 300 515 280 530 260
+       C 550 225 600 220 625 250
+       C 650 280 635 325 595 333
+       C 550 340 520 305 530 270
+       C 540 235 585 215 615 240
+       C 640 260 635 305 650 320
+       C 665 335 680 330 690 310
+       C 700 285 700 245 715 225
+       C 730 205 750 220 750 245
+       C 750 270 748 295 750 320
+       C 750 275 785 225 820 230
+       C 850 235 850 280 850 320
+       C 865 335 880 330 890 310
+       C 900 280 900 235 940 225
+       C 975 216 1005 235 1007 260
+       C 1000 235 955 225 938 253
+       C 918 285 940 325 980 327
+       C 1005 328 1025 315 1040 295
+       C 1055 275 1060 230 1065 180
+       C 1070 120 1100 85 1125 115
+       C 1150 145 1130 245 1110 320
+       C 1115 275 1145 225 1180 230
+       C 1210 235 1215 280 1215 320
+       C 1230 335 1240 330 1250 310
+       C 1260 280 1260 235 1300 225
+       C 1345 215 1370 250 1365 285
+       C 1360 325 1320 340 1285 320
+       C 1250 300 1255 245 1295 228
+       C 1338 210 1368 243 1368 282
+       C 1368 305 1375 320 1390 320
+       C 1405 320 1410 300 1412 275
+       C 1415 240 1442 215 1470 230
+       C 1490 240 1498 260 1492 278
+       C 1480 245 1452 232 1435 252
+       C 1418 272 1430 315 1480 320
+       C 1500 322 1520 315 1540 300"
+    transform="translate(26 364) scale(0.63)"
+    fill="none"
+    stroke="#071b3f"
+    stroke-width="32"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <circle id="origin-anchor" cx="89" cy="565.6" r="19" fill="#d89a18" stroke="#071b3f" stroke-width="8"/>
+</svg>

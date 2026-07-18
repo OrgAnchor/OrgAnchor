@@ -82,8 +82,8 @@ const report = {
   generated_at: finishedAt.toISOString(),
   started_at: startedAt.toISOString(),
   duration_ms: finishedAt.getTime() - startedAt.getTime(),
-  scenario_source: "CAPABILITY_AUDIT_SCENARIOS.md",
-  matrix_source: "CAPABILITY_TRACEABILITY_MATRIX.md",
+  scenario_source: "docs/evaluations/CAPABILITY_AUDIT_SCENARIOS.md",
+  matrix_source: "docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md",
   summary: summarize(results, skipped),
   scenarios: [...results, ...skipped]
 };
@@ -115,7 +115,7 @@ function buildScenarios() {
       title: "Identity, /verify, claims/evidence, IPFS dry-run, and Arweave package smoke",
       status: "LOCAL_EXECUTABLE",
       capabilities: ["OA-001", "OA-002", "OA-003", "OA-007", "OA-008", "OA-014", "OA-015", "OA-022"],
-      docs: ["CAPABILITY_AUDIT_SCENARIOS.md", "README.md", "RELEASE_INTEGRITY.md"],
+      docs: ["docs/evaluations/CAPABILITY_AUDIT_SCENARIOS.md", "README.md", "docs/operations/RELEASE_INTEGRITY.md"],
       commands: ["node scripts/release-smoke.mjs"],
       limitations: "Uses dry-run/manual-package carrier checks for providers that need credentials, funds, or public infrastructure.",
       run: () => runNodeScript("scripts/release-smoke.mjs")
@@ -125,7 +125,7 @@ function buildScenarios() {
       title: "Local AI-agent discovery loop",
       status: "LOCAL_EXECUTABLE",
       capabilities: ["OA-004", "OA-005", "OA-006", "OA-020"],
-      docs: ["AGENT_INTEGRATION_GUIDE.md", "ORGANCHOR_BEACON.md", "DIRECTORY_SNAPSHOT_SPEC.md"],
+      docs: ["docs/protocol/AGENT_INTEGRATION_GUIDE.md", "docs/protocol/ORGANCHOR_BEACON.md", "docs/protocol/DIRECTORY_SNAPSHOT_SPEC.md"],
       commands: ["node scripts/agent-discovery-demo.mjs --cleanup"],
       limitations: "Runs on localhost and proves low-cost loop mechanics, not internet-scale discovery coverage.",
       run: () => runNodeScript("scripts/agent-discovery-demo.mjs", ["--cleanup"])
@@ -135,7 +135,7 @@ function buildScenarios() {
       title: "Package-facing and installed CLI smoke gates",
       status: "LOCAL_EXECUTABLE",
       capabilities: ["OA-021", "OA-022"],
-      docs: ["RELEASE_PUBLISHING_PLAN.md", "NPM_TRUSTED_PUBLISHING.md", "RELEASE_INTEGRITY.md"],
+      docs: ["docs/operations/RELEASE_PUBLISHING_PLAN.md", "docs/operations/NPM_TRUSTED_PUBLISHING.md", "docs/operations/RELEASE_INTEGRITY.md"],
       commands: ["node scripts/package-smoke.mjs", "node scripts/install-smoke.mjs"],
       limitations: "Simulates package contents and installed CLI locally; npm publication remains a separate release action.",
       run: () => {
@@ -156,7 +156,7 @@ function buildScenarios() {
       title: "S1/S2/S3/S4 value-evidence summary path",
       status: "LOCAL_EXECUTABLE",
       capabilities: ["OA-007", "OA-008", "OA-009", "OA-010", "OA-012"],
-      docs: ["CLAIMS_EVIDENCE_PROTOCOL.md", "S2_THIRD_PARTY_MATERIAL_MODEL.md", "S3_RANDOM_SAMPLING_MODEL.md", "S4_REAL_WORLD_OBSERVATION_MODEL.md"],
+      docs: ["docs/protocol/CLAIMS_EVIDENCE_PROTOCOL.md", "docs/protocol/S2_THIRD_PARTY_MATERIAL_MODEL.md", "docs/protocol/S3_RANDOM_SAMPLING_MODEL.md", "docs/protocol/S4_REAL_WORLD_OBSERVATION_MODEL.md"],
       commands: ["node scripts/capability-scenarios.mjs --scenario CAS-004"],
       limitations: "Checks local summary/gap mechanics. It does not prove external institutions, sample-slot ledgers, observer networks, or real-world truth.",
       run: runEvidenceSummaryScenario
@@ -166,7 +166,7 @@ function buildScenarios() {
       title: "Capability traceability matrix validation",
       status: "LOCAL_EXECUTABLE",
       capabilities: ["OA-001", "OA-002", "OA-003", "OA-004", "OA-005", "OA-006", "OA-007", "OA-008", "OA-009", "OA-010", "OA-011", "OA-012", "OA-013", "OA-014", "OA-015", "OA-016", "OA-017", "OA-018", "OA-019", "OA-020", "OA-021", "OA-022", "OA-023", "OA-024", "OA-025", "OA-026"],
-      docs: ["CAPABILITY_TRACEABILITY_MATRIX.md"],
+      docs: ["docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md"],
       commands: ["node scripts/capability-audit.mjs --check"],
       limitations: "Validates traceability metadata and references; it is not a substitute for scenario execution.",
       run: () => runNodeScript("scripts/capability-audit.mjs", ["--check"])
@@ -176,7 +176,7 @@ function buildScenarios() {
       title: "Public OrgAnchor self-pilot compact verification",
       status: "EXTERNAL_OPTIONAL",
       capabilities: ["OA-004", "OA-023"],
-      docs: ["FIRESEED_LAUNCH_DECISION_2026-06-01.md", "README.md", "RELEASE_INTEGRITY.md"],
+      docs: ["docs/operations/PUBLIC_RELEASE_CHECKLIST.md", "README.md", "docs/operations/RELEASE_INTEGRITY.md"],
       commands: ["node src/cli.ts verify url https://organchor.org --compact"],
       limitations: "Depends on current public web availability, DNS, TLS, and deployed self-pilot artifacts.",
       run: () => {
@@ -563,7 +563,7 @@ function assertEqual(actual, expected, label) {
 }
 
 function readCapabilityIds() {
-  const matrixPath = join(repoRoot, "CAPABILITY_TRACEABILITY_MATRIX.md");
+  const matrixPath = join(repoRoot, "docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md");
   const matrix = readFileSync(matrixPath, "utf8");
   return new Set([...matrix.matchAll(/\|\s*(OA-\d{3})\s*\|/g)].map((match) => match[1]));
 }

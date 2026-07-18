@@ -1,8 +1,12 @@
 # OrgAnchor
 
-OrgAnchor helps organizations publish signed, recheckable public records that link identity, official presence, claims, evidence, and migration history so people and AI agents can discover, screen, verify, understand, and compare candidate organizations at lower cost across domain, platform, website, or infrastructure changes.
+OrgAnchor helps organizations publish signed, recheckable public records that
+link identity, official presence, claims, evidence, and migration history. It is
+designed to lower the practical cost for people and AI agents to discover,
+screen, verify, understand, and compare candidate organizations across domain,
+platform, website, or infrastructure changes.
 
-OrgAnchor 帮助组织发布经过签名、可复查的公开资料，将身份、官方入口、主张、证据和迁移历史串联起来，使外部用户和 AI Agent 即使面对域名、平台账号、官网或基础设施变化，也能以更低成本发现、初筛、验证、理解和比较候选组织。
+OrgAnchor 帮助组织发布经过签名、可复查的公开资料，将身份、官方入口、主张、证据和迁移历史串联起来。它旨在降低外部用户和 AI Agent 在域名、平台账号、官网或基础设施发生变化时，发现、初筛、验证、理解和比较候选组织的实际成本。
 
 ## 3-Minute Version
 
@@ -27,23 +31,22 @@ organchor verify url <local-or-public-organchor-url> --compact
 
 Best public starting points:
 
-- `CURRENT_PROJECT_STATE_2026-07-02.md`: historical source-repository snapshot as of 2026-07-02, including the Fireseed boundary, repository boundary, and next-work order at that date.
-- `PUBLIC_EXPLAINER.md`: plain-language explanation for first-time readers.
-- `DESIGN_RATIONALE.md`: full design logic from core goal to mechanisms, effects, and limits.
-- `ADOPTER_QUICKSTART.md`: shortest practical path for an adopting organization.
-- `PILOT_MINIMAL_PATH.md`: minimal external pilot definition and verification gate.
-- `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`: current external-view review of OrgAnchor's own public self-pilot against the minimal path.
-- `PUBLIC_RELEASE_CHECKLIST.md`: practical release gate for public assets, local checks, owner approvals, and hold criteria.
-- `PUBLIC_SELF_VERIFICATION_2026-07-17.md`: current Alpha.5 tag, npm provenance, clean-install, public endpoint, Agent-interface, and disclosed-limit verification result; a Chinese translation is provided alongside it.
-- `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent can keep valid identity and package verification separate from insufficient product-claim evidence.
-- `EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent preserves expired evidence as history without treating it as current support.
-- `EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent preserves conflicting current S2/S3 evidence instead of forcing a trust decision.
-- `PUBLIC_RELEASE_PRECHECK_2026-07-06.md`: historical pre-Alpha.4 release-preparation check for local gates, capability audit, public self-pilot, and public root-signed lockfile verification.
-- `FIRESEED_VALIDATION_TRACKING_ISSUE.md`: copyable GitHub tracking issue for Fireseed Wave 1.
-- `FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
-- `FIRESEED_ALPHA_COMPLETION_AUDIT_2026-07-06.md`: requirement-by-requirement completion audit for Fireseed Alpha public-release preparation.
-- `FIRESEED_ALPHA4_LOCAL_CONVERGENCE_2026-07-11.md`: local Alpha.4 release-convergence record; no npm, GitHub, website, or public-post action is implied.
-- `AI_OPERATING_MODEL.md`: project operating model for human-owner and AI-execution-lead collaboration.
+- `DOCS_INDEX.md`: current two-level documentation map and source-of-truth order.
+- `docs/outreach/PUBLIC_EXPLAINER.md`: plain-language explanation for first-time readers.
+- `docs/project/IMPLEMENTATION_STATUS.md`: current alpha capability state and known gaps.
+- `docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md`: capability-by-capability implementation evidence.
+- `docs/project/DESIGN_RATIONALE.md`: full design logic from core goal to mechanisms, effects, and limits.
+- `docs/guides/ADOPTER_QUICKSTART.md`: shortest practical path for an adopting organization.
+- `docs/guides/PILOT_MINIMAL_PATH.md`: minimal external pilot definition and verification gate.
+- `docs/operations/PUBLIC_RELEASE_CHECKLIST.md`: practical release gate for public assets, local checks, owner approvals, and hold criteria.
+- `docs/evaluations/EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent can keep valid identity and package verification separate from insufficient product-claim evidence.
+- `docs/evaluations/EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent preserves expired evidence as history without treating it as current support.
+- `docs/evaluations/EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent preserves conflicting current S2/S3 evidence instead of forcing a trust decision.
+- `docs/outreach/FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
+
+Dated release checks, earlier project-state snapshots, and retired experiments
+are indexed under `docs/history/`. They remain auditable records but do not
+override current implementation or operating guidance.
 
 Publication production materials such as video scripts, rendered media, platform post drafts, presentation outlines, and sponsorship letters are intentionally kept outside the source repository and npm package. This repository is for the software, protocol, examples, verification artifacts, and external-review boundaries.
 
@@ -76,7 +79,7 @@ Fireseed Alpha focuses on:
 - S1-S3 evidence baseline: first-party evidence, organization-submitted third-party material, and random purchase / sampling structure.
 - S4/S5 design preview only: real-use observation, public challenge, correction, and historical accountability are important, but not finished acceptance gates.
 
-Start with `FIRESEED_OUTREACH_KIT.md`, `FIRESEED_ALPHA_PLAN.md`, `FIRESEED_READINESS_GATE.md`, `FIRESEED_LAUNCH_DECISION_2026-06-01.md`, `CAPABILITY_TRACEABILITY_MATRIX.md`, `CALL_FOR_FIRESEED_REVIEW.md`, and `CONTRIBUTING.md` if you want to try, review, or critique the project.
+Start with `docs/outreach/FIRESEED_OUTREACH_KIT.md`, `docs/operations/FIRESEED_ALPHA_PLAN.md`, `docs/operations/FIRESEED_READINESS_GATE.md`, `docs/history/FIRESEED_LAUNCH_DECISION_2026-06-01.md`, `docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md`, `docs/outreach/CALL_FOR_FIRESEED_REVIEW.md`, and `CONTRIBUTING.md` if you want to try, review, or critique the project.
 
 ## Purpose and Values
 
@@ -84,27 +87,41 @@ OrgAnchor is not only a tool for keeping an organizational name alive. Its purpo
 
 OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
 
-See `PROJECT_NORTH_STAR.md`, `DESIGN_RATIONALE.md`, `AI_OPERATING_MODEL.md`, `DOCS_INDEX.md`, `CAPABILITY_TRACEABILITY_MATRIX.md`, `CAPABILITY_AUDIT_SCENARIOS.md`, `VISIBLE_ACCEPTANCE.md`, `VISIBLE_ACCEPTANCE_REVIEW_2026-06-01.md`, `PUBLIC_LAUNCH_REVIEW_2026-06-06.md`, `PUBLIC_RELEASE_CHECKLIST.md`, `LANGUAGE_COMPATIBILITY.md`, `FIRESEED_OUTREACH_KIT.md`, `FIRESEED_ALPHA_PLAN.md`, `FIRESEED_READINESS_GATE.md`, `FIRESEED_LAUNCH_DECISION_2026-06-01.md`, `IMPLEMENTATION_STATUS.md`, `CALL_FOR_FIRESEED_REVIEW.md`, `CONTRIBUTING.md`, `PURPOSE_AND_VALUES.md`, `CLAIMS_EVIDENCE_PROTOCOL.md`, `CLAIMS_EVIDENCE_IMPLEMENTATION_PLAN.md`, `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md`, `EVIDENCE_SUFFICIENCY_MODEL.md`, `S2_THIRD_PARTY_MATERIAL_MODEL.md`, `PACKAGE_HEALTH_LAYER.md`, `COMMERCIAL_FIT_LAYER.md`, `REAL_WORLD_EVIDENCE_PROFILE.md`, `PRODUCT_SERVICE_CREDENTIAL_LAYER.md`, `ADOPTION_PRINCIPLES.md`, and `SHOWCASE_POLICY.md` for the project stance, current implementation status, operating model, design rationale, visible acceptance flow, public launch consistency review, public release gate, language compatibility, Fireseed outreach kit, evidence protocol, purpose/evidence/challenge model, purpose-fit evidence sufficiency model, S2 third-party material model, package health model, commercial-fit model, real-world evidence profile, product/service credential direction, implementation map, executable scenario audit, and document map.
+Use `DOCS_INDEX.md` rather than a flat reading list. The primary alignment set is
+`docs/project/PROJECT_NORTH_STAR.md`, `docs/project/IMPLEMENTATION_STATUS.md`,
+`docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md`,
+`docs/project/ROADMAP.md`, and `docs/project/V1_ACCEPTANCE.md`.
 
-Protocol evolution is governed by `PROTOCOL_EVOLUTION_POLICY.md`: old adopter packages should remain verifiable under the schema, signatures, hashes, root authority, and verification rules that created them. Newer OrgAnchor versions may expose legacy gaps, but they must not retroactively erase valid historical snapshots.
+Protocol evolution is governed by `docs/protocol/PROTOCOL_EVOLUTION_POLICY.md`: old adopter packages should remain verifiable under the schema, signatures, hashes, root authority, and verification rules that created them. Newer OrgAnchor versions may expose legacy gaps, but they must not retroactively erase valid historical snapshots.
 
-The proposed post-v1 `DISCOVERY_STRATEGY.md`, `ORGANCHOR_BEACON.md`, `DISCOVERY_TAXONOMY.md`, `DIRECTORY_MODEL.md`, and `DIRECTORY_SNAPSHOT_SPEC.md` describe how OrgAnchor can help people and AI agents find OrgAnchor-enabled organizations without becoming a marketplace, certification authority, or v1 trust root.
+The Beacon and Directory documents describe how OrgAnchor can help people and AI
+agents find enabled organizations without becoming a marketplace,
+certification authority, or trust root. Bounded origin inspection,
+sweep/index/query, and static Directory tooling are implemented; broad internet
+discovery coverage and independent Directory adoption are not.
 
 OrgAnchor does not issue organization IDs or require official Directory inclusion. Any organization can adopt the standard by publishing a verifiable origin-owned package; Directory nodes are discovery aids with no protocol privilege.
 
-The accepted but not yet implemented `PRODUCT_SERVICE_CREDENTIAL_LAYER.md` defines how delegated operational keys, model/batch/unit credentials, service delivery credentials, and observation binding should make positive and negative feedback attributable to an organization's root authority chain.
+The accepted but not yet implemented `docs/protocol/PRODUCT_SERVICE_CREDENTIAL_LAYER.md` defines how delegated operational keys, model/batch/unit credentials, service delivery credentials, and observation binding should make positive and negative feedback attributable to an organization's root authority chain.
 
-The accepted `EVIDENCE_SUFFICIENCY_MODEL.md` prevents the evidence layer from becoming a paperwork race: OrgAnchor should report whether evidence is sufficient for a stated purpose, not reward raw field count.
+The accepted `docs/protocol/EVIDENCE_SUFFICIENCY_MODEL.md` prevents the evidence layer from becoming a paperwork race: OrgAnchor should report whether evidence is sufficient for a stated purpose, not reward raw field count.
 
-The accepted but not yet fully implemented `PURPOSE_EVIDENCE_CHALLENGE_MODEL.md` defines the three-axis model for purpose profiles, observation source classes, and challenge/correction/accountability lifecycle. Public challenge review is a horizontal lifecycle mode, not a sixth ascending purpose profile. Product/service history and broader accountability observations are routed through S5 instead of becoming a separate Historical Layer.
+The accepted but not yet fully implemented `docs/protocol/PURPOSE_EVIDENCE_CHALLENGE_MODEL.md` defines the three-axis model for purpose profiles, observation source classes, and challenge/correction/accountability lifecycle. Public challenge review is a horizontal lifecycle mode, not a sixth ascending purpose profile. Product/service history and broader accountability observations are routed through S5 instead of becoming a separate Historical Layer.
 
-The accepted but not yet implemented `PACKAGE_HEALTH_LAYER.md` defines how organizations and external observers should expose freshness, broken links, expired evidence, withdrawn claims, maintenance policy, and low-cost agent fetch recommendations without turning health into a trust score.
+The accepted but not yet implemented `docs/protocol/PACKAGE_HEALTH_LAYER.md` defines how organizations and external observers should expose freshness, broken links, expired evidence, withdrawn claims, maintenance policy, and low-cost agent fetch recommendations without turning health into a trust score.
 
-The accepted but not yet implemented `COMMERCIAL_FIT_LAYER.md` defines how price disclosure modes, signed public price sheets, private signed quotes, lead time, MOQ, and validity windows should reduce commercial-screening cost without forcing public pricing or turning OrgAnchor into a marketplace.
+The accepted but not yet implemented `docs/protocol/COMMERCIAL_FIT_LAYER.md` defines how price disclosure modes, signed public price sheets, private signed quotes, lead time, MOQ, and validity windows should reduce commercial-screening cost without forcing public pricing or turning OrgAnchor into a marketplace.
 
 ## Current Status
 
 The current published package is `organchor@0.1.0-alpha.5` under the npm `alpha` dist-tag, with Git tag `v0.1.0-alpha.5`, SLSA provenance, a public GitHub prerelease, and an aligned public self-pilot at `https://organchor.org`. Release linkage, clean registry installation, homepage verification, Beacon discovery, and the installed-CLI Agent path were publicly rechecked on 2026-07-17. Fireseed Alpha has a GO decision for named early adopter, technical, Agent, and evidence/governance review. It is not stable v1, and broader promotion remains subject to the current release gate. The core alpha surface includes root authority records, signed official-presence records, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
+
+Current boundary: the S1-S3 evidence-layer baseline and bounded Beacon/Directory
+tools are implemented; the S4 evidence layer is partial, while the S5 evidence
+layer, delegated product/service credentials, commercial-fit manifests, broad
+internet discovery coverage, and the first external organization pilot remain
+incomplete. See
+`docs/project/IMPLEMENTATION_STATUS.md` for the authoritative summary.
 
 Alpha.5 includes runnable weak-evidence, stale-evidence, and conflicting-current-evidence evaluations plus additive external-evidence signature routes. These capabilities do not retroactively invalidate Alpha.4 records or turn verification status into a trust decision.
 
@@ -164,7 +181,7 @@ Implemented so far:
 - `/verify` root continuity publication through human-visible page content and machine-readable `root_continuity`.
 - `/verify` value continuity publication through human-visible page content and machine-readable `value_continuity`.
 - `/verify` and `/.well-known` Directory discovery pointers through machine-readable `directory_discovery`.
-- Beacon-first discovery direction for making every adopter natively discoverable without requiring official Directory inclusion.
+- Beacon-first discovery surfaces that give every adopter a standard, origin-owned signal without requiring official Directory inclusion. Compatible crawlers can recognize that signal once the origin enters their discovery frontier; Beacon does not guarantee global discovery by itself.
 - `organchor beacon index` for merging repeated sweep NDJSON files into an incremental local discovery index.
 - `organchor beacon inspect` for distinguishing claimed OrgAnchor signals, partial implementations, impostor Beacons, and strictly verified full compatibility.
 - `organchor beacon generate` for regenerating `/.well-known/organchor.json`, `robots.txt`, and `sitemap.xml` from an already verified local `/verify` package without rebuilding the whole page.
@@ -177,7 +194,7 @@ Implemented so far:
 - `organchor adoption status` for producing human-readable and machine-readable adoption workspace status without turning status into a trust badge.
 - External pilot runbook for repeatable low-risk organization adoption.
 - NPM build configuration that packages the CLI from `dist/cli.js`.
-- Static Directory snapshot build and verification commands for post-v1 discovery experiments.
+- Static Directory snapshot build and verification commands for bounded discovery experiments.
 - Static Directory candidate source maintenance with `organchor directory add`, without treating additions as verification.
 - Directory snapshots can be generated directly from a local Beacon index.
 - Directory build writes a machine-readable `directory-policy.json` so Directory boundaries are public by default.
@@ -220,7 +237,7 @@ npm run evaluation:evidence -- build --out ./.local/evidence-interpretation-run
 npm run evaluation:evidence -- exercise --package ./.local/evidence-interpretation-run
 ```
 
-The output separates the safe-to-serve public package, the fresh-context Agent task, and operator-only ground truth. Synthetic private keys are removed after build. Use the scorer only for this scenario; it is not a general model benchmark or supplier trust rating. See `EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md` for the isolation and interpretation rules.
+The output separates the safe-to-serve public package, the fresh-context Agent task, and operator-only ground truth. Synthetic private keys are removed after build. Use the scorer only for this scenario; it is not a general model benchmark or supplier trust rating. See `docs/evaluations/EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md` for the isolation and interpretation rules.
 
 To run the fixed-time Wave 2 scenario that separates an expired certificate's historical value from current claim support:
 
@@ -229,7 +246,7 @@ npm run evaluation:evidence -- build-stale --out ./.local/evidence-staleness-run
 npm run evaluation:evidence -- exercise-stale --package ./.local/evidence-staleness-run
 ```
 
-See `EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md` for the decision question, hard failures, and scorer boundary.
+See `docs/evaluations/EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md` for the decision question, hard failures, and scorer boundary.
 
 To run the Wave 3 scenario where current issuer-backed S2 evidence and current market-sampling S3 evidence point in opposite directions:
 
@@ -238,7 +255,7 @@ npm run evaluation:evidence -- build-conflict --out ./.local/evidence-conflict-r
 npm run evaluation:evidence -- exercise-conflict --package ./.local/evidence-conflict-run
 ```
 
-See `EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md` for scope rules, hard failures, and the unresolved-conflict boundary.
+See `docs/evaluations/EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md` for scope rules, hard failures, and the unresolved-conflict boundary.
 
 ## Visible Acceptance Demo
 
@@ -254,9 +271,9 @@ For a browser URL that stays open until stopped, run:
 npm run visible:demo -- --out ./visible-demo --serve
 ```
 
-Use `VISIBLE_ACCEPTANCE.md` for the Chinese acceptance checklist and boundary notes.
+Use `docs/operations/VISIBLE_ACCEPTANCE.md` for the Chinese acceptance checklist and boundary notes.
 
-Language policy: machine-readable JSON keys, status enums, policy route codes, schemas, commands, and artifact filenames stay stable English / ASCII. Human explanations and future `/verify` page variants can be localized. See `LANGUAGE_COMPATIBILITY.md`.
+Language policy: machine-readable JSON keys, status enums, policy route codes, schemas, commands, and artifact filenames stay stable English / ASCII. Human explanations and future `/verify` page variants can be localized. See `docs/protocol/LANGUAGE_COMPATIBILITY.md`.
 
 ## Fireseed Review Tracks
 
@@ -267,9 +284,9 @@ Fireseed Alpha has three broad review paths and one focused Agent-evaluation pat
 - Evidence/governance review: test S1-S3 abuse cases, S3 sampling assumptions, S4/S5 design gaps, Directory risks, and stale or misleading evidence.
 - External Agent evaluation: give an unfamiliar Agent the isolated fictional package, preserve its uncorrected JSON, and test whether it separates valid package structure from actual claim support.
 
-Use `CONTRIBUTING.md` for contribution rules, `CALL_FOR_FIRESEED_REVIEW.md` for the public review brief, and `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` for the controlled fresh-context procedure.
+Use `CONTRIBUTING.md` for contribution rules, `docs/outreach/CALL_FOR_FIRESEED_REVIEW.md` for the public review brief, and `docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` for the controlled fresh-context procedure.
 
-Use `FIRESEED_OUTREACH_KIT.md` as the practical starter kit for named external outreach. It includes track-specific task lists, useful commands, feedback routing, success criteria, hold criteria, and copyable invitation text.
+Use `docs/outreach/FIRESEED_OUTREACH_KIT.md` as the practical starter kit for named external outreach. It includes track-specific task lists, useful commands, feedback routing, success criteria, hold criteria, and copyable invitation text.
 
 ## Capability Audit
 
@@ -282,9 +299,9 @@ npm run capability:audit
 npm run capability:scenarios
 ```
 
-`npm run capability:audit` validates `CAPABILITY_TRACEABILITY_MATRIX.md` and writes `reports/capability-audit.json` plus `reports/capability-audit.md`.
+`npm run capability:audit` validates `docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md` and writes `reports/capability-audit.json` plus `reports/capability-audit.md`.
 
-`npm run capability:scenarios` runs the local scenario layer from `CAPABILITY_AUDIT_SCENARIOS.md` and writes `reports/capability-scenarios.json` plus `reports/capability-scenarios.md`. Use `node scripts/capability-scenarios.mjs --include-network` when intentionally checking the public OrgAnchor self-pilot.
+`npm run capability:scenarios` runs the local scenario layer from `docs/evaluations/CAPABILITY_AUDIT_SCENARIOS.md` and writes `reports/capability-scenarios.json` plus `reports/capability-scenarios.md`. Use `node scripts/capability-scenarios.mjs --include-network` when intentionally checking the public OrgAnchor self-pilot.
 
 ## CLI Quick Start
 
@@ -415,13 +432,13 @@ OrgAnchor has four product surfaces:
 - Future local-first OrgAnchor Studio.
 - Adopting organization `/verify` page.
 
-See `PRODUCT_SHAPE.md` for the accepted product shape.
+See `docs/project/PRODUCT_SHAPE.md` for the accepted product shape.
 
 ## Adoption
 
 OrgAnchor is intended to be repeatable by other organizations, not only usable by the OrgAnchor self-pilot.
 
-The adoption model is recorded in `ADOPTION_MODEL.md`.
+The adoption model is recorded in `docs/project/ADOPTION_MODEL.md`.
 
 Start with `DOCS_INDEX.md` when choosing what to read next.
 
@@ -430,37 +447,37 @@ For AI agents, `PASS` is not a trust badge. `organchor verify url --compact` inc
 Operator-facing adoption and verification documents:
 
 - `DOCS_INDEX.md`
-- `CURRENT_PROJECT_STATE_2026-07-02.md`
-- `PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`
-- `PROJECT_NORTH_STAR.md`
-- `PROTOCOL_EVOLUTION_POLICY.md`
-- `PURPOSE_AND_VALUES.md`
-- `ADOPTER_QUICKSTART.md`
-- `ADOPTION_PRINCIPLES.md`
-- `ADOPTION_GUIDE.md`
-- `AGENT_COMPATIBILITY_PLAN.md`
-- `AGENT_INTEGRATION_GUIDE.md`
-- `AGENT_VERIFICATION_CONTRACT.md`
-- `COMMERCIAL_FIT_LAYER.md`
-- `PILOT_MINIMAL_PATH.md`
-- `EXTERNAL_PILOT_RUNBOOK.md`
-- `ORG_ONBOARDING_CHECKLIST.md`
-- `ROOT_AUTHORITY_CUSTODY_GUIDE.md`
-- `MIGRATION_GUIDE.md`
-- `PUBLISHING_GUIDE.md`
-- `RELEASE_INTEGRITY.md`
-- `SHOWCASE_POLICY.md`
-- `VALUE_CONTINUITY_MODEL.md`
-- `DOMAIN_HARDENING_GUIDE.md`
-- `DISCOVERY_STRATEGY.md`
-- `DISCOVERY_TAXONOMY.md`
-- `DIRECTORY_MODEL.md`
-- `DIRECTORY_SNAPSHOT_SPEC.md`
-- `EVIDENCE_ONBOARDING_GUIDE.md`
+- `docs/history/CURRENT_PROJECT_STATE_2026-07-02.md`
+- `docs/history/PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`
+- `docs/project/PROJECT_NORTH_STAR.md`
+- `docs/protocol/PROTOCOL_EVOLUTION_POLICY.md`
+- `docs/project/PURPOSE_AND_VALUES.md`
+- `docs/guides/ADOPTER_QUICKSTART.md`
+- `docs/guides/ADOPTION_PRINCIPLES.md`
+- `docs/guides/ADOPTION_GUIDE.md`
+- `docs/protocol/AGENT_COMPATIBILITY_PLAN.md`
+- `docs/protocol/AGENT_INTEGRATION_GUIDE.md`
+- `docs/protocol/AGENT_VERIFICATION_CONTRACT.md`
+- `docs/protocol/COMMERCIAL_FIT_LAYER.md`
+- `docs/guides/PILOT_MINIMAL_PATH.md`
+- `docs/guides/EXTERNAL_PILOT_RUNBOOK.md`
+- `docs/guides/ORG_ONBOARDING_CHECKLIST.md`
+- `docs/guides/ROOT_AUTHORITY_CUSTODY_GUIDE.md`
+- `docs/guides/MIGRATION_GUIDE.md`
+- `docs/guides/PUBLISHING_GUIDE.md`
+- `docs/operations/RELEASE_INTEGRITY.md`
+- `docs/outreach/SHOWCASE_POLICY.md`
+- `docs/protocol/VALUE_CONTINUITY_MODEL.md`
+- `docs/guides/DOMAIN_HARDENING_GUIDE.md`
+- `docs/protocol/DISCOVERY_STRATEGY.md`
+- `docs/protocol/DISCOVERY_TAXONOMY.md`
+- `docs/protocol/DIRECTORY_MODEL.md`
+- `docs/protocol/DIRECTORY_SNAPSHOT_SPEC.md`
+- `docs/guides/EVIDENCE_ONBOARDING_GUIDE.md`
 
 ## Release Hygiene
 
-Before publishing or promoting a release, use `RELEASE_INTEGRITY.md` as the consistency gate for source state, public `/verify` state, carrier receipts, package metadata, and release notes.
+Before publishing or promoting a release, use `docs/operations/RELEASE_INTEGRITY.md` as the consistency gate for source state, public `/verify` state, carrier receipts, package metadata, and release notes.
 
 Useful local checks:
 

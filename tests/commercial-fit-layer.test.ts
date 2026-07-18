@@ -3,24 +3,25 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("commercial fit layer is package-facing and indexed", () => {
-  const docsIndex = readText("DOCS_INDEX.md");
+  const docsIndex = readDocumentationMap(repoRoot);
   const readme = readText("README.md");
   const packageJson = JSON.parse(readText("package.json")) as { files?: string[] };
-  const matrix = readText("CAPABILITY_TRACEABILITY_MATRIX.md");
+  const matrix = readText("docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md");
 
   assert.match(docsIndex, /COMMERCIAL_FIT_LAYER\.md/);
   assert.match(readme, /COMMERCIAL_FIT_LAYER\.md/);
-  assert.ok(packageJson.files?.includes("COMMERCIAL_FIT_LAYER.md"));
+  assert.ok(packageIncludes(packageJson.files, "docs/protocol/COMMERCIAL_FIT_LAYER.md"));
   assert.match(matrix, /Commercial fit layer/);
   assert.match(matrix, /DESIGN_ONLY/);
 });
 
 test("commercial fit layer reduces transaction cost without becoming a marketplace", () => {
-  const model = readText("COMMERCIAL_FIT_LAYER.md");
+  const model = readText("docs/protocol/COMMERCIAL_FIT_LAYER.md");
 
   for (const phrase of [
     "lower transaction cost",
@@ -41,7 +42,7 @@ test("commercial fit layer reduces transaction cost without becoming a marketpla
 });
 
 test("north star includes commercial screening but keeps final decisions external", () => {
-  const northStar = readText("PROJECT_NORTH_STAR.md");
+  const northStar = readText("docs/project/PROJECT_NORTH_STAR.md");
 
   assert.match(northStar, /commercial-fit constraints/);
   assert.match(northStar, /commercial-screening cost/);

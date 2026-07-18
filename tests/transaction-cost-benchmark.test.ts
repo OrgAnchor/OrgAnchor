@@ -5,6 +5,7 @@ import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const script = join(repoRoot, "scripts", "transaction-cost-benchmark.mjs");
@@ -12,13 +13,13 @@ const reference = join(repoRoot, "examples", "transaction-cost-benchmark", "subm
 
 test("historical retrieval comparison remains documented but is retired from active packaging", () => {
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
-  const docsIndex = readFileSync(join(repoRoot, "DOCS_INDEX.md"), "utf8");
+  const docsIndex = readDocumentationMap(repoRoot);
   const readme = readFileSync(join(repoRoot, "README.md"), "utf8");
-  const benchmarkDoc = readFileSync(join(repoRoot, "FIRESEED_TRANSACTION_COST_BENCHMARK.md"), "utf8");
+  const benchmarkDoc = readFileSync(join(repoRoot, "docs/history/FIRESEED_TRANSACTION_COST_BENCHMARK.md"), "utf8");
 
   assert.equal(packageJson.scripts?.["benchmark:transaction"], undefined);
-  assert.equal(packageJson.files?.includes("scripts/transaction-cost-benchmark.mjs"), false);
-  assert.equal(packageJson.files?.includes("FIRESEED_TRANSACTION_COST_BENCHMARK.md"), false);
+  assert.equal(packageIncludes(packageJson.files, "scripts/transaction-cost-benchmark.mjs"), false);
+  assert.equal(packageIncludes(packageJson.files, "docs/history/FIRESEED_TRANSACTION_COST_BENCHMARK.md"), false);
   assert.equal(packageJson.files?.includes("!examples/transaction-cost-benchmark/"), true);
   assert.match(docsIndex, /FIRESEED_TRANSACTION_COST_BENCHMARK\.md/);
   assert.doesNotMatch(readme, /## Transaction-Cost Benchmark/);

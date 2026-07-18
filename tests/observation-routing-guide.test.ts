@@ -3,16 +3,17 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("observation routing guide is package-facing and indexed", () => {
-  const guide = readText("OBSERVATION_ROUTING_GUIDE.md");
-  const docsIndex = readText("DOCS_INDEX.md");
-  const evidenceModel = readText("EVIDENCE_MODEL.md");
+  const guide = readText("docs/protocol/OBSERVATION_ROUTING_GUIDE.md");
+  const docsIndex = readDocumentationMap(repoRoot);
+  const evidenceModel = readText("docs/protocol/EVIDENCE_MODEL.md");
   const packageJson = JSON.parse(readText("package.json")) as { files?: string[] };
 
-  assert.ok(packageJson.files?.includes("OBSERVATION_ROUTING_GUIDE.md"));
+  assert.ok(packageIncludes(packageJson.files, "docs/protocol/OBSERVATION_ROUTING_GUIDE.md"));
   assert.match(docsIndex, /OBSERVATION_ROUTING_GUIDE\.md/);
   assert.match(evidenceModel, /OBSERVATION_ROUTING_GUIDE\.md/);
   assert.match(guide, /S3 = sample conformance/);
@@ -20,7 +21,7 @@ test("observation routing guide is package-facing and indexed", () => {
 });
 
 test("observation routing guide defines stable route values and CLI output fields", () => {
-  const guide = readText("OBSERVATION_ROUTING_GUIDE.md");
+  const guide = readText("docs/protocol/OBSERVATION_ROUTING_GUIDE.md");
 
   for (const route of ["S3_RECOMMENDED", "S4_RECOMMENDED", "MIXED_S3_S4", "ROUTING_UNCLEAR"]) {
     assert.match(guide, new RegExp(route));
@@ -40,7 +41,7 @@ test("observation routing guide defines stable route values and CLI output field
 });
 
 test("observation routing guide keeps the first example set intentionally small", () => {
-  const guide = readText("OBSERVATION_ROUTING_GUIDE.md");
+  const guide = readText("docs/protocol/OBSERVATION_ROUTING_GUIDE.md");
   const exampleRows = guide
     .split("\n")
     .filter((line) => /^\| \d+ \|/.test(line));

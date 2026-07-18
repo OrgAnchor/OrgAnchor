@@ -44,13 +44,13 @@ npm install -g organchor@alpha
 organchor --help
 ```
 
-Then follow `ADOPTION_GUIDE.md`, `ORG_ONBOARDING_CHECKLIST.md`, and `EXTERNAL_PILOT_RUNBOOK.md`.
+Then follow `docs/guides/ADOPTION_GUIDE.md`, `docs/guides/ORG_ONBOARDING_CHECKLIST.md`, and `docs/guides/EXTERNAL_PILOT_RUNBOOK.md`.
 
-Use `FIRESEED_OUTREACH_KIT.md` for the shortest external-validation task list, feedback route, and safety boundaries.
+Use `docs/outreach/FIRESEED_OUTREACH_KIT.md` for the shortest external-validation task list, feedback route, and safety boundaries.
 
-Use `FIRESEED_READINESS_GATE.md` to distinguish Fireseed launch blockers from normal alpha feedback.
+Use `docs/operations/FIRESEED_READINESS_GATE.md` to distinguish Fireseed launch blockers from normal alpha feedback.
 
-The current named-outreach decision is recorded in `FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
+The current named-outreach decision is recorded in `docs/history/FIRESEED_LAUNCH_DECISION_2026-06-01.md`.
 
 Useful issue type:
 
@@ -118,13 +118,13 @@ Evidence / Governance Review
 
 Report the smallest concrete scenario that breaks clarity, creates misleading confidence, or imposes unnecessary cost on honest adopters.
 
-Use `FIRESEED_READINESS_GATE.md` to separate S1-S3 acceptance-gate issues from S4/S5 design-preview issues.
+Use `docs/operations/FIRESEED_READINESS_GATE.md` to separate S1-S3 acceptance-gate issues from S4/S5 design-preview issues.
 
 ### 4. External Agent Evidence Evaluation
 
 Use this path to test whether an unfamiliar Agent can interpret one fictional signed evidence package without seeing OrgAnchor's answer key or previous discussion.
 
-Follow `EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`. The essential requirements are:
+Follow `docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`. The essential requirements are:
 
 - start the Agent without inherited OrgAnchor context;
 - expose only the Agent task, schema, public origin, and ordinary verification command;

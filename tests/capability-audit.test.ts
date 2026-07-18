@@ -4,22 +4,23 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("capability traceability matrix is package-facing and indexed", () => {
   const readme = readText("README.md");
-  const docsIndex = readText("DOCS_INDEX.md");
+  const docsIndex = readDocumentationMap(repoRoot);
   const packageJson = JSON.parse(readText("package.json")) as { files?: string[]; scripts?: Record<string, string> };
 
   assert.match(readme, /CAPABILITY_TRACEABILITY_MATRIX\.md/);
   assert.match(readme, /CAPABILITY_AUDIT_SCENARIOS\.md/);
   assert.match(docsIndex, /CAPABILITY_TRACEABILITY_MATRIX\.md/);
   assert.match(docsIndex, /CAPABILITY_AUDIT_SCENARIOS\.md/);
-  assert.ok(packageJson.files?.includes("CAPABILITY_TRACEABILITY_MATRIX.md"));
-  assert.ok(packageJson.files?.includes("CAPABILITY_AUDIT_SCENARIOS.md"));
-  assert.ok(packageJson.files?.includes("scripts/capability-audit.mjs"));
-  assert.ok(packageJson.files?.includes("scripts/capability-scenarios.mjs"));
+  assert.ok(packageIncludes(packageJson.files, "docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md"));
+  assert.ok(packageIncludes(packageJson.files, "docs/evaluations/CAPABILITY_AUDIT_SCENARIOS.md"));
+  assert.ok(packageIncludes(packageJson.files, "scripts/capability-audit.mjs"));
+  assert.ok(packageIncludes(packageJson.files, "scripts/capability-scenarios.mjs"));
   assert.equal(packageJson.scripts?.["capability:audit"], "node scripts/capability-audit.mjs");
   assert.equal(packageJson.scripts?.["capability:scenarios"], "node scripts/capability-scenarios.mjs");
 });
@@ -45,7 +46,7 @@ test("capability scenario manifest validates without running heavy scenarios", (
 });
 
 test("capability scenario layer covers executable and external self-pilot checks", () => {
-  const scenarios = readText("CAPABILITY_AUDIT_SCENARIOS.md");
+  const scenarios = readText("docs/evaluations/CAPABILITY_AUDIT_SCENARIOS.md");
 
   for (const phrase of [
     "CAS-001",
@@ -63,7 +64,7 @@ test("capability scenario layer covers executable and external self-pilot checks
 });
 
 test("capability matrix distinguishes implemented, partial, design-only, and not implemented work", () => {
-  const matrix = readText("CAPABILITY_TRACEABILITY_MATRIX.md");
+  const matrix = readText("docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md");
 
   for (const phrase of [
     "IMPLEMENTED_AND_TESTED",

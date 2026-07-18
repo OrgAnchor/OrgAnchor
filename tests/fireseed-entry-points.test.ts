@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -29,7 +30,7 @@ test("Fireseed contributor guide keeps participation paths and safety boundaries
     "Technical Review",
     "Evidence And Governance Review",
     "External Agent Evidence Evaluation",
-    "FIRESEED_READINESS_GATE.md",
+    "docs/operations/FIRESEED_READINESS_GATE.md",
     "Do not submit private keys",
     "Do not describe OrgAnchor compatibility as a trust badge",
     "npm run package:smoke",
@@ -40,7 +41,7 @@ test("Fireseed contributor guide keeps participation paths and safety boundaries
 });
 
 test("Fireseed public review brief does not overclaim maturity", () => {
-  const call = readText("CALL_FOR_FIRESEED_REVIEW.md");
+  const call = readText("docs/outreach/CALL_FOR_FIRESEED_REVIEW.md");
 
   assert.match(call, /Fireseed Alpha does not claim/);
   assert.match(call, /FIRESEED_LAUNCH_DECISION_2026-06-01\.md/);
@@ -81,19 +82,19 @@ function readText(path: string): string {
 }
 
 test("Fireseed outreach kit gives external reviewers concrete tasks and boundaries", () => {
-  const kit = readText("FIRESEED_OUTREACH_KIT.md");
+  const kit = readText("docs/outreach/FIRESEED_OUTREACH_KIT.md");
   const packageJson = JSON.parse(readText("package.json")) as { files?: string[] };
-  const docsIndex = readText("DOCS_INDEX.md");
-  const call = readText("CALL_FOR_FIRESEED_REVIEW.md");
+  const docsIndex = readDocumentationMap(repoRoot);
+  const call = readText("docs/outreach/CALL_FOR_FIRESEED_REVIEW.md");
 
-  assert.equal(packageJson.files?.includes("FIRESEED_OUTREACH_KIT.md"), true);
+  assert.equal(packageIncludes(packageJson.files, "docs/outreach/FIRESEED_OUTREACH_KIT.md"), true);
   assert.match(docsIndex, /FIRESEED_OUTREACH_KIT\.md/);
   assert.match(call, /FIRESEED_OUTREACH_KIT\.md/);
   assert.match(kit, /https:\/\/github\.com\/OrgAnchor\/OrgAnchor\/issues\/4/);
   assert.match(kit, /EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION\.md/);
   assert.match(kit, /distinguishes valid identity\/package integrity from insufficient claim support/i);
 
-  const trackingIssue = readText("FIRESEED_VALIDATION_TRACKING_ISSUE.md");
+  const trackingIssue = readText("docs/outreach/FIRESEED_VALIDATION_TRACKING_ISSUE.md");
   assert.match(trackingIssue, /Retired Internal Calibration/);
   assert.match(trackingIssue, /no longer a Wave 1 success criterion/i);
 

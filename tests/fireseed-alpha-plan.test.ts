@@ -3,17 +3,18 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("Fireseed Alpha plan is package-facing and indexed", () => {
-  const docsIndex = readText("DOCS_INDEX.md");
+  const docsIndex = readDocumentationMap(repoRoot);
   const packageJson = JSON.parse(readText("package.json")) as { files?: string[] };
-  const status = readText("IMPLEMENTATION_STATUS.md");
+  const status = readText("docs/project/IMPLEMENTATION_STATUS.md");
 
-  assert.ok(packageJson.files?.includes("FIRESEED_ALPHA_PLAN.md"));
-  assert.ok(packageJson.files?.includes("FIRESEED_LAUNCH_DECISION_2026-06-01.md"));
-  assert.ok(packageJson.files?.includes("FIRESEED_READINESS_GATE.md"));
+  assert.ok(packageIncludes(packageJson.files, "docs/operations/FIRESEED_ALPHA_PLAN.md"));
+  assert.equal(packageIncludes(packageJson.files, "docs/history/FIRESEED_LAUNCH_DECISION_2026-06-01.md"), false);
+  assert.ok(packageIncludes(packageJson.files, "docs/operations/FIRESEED_READINESS_GATE.md"));
   assert.match(docsIndex, /FIRESEED_ALPHA_PLAN\.md/);
   assert.match(docsIndex, /FIRESEED_LAUNCH_DECISION_2026-06-01\.md/);
   assert.match(docsIndex, /FIRESEED_READINESS_GATE\.md/);
@@ -23,7 +24,7 @@ test("Fireseed Alpha plan is package-facing and indexed", () => {
 });
 
 test("Fireseed Alpha keeps S3 as acceptance and S4/S5 as design preview", () => {
-  const plan = readText("FIRESEED_ALPHA_PLAN.md");
+  const plan = readText("docs/operations/FIRESEED_ALPHA_PLAN.md");
 
   assert.match(plan, /S3 \| Acceptance gate/);
   assert.match(plan, /S4 \| Design Preview/);
@@ -36,7 +37,7 @@ test("Fireseed Alpha keeps S3 as acceptance and S4/S5 as design preview", () => 
 });
 
 test("Fireseed readiness gate defines GO/HOLD without turning OrgAnchor into a trust authority", () => {
-  const gate = readText("FIRESEED_READINESS_GATE.md");
+  const gate = readText("docs/operations/FIRESEED_READINESS_GATE.md");
 
   for (const phrase of [
     "GO",
@@ -54,10 +55,10 @@ test("Fireseed readiness gate defines GO/HOLD without turning OrgAnchor into a t
 });
 
 test("Fireseed launch decision records GO scope, verification results, and accepted gaps", () => {
-  const decision = readText("FIRESEED_LAUNCH_DECISION_2026-06-01.md");
+  const decision = readText("docs/history/FIRESEED_LAUNCH_DECISION_2026-06-01.md");
 
   for (const phrase of [
-    "Status: GO for named Fireseed outreach",
+    "Original status at publication: GO for named Fireseed outreach",
     "da1d2a5cec4538e7af805c20b8920847aedfd6ab",
     "0.1.0-alpha.3",
     "https://organchor.org/verify/",
@@ -76,7 +77,7 @@ test("Fireseed launch decision records GO scope, verification results, and accep
 });
 
 test("purpose evidence challenge model folds history into S5 instead of a separate layer", () => {
-  const model = readText("PURPOSE_EVIDENCE_CHALLENGE_MODEL.md");
+  const model = readText("docs/protocol/PURPOSE_EVIDENCE_CHALLENGE_MODEL.md");
 
   for (const phrase of [
     "No Separate Historical Layer",
@@ -91,7 +92,7 @@ test("purpose evidence challenge model folds history into S5 instead of a separa
 });
 
 test("Fireseed Freeze prevents infinite scope expansion before public collaboration", () => {
-  const plan = readText("FIRESEED_ALPHA_PLAN.md");
+  const plan = readText("docs/operations/FIRESEED_ALPHA_PLAN.md");
 
   for (const phrase of [
     "do not expand S4/S5 into new large engineering tracks",

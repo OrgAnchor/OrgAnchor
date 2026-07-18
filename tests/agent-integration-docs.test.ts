@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("agent integration guide defines low-friction discovery and trust boundary", () => {
-  const guide = readFileSync(join(repoRoot, "AGENT_INTEGRATION_GUIDE.md"), "utf8");
+  const guide = readFileSync(join(repoRoot, "docs/protocol/AGENT_INTEGRATION_GUIDE.md"), "utf8");
   assert.match(guide, /AI 代理接入指南/);
   assert.match(guide, /\/\.well-known\/organchor\.json/);
   assert.match(guide, /organchor verify url https:\/\/example\.org --brief/);

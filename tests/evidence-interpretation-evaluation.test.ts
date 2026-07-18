@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const exampleDir = join(repoRoot, "examples", "evidence-interpretation-adversarial");
@@ -12,14 +13,14 @@ const evaluationScript = join(repoRoot, "scripts", "evidence-interpretation-eval
 
 test("adversarial evidence interpretation design is package-facing and indexed", () => {
   const packageJson = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8"));
-  const docsIndex = readFileSync(join(repoRoot, "DOCS_INDEX.md"), "utf8");
-  const evaluation = readFileSync(join(repoRoot, "EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md"), "utf8");
-  const externalRunbook = readFileSync(join(repoRoot, "EXTERNAL_AGENT_EVALUATION_RUNBOOK.md"), "utf8");
+  const docsIndex = readDocumentationMap(repoRoot);
+  const evaluation = readFileSync(join(repoRoot, "docs/evaluations/EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md"), "utf8");
+  const externalRunbook = readFileSync(join(repoRoot, "docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md"), "utf8");
   const externalIssueForm = readFileSync(join(repoRoot, ".github", "ISSUE_TEMPLATE", "external-agent-evaluation.yml"), "utf8");
 
-  assert.equal(packageJson.files?.includes("EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md"), true);
-  assert.equal(packageJson.files?.includes("EXTERNAL_AGENT_EVALUATION_RUNBOOK.md"), true);
-  assert.equal(packageJson.files?.includes("scripts/evidence-interpretation-evaluation.mjs"), true);
+  assert.equal(packageIncludes(packageJson.files, "docs/evaluations/EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md"), true);
+  assert.equal(packageIncludes(packageJson.files, "docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md"), true);
+  assert.equal(packageIncludes(packageJson.files, "scripts/evidence-interpretation-evaluation.mjs"), true);
   assert.equal(packageJson.scripts?.["evaluation:evidence"], "node scripts/evidence-interpretation-evaluation.mjs");
   assert.match(docsIndex, /EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION\.md/);
   assert.match(evaluation, /valid but the evidence is weak/i);

@@ -3,26 +3,26 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { packageIncludes, readDocumentationMap } from "./helpers/project-layout.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("language compatibility policy is package-facing and indexed", () => {
   const readme = readText("README.md");
-  const docsIndex = readText("DOCS_INDEX.md");
+  const docsIndex = readDocumentationMap(repoRoot);
   const packageJson = JSON.parse(readText("package.json")) as { files?: string[] };
 
-  assert.match(readme, /LANGUAGE_COMPATIBILITY\.md/);
-  assert.match(readme, /VISIBLE_ACCEPTANCE_REVIEW_2026-06-01\.md/);
+  assert.match(readme, /DOCS_INDEX\.md/);
   assert.match(docsIndex, /LANGUAGE_COMPATIBILITY\.md/);
   assert.match(docsIndex, /VISIBLE_ACCEPTANCE_REVIEW_2026-06-01\.md/);
-  assert.equal(packageJson.files?.includes("LANGUAGE_COMPATIBILITY.md"), true);
-  assert.equal(packageJson.files?.includes("VISIBLE_ACCEPTANCE_REVIEW_2026-06-01.md"), true);
+  assert.equal(packageIncludes(packageJson.files, "docs/protocol/LANGUAGE_COMPATIBILITY.md"), true);
+  assert.equal(packageIncludes(packageJson.files, "docs/history/VISIBLE_ACCEPTANCE_REVIEW_2026-06-01.md"), false);
 });
 
 test("language policy keeps machine contract stable and human explanation localizable", () => {
-  const policy = readText("LANGUAGE_COMPATIBILITY.md");
-  const review = readText("VISIBLE_ACCEPTANCE_REVIEW_2026-06-01.md");
-  const visible = readText("VISIBLE_ACCEPTANCE.md");
+  const policy = readText("docs/protocol/LANGUAGE_COMPATIBILITY.md");
+  const review = readText("docs/history/VISIBLE_ACCEPTANCE_REVIEW_2026-06-01.md");
+  const visible = readText("docs/operations/VISIBLE_ACCEPTANCE.md");
 
   for (const phrase of [
     "Machine contract stays stable",
@@ -50,8 +50,8 @@ test("language policy keeps machine contract stable and human explanation locali
 
 test("public entry documents keep readable Chinese text", () => {
   const readme = readText("README.md");
-  const agentGuide = readText("AGENT_INTEGRATION_GUIDE.md");
-  const outreach = readText("FIRESEED_OUTREACH_KIT.md");
+  const agentGuide = readText("docs/protocol/AGENT_INTEGRATION_GUIDE.md");
+  const outreach = readText("docs/outreach/FIRESEED_OUTREACH_KIT.md");
 
   assert.match(readme, /帮助组织发布经过签名、可复查的公开资料/);
   assert.match(agentGuide, /Chinese name: AI 代理接入指南/);

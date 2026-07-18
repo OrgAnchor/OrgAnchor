@@ -40,7 +40,7 @@ organchor page generate --statement statements/official-endpoints.json --sig sta
 organchor adoption status --verify-dir public/verify --origin https://example.org --level 2 --out ADOPTION_STATUS.md --json reports/adoption-status-report.json
 ```
 
-Use `ADOPTER_QUICKSTART.md` for the short explanation and `EXTERNAL_PILOT_RUNBOOK.md` for the full pilot path.
+Use `docs/guides/ADOPTER_QUICKSTART.md` for the short explanation and `docs/guides/EXTERNAL_PILOT_RUNBOOK.md` for the full pilot path.
 
 ## Safety
 

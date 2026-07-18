@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("Beacon model defines low-cost discovery and anti-capture boundaries", () => {
-  const beacon = readFileSync(join(repoRoot, "ORGANCHOR_BEACON.md"), "utf8");
+  const beacon = readFileSync(join(repoRoot, "docs/protocol/ORGANCHOR_BEACON.md"), "utf8");
 
   assert.match(beacon, /Discovery Efficiency Contract/);
   assert.match(beacon, /\/\.well-known\/organchor\.json/);
@@ -18,7 +18,7 @@ test("Beacon model defines low-cost discovery and anti-capture boundaries", () =
 });
 
 test("Beacon model records cache and abuse-resistance requirements", () => {
-  const beacon = readFileSync(join(repoRoot, "ORGANCHOR_BEACON.md"), "utf8");
+  const beacon = readFileSync(join(repoRoot, "docs/protocol/ORGANCHOR_BEACON.md"), "utf8");
 
   assert.match(beacon, /Cache-Control/);
   assert.match(beacon, /ETag/);
@@ -36,7 +36,7 @@ test("Beacon model records cache and abuse-resistance requirements", () => {
 });
 
 test("Beacon model distinguishes self-claims from full compatibility", () => {
-  const beacon = readFileSync(join(repoRoot, "ORGANCHOR_BEACON.md"), "utf8");
+  const beacon = readFileSync(join(repoRoot, "docs/protocol/ORGANCHOR_BEACON.md"), "utf8");
 
   assert.match(beacon, /Conformance And Impostor Defense/);
   assert.match(beacon, /CLAIMED_SIGNAL/);

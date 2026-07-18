@@ -15,9 +15,15 @@ import { dirname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { decodeXmlText } from "../src/commands/beacon-sweep.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const cliPath = join(repoRoot, "src", "cli.ts");
+
+test("XML text decoding does not recursively decode nested entities", () => {
+  assert.equal(decodeXmlText("a&amp;b"), "a&b");
+  assert.equal(decodeXmlText("&amp;lt;script&amp;gt;"), "&lt;script&gt;");
+});
 
 test("beacon inspect reports a full generated verify package as compatible", async () => {
   const workspace = mkdtempSync(join(tmpdir(), "organchor-beacon-full-"));
@@ -694,7 +700,7 @@ test("beacon report turns sweep artifacts into discovery quality metrics", () =>
     assert.equal(report.rates.stale_beacon_rate, 0.3333);
     assert.equal(report.reproducibility.available, true);
     assert.equal(report.reproducibility.average_jaccard, 0.3333);
-    assert.equal(report.stale.origins.includes("https://claimed.example"), true);
+    assert.deepEqual(report.stale.origins, ["https://claimed.example"]);
     assert.equal(existsSync(reportPath), true);
   } finally {
     rmSync(workspace, { recursive: true, force: true });

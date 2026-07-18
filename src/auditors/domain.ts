@@ -5,6 +5,7 @@ import { request as httpsRequest } from "node:https";
 import { connect as tlsConnect } from "node:tls";
 import { ensureDir, writeJsonFile } from "../core/files.ts";
 import type { JsonValue } from "../core/json.ts";
+import { escapeMarkdownTableCell as escapeMarkdown } from "../core/markdown.ts";
 import type { AuditStatus, DomainAuditCheck, DomainSecurityReport } from "../types/report.ts";
 
 export interface DomainAuditOptions {
@@ -450,10 +451,6 @@ function errorDetails(error: unknown): Record<string, unknown> {
   return {
     error: String(error)
   };
-}
-
-function escapeMarkdown(value: string): string {
-  return value.replace(/\|/g, "\\|").replace(/\n/g, " ");
 }
 
 async function resolveDsViaDnsJson(hostname: string, dnsServer?: string): Promise<unknown[]> {

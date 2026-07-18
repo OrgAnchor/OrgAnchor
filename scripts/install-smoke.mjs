@@ -65,15 +65,15 @@ try {
     PATH: `${binDir}${delimiter}${process.env.PATH ?? ""}`
   };
 
-  const help = run(binPath, ["--help"], workspace, env);
+  const help = runInstalled(binPath, ["--help"], workspace, env);
   if (!help.stdout.includes("organchor init")) {
     throw new Error("installed CLI help does not contain organchor init");
   }
 
-  run(binPath, ["init"], installWorkspace, env);
-  run(binPath, ["key", "generate", "--id", "root-2026"], installWorkspace, env);
-  run(binPath, ["authority", "create", "--key", "keys/root-2026.private.json"], installWorkspace, env);
-  run(binPath, [
+  runInstalled(binPath, ["init"], installWorkspace, env);
+  runInstalled(binPath, ["key", "generate", "--id", "root-2026"], installWorkspace, env);
+  runInstalled(binPath, ["authority", "create", "--key", "keys/root-2026.private.json"], installWorkspace, env);
+  runInstalled(binPath, [
     "statement",
     "create",
     "--config",
@@ -83,7 +83,7 @@ try {
     "--out",
     "statements/official-endpoints.json"
   ], installWorkspace, env);
-  run(binPath, [
+  runInstalled(binPath, [
     "statement",
     "sign",
     "--key",
@@ -95,7 +95,7 @@ try {
     "--out",
     "statements/official-endpoints.json.sig"
   ], installWorkspace, env);
-  const verify = run(binPath, [
+  const verify = runInstalled(binPath, [
     "statement",
     "verify",
     "--authority",
@@ -110,7 +110,7 @@ try {
   }
   const authorityHash = requireMatch(verify.stdout, /Authority hash: (sha256:[0-9a-f]{64})/, "authority hash");
 
-  run(binPath, [
+  runInstalled(binPath, [
     "page",
     "generate",
     "--statement",
@@ -122,7 +122,7 @@ try {
     "--out",
     "public/verify"
   ], installWorkspace, env);
-  run(binPath, [
+  runInstalled(binPath, [
     "statement",
     "verify",
     "--authority",
@@ -224,15 +224,20 @@ function removeExcludedEntry(relative) {
 }
 
 function run(command, args, cwd, env = process.env) {
-  const result = process.platform === "win32" && command.endsWith(".cmd") ?
-    spawnSync("cmd.exe", ["/d", "/c", "call", command, ...args], { cwd, env, encoding: "utf8" }) :
-    spawnSync(command, args, { cwd, env, encoding: "utf8" });
+  const result = spawnSync(command, args, { cwd, env, encoding: "utf8" });
   if (result.status !== 0) {
     throw new Error(
       `${command} ${args.join(" ")} failed with status ${result.status}\nerror:\n${result.error?.message ?? ""}\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`
     );
   }
   return result;
+}
+
+function runInstalled(binPath, args, cwd, env) {
+  if (process.platform === "win32") {
+    return run(process.execPath, [join(packageDir, "dist", "cli.js"), ...args], cwd, env);
+  }
+  return run(binPath, args, cwd, env);
 }
 
 function requireMatch(text, pattern, label) {

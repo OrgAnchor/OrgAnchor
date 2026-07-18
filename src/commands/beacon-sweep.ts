@@ -433,13 +433,13 @@ function longestPrefixLength(path: string, patterns: string[]): number {
   return longest;
 }
 
-function decodeXmlText(value: string): string {
+export function decodeXmlText(value: string): string {
   return value
-    .replaceAll("&amp;", "&")
     .replaceAll("&lt;", "<")
     .replaceAll("&gt;", ">")
     .replaceAll("&quot;", '"')
-    .replaceAll("&apos;", "'");
+    .replaceAll("&apos;", "'")
+    .replaceAll("&amp;", "&");
 }
 
 function countStatuses(records: BeaconSweepRecord[]): Record<BeaconInspectStatus, number> {

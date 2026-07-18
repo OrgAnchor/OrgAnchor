@@ -29,7 +29,7 @@ readiness.
 Baseline commit: `6e58d3d2c3c9584433d45d819746a71f189371a6`
 
 - [Failed quality run](https://github.com/OrgAnchor/OrgAnchor/actions/runs/29640146892)
-- [Successful security run](https://github.com/OrgAnchor/OrgAnchor/actions/runs/29640146911)
+- [Completed security run](https://github.com/OrgAnchor/OrgAnchor/actions/runs/29640146911)
 
 The first quality run exposed two defects that local Windows testing did not
 reveal:
@@ -55,7 +55,7 @@ Correction commit: `85a6e5d05f7432e3da5bec31ebb3623753e4b9ea`
 ## Successful Public Result
 
 - [Successful quality run](https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949524)
-- [Successful security run](https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949522)
+- [Completed security run](https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949522)
 
 The corrected public run established:
 
@@ -67,7 +67,31 @@ The corrected public run established:
 - Package-content smoke: PASS.
 - Clean package installation: PASS.
 - npm high/critical vulnerability gate: PASS.
-- CodeQL JavaScript/TypeScript analysis: PASS.
+- CodeQL JavaScript/TypeScript analysis completed, but the initial workflow did
+  not fail when uploaded analysis contained open alerts.
+
+## Security Result Correction
+
+Inspection of the uploaded CodeQL results found six open alerts: five high
+severity and one medium severity. They covered incomplete Markdown escaping,
+double XML entity decoding, an imprecise URL assertion, and Windows smoke-test
+shell invocation. Treating workflow completion as a clean security result was
+therefore incorrect.
+
+The follow-up remediation:
+
+- centralizes Markdown table-cell escaping and tests backslashes, pipes, and
+  line breaks;
+- prevents nested XML entities from being recursively decoded;
+- replaces the imprecise URL substring assertion with exact comparison;
+- removes the Windows shell invocation from the clean-install smoke test; and
+- adds a workflow gate that rejects any open medium, high, or critical CodeQL
+  alert after analysis.
+
+This historical record intentionally retains both the original workflow result
+and the later interpretation correction. A clean public security result must be
+recorded only after the strengthened workflow runs and the repository reports no
+open medium-or-higher CodeQL alerts.
 
 ## Boundary
 

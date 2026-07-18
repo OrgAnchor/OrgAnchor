@@ -71,3 +71,26 @@ jobs:
         uses: github/codeql-action/analyze@v4
         with:
           category: /language:javascript-typescript
+
+      - name: Reject open medium-or-higher CodeQL alerts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            count="$(gh api "repos/${GITHUB_REPOSITORY}/code-scanning/alerts?state=open&per_page=100" \
+              --jq '[.[] | select(.rule.security_severity_level == "critical" or .rule.security_severity_level == "high" or .rule.security_severity_level == "medium")] | length')"
+            if [ "$count" = "0" ]; then
+              echo "No open medium-or-higher CodeQL alerts."
+              exit 0
+            fi
+            if [ "$attempt" != "6" ]; then
+              echo "Waiting for CodeQL alert state to settle (attempt ${attempt}/6, currently ${count})..."
+              sleep 15
+            fi
+          done
+
+          echo "Open medium-or-higher CodeQL alerts remain:"
+          gh api "repos/${GITHUB_REPOSITORY}/code-scanning/alerts?state=open&per_page=100" \
+            --jq '.[] | select(.rule.security_severity_level == "critical" or .rule.security_severity_level == "high" or .rule.security_severity_level == "medium") | "#\(.number) [\(.rule.security_severity_level)] \(.rule.id) at \(.most_recent_instance.location.path):\(.most_recent_instance.location.start_line)"'
+          exit 1

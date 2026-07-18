@@ -19,10 +19,10 @@
     },
     "latest_local_observation": {
       "date": "2026-07-18",
-      "tests_passed": 181,
+      "tests_passed": 183,
       "line_coverage_percent": 87.77,
-      "function_coverage_percent": 94.0,
-      "branch_coverage_percent": 57.37,
+      "function_coverage_percent": 93.99,
+      "branch_coverage_percent": 57.36,
       "npm_audit_high_or_critical": 0
     },
     "first_successful_public_baseline": {
@@ -80,15 +80,17 @@
     {
       "id": "dependency-and-static-security",
       "title": "Dependency audit, dependency review, CodeQL, and secret scanning",
-      "status": "MACHINE_VERIFIED",
+      "status": "PUBLIC_RUN_PENDING",
       "evidence": [
         ".github/workflows/security.yml",
         ".github/dependabot.yml",
         ".github/SECURITY.md",
         "https://github.com/OrgAnchor/OrgAnchor/security",
-        "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949522"
+        "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949522",
+        "src/core/markdown.ts",
+        "tests/markdown.test.ts"
       ],
-      "limitation": "Automated scanners detect known patterns and cannot establish the absence of vulnerabilities."
+      "limitation": "The first CodeQL run completed but exposed five high-severity and one medium-severity findings. Local remediations pass the full quality gate and await a new public scan; automated scanners still cannot establish the absence of vulnerabilities."
     },
     {
       "id": "documentation-implementation-alignment",

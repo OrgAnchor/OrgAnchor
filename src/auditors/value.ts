@@ -2,6 +2,7 @@ import { writeFile } from "node:fs/promises";
 import { hashFile } from "../core/artifacts.ts";
 import { ensureDir, writeJsonFile } from "../core/files.ts";
 import { readJsonFile } from "../core/json.ts";
+import { escapeMarkdownTableCell as escapeMarkdown } from "../core/markdown.ts";
 import { asObject } from "../core/validate.ts";
 import { validateClaimsManifest, validateEvidenceManifest } from "../core/evidence-validate.ts";
 import type { JsonValue } from "../core/json.ts";
@@ -2836,8 +2837,4 @@ function asRecord(value: JsonValue | undefined): Record<string, JsonValue> {
 
 function stringValue(value: JsonValue | undefined): string {
   return typeof value === "string" ? value : "";
-}
-
-function escapeMarkdown(value: string): string {
-  return value.replace(/\|/g, "\\|").replace(/\n/g, " ");
 }

@@ -1,6 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import { sha256CanonicalJson } from "../core/hash.ts";
 import { readJsonFile, type JsonValue } from "../core/json.ts";
+import { escapeMarkdownTableCell as escapePipes } from "../core/markdown.ts";
 import { validateOfficialStatement } from "../core/validate.ts";
 import { ensureDir, writeJsonFile } from "../core/files.ts";
 
@@ -299,8 +300,4 @@ function asStringRecord(value: JsonValue, label: string): Record<string, string>
 
 function ensureTrailingSlash(url: string): string {
   return url.endsWith("/") ? url : `${url}/`;
-}
-
-function escapePipes(value: string): string {
-  return value.replace(/\|/g, "\\|");
 }

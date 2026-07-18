@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { dirname, extname, relative, resolve } from "node:path";
+import { dirname, extname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -67,7 +67,7 @@ for (const file of collectMarkdown(root)) {
     checkLocalTarget(file, match[2]);
   }
 
-  if (!file.startsWith(`${historyRoot}\\`) && text.includes("E:\\CivX\\OrgAnchor-self-pilot")) {
+  if (!file.startsWith(`${historyRoot}${sep}`) && text.includes("E:\\CivX\\OrgAnchor-self-pilot")) {
     errors.push(`Active document contains retired local self-pilot path: ${toRepoPath(file)}`);
   }
 }
@@ -151,7 +151,7 @@ function checkLocalTarget(sourceFile, target) {
   const clean = target.split("#")[0].split("?")[0];
   if (!clean || clean.includes("{") || clean.includes("<")) return;
   checkedLinks += 1;
-  const resolved = resolve(dirname(sourceFile), clean.replaceAll("/", "\\"));
+  const resolved = resolve(dirname(sourceFile), clean);
   if (!existsSync(resolved)) {
     errors.push(`Broken link in ${toRepoPath(sourceFile)}: ${target}`);
   }
@@ -162,14 +162,14 @@ function toRepoPath(path) {
 }
 
 function checkRequiredText(repoPath, expected) {
-  const file = resolve(root, repoPath.replaceAll("/", "\\"));
+  const file = resolve(root, repoPath);
   if (!existsSync(file) || !readFileSync(file, "utf8").includes(expected)) {
     errors.push(`${repoPath} is missing required current-state text: ${expected}`);
   }
 }
 
 function checkForbiddenText(repoPath, forbidden) {
-  const file = resolve(root, repoPath.replaceAll("/", "\\"));
+  const file = resolve(root, repoPath);
   if (existsSync(file) && readFileSync(file, "utf8").includes(forbidden)) {
     errors.push(`${repoPath} contains retired current-state text: ${forbidden}`);
   }

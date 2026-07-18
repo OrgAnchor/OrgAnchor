@@ -93,6 +93,24 @@ and the later interpretation correction. A clean public security result must be
 recorded only after the strengthened workflow runs and the repository reports no
 open medium-or-higher CodeQL alerts.
 
+## Strengthened Public Result
+
+Remediation commit: `aa211ada3ba82de4ddb126c36a252f35f4829110`
+
+- [Successful strengthened quality run](https://github.com/OrgAnchor/OrgAnchor/actions/runs/29644175382)
+- [Successful strengthened security run](https://github.com/OrgAnchor/OrgAnchor/actions/runs/29644175383)
+- [Successful pull-request dependency review](https://github.com/OrgAnchor/OrgAnchor/actions/runs/29640167379/attempts/2)
+
+The public rerun established:
+
+- Ubuntu quality gate: PASS, 183 of 183 tests.
+- Windows quality gate: PASS, 183 of 183 tests.
+- Release, package-content, and clean-install smoke checks: PASS.
+- npm high/critical dependency findings: 0.
+- Open medium-or-higher CodeQL alerts after analysis: 0.
+- Repository dependency graph and SBOM endpoint: available.
+- Pull-request dependency review against an actual Dependabot change: PASS.
+
 ## Boundary
 
 This is machine-generated evidence for the checked code and declared scenarios.

@@ -31,6 +31,17 @@
       "security_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949522",
       "quality_conclusion": "SUCCESS",
       "security_conclusion": "SUCCESS"
+    },
+    "latest_strengthened_public_baseline": {
+      "commit": "aa211ada3ba82de4ddb126c36a252f35f4829110",
+      "quality_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29644175382",
+      "security_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29644175383",
+      "dependency_review_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29640167379/attempts/2",
+      "quality_conclusion": "SUCCESS",
+      "security_conclusion": "SUCCESS",
+      "dependency_review_conclusion": "SUCCESS",
+      "open_codeql_alerts": 0,
+      "dependency_graph_sbom_available": true
     }
   },
   "assurance_items": [
@@ -80,17 +91,19 @@
     {
       "id": "dependency-and-static-security",
       "title": "Dependency audit, dependency review, CodeQL, and secret scanning",
-      "status": "PUBLIC_RUN_PENDING",
+      "status": "MACHINE_VERIFIED",
       "evidence": [
         ".github/workflows/security.yml",
         ".github/dependabot.yml",
         ".github/SECURITY.md",
         "https://github.com/OrgAnchor/OrgAnchor/security",
         "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949522",
+        "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29644175383",
+        "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29640167379/attempts/2",
         "src/core/markdown.ts",
         "tests/markdown.test.ts"
       ],
-      "limitation": "The first CodeQL run completed but exposed five high-severity and one medium-severity findings. Local remediations pass the full quality gate and await a new public scan; automated scanners still cannot establish the absence of vulnerabilities."
+      "limitation": "The first CodeQL run exposed five high-severity and one medium-severity findings. The corrected public scan closed all six and now rejects any open medium-or-higher alert; automated scanners still cannot establish the absence of vulnerabilities."
     },
     {
       "id": "documentation-implementation-alignment",

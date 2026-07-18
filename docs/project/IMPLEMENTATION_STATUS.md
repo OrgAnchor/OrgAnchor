@@ -105,8 +105,10 @@ Release hygiene:
   page and machine-readable companion.
 - Windows and Linux GitHub quality workflows, plus npm dependency audit,
   pull-request dependency review, CodeQL, and weekly Dependabot configuration.
-- The first public runs of the newly added quality and security workflows remain
-  pending until the quality-baseline commit is pushed.
+- The first public Windows/Linux quality run, package/install smoke run,
+  dependency audit, and CodeQL run passed on 2026-07-18. The failed first
+  attempt and cross-platform fixes are preserved in
+  `docs/history/QUALITY_ASSURANCE_BASELINE_2026-07-18.md`.
 - Release smoke.
 - Package smoke.
 - Install smoke.

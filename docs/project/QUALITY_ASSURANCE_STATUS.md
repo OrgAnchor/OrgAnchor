@@ -30,10 +30,10 @@ badge or security certification. The machine-readable companion is
 | Area | Status | What is actually established | Important limit |
 | --- | --- | --- | --- |
 | Canonical JSON, SHA-256, Ed25519, threshold authority, migration, and tamper rejection | Machine verified | Focused automated tests exercise the declared behavior. | An independent security and cryptographic review has not been completed. |
-| Windows and Linux clean-environment checks | Public run pending | A GitHub workflow now installs locked dependencies and runs the full quality gate on both systems. | It becomes public evidence only after a successful run. |
+| Windows and Linux clean-environment checks | Machine verified | The first public GitHub run passed the full quality gate on Node.js 24 for both systems. | The matrix does not represent every downstream operating environment. |
 | Test coverage | Machine verified | The current local run passed 181 tests and measured 87.77% lines, 94.00% functions, and 57.37% branches. CI rejects drops below 80%, 85%, and 50% respectively. | Coverage measures executed code, not correctness of every assumption. |
 | Package and clean installation | Machine verified | Package contents, private-material exclusions, CLI behavior, and clean installation have executable smoke checks. | Downstream environments outside the tested matrix can still fail. |
-| Dependency and static security checks | Public run pending | npm audit, pull-request dependency review, weekly Dependabot updates, and CodeQL are configured. | Automated scanners cannot establish that no vulnerability exists. |
+| Dependency and static security checks | Machine verified | npm audit and CodeQL passed publicly; pull-request dependency review, weekly Dependabot updates, secret scanning, and push protection are active. | Automated scanners cannot establish that no vulnerability exists. |
 | Documentation and implementation alignment | Machine verified | Documentation links, required state language, and capability traceability are checked mechanically. | Internal consistency is not independent proof of usability or correctness. |
 | Bounded Agent evidence interpretation | Internally evaluated | Fresh-context runs preserved key identity-versus-evidence boundaries in three adversarial scenarios. | The scenarios are bounded and mostly use one Agent family. |
 | Independent security and cryptographic review | External verification pending | A public review route and private vulnerability route exist. | No independent review report is available yet. |
@@ -45,6 +45,8 @@ badge or security certification. The machine-readable companion is
 
 - [Quality workflow](https://github.com/OrgAnchor/OrgAnchor/actions/workflows/quality.yml)
 - [Security workflow](https://github.com/OrgAnchor/OrgAnchor/actions/workflows/security.yml)
+- [First successful Windows/Linux quality run](https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949524)
+- [First successful dependency and CodeQL run](https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949522)
 - [Repository security overview](https://github.com/OrgAnchor/OrgAnchor/security)
 - [Capability traceability matrix](../evaluations/CAPABILITY_TRACEABILITY_MATRIX.md)
 - [Implementation status](./IMPLEMENTATION_STATUS.md)
@@ -54,7 +56,7 @@ badge or security certification. The machine-readable companion is
 
 The current evidence supports public inspection, bounded external evaluation,
 and low-risk pilots. It does not support asking an organization to treat this
-alpha as its only production identity control. Promotion beyond this boundary
-requires, at minimum, a successful public quality/security run, an independent
-technical and cryptographic review, and one external organization pilot with
-preserved raw results.
+alpha as its only production identity control. The first public quality and
+security baseline now passes. Promotion beyond this boundary still requires an
+independent technical and cryptographic review and one external organization
+pilot with preserved raw results.

@@ -24,6 +24,13 @@
       "function_coverage_percent": 94.0,
       "branch_coverage_percent": 57.37,
       "npm_audit_high_or_critical": 0
+    },
+    "first_successful_public_baseline": {
+      "commit": "85a6e5d05f7432e3da5bec31ebb3623753e4b9ea",
+      "quality_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949524",
+      "security_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949522",
+      "quality_conclusion": "SUCCESS",
+      "security_conclusion": "SUCCESS"
     }
   },
   "assurance_items": [
@@ -41,12 +48,13 @@
     {
       "id": "cross-platform-ci",
       "title": "Clean Windows and Linux verification on every change",
-      "status": "PUBLIC_RUN_PENDING",
+      "status": "MACHINE_VERIFIED",
       "evidence": [
         ".github/workflows/quality.yml",
-        "https://github.com/OrgAnchor/OrgAnchor/actions/workflows/quality.yml"
+        "https://github.com/OrgAnchor/OrgAnchor/actions/workflows/quality.yml",
+        "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949524"
       ],
-      "limitation": "The workflow must complete its first public run before this item can be promoted."
+      "limitation": "The public matrix currently covers Node.js 24 on Windows and Linux, not every supported downstream environment."
     },
     {
       "id": "test-coverage-gate",
@@ -72,12 +80,13 @@
     {
       "id": "dependency-and-static-security",
       "title": "Dependency audit, dependency review, CodeQL, and secret scanning",
-      "status": "PUBLIC_RUN_PENDING",
+      "status": "MACHINE_VERIFIED",
       "evidence": [
         ".github/workflows/security.yml",
         ".github/dependabot.yml",
         ".github/SECURITY.md",
-        "https://github.com/OrgAnchor/OrgAnchor/security"
+        "https://github.com/OrgAnchor/OrgAnchor/security",
+        "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29642949522"
       ],
       "limitation": "Automated scanners detect known patterns and cannot establish the absence of vulnerabilities."
     },

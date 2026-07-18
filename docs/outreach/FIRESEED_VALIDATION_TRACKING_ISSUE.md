@@ -1,185 +1,180 @@
-# Fireseed Alpha External Validation Wave 1 Tracking Issue
-
-Status: Copyable GitHub tracking issue draft.
-
-Use this file to open the first public GitHub issue for external validation.
-
-## Issue Title
-
-Fireseed Alpha External Validation Wave 1
-
-## Labels
-
-Suggested labels:
-
-- `fireseed`
-- `external-validation`
-- `alpha`
-- `review`
-- `needs-participants`
-
-## Issue Body
-
-```markdown
 # Fireseed Alpha External Validation Wave 1
 
-OrgAnchor is in Fireseed Alpha. This issue tracks the first external validation wave.
+Status: Active public external-validation and recruitment funnel.
 
-The goal is not to prove that OrgAnchor is finished. The goal is to make the current direction understandable, reproducible, criticizable, and useful enough for serious early collaborators.
+OrgAnchor Fireseed `0.1.0-alpha.5` is open for its first external validation
+wave. This issue is the canonical public place to reproduce the current release,
+report friction, and record findings that should change the implementation or
+roadmap.
 
-## What OrgAnchor Is
+The immediate uncertainty is not whether a willing adopting organization already
+exists. It is whether unfamiliar people and organizations can understand the
+value, complete a low-commitment check, and choose to continue without excessive
+cost.
 
-OrgAnchor helps organizations publish signed, recheckable public records that link identity, official presence, claims, evidence, and migration history so people and AI agents can discover, screen, verify, understand, and compare candidate organizations at lower cost across domain, platform, website, or infrastructure changes.
+## Current Public Release
 
-## What OrgAnchor Is Not
+- GitHub prerelease: https://github.com/OrgAnchor/OrgAnchor/releases/tag/v0.1.0-alpha.5
+- npm package: https://www.npmjs.com/package/organchor/v/0.1.0-alpha.5
+- public site: https://organchor.org/
+- human-readable verification page: https://organchor.org/verify/
+- machine-readable Beacon: https://organchor.org/.well-known/organchor.json
+- public release verification: https://github.com/OrgAnchor/OrgAnchor/blob/main/docs/history/PUBLIC_SELF_VERIFICATION_2026-07-17.md
 
-OrgAnchor is not:
+## What OrgAnchor Is Testing
 
-- a trust badge;
-- a marketplace;
-- a certification authority;
-- a government identity replacement;
-- a product truth oracle;
-- stable v1.
+OrgAnchor links an organization's identity, official presence, claims, evidence,
+migration history, and verification routes into signed, recheckable public
+records. The intended result is lower discovery, verification, interpretation,
+and comparison cost for people and AI agents.
 
-`PASS` does not mean "this organization is good." It means the checked identity/evidence path passed the current verification checks. OrgAnchor's own trust decision remains `NOT_ASSIGNED_BY_ORGANCHOR`.
+`PASS` is a verification result, not a trust badge. It does not mean that an
+organization is good, that a product claim is true, or that a buyer should
+transact. OrgAnchor's trust decision remains `NOT_ASSIGNED_BY_ORGANCHOR`.
+
+## Start Here: 15-Minute Public Check
+
+No source checkout and no OrgAnchor adoption are required:
+
+```bash
+npx --yes organchor@alpha doctor https://organchor.org
+npx --yes organchor@alpha beacon inspect https://organchor.org
+npx --yes organchor@alpha verify url https://organchor.org --brief
+```
+
+On Windows PowerShell, use `npx.cmd` instead of `npx` if the execution policy
+blocks `npx.ps1`.
+
+Report just one concrete result: a failed command, confusing field, hidden gap,
+misleading status, unnecessary step, or missing next action. A useful negative
+result is more valuable than general approval.
+
+## Continue Only As Far As Useful
+
+Participation is intentionally progressive:
+
+1. Run the 15-minute public check.
+2. Report one concrete finding.
+3. Try a fictional or local-only sandbox package.
+4. Use real organization material in a non-public assisted workspace.
+5. Publish a real pilot only after the organization explicitly approves it.
+
+An organization may stop at any step. A non-public trial is still useful Fireseed
+evidence and creates no obligation to publish.
+
+For non-public pilot interest, contact `organchor.admin@proton.me`. Do not email
+private keys, recovery codes, provider tokens, wallet files, customer-private
+data, or confidential evidence.
+
+## What A Pilot Participant Receives
+
+The first named pilot is assisted by the OrgAnchor operator. The participant
+receives:
+
+- a local adoption workspace;
+- a root-authority and custody plan controlled by the organization;
+- a generated `/verify` package and Beacon preview;
+- a domain-security report;
+- a record of actual time, direct cost, friction, and unresolved gaps;
+- the right to stop before public or append-only publication.
+
+Participation is not certification, endorsement, ranking, or a final trust
+decision.
 
 ## Review Tracks
 
-### Track A: Adopting Organization Trial
+### Adopting Organization Trial
 
-Goal: Test whether a real or realistic organization can publish a useful OrgAnchor package without excessive effort.
+Test whether a real or realistic organization can create a useful package without
+excessive effort. Local-only trials count. Useful findings include setup friction,
+unclear decisions, missing templates, and maintenance work that would prevent
+adoption.
 
-Useful output:
+### Technical Review
 
-- friction points;
-- unclear docs;
-- missing templates;
-- excessive setup cost;
-- evidence fields that are too vague or too heavy.
+Test canonical JSON, Ed25519 verification, threshold root authority, migration,
+`/verify` generation, Beacon discovery, package safety, tamper failure, and
+release reproducibility.
 
-### Track B: Technical Review
+### Evidence And Governance Review
 
-Goal: Test the implementation.
+Challenge whether S1-S3 evidence handling is practical and abuse-resistant.
+Focus on weak, mismatched, stale, or conflicting evidence and on places where
+honest adopters carry too much cost.
 
-Focus:
+### AI Agent Or Directory Review
 
-- canonical JSON;
-- Ed25519 signing and verification;
-- root authority migration;
-- `/verify` generation;
-- Beacon discovery;
-- `organchor verify url --compact`;
-- package safety;
-- tamper failure;
-- test coverage.
-
-### Track C: Evidence And Governance Review
-
-Goal: Test whether S1-S3 evidence handling is practical and abuse-resistant.
-
-Focus:
-
-- S1 first-party evidence;
-- S2 organization-submitted third-party material;
-- S3 random purchase / sampling;
-- sample-slot and anti-brushing design;
-- stale or misleading evidence;
-- S4/S5 design-preview gaps.
-
-### Track D: AI Agent Or Directory Builder
-
-Goal: Test whether an external AI Agent or Directory can discover, filter, and verify OrgAnchor adopters with low friction.
-
-Focus:
-
-- `/.well-known/organchor.json`;
-- `organchor beacon sweep`;
-- local Beacon index;
-- `organchor beacon query`;
-- Directory snapshot;
-- compact verification result;
-- risk gaps and next actions.
-- adversarial evidence interpretation where identity and package integrity pass but a product claim remains insufficiently supported.
+Test whether an unfamiliar Agent can discover an adopter, retrieve the signed
+package, preserve evidence gaps and conflicts, and avoid turning package validity
+into claim truth or trust.
 
 ## Retired Internal Calibration
 
-The former homepage-only versus OrgAnchor retrieval comparison is preserved as an internal integration calibration, not as a transaction-cost experiment. Structured machine data being easier to retrieve than homepage prose is a design premise and is no longer a Wave 1 success criterion.
+The former homepage-only versus OrgAnchor retrieval comparison remains a
+historical integration calibration. Structured machine data being easier to
+retrieve than homepage prose is a design premise and is no longer a Wave 1
+success criterion.
 
-The active uncertainty is whether an unfamiliar Agent can keep valid identity and package integrity separate from insufficient, mismatched, stale, or missing claim evidence. See `docs/evaluations/EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`.
+The active Agent uncertainty is whether an unfamiliar Agent preserves the
+boundary between valid identity/package integrity and insufficient, mismatched,
+stale, or conflicting claim evidence.
 
-## Internal Fresh-Context Baseline
+## Deeper Adversarial Checks
 
-The first isolated internal Agent run completed on 2026-07-16 and scored `96/100 SAFE_AND_USEFUL` with no hard failure. It correctly rejected insufficient and out-of-scope evidence without turning insufficiency into falsity or fraud. It did not order the follow-up checks by lowest cost, so the result also produced a concrete machine-contract improvement target. Raw output and scoring are preserved under `evaluation-results/evidence-interpretation/2026-07-16-internal-fresh-context/`.
-
-This baseline does not satisfy the independent external review criteria by itself.
-
-The public fictional Wave 1 package is available at `https://organchor-evidence-eval-v1.pages.dev`; `https://weak-evidence-v1.eval.organchor.org` is its custom alias. Only the public package is deployed. Agent tasks, scoring, and raw-result submission follow `docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md`.
-
-## Fast Local Checks
-
-```bash
-npm install -g organchor@alpha
-organchor doctor https://organchor.org
-organchor beacon inspect https://organchor.org
-organchor verify url https://organchor.org --compact
-```
-
-From a source checkout, run the local demos:
+From a source checkout:
 
 ```bash
 npm ci
-npm run visible:demo -- --out ./visible-demo --serve
-npm run agent:demo
-npm run evaluation:evidence -- build --out ./.local/evidence-interpretation-run
-npm run evaluation:evidence -- exercise --package ./.local/evidence-interpretation-run
+npm run evaluation:evidence -- build --out ./.local/evidence-weak-run
+npm run evaluation:evidence -- exercise --package ./.local/evidence-weak-run
+npm run evaluation:evidence -- build-stale --out ./.local/evidence-stale-run
+npm run evaluation:evidence -- exercise-stale --package ./.local/evidence-stale-run
+npm run evaluation:evidence -- build-conflict --out ./.local/evidence-conflict-run
+npm run evaluation:evidence -- exercise-conflict --package ./.local/evidence-conflict-run
 ```
 
-## Useful Public Docs
+Reference material:
 
-- `README.md`
-- `docs/outreach/PUBLIC_EXPLAINER.md`
-- `docs/outreach/FIRESEED_OUTREACH_KIT.md`
-- `docs/history/PUBLIC_SELF_VERIFICATION_2026-07-15.md`
-- `docs/evaluations/EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`
-- `docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md`
-- `docs/operations/VISIBLE_ACCEPTANCE.md`
-- `docs/protocol/CLAIMS_EVIDENCE_PROTOCOL.md`
-- `docs/protocol/S2_THIRD_PARTY_MATERIAL_MODEL.md`
-- `docs/protocol/S3_RANDOM_SAMPLING_MODEL.md`
-- `docs/protocol/DIRECTORY_MODEL.md`
-- `docs/protocol/COMMERCIAL_FIT_LAYER.md`
+- https://github.com/OrgAnchor/OrgAnchor/blob/main/docs/outreach/FIRESEED_OUTREACH_KIT.md
+- https://github.com/OrgAnchor/OrgAnchor/blob/main/docs/evaluations/EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md
+- https://github.com/OrgAnchor/OrgAnchor/blob/main/docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md
+- https://github.com/OrgAnchor/OrgAnchor/blob/main/docs/protocol/CLAIMS_EVIDENCE_PROTOCOL.md
+- https://github.com/OrgAnchor/OrgAnchor/blob/main/docs/operations/FIRESEED_READINESS_GATE.md
 
-## Wave 1 Success Criteria
+## What Counts As Progress
 
-Wave 1 is useful if it produces:
+This wave is informative when it produces movement through the participation
+ladder, not merely impressions or stars. Record:
 
-- at least one external organization or realistic pilot workspace;
-- at least one independent technical review;
-- at least one evidence/governance review;
-- at least one AI-agent or Directory discovery experiment;
-- at least one adversarial evidence-interpretation result that distinguishes package validity from claim support;
-- at least one documented failure, confusion, or gap that changes the roadmap.
+- targeted invitations sent;
+- substantive replies;
+- completed public checks;
+- concrete findings;
+- sandbox trials;
+- non-public real-material trials;
+- public pilots.
 
-## Hold Criteria
+After roughly 20 carefully matched invitations, a near-zero substantive response
+is a signal to revisit the value proposition, participant benefit, or adoption
+cost before expanding promotion.
 
-Slow or hold public promotion if:
+## Hold Conditions
 
-- reviewers cannot understand what OrgAnchor does;
-- demos cannot be reproduced;
-- public materials make OrgAnchor look like a trust badge;
-- S1-S3 claims exceed implementation maturity;
-- sponsorship language looks like pay-for-trust.
+Narrow or pause promotion if reviewers cannot reproduce the public check, public
+materials imply trust certification, S1-S3 claims exceed implementation maturity,
+participants are pushed toward premature public adoption, or sponsorship appears
+able to buy ranking, trust, verification outcomes, or policy influence.
 
-## How To Comment
+## Report A Finding
 
-Please include:
+Please include only what is necessary:
 
-- review track;
-- what you tried;
-- command or document path;
-- expected result;
-- actual result;
-- whether this affects Fireseed readiness;
-- suggested fix or open question.
+```text
+Participation step:
+What you tried:
+Command, URL, or document:
+Expected result:
+Actual result:
+Why it matters:
+Suggested fix or open question:
 ```

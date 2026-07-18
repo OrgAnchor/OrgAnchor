@@ -96,7 +96,9 @@ test("Fireseed outreach kit gives external reviewers concrete tasks and boundari
 
   const trackingIssue = readText("docs/outreach/FIRESEED_VALIDATION_TRACKING_ISSUE.md");
   assert.match(trackingIssue, /Retired Internal Calibration/);
-  assert.match(trackingIssue, /no longer a Wave 1 success criterion/i);
+  assert.match(trackingIssue, /no longer a Wave 1\s+success criterion/i);
+  assert.match(trackingIssue, /non-public assisted workspace/i);
+  assert.match(trackingIssue, /Publish a real pilot only after the organization explicitly approves it/i);
 
   for (const phrase of [
     "Adopting Organization Trial",
@@ -108,7 +110,8 @@ test("Fireseed outreach kit gives external reviewers concrete tasks and boundari
     "Failure Or Hold Criteria",
     "Copyable Short Invitation",
     "Do not claim",
-    "OrgAnchor 现在处于 Fireseed Alpha 阶段"
+    "OrgAnchor 现在处于 Fireseed Alpha 阶段",
+    "你不需要立即公开采用 OrgAnchor"
   ]) {
     assert.match(kit, new RegExp(escapeRegExp(phrase)));
   }

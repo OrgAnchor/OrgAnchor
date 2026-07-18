@@ -79,14 +79,29 @@ OrgAnchor verifies signatures, hashes, continuity, publication structure, and de
 
 ## How To Start
 
-1. Read `docs/outreach/FIRESEED_OUTREACH_KIT.md` for the practical task list and feedback route.
-2. Read `README.md`.
-3. Read `docs/operations/FIRESEED_ALPHA_PLAN.md`.
-4. Read `docs/operations/FIRESEED_READINESS_GATE.md` to understand what is in scope for Fireseed and what remains unfinished.
-5. Read `docs/history/FIRESEED_LAUNCH_DECISION_2026-06-01.md` for the GO decision, accepted gaps, and first outreach tracks.
-6. Run `npm run agent:demo` from a source checkout, or install with `npm install -g organchor@alpha`.
-7. Use `docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` to run the isolated evidence-interpretation exercise with an unfamiliar Agent.
-8. Use the GitHub issue templates for adopter trials, technical review, evidence/governance review, or an external Agent evaluation.
+Begin with the smallest useful commitment. Public adoption is not the entry
+requirement.
+
+1. Run the 15-minute public check in `https://github.com/OrgAnchor/OrgAnchor/issues/4`.
+2. Report one concrete failure, confusion, or missing distinction.
+3. If useful, try a fictional or local-only package before using real organization material.
+4. Contact `organchor.admin@proton.me` for an assisted non-public pilot. Do not send secrets or confidential evidence by email.
+5. Read `docs/outreach/FIRESEED_OUTREACH_KIT.md` for the practical task list, participation ladder, participant benefits, and feedback routes.
+6. Read `README.md`, `docs/operations/FIRESEED_ALPHA_PLAN.md`, and `docs/operations/FIRESEED_READINESS_GATE.md` for the current scope and limits.
+7. Use `docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` for a controlled unfamiliar-Agent exercise.
+
+An organization may stop after a local-only trial. A public pilot is created only
+after the organization approves its wording, keys, evidence, and publication.
+
+## What An Early Pilot Receives
+
+The first external pilot is assisted by the OrgAnchor operator. The organization
+does not need to learn every carrier or edit raw JSON unaided. It receives a local
+workspace, root-custody plan, generated verification package, Beacon preview,
+domain-security report, and a record of actual time, cost, and friction.
+
+The organization retains control of its keys, materials, and publication decision.
+Participation is not certification, endorsement, ranking, or a trust decision.
 
 ## Fireseed Success Condition
 

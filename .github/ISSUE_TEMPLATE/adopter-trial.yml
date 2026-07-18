@@ -8,7 +8,20 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this for organizations testing the Fireseed Alpha flow. Do not include private keys, recovery codes, provider tokens, wallets, payment data, customer-private data, or confidential evidence.
+        Use this for organizations testing any step of the Fireseed Alpha flow. A public adoption is not required: a 15-minute check, fictional sandbox, or local-only trial is useful. Do not include private keys, recovery codes, provider tokens, wallets, payment data, customer-private data, or confidential evidence.
+  - type: dropdown
+    id: participation_step
+    attributes:
+      label: Participation step
+      description: Choose the smallest step that describes what you tried.
+      options:
+        - 15-minute public verification check
+        - Fictional or sandbox package
+        - Real-material local-only trial
+        - Non-public assisted pilot
+        - Public adopting-organization pilot
+    validations:
+      required: true
   - type: input
     id: organization_kind
     attributes:
@@ -64,3 +77,12 @@ body:
       description: CLI change, documentation change, template, example, or protocol simplification.
     validations:
       required: false
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Participation boundaries
+      options:
+        - label: I understand that this trial is not certification, endorsement, ranking, or a final trust decision.
+          required: true
+        - label: I have not included private keys, tokens, wallets, customer-private data, or confidential evidence.
+          required: true

@@ -12,9 +12,10 @@ For current project direction and implementation state:
 
 1. [Project North Star](./docs/project/PROJECT_NORTH_STAR.md)
 2. [Implementation Status](./docs/project/IMPLEMENTATION_STATUS.md)
-3. [Capability Traceability Matrix](./docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md)
-4. [Roadmap](./docs/project/ROADMAP.md)
-5. [V1 Acceptance](./docs/project/V1_ACCEPTANCE.md)
+3. [Quality Assurance Status](./docs/project/QUALITY_ASSURANCE_STATUS.md)
+4. [Capability Traceability Matrix](./docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md)
+5. [Roadmap](./docs/project/ROADMAP.md)
+6. [V1 Acceptance](./docs/project/V1_ACCEPTANCE.md)
 
 The implementation status and executable capability evidence take precedence
 over an older plan that describes intended work.

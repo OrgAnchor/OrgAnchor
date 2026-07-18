@@ -1,5 +1,8 @@
 # OrgAnchor
 
+[![Quality baseline](https://github.com/OrgAnchor/OrgAnchor/actions/workflows/quality.yml/badge.svg)](https://github.com/OrgAnchor/OrgAnchor/actions/workflows/quality.yml)
+[![Security baseline](https://github.com/OrgAnchor/OrgAnchor/actions/workflows/security.yml/badge.svg)](https://github.com/OrgAnchor/OrgAnchor/actions/workflows/security.yml)
+
 OrgAnchor helps organizations publish signed, recheckable public records that
 link identity, official presence, claims, evidence, and migration history. It is
 designed to lower the practical cost for people and AI agents to discover,
@@ -34,6 +37,7 @@ Best public starting points:
 - `DOCS_INDEX.md`: current two-level documentation map and source-of-truth order.
 - `docs/outreach/PUBLIC_EXPLAINER.md`: plain-language explanation for first-time readers.
 - `docs/project/IMPLEMENTATION_STATUS.md`: current alpha capability state and known gaps.
+- `docs/project/QUALITY_ASSURANCE_STATUS.md`: what is machine-verified, internally evaluated, externally pending, incomplete, or out of scope.
 - `docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md`: capability-by-capability implementation evidence.
 - `docs/project/DESIGN_RATIONALE.md`: full design logic from core goal to mechanisms, effects, and limits.
 - `docs/guides/ADOPTER_QUICKSTART.md`: shortest practical path for an adopting organization.

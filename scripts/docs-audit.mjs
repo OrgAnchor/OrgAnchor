@@ -73,7 +73,14 @@ for (const file of collectMarkdown(root)) {
 }
 
 checkRequiredText("README.md", packageId);
+checkRequiredText("README.md", "docs/project/QUALITY_ASSURANCE_STATUS.md");
 checkRequiredText("docs/project/IMPLEMENTATION_STATUS.md", packageId);
+checkRequiredText("docs/project/QUALITY_ASSURANCE_STATUS.md", packageId);
+checkRequiredText("docs/project/QUALITY_ASSURANCE_STATUS.md", "ALPHA_REVIEW_READY");
+checkRequiredText(
+  "docs/project/QUALITY_ASSURANCE_STATUS.md",
+  "PRODUCTION_IDENTITY_ASSURANCE_NOT_ESTABLISHED"
+);
 checkRequiredText("docs/operations/V1_RELEASE_CHECKLIST.md", packageId);
 checkRequiredText("docs/operations/V1_RELEASE_CHECKLIST.md", `v${packageJson.version}`);
 checkRequiredText("docs/project/IMPLEMENTATION_STATUS.md", "Stable v1: NOT_RELEASED");

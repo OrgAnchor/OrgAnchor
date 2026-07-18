@@ -9,6 +9,8 @@ shape, current implementation state, roadmap, and project-level decisions.
   discovery, verification, understanding, comparison, and decision friction.
 - [IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md): current implemented
   capability surface and known gaps.
+- [QUALITY_ASSURANCE_STATUS.md](./QUALITY_ASSURANCE_STATUS.md): public evidence
+  for current quality claims, automation, limitations, and external-review gaps.
 - [ROADMAP.md](./ROADMAP.md): ordered future work.
 - [V1_ACCEPTANCE.md](./V1_ACCEPTANCE.md): definition of v1 completeness.
 

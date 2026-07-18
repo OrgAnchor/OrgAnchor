@@ -145,7 +145,8 @@ This path tests one evidence-interpretation boundary. It does not rank Agent pro
 
 Before opening a pull request:
 
-- Keep `npm run typecheck` and `npm test` green.
+- Keep `npm run quality:check` green. This includes type checking, coverage
+  minimums, documentation checks, and assurance-boundary checks.
 - Run `npm run package:smoke` when package-facing files, examples, schemas, CLI output, or release files change.
 - Update `DOCS_INDEX.md` when adding package-facing documentation.
 - Update `package.json` `files` when a new document should ship in the npm package.

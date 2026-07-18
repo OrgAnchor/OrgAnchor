@@ -100,7 +100,13 @@ Discovery and anti-capture:
 Release hygiene:
 
 - Type checking.
-- Node test suite.
+- Node test suite with enforced minimum line, function, and branch coverage.
+- Source-repository quality assurance audit with a public human-readable status
+  page and machine-readable companion.
+- Windows and Linux GitHub quality workflows, plus npm dependency audit,
+  pull-request dependency review, CodeQL, and weekly Dependabot configuration.
+- The first public runs of the newly added quality and security workflows remain
+  pending until the quality-baseline commit is pushed.
 - Release smoke.
 - Package smoke.
 - Install smoke.

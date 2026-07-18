@@ -1,0 +1,148 @@
+{
+  "$schema": "https://organchor.org/schemas/quality-assurance-status.v1.json",
+  "type": "OrgAnchorQualityAssuranceStatus",
+  "version": "1.0",
+  "assessed_at": "2026-07-18",
+  "package": "organchor@0.1.0-alpha.5",
+  "repository": "https://github.com/OrgAnchor/OrgAnchor",
+  "release_decision": {
+    "status": "ALPHA_REVIEW_READY",
+    "meaning": "Suitable for public inspection, bounded evaluation, and low-risk pilots."
+  },
+  "production_identity_assurance": "NOT_ESTABLISHED",
+  "automated_baseline": {
+    "node_version": "24",
+    "coverage_thresholds": {
+      "lines": 80,
+      "functions": 85,
+      "branches": 50
+    },
+    "latest_local_observation": {
+      "date": "2026-07-18",
+      "tests_passed": 181,
+      "line_coverage_percent": 87.77,
+      "function_coverage_percent": 94.0,
+      "branch_coverage_percent": 57.37,
+      "npm_audit_high_or_critical": 0
+    }
+  },
+  "assurance_items": [
+    {
+      "id": "core-cryptographic-behavior",
+      "title": "Canonicalization, hashing, signatures, thresholds, migration, and tamper rejection",
+      "status": "MACHINE_VERIFIED",
+      "evidence": [
+        "tests/canonicalize.test.ts",
+        "tests/sign-verify.test.ts",
+        "tests/migration.test.ts"
+      ],
+      "limitation": "Automated behavior is tested, but the implementation has not received an independent cryptographic review."
+    },
+    {
+      "id": "cross-platform-ci",
+      "title": "Clean Windows and Linux verification on every change",
+      "status": "PUBLIC_RUN_PENDING",
+      "evidence": [
+        ".github/workflows/quality.yml",
+        "https://github.com/OrgAnchor/OrgAnchor/actions/workflows/quality.yml"
+      ],
+      "limitation": "The workflow must complete its first public run before this item can be promoted."
+    },
+    {
+      "id": "test-coverage-gate",
+      "title": "Regression coverage minimums",
+      "status": "MACHINE_VERIFIED",
+      "evidence": [
+        "package.json",
+        ".github/workflows/quality.yml"
+      ],
+      "limitation": "Coverage shows which code ran during tests; it does not prove that every security property or real-world scenario was tested."
+    },
+    {
+      "id": "package-and-install-smoke",
+      "title": "Package contents, clean installation, and packaged CLI behavior",
+      "status": "MACHINE_VERIFIED",
+      "evidence": [
+        "scripts/package-smoke.mjs",
+        "scripts/install-smoke.mjs",
+        ".github/workflows/quality.yml"
+      ],
+      "limitation": "Smoke checks cover declared package behavior, not every downstream operating environment."
+    },
+    {
+      "id": "dependency-and-static-security",
+      "title": "Dependency audit, dependency review, CodeQL, and secret scanning",
+      "status": "PUBLIC_RUN_PENDING",
+      "evidence": [
+        ".github/workflows/security.yml",
+        ".github/dependabot.yml",
+        ".github/SECURITY.md",
+        "https://github.com/OrgAnchor/OrgAnchor/security"
+      ],
+      "limitation": "Automated scanners detect known patterns and cannot establish the absence of vulnerabilities."
+    },
+    {
+      "id": "documentation-implementation-alignment",
+      "title": "Documentation and implementation drift checks",
+      "status": "MACHINE_VERIFIED",
+      "evidence": [
+        "scripts/docs-audit.mjs",
+        "scripts/capability-audit.mjs",
+        "docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md"
+      ],
+      "limitation": "These checks reduce internal inconsistency; they do not independently prove usability, security, or protocol correctness."
+    },
+    {
+      "id": "independent-agent-interpretation",
+      "title": "Fresh-context Agent interpretation of bounded evidence scenarios",
+      "status": "INTERNALLY_EVALUATED",
+      "evidence": [
+        "docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md",
+        "evaluation-results/evidence-interpretation/WAVE1_SUMMARY.md",
+        "evaluation-results/evidence-interpretation/WAVE2_CALIBRATION_SUMMARY.md",
+        "evaluation-results/evidence-interpretation/WAVE3_CALIBRATION_SUMMARY.md"
+      ],
+      "limitation": "The scenarios are bounded and mostly use one Agent family; they do not prove general real-world interpretation quality."
+    },
+    {
+      "id": "independent-security-review",
+      "title": "Independent security and cryptographic implementation review",
+      "status": "EXTERNAL_VERIFICATION_PENDING",
+      "evidence": [
+        ".github/ISSUE_TEMPLATE/technical-review.yml",
+        ".github/SECURITY.md"
+      ],
+      "limitation": "No independent security or cryptographic review report is currently available."
+    },
+    {
+      "id": "external-organization-pilot",
+      "title": "Unfamiliar external organization adoption",
+      "status": "NOT_COMPLETED",
+      "evidence": [
+        "docs/guides/PILOT_MINIMAL_PATH.md",
+        "docs/guides/EXTERNAL_PILOT_RUNBOOK.md"
+      ],
+      "limitation": "OrgAnchor has not yet demonstrated low-friction adoption by an external organization."
+    },
+    {
+      "id": "real-world-transaction-cost-effect",
+      "title": "Measured reduction in real discovery, verification, and comparison cost",
+      "status": "NOT_COMPLETED",
+      "evidence": [
+        "docs/project/PROJECT_NORTH_STAR.md",
+        "docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md"
+      ],
+      "limitation": "The north-star effect remains a hypothesis until measured across real organizations and third-party decision tasks."
+    },
+    {
+      "id": "organization-or-product-truth",
+      "title": "Certification that an organization or product is truthful, safe, or best",
+      "status": "OUT_OF_SCOPE",
+      "evidence": [
+        "docs/project/PROJECT_NORTH_STAR.md",
+        "docs/protocol/EVIDENCE_MODEL.md"
+      ],
+      "limitation": "OrgAnchor exposes signed records, evidence structure, gaps, and recheck paths; it does not assign final trust."
+    }
+  ]
+}

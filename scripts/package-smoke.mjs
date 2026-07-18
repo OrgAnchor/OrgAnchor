@@ -73,6 +73,8 @@ try {
   assertContains(copiedFiles, "docs/project/PROJECT_NORTH_STAR.md");
   assertContains(copiedFiles, "docs/project/ARCHITECTURE.md");
   assertContains(copiedFiles, "docs/project/IMPLEMENTATION_STATUS.md");
+  assertContains(copiedFiles, "docs/project/QUALITY_ASSURANCE_STATUS.md");
+  assertContains(copiedFiles, "docs/project/quality-assurance-status.json");
   assertContains(copiedFiles, "docs/protocol/DISCOVERY_STRATEGY.md");
   assertContains(copiedFiles, "docs/protocol/DIRECTORY_MODEL.md");
   assertContains(copiedFiles, "docs/protocol/DIRECTORY_SNAPSHOT_SPEC.md");

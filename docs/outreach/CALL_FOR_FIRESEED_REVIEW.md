@@ -82,13 +82,14 @@ OrgAnchor verifies signatures, hashes, continuity, publication structure, and de
 Begin with the smallest useful commitment. Public adoption is not the entry
 requirement.
 
-1. Run the 15-minute public check in `https://github.com/OrgAnchor/OrgAnchor/issues/4`.
-2. Report one concrete failure, confusion, or missing distinction.
-3. If useful, try a fictional or local-only package before using real organization material.
-4. Contact `organchor.admin@proton.me` for an assisted non-public pilot. Do not send secrets or confidential evidence by email.
-5. Read `docs/outreach/FIRESEED_OUTREACH_KIT.md` for the practical task list, participation ladder, participant benefits, and feedback routes.
-6. Read `README.md`, `docs/operations/FIRESEED_ALPHA_PLAN.md`, and `docs/operations/FIRESEED_READINESS_GATE.md` for the current scope and limits.
-7. Use `docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` for a controlled unfamiliar-Agent exercise.
+1. Use `https://organchor.org/start/` to understand the model, live example, boundaries, and available participation depths.
+2. Run the 15-minute public check in `https://github.com/OrgAnchor/OrgAnchor/issues/4`.
+3. Report one concrete failure, confusion, or missing distinction.
+4. If useful, try a fictional or local-only package before using real organization material.
+5. Contact `organchor.admin@proton.me` for an assisted non-public pilot. Do not send secrets or confidential evidence by email.
+6. Read `docs/outreach/FIRESEED_OUTREACH_KIT.md` for the practical task list, participation ladder, participant benefits, and feedback routes.
+7. Read `README.md`, `docs/operations/FIRESEED_ALPHA_PLAN.md`, and `docs/operations/FIRESEED_READINESS_GATE.md` for the current scope and limits.
+8. Use `docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` for a controlled unfamiliar-Agent exercise.
 
 An organization may stop after a local-only trial. A public pilot is created only
 after the organization approves its wording, keys, evidence, and publication.

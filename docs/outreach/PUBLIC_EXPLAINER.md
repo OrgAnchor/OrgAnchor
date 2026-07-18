@@ -2,6 +2,8 @@
 
 Status: Fireseed Alpha public explainer.
 
+Guided public entry: https://organchor.org/start/
+
 ## Short Version
 
 OrgAnchor helps organizations publish signed, recheckable public records that
@@ -155,6 +157,7 @@ OrgAnchor reports the material path it checked. The final decision to buy, partn
 
 If you are seeing OrgAnchor for the first time:
 
+- start at `https://organchor.org/start/` for the three-minute guided path;
 - read `README.md` for the project overview;
 - run `npm run visible:demo -- --out ./visible-demo --serve` to see the human-readable demo;
 - run `npm run agent:demo` to see the local agent discovery loop.

@@ -12,11 +12,23 @@ exists. It is whether unfamiliar people and organizations can understand the
 value, complete a low-commitment check, and choose to continue without excessive
 cost.
 
+## New To OrgAnchor? Start Here First
+
+Use the three-minute guided entry before running commands:
+
+https://organchor.org/start/
+
+It explains the problem, walks through the live self-pilot, separates what the
+current Alpha can and cannot establish, and lets a reviewer choose between
+reading, visible inspection, command-line reproduction, or a non-public assisted
+trial. No installation or adoption decision is required to use that page.
+
 ## Current Public Release
 
 - GitHub prerelease: https://github.com/OrgAnchor/OrgAnchor/releases/tag/v0.1.0-alpha.5
 - npm package: https://www.npmjs.com/package/organchor/v/0.1.0-alpha.5
 - public site: https://organchor.org/
+- guided first look: https://organchor.org/start/
 - human-readable verification page: https://organchor.org/verify/
 - machine-readable Beacon: https://organchor.org/.well-known/organchor.json
 - public release verification: https://github.com/OrgAnchor/OrgAnchor/blob/main/docs/history/PUBLIC_SELF_VERIFICATION_2026-07-17.md
@@ -53,11 +65,12 @@ result is more valuable than general approval.
 
 Participation is intentionally progressive:
 
-1. Run the 15-minute public check.
-2. Report one concrete finding.
-3. Try a fictional or local-only sandbox package.
-4. Use real organization material in a non-public assisted workspace.
-5. Publish a real pilot only after the organization explicitly approves it.
+1. Understand the model and boundaries at `https://organchor.org/start/`.
+2. Run the 15-minute public check.
+3. Report one concrete finding.
+4. Try a fictional or local-only sandbox package.
+5. Use real organization material in a non-public assisted workspace.
+6. Publish a real pilot only after the organization explicitly approves it.
 
 An organization may stop at any step. A non-public trial is still useful Fireseed
 evidence and creates no obligation to publish.

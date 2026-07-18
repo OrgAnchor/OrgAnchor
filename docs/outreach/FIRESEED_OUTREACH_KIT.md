@@ -87,7 +87,7 @@ Do not ask an unfamiliar organization to begin with a public adoption. Offer the
 smallest useful step first:
 
 ```text
-1. Read the public explanation.
+1. Use the guided first-look page at https://organchor.org/start/.
 2. Run the 15-minute public verification check.
 3. Report one concrete confusion, failure, or missing distinction.
 4. Try a fictional or local-only sandbox package.
@@ -118,6 +118,12 @@ organization's claims are true. The organization keeps control of its keys,
 wording, evidence, and publication decision.
 
 ## Lowest-Cost Entry Points
+
+Guided first look:
+
+```text
+https://organchor.org/start/
+```
 
 Public 15-minute check:
 
@@ -407,10 +413,10 @@ English:
 ```text
 OrgAnchor is in Fireseed Alpha. It helps organizations publish signed, recheckable public records that link identity, official presence, claims, evidence, and migration history so external AI agents and people can discover, screen, verify, understand, and compare candidate organizations at lower cost without treating OrgAnchor as a trust authority.
 
-You do not need to adopt OrgAnchor publicly. Start with a 15-minute verification check, report one concrete problem, or request an assisted local-only pilot. A real pilot is published only after the participating organization approves it.
+You do not need to adopt OrgAnchor publicly. First use the three-minute guided page to understand the model and choose a useful next step. You may stop there, run a 15-minute verification check, report one concrete problem, or request an assisted local-only pilot. A real pilot is published only after the participating organization approves it.
 
 Start here:
-https://github.com/OrgAnchor/OrgAnchor/issues/4
+https://organchor.org/start/
 
 Review kit:
 https://github.com/OrgAnchor/OrgAnchor/blob/main/docs/outreach/FIRESEED_OUTREACH_KIT.md
@@ -424,10 +430,10 @@ Chinese:
 ```text
 OrgAnchor 现在处于 Fireseed Alpha 阶段。它帮助组织发布经过签名、可复查的公开资料，将身份、官方存在位置、主张、证据和迁移历史串联起来，使外部 AI Agent 和人能够以更低成本发现、初筛、验证、理解和比较候选组织，同时不把 OrgAnchor 当成最终信任权威。
 
-你不需要立即公开采用 OrgAnchor。可以先完成一次 15 分钟验证、报告一个具体问题，或者申请由我们协助完成的本地非公开试用。只有在参与组织明确同意后，真实试点才会公开。
+你不需要立即公开采用 OrgAnchor。请先通过三分钟引导页面了解模型，再选择是否继续。你可以停在那里，也可以完成一次十五分钟验证、报告一个具体问题，或者申请由我们协助完成的本地非公开试用。只有在参与组织明确同意后，真实试点才会公开。
 
 从这里开始：
-https://github.com/OrgAnchor/OrgAnchor/issues/4
+https://organchor.org/start/zh-CN/
 
 复核材料：
 https://github.com/OrgAnchor/OrgAnchor/blob/main/docs/outreach/FIRESEED_OUTREACH_KIT.md

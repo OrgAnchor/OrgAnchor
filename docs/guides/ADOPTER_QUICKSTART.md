@@ -203,7 +203,7 @@ For S3 random purchase / sampling:
 
 ```bash
 organchor evidence s3 template --template market_purchase
-organchor evidence s3 attach --evidence-id evidence-001 --template market_purchase --sampler-type buyer --acquired-at 2026-05-28T00:00:00Z --subject-type product_model --subject-id model-x1 --sample-slot-id sample-slot-claim-001-2026-05-001 --storage-role DIRECTORY_VAULT --raw-availability-status REQUEST_REQUIRED --scope "Random market purchase sample supports claim-001 for model-x1"
+organchor evidence s3 attach --evidence-id evidence-001 --template market_purchase --sampler-type buyer --acquired-at 2026-05-28T00:00:00Z --subject-type product_model --subject-id model-x1 --claim-id claim-001 --claim-version 2026-05 --sample-pool-id s3-pool-claim-001-2026-05 --sample-slot-id sample-slot-claim-001-2026-05-001 --max-active-samples 24 --credential-hash sha256:<64-hex> --sample-nullifier sha256:<64-hex> --credential-verified-against-root --selector-control buyer --storage-role DIRECTORY_VAULT --raw-availability-status REQUEST_REQUIRED --scope "Random market purchase sample supports claim-001 for model-x1"
 ```
 
 S1-S3 are the Fireseed Alpha evidence baseline. S4/S5 are design previews.

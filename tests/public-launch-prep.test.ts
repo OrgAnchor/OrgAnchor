@@ -37,7 +37,11 @@ test("README exposes public source-repository entry points without hiding alpha 
   const readme = readText("README.md");
   const packageJson = JSON.parse(readText("package.json")) as { name: string };
 
-  assert.match(readme, /## 3-Minute Version/);
+  assert.match(readme, /## Why OrgAnchor/);
+  assert.match(readme, /## How It Works/);
+  assert.match(readme, /## See It Working/);
+  assert.match(readme, /https:\/\/organchor\.org\/verify\//);
+  assert.match(readme, /organchor verify url https:\/\/organchor\.org --compact/);
   assert.match(readme, /not a trust badge/i);
   assert.match(readme, /not stable v1/i);
   assert.match(readme, /NOT_ASSIGNED_BY_ORGANCHOR/);
@@ -49,6 +53,23 @@ test("README exposes public source-repository entry points without hiding alpha 
     assert.match(readme, new RegExp(escapeRegExp(doc)), `${doc} should be linked from README`);
   }
   assert.match(readme, /DOCS_INDEX\.md/, "README should point to the complete two-level documentation map");
+});
+
+test("README remains a focused public entry point instead of a status archive", () => {
+  const readme = readText("README.md");
+  const lineCount = readme.split(/\r?\n/).length;
+  const wordCount = readme.match(/[A-Za-z0-9][A-Za-z0-9'-]*/g)?.length ?? 0;
+
+  assert.ok(lineCount <= 260, `README has ${lineCount} lines; move detail into the documentation map`);
+  assert.ok(wordCount <= 1600, `README has ${wordCount} English words; keep the public entry concise`);
+  assert.doesNotMatch(readme, /Implemented so far:/);
+  assert.doesNotMatch(readme, /## CLI Quick Start/);
+  assert.match(readme, /\[CLI Reference\]\(docs\/guides\/CLI_REFERENCE\.md\)/);
+  assert.equal(
+    readme.match(/npm run visible:demo -- --out \.\/visible-demo --serve/g)?.length,
+    1,
+    "the visible demo command should appear once"
+  );
 });
 
 test("source-repository public docs are indexed and packaged", () => {

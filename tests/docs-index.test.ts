@@ -16,6 +16,8 @@ test("documentation index is discoverable from README and package metadata", () 
   assert.match(readme, /DOCS_INDEX\.md/);
   assert.match(readme, /CONTRIBUTING\.md/);
   assert.match(readme, /docs\/history\//);
+  assert.match(readme, /CLI_REFERENCE\.md/);
+  assert.match(docsMap, /CLI_REFERENCE\.md/);
 
   for (const doc of [
     "AI_OPERATING_MODEL.md",

@@ -5,6 +5,7 @@ Use these documents to adopt, publish, migrate, and operate OrgAnchor material.
 ## Start Here
 
 - [ADOPTER_QUICKSTART.md](./ADOPTER_QUICKSTART.md)
+- [CLI_REFERENCE.md](./CLI_REFERENCE.md)
 - [ADOPTION_GUIDE.md](./ADOPTION_GUIDE.md)
 - [ADOPTION_PRINCIPLES.md](./ADOPTION_PRINCIPLES.md)
 - [ORG_ONBOARDING_CHECKLIST.md](./ORG_ONBOARDING_CHECKLIST.md)

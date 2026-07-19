@@ -105,9 +105,11 @@ Release hygiene:
   page and machine-readable companion.
 - Windows and Linux GitHub quality workflows, plus npm dependency audit,
   pull-request dependency review, CodeQL, and weekly Dependabot configuration.
-- The first public Windows/Linux quality run, package/install smoke run,
-  dependency audit, and CodeQL run passed on 2026-07-18. The failed first
-  attempt and cross-platform fixes are preserved in
+- The corrected public Windows/Linux quality run and package/install smoke run
+  passed on 2026-07-18. The strengthened security run closed five high-severity
+  and one medium-severity CodeQL finding, rejects future open
+  medium-or-higher alerts, and passed with zero such alerts. The failed first
+  quality attempt, initial scanner findings, and corrections are preserved in
   `docs/history/QUALITY_ASSURANCE_BASELINE_2026-07-18.md`.
 - Release smoke.
 - Package smoke.

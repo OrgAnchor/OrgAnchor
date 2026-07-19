@@ -52,9 +52,10 @@ over an older plan that describes intended work.
 ### Adopting Organization
 
 1. [Adopter Quickstart](./docs/guides/ADOPTER_QUICKSTART.md)
-2. [Adoption Guide](./docs/guides/ADOPTION_GUIDE.md)
-3. [Root Authority Custody Guide](./docs/guides/ROOT_AUTHORITY_CUSTODY_GUIDE.md)
-4. [Publishing Guide](./docs/guides/PUBLISHING_GUIDE.md)
+2. [CLI Reference](./docs/guides/CLI_REFERENCE.md)
+3. [Adoption Guide](./docs/guides/ADOPTION_GUIDE.md)
+4. [Root Authority Custody Guide](./docs/guides/ROOT_AUTHORITY_CUSTODY_GUIDE.md)
+5. [Publishing Guide](./docs/guides/PUBLISHING_GUIDE.md)
 
 ### AI Agent Or Verifier Builder
 

@@ -6,6 +6,21 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 
 ## Unreleased
 
+### Changed
+
+- Reworked the GitHub README into a concise public entry point centered on the
+  problem, verification loop, live self-pilot, alpha boundary, and shortest
+  adoption path.
+- Moved the broad command catalogue into a role-grouped CLI reference and added
+  regression checks that keep future README growth bounded.
+
+### Fixed
+
+- Corrected public quality wording so the failed first run and the strengthened
+  zero-open-alert security result are not conflated.
+- Updated the adopter quickstart S3 example to include the current bounded-pool,
+  credential, and nullifier fields.
+
 ## 0.1.0-alpha.5 - 2026-07-17
 
 Fireseed Agent-verification candidate. This release makes the ordinary URL-verification path more useful for low-cost external Agents and adds reproducible adversarial evidence-interpretation checks.

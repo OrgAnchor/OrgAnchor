@@ -4,492 +4,235 @@
 [![Security baseline](https://github.com/OrgAnchor/OrgAnchor/actions/workflows/security.yml/badge.svg)](https://github.com/OrgAnchor/OrgAnchor/actions/workflows/security.yml)
 
 OrgAnchor helps organizations publish signed, recheckable public records that
-link identity, official presence, claims, evidence, and migration history. It is
-designed to lower the practical cost for people and AI agents to discover,
-screen, verify, understand, and compare candidate organizations across domain,
-platform, website, or infrastructure changes.
+connect identity, official presence, claims, evidence, and migration history.
+It provides people and AI agents with a common verification path intended to
+reduce repeated search, due-diligence, and comparison work when domains,
+platform accounts, websites, or infrastructure change.
 
-OrgAnchor 帮助组织发布经过签名、可复查的公开资料，将身份、官方入口、主张、证据和迁移历史串联起来。它旨在降低外部用户和 AI Agent 在域名、平台账号、官网或基础设施发生变化时，发现、初筛、验证、理解和比较候选组织的实际成本。
+OrgAnchor 帮助组织发布经过签名、可复查的公开资料，将身份、官方入口、主张、证据和迁移历史串联起来。它为外部用户和 AI Agent 提供共同的验证路径，旨在降低发现、核验、理解和比较组织时的重复成本，同时避免将某个域名、平台或 OrgAnchor 官方目录变成身份根。
 
-## 3-Minute Version
+> **Fireseed Alpha:** `organchor@0.1.0-alpha.5` is ready for public inspection
+> and low-risk pilots. It is not stable v1 and must not be an organization's
+> only production identity control.
 
-OrgAnchor is a Fireseed Alpha project for organization identity continuity and evidence-aware verification.
+[Live self-pilot](https://organchor.org/verify/) ·
+[Machine-readable Beacon](https://organchor.org/.well-known/organchor.json) ·
+[Public explainer](docs/outreach/PUBLIC_EXPLAINER.md) ·
+[Quality status](docs/project/QUALITY_ASSURANCE_STATUS.md)
 
-The short version:
+## Why OrgAnchor
 
-- It helps an organization publish signed records of who it is, where its official presence can be found, what it claims, what evidence it exposes, and what changed over time.
-- It helps people and AI agents reduce the cost of deciding whether an organization is worth deeper review, contact, partnership, purchase, or support.
-- It gives external AI agents a low-friction path to discover `/.well-known/organchor.json`, verify signatures and hashes, inspect evidence gaps, and decide what to check next.
-- It treats websites, IPFS, Arweave, Onion, ENS, Directory snapshots, and cloud platforms as carriers or discovery aids, not as the identity root.
-- It does not certify that an organization is good, truthful, safe, lawful, cheap, or the best supplier. `PASS` is identity/evidence-structure verification, not a trust badge; OrgAnchor's own trust decision field remains `NOT_ASSIGNED_BY_ORGANCHOR`.
-- It is not stable v1 yet. The current public phase is for named early adopters, technical reviewers, evidence/governance reviewers, directory builders, and sponsors who can help test the minimum useful loop.
+Organizations normally present themselves through domains, websites, platform
+accounts, cloud services, product pages, certificates, reports, and media.
+Those materials are useful, but they are usually scattered and do not naturally
+form one signed, recheckable chain of identity continuity and evidence history.
 
-Fast visible checks:
+This leaves every buyer, partner, reviewer, and AI agent to reconstruct basic
+answers repeatedly:
 
-```bash
-npm run visible:demo -- --out ./visible-demo --serve
-npm run agent:demo
-organchor verify url <local-or-public-organchor-url> --compact
+- Is this the same organization seen before?
+- Where is its current official presence?
+- What exactly does it claim, and which product, service, or time window does
+  the claim cover?
+- What evidence supports it, what is stale or missing, and what should be
+  checked next?
+- What changed after a domain, platform, authority, or infrastructure migration?
+
+AI-generated media makes polished presentation cheaper, but it does not make
+real evidence cheaper. OrgAnchor addresses this structural gap by making the
+verification path explicit and machine-readable. Whether that path reduces
+total transaction cost in real organizations remains an external pilot question,
+not an established project claim.
+
+## How It Works
+
+```text
+organization root authority
+        |
+        v
+signed official-presence, claim, evidence, and migration records
+        |
+        v
+human-readable /verify page + machine-readable OrgAnchor package
+        |
+        v
+website / Beacon / IPFS / Arweave / Onion / ENS / Directory carriers
+        |
+        v
+independent verification -> visible gaps -> external policy decision
 ```
 
-Best public starting points:
+The adopting organization's root authority is the identity root. Websites,
+domains, IPFS, Arweave, Onion, ENS, cloud services, and Directory snapshots are
+carriers, archives, or discovery aids. None of them, including OrgAnchor's own
+website or Directory, receives protocol privilege over the organization.
 
-- `DOCS_INDEX.md`: current two-level documentation map and source-of-truth order.
-- `docs/outreach/PUBLIC_EXPLAINER.md`: plain-language explanation for first-time readers.
-- `docs/project/IMPLEMENTATION_STATUS.md`: current alpha capability state and known gaps.
-- `docs/project/QUALITY_ASSURANCE_STATUS.md`: what is machine-verified, internally evaluated, externally pending, incomplete, or out of scope.
-- `docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md`: capability-by-capability implementation evidence.
-- `docs/project/DESIGN_RATIONALE.md`: full design logic from core goal to mechanisms, effects, and limits.
-- `docs/guides/ADOPTER_QUICKSTART.md`: shortest practical path for an adopting organization.
-- `docs/guides/PILOT_MINIMAL_PATH.md`: minimal external pilot definition and verification gate.
-- `docs/operations/PUBLIC_RELEASE_CHECKLIST.md`: practical release gate for public assets, local checks, owner approvals, and hold criteria.
-- `docs/evaluations/EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent can keep valid identity and package verification separate from insufficient product-claim evidence.
-- `docs/evaluations/EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent preserves expired evidence as history without treating it as current support.
-- `docs/evaluations/EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md`: runnable evaluation for testing whether an Agent preserves conflicting current S2/S3 evidence instead of forcing a trust decision.
-- `docs/outreach/FIRESEED_OUTREACH_KIT.md`: concrete external review and pilot starter kit.
+Old signed packages remain historical evidence under the rules that created
+them. Protocol evolution adds new package versions and migration links rather
+than retroactively erasing valid old snapshots. See the
+[protocol evolution policy](docs/protocol/PROTOCOL_EVOLUTION_POLICY.md).
 
-Dated release checks, earlier project-state snapshots, and retired experiments
-are indexed under `docs/history/`. They remain auditable records but do not
-override current implementation or operating guidance.
+## See It Working
 
-Publication production materials such as video scripts, rendered media, platform post drafts, presentation outlines, and sponsorship letters are intentionally kept outside the source repository and npm package. This repository is for the software, protocol, examples, verification artifacts, and external-review boundaries.
+The public self-pilot exposes the same organization record in two views:
 
-## What It Is
+- [Human-readable verification summary](https://organchor.org/verify/)
+- [Machine-readable discovery record](https://organchor.org/.well-known/organchor.json)
 
-OrgAnchor is an open-source identity continuity toolkit.
+An Agent or verifier can inspect the public origin directly:
 
-It is designed around:
+```bash
+npm install -g organchor@alpha
+organchor verify url https://organchor.org --compact
+```
 
-- An organization root authority.
-- Signed official-presence records.
-- Static adopting-organization `/verify` pages.
-- Machine-readable verification artifacts.
-- Claims and evidence manifests.
-- Optional carriers such as IPFS, Arweave, Onion, ENS, and traditional websites.
+`PASS` means the checked identity and package-integrity conditions passed. It
+does **not** mean the organization, product, claim, or evidence is trustworthy.
+It is not a trust badge.
+OrgAnchor's trust decision remains `NOT_ASSIGNED_BY_ORGANCHOR`; the external
+user or Agent still applies its own purchasing, safety, legal, partnership, or
+listing policy.
 
-The identity root is the adopting organization's root authority, not OrgAnchor's website, a domain, a platform account, IPFS, Arweave, ENS, or a lockfile.
+## Current Alpha Boundary
 
-## Fireseed Alpha
+| Area | Current state | Important limit |
+| --- | --- | --- |
+| Root authority, threshold signatures, official presence, migration, `/verify`, and direct URL verification | Implemented and tested | Independent cryptographic review is still pending. |
+| Claims, signed evidence manifests, S1 first-party material, S2 organization-submitted third-party material, and S3 sampling structure | S1-S3 evidence baseline implemented | OrgAnchor exposes support and gaps; it does not certify claim truth. |
+| Beacon and bounded Directory sweep, index, query, compare, and direct-origin verification | Implemented for bounded discovery | Broad internet discovery coverage and independent Directory adoption are not established. |
+| S4 real-use observation and S5 challenge, correction, and accountability | S4/S5 design preview; S4 is partial | Mature observer networks, abuse controls, privacy handling, and durable storage incentives are unfinished. |
+| Delegated product/service credentials, package health, and commercial fit | Accepted design direction | These are not complete shipped surfaces. |
+| External adoption and transaction-cost effect | Not completed | No unfamiliar organization has completed the full pilot, and real cost reduction is not yet established. |
 
-OrgAnchor is currently in Fireseed Alpha: the first public collaboration point where the minimum useful loop is visible enough for named early adopters and reviewers.
+The authoritative detail lives in
+[Implementation Status](docs/project/IMPLEMENTATION_STATUS.md),
+[Quality Assurance Status](docs/project/QUALITY_ASSURANCE_STATUS.md), and the
+[Capability Traceability Matrix](docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md).
 
-Fireseed Alpha focuses on:
+## Install And Create A First Package
 
-- Organization root authority and migration continuity.
-- Signed official-presence records.
-- Public `/verify` packages.
-- AI-agent-readable verification through `/.well-known/organchor.json` and `organchor verify url --compact`.
-- Signed claims and evidence manifests.
-- S1-S3 evidence baseline: first-party evidence, organization-submitted third-party material, and random purchase / sampling structure.
-- S4/S5 design preview only: real-use observation, public challenge, correction, and historical accountability are important, but not finished acceptance gates.
-
-Start with `docs/outreach/FIRESEED_OUTREACH_KIT.md`, `docs/operations/FIRESEED_ALPHA_PLAN.md`, `docs/operations/FIRESEED_READINESS_GATE.md`, `docs/history/FIRESEED_LAUNCH_DECISION_2026-06-01.md`, `docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md`, `docs/outreach/CALL_FOR_FIRESEED_REVIEW.md`, and `CONTRIBUTING.md` if you want to try, review, or critique the project.
-
-## Purpose and Values
-
-OrgAnchor is not only a tool for keeping an organizational name alive. Its purpose is to help long-term, evidence-bearing organizations make their public identity, claims, evidence, corrections, and migrations easier to verify over time, while reducing the cost of deciding whether they are worth deeper review, contact, partnership, purchase, or support.
-
-OrgAnchor does not certify that an organization is good, lawful, ethical, effective, or worthy of support. It makes continuity and public evidence more inspectable. The official project should not present signed continuity as a trust badge or help launder fraud, impersonation, exploitation, or deliberate deception.
-
-Use `DOCS_INDEX.md` rather than a flat reading list. The primary alignment set is
-`docs/project/PROJECT_NORTH_STAR.md`, `docs/project/IMPLEMENTATION_STATUS.md`,
-`docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md`,
-`docs/project/ROADMAP.md`, and `docs/project/V1_ACCEPTANCE.md`.
-
-Protocol evolution is governed by `docs/protocol/PROTOCOL_EVOLUTION_POLICY.md`: old adopter packages should remain verifiable under the schema, signatures, hashes, root authority, and verification rules that created them. Newer OrgAnchor versions may expose legacy gaps, but they must not retroactively erase valid historical snapshots.
-
-The Beacon and Directory documents describe how OrgAnchor can help people and AI
-agents find enabled organizations without becoming a marketplace,
-certification authority, or trust root. Bounded origin inspection,
-sweep/index/query, and static Directory tooling are implemented; broad internet
-discovery coverage and independent Directory adoption are not.
-
-OrgAnchor does not issue organization IDs or require official Directory inclusion. Any organization can adopt the standard by publishing a verifiable origin-owned package; Directory nodes are discovery aids with no protocol privilege.
-
-The accepted but not yet implemented `docs/protocol/PRODUCT_SERVICE_CREDENTIAL_LAYER.md` defines how delegated operational keys, model/batch/unit credentials, service delivery credentials, and observation binding should make positive and negative feedback attributable to an organization's root authority chain.
-
-The accepted `docs/protocol/EVIDENCE_SUFFICIENCY_MODEL.md` prevents the evidence layer from becoming a paperwork race: OrgAnchor should report whether evidence is sufficient for a stated purpose, not reward raw field count.
-
-The accepted but not yet fully implemented `docs/protocol/PURPOSE_EVIDENCE_CHALLENGE_MODEL.md` defines the three-axis model for purpose profiles, observation source classes, and challenge/correction/accountability lifecycle. Public challenge review is a horizontal lifecycle mode, not a sixth ascending purpose profile. Product/service history and broader accountability observations are routed through S5 instead of becoming a separate Historical Layer.
-
-The accepted but not yet implemented `docs/protocol/PACKAGE_HEALTH_LAYER.md` defines how organizations and external observers should expose freshness, broken links, expired evidence, withdrawn claims, maintenance policy, and low-cost agent fetch recommendations without turning health into a trust score.
-
-The accepted but not yet implemented `docs/protocol/COMMERCIAL_FIT_LAYER.md` defines how price disclosure modes, signed public price sheets, private signed quotes, lead time, MOQ, and validity windows should reduce commercial-screening cost without forcing public pricing or turning OrgAnchor into a marketplace.
-
-## Current Status
-
-The current published package is `organchor@0.1.0-alpha.5` under the npm `alpha` dist-tag, with Git tag `v0.1.0-alpha.5`, SLSA provenance, a public GitHub prerelease, and an aligned public self-pilot at `https://organchor.org`. Release linkage, clean registry installation, homepage verification, Beacon discovery, and the installed-CLI Agent path were publicly rechecked on 2026-07-17. Fireseed Alpha has a GO decision for named early adopter, technical, Agent, and evidence/governance review. It is not stable v1, and broader promotion remains subject to the current release gate. The core alpha surface includes root authority records, signed official-presence records, claims/evidence manifests, value continuity reports, carrier receipts, domain audit, Onion/ENS support, OpenTimestamps anchoring, root authority migration, AI-agent verification discovery, policy-route hints, and `/verify` root continuity publication.
-
-Current boundary: the S1-S3 evidence-layer baseline and bounded Beacon/Directory
-tools are implemented; the S4 evidence layer is partial, while the S5 evidence
-layer, delegated product/service credentials, commercial-fit manifests, broad
-internet discovery coverage, and the first external organization pilot remain
-incomplete. See
-`docs/project/IMPLEMENTATION_STATUS.md` for the authoritative summary.
-
-Alpha.5 includes runnable weak-evidence, stale-evidence, and conflicting-current-evidence evaluations plus additive external-evidence signature routes. These capabilities do not retroactively invalidate Alpha.4 records or turn verification status into a trust decision.
-
-OrgAnchor's own public self-pilot is active at `https://organchor.org/verify/`. Its real operational artifacts live outside this source repository so that the publishable project remains clean: no private keys, provider tokens, payment records, or deployment credentials are stored here.
-
-Implemented so far:
-
-- Strict JSON loading with duplicate-key rejection.
-- Canonical JSON hashing.
-- SHA-256 statement hashes.
-- Ed25519 root member key generation.
-- Root authority records, including threshold authority creation.
-- Detached statement signatures, including appended signatures from independent root member keys.
-- Statement verification with root authority threshold checks.
-- Anchored verification with an expected root authority hash.
-- Stage 1 test vectors.
-- Static adopting-organization `/verify` page generation.
-- Automatic Beacon discovery surfaces: `/.well-known/organchor.json`, `robots.txt`, `sitemap.xml`, HTML discovery links, and JSON-LD metadata.
-- Machine-readable `public/verify/organchor.json`.
-- Human-readable Agent Verification View on `/verify/index.html`, backed by the same `agent_review` data exposed in `organchor.json`.
-- Agent-facing discovery and verification contract for `/.well-known/organchor.json`.
-- Third-party AI agent integration guide with compact-result examples.
-- `organchor verify url` for external AI agents and other verifiers.
-- Compact `organchor verify url --compact` output for low-cost first-pass agent routing.
-- `conformance_status` in agent verification output so integrations can separate claimed, partial, failed, and full-compatible adoption.
-- Human-visible and machine-readable carrier receipt summaries from `organchor.lock.json`.
-- `organchor lockfile hash`, `organchor lockfile sign`, and `organchor lockfile verify` for root-signed publication ledger snapshots.
-- `/verify` publication of `organchor.lock.json`, `organchor.lock.json.sig`, and machine-readable `lockfile_integrity` when a signed lockfile is available.
-- Signed claims/evidence manifests are copied into `/verify` and indexed when available.
-- Value continuity audit reports for claim support levels, evidence quality, stale evidence, and unsupported claims.
-- Claim-level support axes, risk gaps, next best actions, and compact support-level counts for low-friction external AI-agent review.
-- Claims/evidence protocol baseline for structured claims, evidence, reproducible methods, third-party attestations, challenges, and AI-agent claim-support output.
-- `organchor.lock.json` publish receipt records.
-- IPFS verify-directory dry-run receipts.
-- Local Kubo IPFS publish support with CID receipts.
-- Pinata directory upload support for the default verify mirror.
-- IPFS local directory hash verification and Kubo CID content hash verification.
-- Arweave manual upload package generation, including optional signed claims/evidence manifests.
-- Arweave Turbo SDK upload adapter for real archival receipts.
-- Arweave local package artifact hash verification and gateway TX content hash verification.
-- Signed product claims manifests, including appended threshold signatures.
-- Signed evidence manifests with local artifact hash checks and appended threshold signatures.
-- Evidence recheck method objects through `organchor evidence method add`, linking signed evidence to concrete steps, expected results, tools, verification cost, and limitations.
-- Real-world profile validators for physical product, service delivery, SaaS/API, certification/compliance, and dataset/research claims.
-- S2 third-party material template and attach commands plus local checks for candidate versus effective S2, external recheck anchors, claim linkage, scope, limitations, expiry, disclosures, and compact `s2_summary`.
-- S3 random purchase / sampling template and attach commands plus local checks for candidate versus effective S3, sample identity, sample source, selector, organization-provided samples, custody gaps, and compact `s3_summary`.
-- Domain security audit reports with `PASS`, `WARN`, `FAIL`, and `MANUAL_CHECK_REQUIRED`.
-- HTTPS, certificate expiration, DNSSEC, SPF, DMARC, MX, CAA, security.txt, `/verify`, statement, and signature checks.
-- Onion v3 address validation and Tor Hidden Service config guidance.
-- ENS auxiliary-name planning and offline records snapshot verification.
-- Root member key rotation planning that generates a next-authority draft.
-- General root authority change planning for retained, removed, and added members with explicit threshold changes.
-- Root authority migration statement creation, signing, and verification.
-- Self-pilot root authority migration rehearsal with positive and negative verification checks.
-- Operator migration guidance for root authority evolution.
-- `/verify` migration-history publication for migration chains that end at the current root authority.
-- `/verify` root continuity publication through human-visible page content and machine-readable `root_continuity`.
-- `/verify` value continuity publication through human-visible page content and machine-readable `value_continuity`.
-- `/verify` and `/.well-known` Directory discovery pointers through machine-readable `directory_discovery`.
-- Beacon-first discovery surfaces that give every adopter a standard, origin-owned signal without requiring official Directory inclusion. Compatible crawlers can recognize that signal once the origin enters their discovery frontier; Beacon does not guarantee global discovery by itself.
-- `organchor beacon index` for merging repeated sweep NDJSON files into an incremental local discovery index.
-- `organchor beacon inspect` for distinguishing claimed OrgAnchor signals, partial implementations, impostor Beacons, and strictly verified full compatibility.
-- `organchor beacon generate` for regenerating `/.well-known/organchor.json`, `robots.txt`, and `sitemap.xml` from an already verified local `/verify` package without rebuilding the whole page.
-- `organchor beacon query` for filtering a local Beacon index and returning agent-facing need-match reports, candidate explanations, risk gaps, and verification plans.
-- `organchor beacon report` for measuring local discovery quality from sweep artifacts, including find rate, verification success rate, stale rate, and cross-sweep reproducibility.
-- `organchor beacon sweep` for checking seed files, Directory snapshots, sitemaps, and bounded crawl starts, then writing reusable NDJSON discovery results.
-- `organchor beacon verify` for checking that shared sweep NDJSON files are structurally valid discovery artifacts.
-- `node scripts/agent-discovery-demo.mjs` for running a complete local seed -> sweep -> index -> query -> verify loop without external credentials.
-- `organchor doctor` for adopter-facing readiness diagnosis and concrete next actions.
-- `organchor adoption status` for producing human-readable and machine-readable adoption workspace status without turning status into a trust badge.
-- External pilot runbook for repeatable low-risk organization adoption.
-- NPM build configuration that packages the CLI from `dist/cli.js`.
-- Static Directory snapshot build and verification commands for bounded discovery experiments.
-- Static Directory candidate source maintenance with `organchor directory add`, without treating additions as verification.
-- Directory snapshots can be generated directly from a local Beacon index.
-- Directory build writes a machine-readable `directory-policy.json` so Directory boundaries are public by default.
-- Directory snapshots can be exported as NDJSON feeds for mirroring, merging, and independent Directory nodes.
-- Optional Directory origin verification that fetches each listed organization's OrgAnchor package before writing crawler-derived records.
-- `organchor directory inspect` for checking whether an organization exposes a machine-readable Directory pointer and whether the linked snapshot/hash/policy are consistent.
-- `organchor directory fetch` for retrieving verified Directory candidate records and next-step `verify url` commands.
-- `organchor directory fetch` filtering by category, capability, region, language, identity status, value status, policy route, and limit so AI agents can reduce candidate sets before direct origin verification.
-- Directory candidate explanations with priority, matched filters, risk gaps, and verification plans.
-- `organchor directory compare` for comparing independent Directory snapshots and surfacing conflicting origin summaries without making trust decisions.
-- Public complete minimal example artifacts under `examples/complete`.
-
-## Install Alpha
-
-The current public package is a prerelease:
+The public package is a prerelease. Use the explicit `alpha` tag:
 
 ```bash
 npm install -g organchor@alpha
 organchor --help
 ```
 
-Use the explicit `@alpha` tag until OrgAnchor has a stable release. The npm registry still exposes an older alpha under `latest`, but that is not a stability claim and should not be used in public install instructions.
-
-## Local Agent Discovery Demo
-
-To see the AI-agent discovery loop without Cloudflare, IPFS, Arweave, wallets, tokens, or real domains, run:
-
-```bash
-npm run agent:demo
-```
-
-The demo creates a temporary adopting organization, serves its `/verify` package on localhost, then runs Beacon sweep, local indexing, Directory snapshot export, need-match query, and direct compact verification. It writes observable outputs under a temporary workspace so people can inspect what actually happened.
-
-## Evidence Interpretation Evaluation
-
-To build a fictional but cryptographically valid manufacturing package whose 10,000-hour lifetime claim has relevant but insufficient evidence, run:
-
-```bash
-npm run evaluation:evidence -- build --out ./.local/evidence-interpretation-run
-npm run evaluation:evidence -- exercise --package ./.local/evidence-interpretation-run
-```
-
-The output separates the safe-to-serve public package, the fresh-context Agent task, and operator-only ground truth. Synthetic private keys are removed after build. Use the scorer only for this scenario; it is not a general model benchmark or supplier trust rating. See `docs/evaluations/EVIDENCE_INTERPRETATION_ADVERSARIAL_EVALUATION.md` for the isolation and interpretation rules.
-
-To run the fixed-time Wave 2 scenario that separates an expired certificate's historical value from current claim support:
-
-```bash
-npm run evaluation:evidence -- build-stale --out ./.local/evidence-staleness-run
-npm run evaluation:evidence -- exercise-stale --package ./.local/evidence-staleness-run
-```
-
-See `docs/evaluations/EVIDENCE_STALENESS_ADVERSARIAL_EVALUATION.md` for the decision question, hard failures, and scorer boundary.
-
-To run the Wave 3 scenario where current issuer-backed S2 evidence and current market-sampling S3 evidence point in opposite directions:
-
-```bash
-npm run evaluation:evidence -- build-conflict --out ./.local/evidence-conflict-run
-npm run evaluation:evidence -- exercise-conflict --package ./.local/evidence-conflict-run
-```
-
-See `docs/evaluations/EVIDENCE_CONFLICT_ADVERSARIAL_EVALUATION.md` for scope rules, hard failures, and the unresolved-conflict boundary.
-
-## Visible Acceptance Demo
-
-To see the human-readable `/verify` page, the matching `agent_review` JSON, and a tamper-failure proof without external credentials, run:
-
-```bash
-npm run visible:demo -- --out ./visible-demo --serve
-```
-
-For a browser URL that stays open until stopped, run:
-
-```bash
-npm run visible:demo -- --out ./visible-demo --serve
-```
-
-Use `docs/operations/VISIBLE_ACCEPTANCE.md` for the Chinese acceptance checklist and boundary notes.
-
-Language policy: machine-readable JSON keys, status enums, policy route codes, schemas, commands, and artifact filenames stay stable English / ASCII. Human explanations and future `/verify` page variants can be localized. See `docs/protocol/LANGUAGE_COMPATIBILITY.md`.
-
-## Fireseed Review Tracks
-
-Fireseed Alpha has three broad review paths and one focused Agent-evaluation path:
-
-- Adopting organization trial: test whether a real or realistic organization can publish a useful OrgAnchor package without excessive effort.
-- Technical review: test signatures, canonicalization, threshold authority, migration, `/verify`, Beacon, package safety, and release checks.
-- Evidence/governance review: test S1-S3 abuse cases, S3 sampling assumptions, S4/S5 design gaps, Directory risks, and stale or misleading evidence.
-- External Agent evaluation: give an unfamiliar Agent the isolated fictional package, preserve its uncorrected JSON, and test whether it separates valid package structure from actual claim support.
-
-Use `CONTRIBUTING.md` for contribution rules, `docs/outreach/CALL_FOR_FIRESEED_REVIEW.md` for the public review brief, and `docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md` for the controlled fresh-context procedure.
-
-Use `docs/outreach/FIRESEED_OUTREACH_KIT.md` as the practical starter kit for named external outreach. It includes track-specific task lists, useful commands, feedback routing, success criteria, hold criteria, and copyable invitation text.
-
-## Capability Audit
-
-OrgAnchor keeps a package-facing capability traceability matrix so implementation maturity is not inferred from prose alone. It also keeps executable capability scenarios so cross-module workflows can be checked by machines instead of manual reading.
-
-Run:
-
-```bash
-npm run capability:audit
-npm run capability:scenarios
-```
-
-`npm run capability:audit` validates `docs/evaluations/CAPABILITY_TRACEABILITY_MATRIX.md` and writes `reports/capability-audit.json` plus `reports/capability-audit.md`.
-
-`npm run capability:scenarios` runs the local scenario layer from `docs/evaluations/CAPABILITY_AUDIT_SCENARIOS.md` and writes `reports/capability-scenarios.json` plus `reports/capability-scenarios.md`. Use `node scripts/capability-scenarios.mjs --include-network` when intentionally checking the public OrgAnchor self-pilot.
-
-## CLI Quick Start
-
-Run from an empty working directory:
+For a disposable 1-of-1 trial in an empty directory:
 
 ```bash
 organchor init
+# Edit organchor.config.json before creating the statement.
 organchor key generate --id root-2026
 organchor authority create --key keys/root-2026.private.json
 organchor statement create --config organchor.config.json --authority root-authority.json
 organchor statement sign --key keys/root-2026.private.json --authority root-authority.json --in statements/official-endpoints.json
 organchor statement verify --authority root-authority.json --in statements/official-endpoints.json --sig statements/official-endpoints.json.sig
 organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --out public/verify
-organchor mirror ipfs publish --dir public/verify --dry-run
-organchor mirror ipfs publish --dir public/verify --api http://127.0.0.1:5001
-organchor mirror ipfs pin --cid <CID> --service-url <PINNING_SERVICE_API> --token-env ORGANCHOR_IPFS_PINNING_JWT
-organchor mirror ipfs upload --provider pinata --dir public/verify --token-env ORGANCHOR_IPFS_PINNING_JWT
-organchor mirror ipfs verify --cid <CID> --api http://127.0.0.1:5001 --expected-hash sha256:<HASH>
-organchor archive arweave publish --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --verify-index public/verify/organchor.json --verify-page public/verify/index.html
-organchor archive arweave estimate --dir arweave-package
-organchor archive arweave upload --provider turbo --dir arweave-package --wallet-file arweave-wallet.local.json
-organchor archive arweave verify --tx <ARWEAVE_TX_ID> --gateway https://arweave.net --expected-hash sha256:<HASH>
-organchor anchor opentimestamps stamp --file statements/official-endpoints.json
-organchor anchor opentimestamps upgrade --proof anchors/opentimestamps/official-endpoints.json.ots
-organchor anchor opentimestamps verify --file statements/official-endpoints.json --proof anchors/opentimestamps/official-endpoints.json.ots
-organchor claims create --config organchor.config.json
-organchor claims sign --key keys/root-2026.private.json --authority root-authority.json
-organchor evidence create --config organchor.config.json
-organchor evidence add --file README.md
-organchor evidence add --file demo.mp4 --uri https://example.com/evidence/demo.mp4 --location-type https --subject-type product --subject-id primary-product
-organchor evidence method add --id method-001 --evidence-id evidence-001 --steps "Fetch artifact;Compute SHA-256;Compare with signed manifest" --expected-results "Hash matches"
-organchor evidence s2 template --template certification_record
-organchor evidence s2 attach --evidence-id evidence-001 --template certification_record --issuer-name "Example Certification Body" --anchor-url https://registry.example/records/ABC-123 --scope "Certificate supports claim-001 for model-x1"
-organchor evidence s3 template --template market_purchase
-organchor evidence s3 attach --evidence-id evidence-001 --template market_purchase --sampler-type buyer --acquired-at 2026-05-28T00:00:00Z --subject-type product_model --subject-id model-x1 --sample-slot-id sample-slot-claim-001-2026-05-001 --storage-role DIRECTORY_VAULT --raw-availability-status REQUEST_REQUIRED --scope "Random market purchase sample supports claim-001 for model-x1"
-organchor evidence sign --key keys/root-2026.private.json --authority root-authority.json
-organchor value audit --claims claims/product-claims.json --evidence evidence/evidence-manifest.json --check-files
-organchor beacon index --in beacon-sweep.ndjson --out beacon-index.json
-organchor beacon index --previous beacon-index.json --in beacon-sweep-latest.ndjson --out beacon-index.json
-organchor beacon query --index beacon-index.json --need "identity continuity support" --capability identity-continuity --conformance FULL_COMPATIBLE --limit 10
-organchor beacon inspect https://example.org
-organchor beacon sweep --seeds seeds.txt --out beacon-sweep.ndjson --concurrency 4 --timeout-ms 10000
-organchor beacon sweep --crawl https://example.org --crawl-max-pages 25 --crawl-max-depth 1 --out beacon-sweep.ndjson
-organchor beacon sweep --directory-snapshot public/directory/directory-snapshot.json --out beacon-sweep.ndjson
-organchor beacon sweep --sitemap https://example.org/sitemap.xml --out beacon-sweep.ndjson
-organchor beacon verify --in beacon-sweep.ndjson
-organchor doctor https://example.org
-organchor adoption status --verify-dir public/verify --origin https://example.org --level 3
-organchor directory build --origins examples/directory/directory-origins.json --out public/directory
-organchor directory build --origins examples/directory/directory-origins.json --out public/directory --verify-origins
-organchor directory build --beacon-index beacon-index.json --node-origin https://directory.example --out public/directory
-organchor directory compare --snapshots directory-a.json,directory-b.json --out directory-compare.json
-organchor directory export --snapshot public/directory/directory-snapshot.json --format ndjson --out directory-feed.ndjson
-organchor directory fetch https://example.org
-organchor directory fetch https://example.org --capability identity-continuity --identity-status PASS --limit 5
-organchor directory inspect https://example.org
-organchor directory verify --snapshot public/directory/directory-snapshot.json
-organchor verify url https://example.org
-organchor verify url https://example.org --compact
-organchor domain audit example.com
-organchor onion verify <v3-address.onion>
-organchor onion config generate --domain <v3-address.onion>
-organchor ens plan example.eth --statement statements/official-endpoints.json
-organchor ens verify example.eth --statement statements/official-endpoints.json --records ens-records.json
-organchor key rotate-plan --authority root-authority.json --replace-key root-c --new-key keys/root-d.public.json --out root-authority-next.json
-organchor authority change-plan --old-authority root-authority.json --add-keys keys/root-d.public.json,keys/root-e.public.json --threshold 3 --out root-authority-next.json
-organchor migrate create --old-authority root-authority.json --new-authority root-authority-next.json
-organchor migrate sign --key keys/root-a.private.json --old-authority root-authority.json --in statements/migration-2026-001.json
-organchor migrate verify --old-authority root-authority.json --new-authority root-authority-next.json --in statements/migration-2026-001.json --sig statements/migration-2026-001.json.sig
-organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority-next.json --migration statements/migration-2026-001.json --migration-sig statements/migration-2026-001.json.sig
 ```
 
-`archive arweave publish` refuses to reuse a non-empty package directory by default, so stale files are not accidentally archived. Use `--overwrite` only when you intentionally want to replace the existing `arweave-package` directory.
+A serious public pilot should use independent key holders and threshold
+authority rather than sharing one private key. Follow the
+[Adopter Quickstart](docs/guides/ADOPTER_QUICKSTART.md),
+[Root Authority Custody Guide](docs/guides/ROOT_AUTHORITY_CUSTODY_GUIDE.md), and
+[CLI Reference](docs/guides/CLI_REFERENCE.md) before publishing or archiving a
+real package.
 
-After packaging, the intended command name is:
+## Local Demos
+
+From a source checkout:
 
 ```bash
-organchor
+npm ci
+npm run visible:demo -- --out ./visible-demo --serve
+npm run agent:demo
 ```
 
-## Safety Notes
+The visible demo shows a human `/verify` page, the corresponding Agent result,
+and a tamper failure. The Agent demo runs a local
+`seed -> sweep -> index -> query -> verify` loop without real domains, wallets,
+tokens, or paid services. See
+[Visible Acceptance](docs/operations/VISIBLE_ACCEPTANCE.md) and the
+[Agent Integration Guide](docs/protocol/AGENT_INTEGRATION_GUIDE.md).
 
-Private key files are sensitive.
+Runnable adversarial scenarios also test whether Agents keep valid package
+integrity separate from weak, stale, or conflicting product evidence. Their
+scope and raw-result rules are documented in the
+[External Agent Evaluation Runbook](docs/evaluations/EXTERNAL_AGENT_EVALUATION_RUNBOOK.md).
 
-OrgAnchor initializes `.gitignore` rules for:
+## Fireseed Alpha
+
+Fireseed Alpha is the first public collaboration boundary, not a finished trust
+system. Its minimum loop is:
 
 ```text
-keys/*.private.json
-*.private.json
+identity continuity;
+public /verify;
+AI-agent-readable verification;
+signed claims/evidence;
+S1-S3 evidence baseline;
+S4/S5 design preview;
+external review and low-risk pilots.
 ```
 
-Do not publish private keys, wallet seeds, provider tokens, or credentials.
+The operating boundary is defined by the
+[Fireseed Alpha Plan](docs/operations/FIRESEED_ALPHA_PLAN.md),
+[Readiness Gate](docs/operations/FIRESEED_READINESS_GATE.md), and preserved
+[first GO decision](docs/history/FIRESEED_LAUNCH_DECISION_2026-06-01.md).
 
-## What OrgAnchor Does Not Claim
+## Fireseed Review Tracks
 
-OrgAnchor does not claim:
+- **Adopting organization trial:** test whether a real organization can publish
+  and maintain a useful package without excessive effort.
+- **Technical review:** test canonicalization, signatures, threshold authority,
+  migration, package safety, and release integrity.
+- **Evidence and governance review:** test misleading evidence, sampling,
+  staleness, conflicts, challenge handling, and Directory risks.
+- **External Agent evaluation:** test whether a fresh-context Agent separates
+  identity integrity from actual claim support.
 
-- Permanent identity.
-- Absolute censorship resistance.
-- Complete decentralization.
-- Replacement for domains.
-- Replacement for legal identity.
-- Replacement for government registration.
-- Quantum-proof security in v1.
+Start with the [Fireseed Outreach Kit](docs/outreach/FIRESEED_OUTREACH_KIT.md),
+[Call for Review](docs/outreach/CALL_FOR_FIRESEED_REVIEW.md), and
+[Contributing Guide](CONTRIBUTING.md). Security findings should follow the
+[private reporting policy](.github/SECURITY.md).
 
-OrgAnchor improves verifiability and continuity. It does not make an organization automatically trustworthy.
+## Safety And Non-Claims
 
-## Carrier Notes
+Never publish private keys, recovery material, wallet seeds, provider tokens,
+payment records, or confidential evidence. Generated private-key files are
+ignored by default, but custody remains the adopting organization's
+responsibility.
 
-Arweave is treated as a long-term append-only archival carrier with one-time upload economics, not as OrgAnchor's identity root, current authority layer, general evidence storage backend, or sole durability guarantee. Corrections are made by publishing a new signed statement that supersedes an older one.
+OrgAnchor is not:
 
-OpenTimestamps/Bitcoin anchoring is treated as a public time anchor for hashes. It proves that a hash existed before a Bitcoin block time; it does not store the file content and does not prove that the claim is true.
+- a trust badge, certification authority, supplier ranking, or marketplace;
+- proof that an organization is good, truthful, safe, lawful, cheap, or best;
+- a replacement for legal identity, government registration, domains, or
+  direct origin verification;
+- a guarantee of permanent availability, complete decentralization, or
+  censorship resistance; or
+- quantum-proof security in the current alpha.
 
-IPFS CIDs identify content, but they do not guarantee that someone will keep serving it.
+## Documentation
 
-The default IPFS mirror is the small `public/verify` verification package, not a large evidence repository. Large media, datasets, PDFs, and other heavy artifacts should be recorded in the signed evidence manifest with hashes and external locations such as HTTPS, R2/S3, GitHub Releases, or independent IPFS CIDs.
+- [Project North Star](docs/project/PROJECT_NORTH_STAR.md): the goal and
+  non-negotiable boundaries.
+- [Design Rationale](docs/project/DESIGN_RATIONALE.md):
+  goal -> properties -> mechanisms -> effects -> limits.
+- [Implementation Status](docs/project/IMPLEMENTATION_STATUS.md): shipped,
+  partial, design-only, and incomplete capabilities.
+- [Quality Assurance Status](docs/project/QUALITY_ASSURANCE_STATUS.md): public
+  machine evidence and remaining external assurance gaps.
+- [Public Release Checklist](docs/operations/PUBLIC_RELEASE_CHECKLIST.md):
+  repeatable release gates and human-owner stop points.
+- [Capability Audit Scenarios](docs/evaluations/CAPABILITY_AUDIT_SCENARIOS.md):
+  executable cross-module checks.
+- [Commercial Fit Layer](docs/protocol/COMMERCIAL_FIT_LAYER.md): accepted design
+  for price, MOQ, lead-time, and quote paths without becoming a marketplace.
+- [Documentation Index](DOCS_INDEX.md): role-based reading paths and source-of-truth order.
+- [Historical records](docs/history/): dated decisions and retired experiments
+  that do not override current guidance.
 
-`organchor.lock.json` is the publication receipt ledger. It records non-sensitive receipt metadata such as artifact hashes, provider names, CIDs, transaction ids, and timestamps. When the adopting organization's root authority signs the lockfile, changing any recorded receipt changes the canonical hash and breaks `organchor lockfile verify`.
+## License
 
-Traditional domains, Cloudflare, ENS, Onion, IPFS, and Arweave are all carriers or discovery surfaces. The trust path returns to the root authority, signatures, hashes, and migration history.
-
-## Product Shape
-
-OrgAnchor has four product surfaces:
-
-- Core verification library.
-- CLI.
-- Future local-first OrgAnchor Studio.
-- Adopting organization `/verify` page.
-
-See `docs/project/PRODUCT_SHAPE.md` for the accepted product shape.
-
-## Adoption
-
-OrgAnchor is intended to be repeatable by other organizations, not only usable by the OrgAnchor self-pilot.
-
-The adoption model is recorded in `docs/project/ADOPTION_MODEL.md`.
-
-Start with `DOCS_INDEX.md` when choosing what to read next.
-
-For AI agents, `PASS` is not a trust badge. `organchor verify url --compact` includes `policy_route` so an external agent can distinguish identity verification from its own transaction, partnership, listing, or safety policy.
-
-Operator-facing adoption and verification documents:
-
-- `DOCS_INDEX.md`
-- `docs/history/CURRENT_PROJECT_STATE_2026-07-02.md`
-- `docs/history/PUBLIC_SELF_PILOT_MINIMAL_REVIEW_2026-07-06.md`
-- `docs/project/PROJECT_NORTH_STAR.md`
-- `docs/protocol/PROTOCOL_EVOLUTION_POLICY.md`
-- `docs/project/PURPOSE_AND_VALUES.md`
-- `docs/guides/ADOPTER_QUICKSTART.md`
-- `docs/guides/ADOPTION_PRINCIPLES.md`
-- `docs/guides/ADOPTION_GUIDE.md`
-- `docs/protocol/AGENT_COMPATIBILITY_PLAN.md`
-- `docs/protocol/AGENT_INTEGRATION_GUIDE.md`
-- `docs/protocol/AGENT_VERIFICATION_CONTRACT.md`
-- `docs/protocol/COMMERCIAL_FIT_LAYER.md`
-- `docs/guides/PILOT_MINIMAL_PATH.md`
-- `docs/guides/EXTERNAL_PILOT_RUNBOOK.md`
-- `docs/guides/ORG_ONBOARDING_CHECKLIST.md`
-- `docs/guides/ROOT_AUTHORITY_CUSTODY_GUIDE.md`
-- `docs/guides/MIGRATION_GUIDE.md`
-- `docs/guides/PUBLISHING_GUIDE.md`
-- `docs/operations/RELEASE_INTEGRITY.md`
-- `docs/outreach/SHOWCASE_POLICY.md`
-- `docs/protocol/VALUE_CONTINUITY_MODEL.md`
-- `docs/guides/DOMAIN_HARDENING_GUIDE.md`
-- `docs/protocol/DISCOVERY_STRATEGY.md`
-- `docs/protocol/DISCOVERY_TAXONOMY.md`
-- `docs/protocol/DIRECTORY_MODEL.md`
-- `docs/protocol/DIRECTORY_SNAPSHOT_SPEC.md`
-- `docs/guides/EVIDENCE_ONBOARDING_GUIDE.md`
-
-## Release Hygiene
-
-Before publishing or promoting a release, use `docs/operations/RELEASE_INTEGRITY.md` as the consistency gate for source state, public `/verify` state, carrier receipts, package metadata, and release notes.
-
-Useful local checks:
-
-```bash
-node --run build
-node --run check
-node --run release:smoke
-node --run package:smoke
-node --run install:smoke
-node --run release:check
-```
+Apache-2.0. See [LICENSE](LICENSE).

@@ -237,6 +237,9 @@ OrgAnchor is not:
   executable cross-module checks.
 - [Commercial Fit Layer](docs/protocol/COMMERCIAL_FIT_LAYER.md): accepted design
   for price, MOQ, lead-time, and quote paths without becoming a marketplace.
+- [Historical Anchor Policy](docs/protocol/HISTORICAL_ANCHOR_POLICY.md):
+  accepted rules for immediate anchors, periodic checkpoints, local records,
+  and material that must not be publicly anchored.
 - [Documentation Index](DOCS_INDEX.md): role-based reading paths and source-of-truth order.
 - [Historical records](docs/history/): dated decisions and retired experiments
   that do not override current guidance.

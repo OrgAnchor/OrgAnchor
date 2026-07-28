@@ -67,7 +67,9 @@ migration statement
 5. A valid older package should be reported as legacy or gap-bearing, not as tampered.
 6. OrgAnchor cannot migrate an adopter's identity on the adopter's behalf.
 7. Adoption migration must be authorized by the adopter's own root authority.
-8. Historical packages should be preserved by stable dated paths or content-addressed/archive carriers.
+8. Historical packages should be preserved by stable dated paths or
+   content-addressed/archive carriers according to
+   [HISTORICAL_ANCHOR_POLICY.md](./HISTORICAL_ANCHOR_POLICY.md).
 9. Directories, mirrors, registries, and the OrgAnchor project website are not allowed to become the identity root for adopters.
 
 ## Recommended Compatibility Statuses

@@ -73,8 +73,15 @@ canonical JSON statement + detached signatures + current root authority threshol
 Historical continuity comes from:
 
 ```text
-old signed statements + valid root migration statements + archived/mirrored receipts
+old signed statements + valid root migration statements + signed historical
+event/checkpoint links + archived/mirrored receipts
 ```
+
+The accepted historical-anchor policy classifies public events as immediate
+anchors, periodic-checkpoint inputs, local-only records, or prohibited public
+material. The current alpha implements signed artifacts, carrier publication,
+OpenTimestamps proofs, and signed lockfile receipts; it does not yet implement
+the dedicated historical-event schema or automated checkpoint aggregation.
 
 Value evidence comes from:
 

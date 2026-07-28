@@ -18,6 +18,7 @@ S4 real-use observation: PARTIAL / DESIGN_PREVIEW
 S5 challenge and accountability: DESIGN_ONLY
 Commercial-fit protocol: DESIGN_ONLY
 Delegated product/service credentials: DESIGN_ONLY
+Historical event classification and checkpoints: DESIGN_ONLY
 Broad external organization pilot: NOT_COMPLETED
 Broad internet discovery coverage: NOT_IMPLEMENTED
 ```
@@ -68,6 +69,7 @@ Value evidence layer:
 - Commercial fit layer documented as an accepted design direction for price disclosure modes, signed public price sheets, private signed quotes, lead time, MOQ, validity windows, and commercial-fit routing without turning OrgAnchor into a marketplace or price judge.
 - Evidence sufficiency model documented as an accepted design principle so OrgAnchor can avoid field-count competition and report purpose-fit support instead of universal completeness scores.
 - Subject binding model documented as the accepted rule that discovery matches, claims, evidence, samples, observations, credentials, and challenges must declare the subject they cover and must not silently widen evidence coverage.
+- Historical anchor policy documented as the accepted event-selection rule for immediate external anchors, periodic checkpoints, local-only records, and material prohibited from public anchoring. Dedicated event schemas, deterministic checkpoint aggregation, and automated classification remain design-only.
 
 Carriers and auxiliary surfaces:
 

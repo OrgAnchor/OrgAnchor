@@ -68,9 +68,10 @@ over an older plan that describes intended work.
 
 1. [Claims And Evidence Protocol](./docs/protocol/CLAIMS_EVIDENCE_PROTOCOL.md)
 2. [Evidence Sufficiency Model](./docs/protocol/EVIDENCE_SUFFICIENCY_MODEL.md)
-3. [S2 Third-Party Material Model](./docs/protocol/S2_THIRD_PARTY_MATERIAL_MODEL.md)
-4. [S3 Random Sampling Model](./docs/protocol/S3_RANDOM_SAMPLING_MODEL.md)
-5. [Adversarial Evaluations](./docs/evaluations/README.md)
+3. [Historical Anchor Policy](./docs/protocol/HISTORICAL_ANCHOR_POLICY.md)
+4. [S2 Third-Party Material Model](./docs/protocol/S2_THIRD_PARTY_MATERIAL_MODEL.md)
+5. [S3 Random Sampling Model](./docs/protocol/S3_RANDOM_SAMPLING_MODEL.md)
+6. [Adversarial Evaluations](./docs/evaluations/README.md)
 
 ## Status Language
 

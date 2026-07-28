@@ -6,6 +6,13 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 
 ## Unreleased
 
+### Added
+
+- Added an accepted historical-anchor policy that classifies events into
+  immediate external anchors, periodic checkpoints, local-only records, and
+  material prohibited from public anchoring, while keeping the dedicated event
+  schema and checkpoint automation explicitly design-only.
+
 ### Changed
 
 - Reworked the GitHub README into a concise public entry point centered on the

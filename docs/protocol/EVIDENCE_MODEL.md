@@ -385,6 +385,12 @@ organchor.lock.json = local publish receipt ledger
 
 No carrier is the identity root. The root authority and signed manifests remain the trust basis.
 
+The selection of which events and artifacts deserve immediate archival,
+periodic checkpointing, local-only retention, or exclusion from public anchors
+is governed by [HISTORICAL_ANCHOR_POLICY.md](./HISTORICAL_ANCHOR_POLICY.md).
+Carrier availability must not cause every operational event or raw evidence
+file to become a permanent public record.
+
 ### Website `/verify`
 
 The website is the main real-world discovery entry.
@@ -605,7 +611,8 @@ Limit:
 
 Future versions may revisit:
 
-- Which artifacts should be automatically archived to Arweave.
+- How the accepted historical-event classifications and checkpoint rules
+  should be automated without weakening privacy or finality review.
 - Whether large media should be chunked or packaged with CAR files.
 - Whether to support dedicated dataset repositories.
 - Whether to support C2PA manifests for media files.

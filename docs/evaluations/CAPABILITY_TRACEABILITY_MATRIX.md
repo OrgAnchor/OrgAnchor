@@ -70,6 +70,7 @@ Only these status values are allowed:
 | OA-025 | Package health layer commands | DESIGN_ONLY | Future | docs/protocol/PACKAGE_HEALTH_LAYER.md; docs/project/IMPLEMENTATION_STATUS.md; docs/history/FIRESEED_LAUNCH_DECISION_2026-06-01.md | none | none | none | Health commands, observed health lookup, and Directory health summaries are not implemented. |
 | OA-026 | Broad external organization pilot | NOT_IMPLEMENTED | Post-Fireseed | docs/guides/EXTERNAL_PILOT_RUNBOOK.md; docs/history/FIRESEED_LAUNCH_DECISION_2026-06-01.md; docs/project/IMPLEMENTATION_STATUS.md | none | none | none | No broad external organization pilot has completed yet. |
 | OA-027 | Commercial fit layer | DESIGN_ONLY | Future | docs/protocol/COMMERCIAL_FIT_LAYER.md; docs/project/PROJECT_NORTH_STAR.md; docs/project/IMPLEMENTATION_STATUS.md | none | tests/commercial-fit-layer.test.ts | none | Public commercial-fit manifests, signed price sheets, delegated commercial keys, private quote verification, and compact commercial-fit summaries are not implemented. |
+| OA-028 | Historical event classification and checkpoint aggregation | DESIGN_ONLY | Future | docs/protocol/HISTORICAL_ANCHOR_POLICY.md; docs/protocol/EVIDENCE_MODEL.md; docs/project/ARCHITECTURE.md | none | none | none | Existing signed artifacts, Arweave/IPFS publication, OpenTimestamps proofs, and signed lockfile receipts are implemented, but the dedicated event schema, classifier, deterministic checkpoint aggregation, and Agent completeness output are not. |
 
 ## Audit Rules
 

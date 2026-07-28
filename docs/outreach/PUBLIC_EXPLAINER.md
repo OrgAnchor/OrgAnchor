@@ -39,6 +39,42 @@ OrgAnchor is not trying to replace websites, domains, or platforms. It addresses
 
 It helps organizations organize identity, official presence, claims, evidence, migrations, and history into signed, recheckable, traceable, and portable public materials. That way, outside people and AI agents do not have to start from zero and piece everything together manually. They can discover, screen, verify, understand, and compare an organization at lower cost.
 
+## Verifiable History Over Time
+
+OrgAnchor is not limited to checking one current snapshot. Used over time, it
+lets an organization accumulate a **verifiable longitudinal record**: a sequence
+of signed public states connected to publication receipts, external time
+anchors, corrections, evidence updates, and migration records.
+
+AI can make a convincing current website, report, certificate-like document, or
+organization profile quickly. It is much harder to backfill a long history that
+was already published at multiple real moments, signed by the relevant
+authority, externally time-anchored, and kept consistent with product versions,
+evidence, corrections, migrations, and independent observations.
+
+This changes what an outside person or AI agent can inspect. Instead of asking
+only "what does the organization say today?", the reviewer can also ask:
+
+- What did the organization publish at earlier verifiable moments?
+- Which authority signed each state?
+- Which records have independent time anchors rather than only declared dates?
+- How did claims and supporting evidence change?
+- Were corrections appended transparently or was context silently removed?
+- Are there unexplained gaps, abrupt discontinuities, contradictions, or
+  concentrated late backfills?
+
+The mechanism matters. A date written inside a signed file is not independent
+proof that the file existed on that date. Stronger temporal evidence comes from
+separately published signed snapshots, content hashes, signed receipt history,
+and external anchors such as OpenTimestamps/Bitcoin or append-only archival
+publication.
+
+Longer history is not automatic proof of truth, and a new organization is not
+presumed untrustworthy. The value is narrower and more defensible: time becomes
+an inspectable evidence dimension, raising the cost of silently rewriting or
+retrospectively fabricating a coherent past while lowering the cost of reviewing
+change.
+
 ## What OrgAnchor Makes Visible
 
 An OrgAnchor package should help an outside person or AI agent answer:
@@ -70,6 +106,12 @@ The basic verification path is:
 6. Optional carriers and anchors: website, IPFS, Arweave, OpenTimestamps/Bitcoin, Onion, ENS, GitHub, DNS, and Directory snapshots.
 
 The carrier is not the root. A website, storage network, platform account, Directory, or domain may help publish or discover materials, but the verification path returns to the organization's authority records, signatures, hashes, migration records, and evidence structure.
+
+A verifiable history emerges when an organization preserves successive
+snapshots instead of silently replacing the only visible copy. Corrections,
+withdrawals, and migrations should point backward to the state they supersede,
+while external time anchors help distinguish contemporaneous publication from a
+date declared later.
 
 ## Human And Agent Views
 

@@ -44,6 +44,9 @@ Focus on:
 - Canonical JSON and hashing.
 - Signature and threshold verification.
 - Root authority migration.
+- Whether declared dates are clearly distinguished from external time anchors.
+- Whether successive snapshots, signed receipt history, corrections, and
+  migrations can form a recheckable history without implying a trust score.
 - CLI ergonomics.
 - Package safety.
 - Release integrity.
@@ -58,6 +61,8 @@ Focus on:
 - S1-S3 abuse cases.
 - S3 random sampling and anti-brushing limits.
 - Stale or misleading evidence.
+- Long-history theatre: backdated records, unexplained gaps, concentrated
+  backfills, and misleading claims that age proves truth.
 - Directory capture and ranking risks.
 - S4/S5 observation, challenge, correction, and accountability gaps.
 - Ways to expose uncertainty without making OrgAnchor a central judge.
@@ -70,6 +75,7 @@ Fireseed Alpha does not claim:
 - Product quality certification.
 - Legal, safety, procurement, or ethical approval.
 - Guaranteed truth.
+- A claim that longer history automatically means greater trustworthiness.
 - Permanent identity.
 - Anti-censorship guarantees.
 - Official Directory privilege.

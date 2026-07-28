@@ -32,6 +32,21 @@ S1-S3 evidence baseline;
 S4/S5 design-preview boundaries.
 ```
 
+Fireseed also exposes the primitives from which a verifiable longitudinal
+record can grow:
+
+```text
+signed snapshots;
+root-signed publication receipt history;
+external time anchoring through OpenTimestamps/Bitcoin;
+explicit corrections, supersession, and migration paths.
+```
+
+The current self-pilot has not accumulated a long independent adopter history.
+Outreach may ask reviewers whether the temporal model is understandable and
+recheckable, but it must not claim that Fireseed has already proved long-term
+anti-fabrication effects.
+
 Do not claim:
 
 ```text
@@ -108,6 +123,7 @@ participating organization receives:
 a local OrgAnchor adoption workspace;
 a root-authority and custody plan owned by the organization;
 a generated /verify package and Beacon preview;
+a first signed, dated snapshot from which a future verifiable history can grow;
 a domain-security report;
 a record of time, friction, gaps, and actual direct cost;
 the right to stop before any public or append-only publication.

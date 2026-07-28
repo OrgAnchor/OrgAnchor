@@ -156,6 +156,32 @@ test("public explainer exposes commercial fit without turning OrgAnchor into a m
   }
 });
 
+test("public messaging explains verifiable history without turning age into trust", () => {
+  const readme = readText("README.md");
+  const explainer = readText("docs/outreach/PUBLIC_EXPLAINER.md");
+  const rationale = readText("docs/project/DESIGN_RATIONALE.md");
+  const agentGuide = readText("docs/protocol/AGENT_INTEGRATION_GUIDE.md");
+  const combined = [readme, explainer, rationale, agentGuide].join("\n\n");
+
+  for (const phrase of [
+    "verifiable longitudinal record",
+    "external time anchors",
+    "declared timestamp",
+    "longer history",
+    "not a trust score",
+    "new organization"
+  ]) {
+    assert.match(combined, new RegExp(escapeRegExp(phrase), "i"));
+  }
+
+  assert.match(explainer.replace(/\s+/g, " "), /backfill a long history/i);
+  assert.match(
+    rationale.replace(/\s+/g, " "),
+    /retrospectively constructing or silently rewriting a coherent past/i
+  );
+  assert.match(agentGuide.replace(/\s+/g, " "), /does not automatically infer fraud/i);
+});
+
 test("public release checklist defines owner gates and hold criteria", () => {
   const checklist = readText("docs/operations/PUBLIC_RELEASE_CHECKLIST.md");
 

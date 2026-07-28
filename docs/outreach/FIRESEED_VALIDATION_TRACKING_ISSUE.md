@@ -40,6 +40,12 @@ migration history, and verification routes into signed, recheckable public
 records. The intended result is lower discovery, verification, interpretation,
 and comparison cost for people and AI agents.
 
+Over time, separately published and externally time-anchored snapshots can form
+a verifiable longitudinal record. That record can make silent rewriting and
+retrospective fabrication of a coherent past harder to sustain and easier to
+question. It does not turn age into a trust score, and the current self-pilot has
+not yet accumulated a long independent adopter history.
+
 `PASS` is a verification result, not a trust badge. It does not mean that an
 organization is good, that a product claim is true, or that a buyer should
 transact. OrgAnchor's trust decision remains `NOT_ASSIGNED_BY_ORGANCHOR`.

@@ -497,6 +497,68 @@ even if the current recommended package shape is stronger.
 
 Migration cannot repair a root compromise that was never detected or never transparently corrected. It provides a mechanism for explicit continuity, not magical recovery.
 
+## Cross-Layer Effect: Verifiable History Over Time
+
+Implementation state: the supporting primitives are implemented and tested;
+long-running adopter histories and population-level anti-fabrication effects
+have not yet been demonstrated.
+
+### Failure Mode
+
+A single polished snapshot is increasingly cheap to construct. A signed snapshot
+is stronger because unauthorized alteration becomes visible, but it still does
+not establish that every claim is true or that the snapshot existed at the date
+declared inside it.
+
+If each new publication silently replaces the previous one, external reviewers
+still cannot cheaply inspect how identity, claims, evidence, corrections, and
+official presence changed.
+
+### Mechanism
+
+OrgAnchor combines multiple existing layers:
+
+```text
+stable organization and artifact identifiers
++ authority-signed snapshots
++ content hashes
++ root-signed publication receipt history
++ external time anchors
++ append-style correction and supersession links
++ root and endpoint migration records
++ optional independent observations
+```
+
+A declared timestamp is metadata. It becomes stronger temporal evidence when a
+hash was witnessed by an independent system such as OpenTimestamps/Bitcoin or
+was published through an append-only archival route at that time.
+
+### Effect
+
+An honest organization can accumulate this history gradually as a by-product of
+real operation. A later fabricator must do more than produce one convincing
+page: it must explain a sequence of states that is coherent across time,
+authority changes, product or service versions, evidence updates, corrections,
+external anchors, and any surviving third-party observations.
+
+This does not make fabrication impossible. It raises the cost of retrospectively
+constructing or silently rewriting a coherent past and gives people and AI
+agents more opportunities to detect contradictions, unexplained gaps, abrupt
+discontinuities, stale evidence, and concentrated late backfills.
+
+The transaction-cost benefit is cumulative. A reviewer can reuse a
+machine-readable change history instead of reconstructing the organization's
+past from scattered pages, announcements, repositories, and archives during
+every new due-diligence exercise.
+
+### Limit
+
+History length is not a trust score. Long-running deception and collusion remain
+possible, and a new organization should not be penalized merely because it has
+less temporal evidence. OrgAnchor can verify signatures, hashes, links, receipts,
+and supported time anchors; external policy still decides what the observed
+history means for a particular transaction.
+
 ## Layer 11: Directory-Assisted Discovery
 
 Implementation state: static/local Directory tooling is implemented and tested;

@@ -44,6 +44,14 @@ verification path explicit and machine-readable. Whether that path reduces
 total transaction cost in real organizations remains an external pilot question,
 not an established project claim.
 
+OrgAnchor also makes time an inspectable evidence dimension. A convincing
+current snapshot can be assembled quickly; backfilling a long, internally
+coherent history that was separately signed and externally time-anchored at
+multiple earlier moments is harder and more likely to expose contradictions.
+OrgAnchor calls this a **verifiable longitudinal record**. It is not a trust
+score: a longer history does not prove truth, and a new organization is not
+presumed untrustworthy.
+
 ## How It Works
 
 ```text

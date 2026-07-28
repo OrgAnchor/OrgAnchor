@@ -51,6 +51,8 @@ Who is speaking?
 Which root authority signed the current statement?
 Can current and historical entry points be linked?
 Was any statement changed after signing?
+Which states were published and externally time-anchored at distinct moments?
+Where does the visible continuity record contain gaps or unexplained breaks?
 ```
 
 Current artifacts:
@@ -60,6 +62,11 @@ Current artifacts:
 - `official-endpoints.json.sig`
 - `migration-*.json`
 - `migration-*.json.sig`
+
+Identity continuity is longitudinal, not merely current-state verification.
+Successive signed snapshots, publication receipts, external time anchors, and
+migration records should let external agents inspect change without treating
+history length as a trust score.
 
 ### 2. Verifiable Value Evidence
 

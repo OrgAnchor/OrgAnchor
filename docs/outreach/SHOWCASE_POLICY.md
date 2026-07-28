@@ -42,6 +42,8 @@ Stronger showcase candidates:
 - Identify first-party and third-party evidence.
 - Record superseded claims and corrections.
 - Keep a visible migration history when roots or endpoints change.
+- Preserve successive signed snapshots and distinguish declared dates from
+  independently anchored publication times.
 - Make verification understandable to non-experts.
 - Make verification usable by AI agents.
 
@@ -95,6 +97,8 @@ Use:
 ```text
 This organization publishes a verifiable OrgAnchor identity continuity trail.
 Its official endpoints, root authority, claims, evidence, and carrier receipts can be independently inspected.
+Where multiple signed and time-anchored snapshots exist, reviewers can inspect
+how those records changed over time.
 ```
 
 Avoid:

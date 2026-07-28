@@ -1021,6 +1021,13 @@ ${carrierRows}
       </table>` : "<p>No carrier receipts were included in this verification package.</p>"}
     </section>
 
+    <section aria-labelledby="longitudinal-history">
+      <h2 id="longitudinal-history">Verifiable History Over Time</h2>
+      <p>This page represents a signed organization state. When successive states are preserved with signed receipt history, external time anchors, correction or supersession links, and migration records, they can form a verifiable longitudinal record.</p>
+      <p>This does not make older records automatically true or make a newer organization less trustworthy. It gives reviewers another inspectable dimension: what was published at different verifiable moments, which authority signed it, what changed, and whether the visible history contains unexplained gaps or contradictions.</p>
+      <p>A date declared inside a signed file is not independent proof that the file existed on that date. Check the signed lockfile, carrier receipts, external timestamp proofs, preserved snapshots, and migration files before making a cross-time inference.</p>
+    </section>
+
     <section aria-labelledby="root-continuity">
       <h2 id="root-continuity">Root Continuity</h2>
       <p>The current root authority is the root that verifies new statements in this package. Older statements remain historical records and must be checked against the root authority that signed them.</p>

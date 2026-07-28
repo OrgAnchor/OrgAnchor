@@ -16,11 +16,41 @@ Which root authority signed it?
 Did the public files change after signing?
 Are claims and evidence present?
 Is publication receipt history signed or only unsigned metadata?
+Which records have external time anchors rather than only declared dates?
+How did signed claims, evidence, corrections, and authority state change over time?
 What is missing or only manual-checkable?
 Where should the agent's own policy take over?
 ```
 
 OrgAnchor reports verification facts, gaps, and warnings. It does not assign the final trust decision.
+
+## Cross-Time Review
+
+When several historical packages or receipt records are available, an agent
+should treat them as a verifiable longitudinal record rather than as a reputation
+score.
+
+Recommended order:
+
+```text
+verify each snapshot and the authority that signed it
+distinguish declared dates from independently anchored times
+order verified states by the strongest available temporal evidence
+follow migration, correction, withdrawal, and supersession links
+compare stable claims and evidence across time
+report unexplained gaps, contradictions, abrupt breaks, and late backfills
+hand the interpretation to the agent's purpose-specific policy
+```
+
+A signed `issued_at` value proves what the signer declared; it does not by itself
+prove that the artifact existed at that time. OpenTimestamps/Bitcoin proofs,
+append-only archive receipts, and independently preserved snapshots can provide
+stronger temporal evidence.
+
+The current Alpha can verify the supporting signatures, hashes, lockfile receipt
+history, migration records, and OpenTimestamps proofs when present. It does not
+automatically infer fraud, calculate a universal history score, or treat a new
+organization as less trustworthy.
 
 ## Terms
 

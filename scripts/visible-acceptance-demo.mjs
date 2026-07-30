@@ -28,6 +28,11 @@ if (options.help) {
   printHelp();
   process.exit(0);
 }
+const runMetrics = {
+  started_at: new Date().toISOString(),
+  started_ms: Date.now(),
+  commands: []
+};
 
 if (options.cleanup && options.serve) {
   throw new Error("--cleanup cannot be used with --serve");
@@ -80,13 +85,46 @@ async function runVisibleAcceptance(workspace, opts) {
   });
 
   const verifyIndex = JSON.parse(readFileSync(join(verifyDir, "organchor.json"), "utf8"));
+  const publicFiles = listFiles(publicRoot);
+  const privateKeyFilesInPublic = publicFiles.filter((path) => path.endsWith(".private.json"));
+  const localRehearsalStatus =
+    visibleChecks.status === "PASS" &&
+    compactResult.overall_status === "PASS" &&
+    tamperCompactResult.overall_status === "FAIL" &&
+    privateKeyFilesInPublic.length === 0
+      ? "PASS"
+      : "FAIL";
   const summary = {
     type: "OrgAnchorVisibleAcceptanceDemoSummary",
     version: "0.1",
-    status: visibleChecks.status === "PASS" && compactResult.overall_status === "PASS" && tamperCompactResult.overall_status === "FAIL"
-      ? "PASS"
-      : "FAIL",
+    status: localRehearsalStatus,
     workspace,
+    pilot_readiness: {
+      rehearsal_scope: "LOCAL_ONLY",
+      local_preview_status: localRehearsalStatus,
+      elapsed_ms: Date.now() - runMetrics.started_ms,
+      automated_cli_steps: runMetrics.commands.length,
+      command_log: runMetrics.commands,
+      public_artifact_count: publicFiles.length,
+      private_key_files_in_public: privateKeyFilesInPublic,
+      external_side_effects: "NONE",
+      organization_inputs_required: [
+        "Organization name, description, and current official endpoints",
+        "Root authority custody choice: temporary 1-of-1 preview or serious public threshold authority",
+        "One bounded public claim and its evidence artifact when the evidence layer is included"
+      ],
+      public_level_2: {
+        status: "HUMAN_APPROVAL_REQUIRED",
+        requirements: [
+          "Approve organization-specific wording and official endpoints",
+          "Approve the real root authority and custody plan",
+          "Approve first publication of the root authority and /verify package",
+          "Deploy to an organization-controlled public origin",
+          "Run and review the domain security audit",
+          "Re-run URL verification and adoption status against the public origin"
+        ]
+      }
+    },
     visible_page: {
       html_path: join(verifyDir, "index.html"),
       required_markers: visibleChecks.markers,
@@ -389,6 +427,29 @@ function renderSummaryMarkdown(summary) {
 
 Status: ${summary.status}
 
+## Pilot Readiness
+
+- Rehearsal scope: ${summary.pilot_readiness.rehearsal_scope}
+- Local preview: ${summary.pilot_readiness.local_preview_status}
+- Automated CLI steps: ${summary.pilot_readiness.automated_cli_steps}
+- Elapsed: ${summary.pilot_readiness.elapsed_ms} ms
+- Public artifacts: ${summary.pilot_readiness.public_artifact_count}
+- Private key files in public output: ${summary.pilot_readiness.private_key_files_in_public.length}
+- External side effects: ${summary.pilot_readiness.external_side_effects}
+- Public Level 2: ${summary.pilot_readiness.public_level_2.status}
+
+The local rehearsal proves that the package can be generated and checked without
+publishing anything. It does not cross the organization approval, public
+deployment, or domain-audit gates required for Level 2.
+
+### Organization Inputs
+
+${summary.pilot_readiness.organization_inputs_required.map((item) => `- ${item}`).join("\n")}
+
+### Human Approval Gates Before Public Level 2
+
+${summary.pilot_readiness.public_level_2.requirements.map((item) => `- ${item}`).join("\n")}
+
 ## What A Human Should See
 
 ${markers}
@@ -424,10 +485,12 @@ OrgAnchor verifies continuity, signatures, hashes, and disclosed evidence state.
 }
 
 function runCli(args, cwd, expectedStatus = 0) {
+  const started = Date.now();
   const result = spawnSync(process.execPath, [cliPath, ...args], {
     cwd,
     encoding: "utf8"
   });
+  recordCommand(args, expectedStatus, result.status, Date.now() - started);
   if (result.status !== expectedStatus) {
     throw new Error(
       `${formatCommand(args)} expected status ${expectedStatus} but got ${result.status}\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`
@@ -440,6 +503,7 @@ function runCli(args, cwd, expectedStatus = 0) {
 }
 
 async function runCliAsync(args, cwd, expectedStatus = 0) {
+  const started = Date.now();
   const child = spawn(process.execPath, [cliPath, ...args], {
     cwd,
     stdio: ["ignore", "pipe", "pipe"]
@@ -457,6 +521,7 @@ async function runCliAsync(args, cwd, expectedStatus = 0) {
   const status = await new Promise((resolvePromise) => {
     child.on("close", resolvePromise);
   });
+  recordCommand(args, expectedStatus, status, Date.now() - started);
   if (status !== expectedStatus) {
     throw new Error(
       `${formatCommand(args)} expected status ${expectedStatus} but got ${status}\nstdout:\n${stdout}\nstderr:\n${stderr}`
@@ -475,6 +540,29 @@ function shellQuote(value) {
 
 function writeJson(path, value) {
   writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+}
+
+function recordCommand(args, expectedStatus, actualStatus, elapsedMs) {
+  runMetrics.commands.push({
+    step: runMetrics.commands.length + 1,
+    command: formatCommand(args),
+    expected_status: expectedStatus,
+    actual_status: actualStatus,
+    elapsed_ms: elapsedMs
+  });
+}
+
+function listFiles(root) {
+  const files = [];
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    const path = join(root, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...listFiles(path));
+    } else if (entry.isFile()) {
+      files.push(path);
+    }
+  }
+  return files;
 }
 
 function prepareWorkspace(out) {
@@ -543,6 +631,7 @@ Usage:
 
 The demo creates a local adopting organization, generates a /verify page,
 runs direct agent verification, changes a signed statement to prove tamper
-rejection, and writes a human-readable acceptance summary.
+rejection, checks that no private key entered the public output, and writes a
+human-readable pilot-readiness summary. It performs no public deployment.
 `);
 }

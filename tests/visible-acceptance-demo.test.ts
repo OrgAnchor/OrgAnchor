@@ -23,6 +23,12 @@ test("visible acceptance demo proves human page, agent result, and tamper failur
   assert.match(result.stdout, /Visible acceptance demo PASS/);
   assert.match(result.stdout, /OrgAnchorVisibleAcceptanceDemoSummary/);
   assert.match(result.stdout, /"status": "PASS"/);
+  assert.match(result.stdout, /"rehearsal_scope": "LOCAL_ONLY"/);
+  assert.match(result.stdout, /"local_preview_status": "PASS"/);
+  assert.match(result.stdout, /"automated_cli_steps": 17/);
+  assert.match(result.stdout, /"private_key_files_in_public": \[\]/);
+  assert.match(result.stdout, /"external_side_effects": "NONE"/);
+  assert.match(result.stdout, /"status": "HUMAN_APPROVAL_REQUIRED"/);
   assert.match(result.stdout, /"overall_status": "PASS"/);
   assert.match(result.stdout, /"identity_status": "PASS"/);
   assert.match(result.stdout, /"policy_route": "STOP_IDENTITY_FAILURE"/);
@@ -46,6 +52,7 @@ test("visible acceptance guide is package-facing and explains boundaries", () =>
   assert.equal(packageIncludes(packageJson.files, "docs/operations/VISIBLE_ACCEPTANCE.md"), true);
   assert.equal(packageIncludes(packageJson.files, "scripts/visible-acceptance-demo.mjs"), true);
   assert.equal(packageJson.scripts?.["visible:demo"], "node scripts/visible-acceptance-demo.mjs");
+  assert.equal(packageJson.scripts?.["pilot:rehearsal"], "node scripts/visible-acceptance-demo.mjs");
 
   for (const phrase of [
     "可见验收不是信任根",

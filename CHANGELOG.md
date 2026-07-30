@@ -12,6 +12,9 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
   immediate external anchors, periodic checkpoints, local-only records, and
   material prohibited from public anchoring, while keeping the dedicated event
   schema and checkpoint automation explicitly design-only.
+- Added a `pilot:rehearsal` entry point that reports measured CLI steps,
+  elapsed time, required organization inputs, human approval gates, public
+  artifact count, external side effects, and accidental private-key exposure.
 
 ### Changed
 
@@ -20,6 +23,9 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
   adoption path.
 - Moved the broad command catalogue into a role-grouped CLI reference and added
   regression checks that keep future README growth bounded.
+- Split pilot guidance into local preview, public Level 2, and resilient Level 3
+  checkpoints so a successful local rehearsal is not misreported as public
+  adoption.
 
 ### Fixed
 

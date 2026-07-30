@@ -21,25 +21,49 @@ A pilot succeeds when an independent reviewer can:
 7. see evidence gaps and next verification actions
 8. confirm no OrgAnchor claim implies final trust, ranking, or certification
 
-## Minimum Pilot Level
+## Three Distinct Checkpoints
 
-Target:
-
-```text
-Level 3: Mirrored and Archived Identity
-```
-
-Minimum acceptable for a first dry external rehearsal:
+Do not collapse a local rehearsal, a public pilot, and a resilient deployment
+into one vague "pilot complete" state.
 
 ```text
-Level 2: Public Verify Package
+Checkpoint A: Assisted local preview
+No publication, no provider account, no payment, and no claim of public adoption.
+The package, human page, Agent result, and tamper rejection must work locally.
 ```
 
-Do not call the pilot complete if the public `/verify` package cannot be verified from downloaded public artifacts.
+Run:
+
+```bash
+npm run pilot:rehearsal
+```
+
+The report records elapsed time, automated CLI steps, organization inputs,
+human approval gates, public artifact count, and whether a private key entered
+the public output.
+
+```text
+Checkpoint B: Level 2 Public Verification Presence
+The organization has approved its wording and real root authority, published
+/verify on an organization-controlled origin, completed a domain audit, and
+passed public URL verification.
+```
+
+This is the minimum completed external pilot.
+
+```text
+Checkpoint C: Level 3 Mirrored and Archived Identity
+The Level 2 package also has recorded mirror/archive receipts and the selected
+claims/evidence layer where relevant.
+```
+
+This is the target after the public identity loop is stable. Do not call an
+external pilot complete if the public `/verify` package cannot be verified from
+downloaded public artifacts.
 
 ## Required Artifacts
 
-Required for every pilot:
+Required for the local preview and every public pilot:
 
 ```text
 root-authority.json
@@ -50,7 +74,15 @@ public/verify/organchor.json
 public/verify/root-authority.json
 public/verify/official-endpoints.json
 public/verify/official-endpoints.json.sig
+```
+
+Required for a completed Level 2 public pilot:
+
+```text
 ADOPTION_STATUS.md
+reports/adoption-status-report.json
+reports/domain-security-report.json
+reports/domain-security-report.md
 ```
 
 Required if public claims are included:
@@ -64,11 +96,9 @@ reports/value-continuity-report.json
 reports/value-continuity-report.md
 ```
 
-Recommended:
+Recommended after Level 2:
 
 ```text
-reports/domain-security-report.json
-reports/domain-security-report.md
 organchor.lock.json
 organchor.lock.json.sig
 arweave-manifest.json or Arweave TX receipts
@@ -90,20 +120,41 @@ Human approval is required before:
 
 An assisting AI agent may prepare files and commands. It should not silently cross these gates.
 
-## Minimal Work Sequence
+## Response-To-Preview Sequence
 
-1. Create a separate adoption workspace.
-2. Run `organchor init`.
-3. Edit `organchor.config.json`.
-4. Create root authority.
-5. Create and sign official-presence statement.
-6. Verify the signature locally.
-7. Generate `/verify`.
-8. Publish `/verify` to the organization's website.
-9. Run `organchor verify url`.
-10. Run `organchor adoption status`.
-11. Add claims/evidence only if the organization has concrete public claims to expose.
-12. Add IPFS, Arweave, OpenTimestamps, lockfile, and domain audit after the identity loop works.
+When an organization first replies:
+
+1. Run the local fictional rehearsal without organization data.
+2. Show the generated human page, compact Agent result, and tamper failure.
+3. Ask only for organization name, official endpoints, custody preference, and
+   one bounded claim/evidence artifact if evidence is in scope.
+4. Generate an organization-specific package in a private adoption workspace.
+5. Let the organization correct wording and decide whether to stop locally.
+6. Cross public approval gates only after explicit approval.
+
+This path should require no provider account, payment, DNS change, or public
+commitment.
+
+The automated local loop should finish in one working session. A same-day
+public Level 2 pilot is feasible only when the organization can approve the
+wording and root authority, already controls the target origin, and can deploy
+and review the domain audit that day. Do not report waiting on people, DNS, or
+hosting approval as CLI execution time.
+
+## Public Level 2 Sequence
+
+1. Confirm organization-specific wording and official endpoints.
+2. Confirm the real root authority and custody plan.
+3. Create and sign the official-presence statement.
+4. Verify the signature locally.
+5. Generate `/verify` and inspect it for accidental secrets.
+6. Obtain explicit approval for first publication.
+7. Publish `/verify` and the Beacon to the organization's website.
+8. Run `organchor verify url` and `organchor doctor`.
+9. Run `organchor domain audit`.
+10. Run `organchor adoption status --level 2`.
+11. Add claims/evidence only when the organization has a concrete public claim.
+12. Add IPFS, Arweave, OpenTimestamps, and signed receipts after Level 2 works.
 
 Before public deployment, `adoption status` can report `NEEDS_WORK` for the selected level. Treat that as a readiness signal, not as a failed local generation step.
 

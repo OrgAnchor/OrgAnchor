@@ -45,6 +45,7 @@
     "evaluation:evidence": "node scripts/evidence-interpretation-evaluation.mjs",
     "install:smoke": "node scripts/install-smoke.mjs",
     "package:smoke": "node scripts/package-smoke.mjs",
+    "pilot:rehearsal": "node scripts/visible-acceptance-demo.mjs",
     "prepack": "node --run build",
     "quality:audit": "node scripts/quality-assurance-audit.mjs",
     "quality:check": "node --run typecheck && node --run test:coverage && node --run docs:audit && node --run quality:audit",

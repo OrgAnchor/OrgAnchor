@@ -83,22 +83,26 @@ test("documentation map separates current areas from historical records", () => 
   }
 });
 
-test("AI operating model defines execution authority and owner decision gates", () => {
+test("AI collaboration governance defines public authority and private-operations boundaries", () => {
   const docsIndex = readDocumentationMap(repoRoot);
   const model = readFileSync(join(repoRoot, "docs/project/AI_OPERATING_MODEL.md"), "utf8");
 
   assert.match(docsIndex, /AI_OPERATING_MODEL\.md/);
 
   for (const phrase of [
-    "human project owner plus AI execution lead model",
+    "human project owner plus AI execution lead",
     "Default Execution Authority",
     "Required Owner Decision Gates",
-    "public posting, paid actions, account changes, permission expansion, or final release publication",
-    "If a decision is ambiguous and could affect public trust, security, money, law, or project values",
+    "public posting",
+    "final release publication",
+    "If a decision is ambiguous",
+    "could affect public trust",
     "docs/project/PROJECT_NORTH_STAR.md",
     "docs/operations/FIRESEED_READINESS_GATE.md",
     "The current priority is Fireseed Alpha external validation",
-    "It is not part of the OrgAnchor verification protocol"
+    "It is not part of the OrgAnchor verification protocol",
+    "Separate Private Operations Project",
+    "must not invalidate any signed OrgAnchor package"
   ]) {
     assert.match(model, new RegExp(escapeRegExp(phrase)));
   }

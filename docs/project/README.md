@@ -24,7 +24,9 @@ shape, current implementation state, roadmap, and project-level decisions.
 
 ## Decisions And Governance
 
-- [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md)
+- [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md): public authority boundary
+  for human and AI collaboration; private automation remains outside the
+  protocol and public product.
 - [TECHNICAL_DECISIONS.md](./TECHNICAL_DECISIONS.md)
 - [CRYPTO_POLICY.md](./CRYPTO_POLICY.md)
 - [ADOPTION_MODEL.md](./ADOPTION_MODEL.md)

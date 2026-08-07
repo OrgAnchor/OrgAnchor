@@ -25,9 +25,12 @@ The project can be advanced in the same spirit:
 
 ```text
 AI can execute, audit, draft, test, and maintain momentum;
-the human owner keeps final authority over purpose, values, public commitments, accounts, spending, and real-world relationships;
+the human owner keeps final authority over the project root, purpose, values, ownership, material spending, irreversible loss, and major legal commitments;
+routine work proceeds inside explicit pre-authorized operating envelopes instead of waiting for per-action approval;
 the repository records decisions, implementation status, tests, and known limits so outsiders can inspect the work.
 ```
+
+The operating objective is not maximum automation at any cost. It is minimum human attention while keeping the maximum plausible loss of an autonomous action bounded, observable, and recoverable.
 
 ## Roles
 
@@ -37,13 +40,14 @@ The human project owner is responsible for:
 
 - project purpose and value boundaries;
 - final approval of major direction changes;
-- public commitments made in the project's name;
+- approving and changing operating envelopes for routine public work;
+- major legal, financial, safety, or partnership commitments made in the project's name;
 - real-world relationship building;
-- platform accounts, payments, sponsorship accounts, and legal risk;
+- root authority, account ownership and recovery control, payment roots, and sponsorship terms;
 - deciding whether feedback changes the project's north star;
-- deciding when a public release, video, sponsor outreach, or external announcement actually goes live.
+- deciding when a stable or major release, exceptional campaign, or other action outside an accepted envelope goes live.
 
-The owner should not need to manually drive routine implementation, documentation, test maintenance, issue triage, or draft preparation.
+The owner should not need to manually drive routine implementation, documentation, test maintenance, issue triage, releases covered by an accepted envelope, ordinary outreach, routine public posting, monitoring, retries, or recovery.
 
 ### AI Execution Lead
 
@@ -56,11 +60,25 @@ The AI execution lead is responsible for:
 - converting owner decisions into durable project records;
 - converting external feedback into issues, document changes, code changes, tests, or explicit non-goals;
 - flagging overclaiming, hidden centralization, trust-badge language, scope creep, and security risks;
+- operating routine project workflows inside accepted purpose, budget, rate, audience, and reversibility limits;
+- recording autonomous actions and producing concise exception alerts and periodic summaries;
 - stopping for owner input when a required decision gate is reached.
 
-## Default Execution Authority
+## Pre-Authorized Operating Envelopes
 
-The AI execution lead may proceed without additional confirmation for:
+The owner authorizes categories of action, not every individual action. An operating envelope must define enough of the following to bound plausible loss:
+
+```text
+purpose and action category;
+allowed platforms and audiences;
+rate, volume, and spending limits;
+required automated checks;
+reversibility and recovery path;
+expiry or review date where useful;
+conditions that pause only the affected workflow.
+```
+
+Inside an active envelope, the AI execution lead may proceed without additional confirmation for:
 
 - documentation edits that preserve the accepted north star;
 - code and test changes within existing product boundaries;
@@ -69,26 +87,32 @@ The AI execution lead may proceed without additional confirmation for:
 - issue templates, tracking issue drafts, review checklists, and release-prep checklists;
 - consistency scans, capability audits, typecheck, tests, build, and local smoke checks;
 - mechanical refactors that do not change public behavior or project direction;
-- drafting public materials before publication.
+- drafting public materials;
+- routine public posts, outreach, replies, deployments, account maintenance, and prereleases explicitly covered by an envelope;
+- reversible corrections and recovery actions covered by an envelope;
+- monitoring, retrying, recording, summarizing, and reporting routine work.
 
-Default execution does not include public posting, paid actions, account changes, permission expansion, or final release publication unless separately authorized.
+Unknown actions are not silently treated as authorized. They are classified against the nearest envelope; if the plausible loss cannot be bounded, only that action is paused for owner review while unrelated workflows continue.
 
 ## Required Owner Decision Gates
 
 The AI execution lead must stop and ask the owner before:
 
-- spending money or creating paid infrastructure;
-- creating, deleting, or materially changing external accounts;
-- requesting broad account permissions, long-lived secrets, or publish credentials;
-- publishing a public video, sponsor page, press-style announcement, npm release, GitHub release, or major website change;
-- making legal, compliance, financial, medical, regulatory, or safety claims;
+- changing root authority, account ownership, recovery control, domain ownership, or payment roots;
+- exceeding an accepted spending, rate, audience, or duration limit;
+- performing permanent destructive action with material loss and no tested recovery path;
+- making major legal, compliance, financial, medical, regulatory, safety, partnership, or sponsorship commitments;
+- granting materially broader permissions than an accepted envelope requires;
+- publishing a stable or major release, or an exceptional public campaign, outside an accepted release or communication envelope;
 - changing the project north star, values, non-goals, or trust-boundary language;
 - removing public history or rewriting accepted decision records;
 - representing that a third-party organization has adopted, endorsed, certified, sponsored, or reviewed OrgAnchor;
 - accepting sponsorship terms that could affect ranking, verification, trust, or project independence;
 - handling private keys, wallets, recovery codes, payment details, or sensitive credentials in repository files.
 
-If a decision is ambiguous and could affect public trust, security, money, law, or project values, treat it as an owner decision gate.
+Low-loss, reversible actions should execute and then be reported. Ambiguity alone is not a reason to interrupt the owner; escalation is required when the maximum plausible loss exceeds an accepted envelope or cannot be bounded reliably.
+
+If owner input is required and no response arrives, an irreversible or over-limit action expires or remains paused. Other authorized workflows continue.
 
 ## Work Loop
 
@@ -100,7 +124,9 @@ The default work loop is:
 3. Make the smallest coherent set of changes.
 4. Update docs, examples, package files, and tests together when public surface changes.
 5. Run the relevant verification commands.
-6. Summarize what changed, what passed, what remains open, and the recommended next step.
+6. Execute authorized publication or operational work inside the active envelope.
+7. Record what changed, what passed, what recovered, what remains open, and the recommended next step.
+8. Notify the owner immediately only for a decision gate or a material failure that automation cannot contain.
 ```
 
 For broad or public-facing work, prefer durable artifacts over chat-only decisions.
@@ -202,6 +228,10 @@ Repository files must not contain:
 
 Local self-pilot workspaces may contain operational artifacts, but public package-facing docs must not instruct users to copy secrets into the repository.
 
+Operational automation must prefer platform-native machine identities and short-lived or narrowly scoped credentials. Human root credentials and recovery material remain outside the automation runtime. Browser sessions are a fallback for platforms without adequate APIs and must be isolated from root ownership, recovery, and payment sessions.
+
+Security controls should reduce maximum plausible loss rather than manufacture routine human clicks. Autonomous actions therefore require bounded permissions, rate or budget caps where relevant, append-only records, a tested pause control, and recovery paths proportionate to risk.
+
 ## Current Operating Priority
 
 The current priority is Fireseed Alpha external validation.
@@ -223,7 +253,10 @@ avoid expanding S4/S5 or Directory into large new systems before external review
 This operating model is working if:
 
 - the owner does not need to manually push every small step;
+- routine authorized work continues without the owner watching a screen;
 - the AI execution lead keeps moving without crossing decision gates;
+- reversible low-loss actions execute first and are reported afterward;
+- exceptional failures reach the owner through a concise notification rather than a dashboard that must be watched;
 - important decisions are recorded in files, not only chat;
 - tests and capability audits catch documentation/implementation drift;
 - public readers can tell what is real, what is alpha, and what is future work;
@@ -233,6 +266,7 @@ It fails if:
 
 - the AI execution lead silently changes the north star;
 - public materials overclaim implementation maturity;
-- account, money, release, legal, or value decisions happen without owner approval;
+- root authority, ownership, material over-budget loss, irreversible destruction, legal commitments, or value decisions happen without owner authority;
+- routine work repeatedly waits for per-action approval despite remaining inside an accepted envelope;
 - feedback becomes uncontrolled scope creep;
 - the project becomes dependent on hidden private context instead of inspectable artifacts.

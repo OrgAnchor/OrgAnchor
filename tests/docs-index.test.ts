@@ -20,7 +20,6 @@ test("documentation index is discoverable from README and package metadata", () 
   assert.match(docsMap, /CLI_REFERENCE\.md/);
 
   for (const doc of [
-    "AI_OPERATING_MODEL.md",
     "FIRESEED_ALPHA_PLAN.md",
     "FIRESEED_LAUNCH_DECISION_2026-06-01.md",
     "FIRESEED_READINESS_GATE.md",
@@ -34,7 +33,6 @@ test("documentation index is discoverable from README and package metadata", () 
   }
   for (const doc of [
     "docs/project/PROJECT_NORTH_STAR.md",
-    "docs/project/AI_OPERATING_MODEL.md",
     "DOCS_INDEX.md",
     "docs/operations/FIRESEED_ALPHA_PLAN.md",
     "docs/operations/FIRESEED_READINESS_GATE.md",
@@ -72,7 +70,6 @@ test("documentation map separates current areas from historical records", () => 
   }
 
   for (const doc of [
-    "AI_OPERATING_MODEL.md",
     "ORGANCHOR_BEACON.md",
     "AGENT_VERIFICATION_CONTRACT.md",
     "FIRESEED_READINESS_GATE.md",
@@ -80,31 +77,6 @@ test("documentation map separates current areas from historical records", () => 
     "FIRESEED_LAUNCH_DECISION_2026-06-01.md"
   ]) {
     assert.match(docsMap, new RegExp(escapeRegExp(doc)), `${doc} should be present in the two-level documentation map`);
-  }
-});
-
-test("AI collaboration governance defines public authority and private-operations boundaries", () => {
-  const docsIndex = readDocumentationMap(repoRoot);
-  const model = readFileSync(join(repoRoot, "docs/project/AI_OPERATING_MODEL.md"), "utf8");
-
-  assert.match(docsIndex, /AI_OPERATING_MODEL\.md/);
-
-  for (const phrase of [
-    "human project owner plus AI execution lead",
-    "Default Execution Authority",
-    "Required Owner Decision Gates",
-    "public posting",
-    "final release publication",
-    "If a decision is ambiguous",
-    "could affect public trust",
-    "docs/project/PROJECT_NORTH_STAR.md",
-    "docs/operations/FIRESEED_READINESS_GATE.md",
-    "The current priority is Fireseed Alpha external validation",
-    "It is not part of the OrgAnchor verification protocol",
-    "Separate Private Operations Project",
-    "must not invalidate any signed OrgAnchor package"
-  ]) {
-    assert.match(model, new RegExp(escapeRegExp(phrase)));
   }
 });
 

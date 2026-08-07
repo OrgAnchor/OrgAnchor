@@ -147,7 +147,7 @@ FIRESEED ALPHA PUBLIC PREPARATION: CONTINUE
 
 This supports continued preparation for Fireseed Alpha public review assets and named external review.
 
-It does not authorize public posting, video publication, sponsorship activation, direct outreach to named organizations, or paid infrastructure changes. Those remain human-owner approval gates under `docs/operations/PUBLIC_RELEASE_CHECKLIST.md` and `docs/project/AI_OPERATING_MODEL.md`.
+It does not authorize public posting, video publication, sponsorship activation, direct outreach to named organizations, or paid infrastructure changes. Those remain human-owner approval gates under `docs/operations/PUBLIC_RELEASE_CHECKLIST.md` and `docs/operations/FIRESEED_READINESS_GATE.md`.
 
 ## Remaining Non-Claims
 

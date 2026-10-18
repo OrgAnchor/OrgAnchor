@@ -4,7 +4,7 @@ Status: Active public assurance boundary.
 
 - Published-package baseline assessed: 2026-07-18
 - Unreleased source follow-up: 2026-10-18
-- Tool release candidate: `organchor@0.1.0-alpha.6`
+- Published tool: `organchor@0.1.0-alpha.6`
 - Current decision: `ALPHA_REVIEW_READY`
 - Production decision: `PRODUCTION_IDENTITY_ASSURANCE_NOT_ESTABLISHED`
 
@@ -57,6 +57,20 @@ a real-adopter migration or a completed live Bitcoin timestamp. Native Node
 The live authority remains unchanged. Alpha.6 tool publication is tracked in the
 [release plan](../operations/RELEASE_PUBLISHING_PLAN.md). See the
 [accepted plan and remaining rollout boundaries](../protocol/POST_QUANTUM_MIGRATION.md).
+
+## Public Alpha.6 Release Result
+
+Alpha.6 is published and its exact registry version passed a fresh installation,
+registry-signature/provenance checks, v1-preservation and disposable-key hybrid
+migration/seal checks. Final source passed 309 tests on Windows and Linux,
+unchanged coverage thresholds, package/install smoke and the public security
+baseline. Local/Windows coverage was 88.36% lines, 94.12% functions and 61.61%
+branches; Linux coverage was 88.25%, 94.12% and 61.52% respectively.
+
+This supersedes the initial local counts above, not the independent-review
+boundary. The live website/authority/statement/signature bytes were unchanged.
+See the [public release verification](../history/PUBLIC_SELF_VERIFICATION_2026-10-18.md)
+and its [Chinese companion](../history/PUBLIC_SELF_VERIFICATION_2026-10-18.zh-CN.md).
 
 ## Public Evidence Links
 

@@ -10,7 +10,7 @@ This document records what is already implemented, what remains external or futu
 
 ```text
 Lifecycle: FIRESEED_ALPHA
-Tool release line: organchor@0.1.0-alpha.6 (publication tracked in release plan)
+Published package: organchor@0.1.0-alpha.6
 Stable v1: NOT_RELEASED
 Stages 1-5 functional scope: IMPLEMENTED_FOR_ALPHA_WITH_DISCLOSED_EXTERNAL_GAPS
 S1-S3 evidence baseline: IMPLEMENTED_AND_TESTED
@@ -144,6 +144,13 @@ Release hygiene:
 - Alpha.4 public release linkage, clean npm install, homepage, `/verify`, Beacon, machine index, and installed-CLI verification recorded in `docs/history/PUBLIC_SELF_VERIFICATION_2026-07-15.md`.
 
 ## Current Fireseed Launch Focus
+
+Alpha.6 completed tool publication, provenance verification and clean public
+registry installation on 2026-10-18. Its 309-test Windows/Linux quality gates
+and security baseline passed. The real self-pilot remains on its unchanged v1
+authority; real root migration requires the owner's next explicit approval.
+The [release record](../history/PUBLIC_SELF_VERIFICATION_2026-10-18.md) preserves
+the exact source/tag/package linkage and byte-for-byte live-identity comparison.
 
 The `0.1.0-alpha.5` batch is published and publicly verified. It consolidates the Fireseed external-falsification work so the installable package exposes the same Agent verification capability as the tagged source before wider review.
 

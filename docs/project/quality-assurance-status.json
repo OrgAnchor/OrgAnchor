@@ -10,6 +10,23 @@
     "meaning": "Suitable for public inspection, bounded evaluation, and low-risk pilots."
   },
   "production_identity_assurance": "NOT_ESTABLISHED",
+  "alpha6_public_release": {
+    "verified_at": "2026-10-18",
+    "source_commit": "cd4995b10a7f68ad9ea1f7bd06214d13c46b617f",
+    "tag": "v0.1.0-alpha.6",
+    "registry_published_at": "2026-10-18T16:46:25.085Z",
+    "quality_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/39145385949",
+    "security_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/39145386094",
+    "publish_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/39145911601",
+    "tests_passed_per_platform": 309,
+    "registry_install": "PASS",
+    "registry_signature": "VERIFIED",
+    "registry_provenance": "VERIFIED",
+    "schema_assets_checked": 5,
+    "live_artifacts_unchanged": 7,
+    "real_authority_migration": "AWAITING_OWNER_CONFIRMATION",
+    "record": "docs/history/PUBLIC_SELF_VERIFICATION_2026-10-18.md"
+  },
   "initial_alpha6_local_assessment": {
     "assessed_at": "2026-10-18",
     "candidate_package": "organchor@0.1.0-alpha.6",
@@ -37,11 +54,11 @@
       "branches": 50
     },
     "latest_local_observation": {
-      "date": "2026-07-18",
-      "tests_passed": 184,
-      "line_coverage_percent": 87.77,
-      "function_coverage_percent": 93.99,
-      "branch_coverage_percent": 57.36,
+      "date": "2026-10-18",
+      "tests_passed": 309,
+      "line_coverage_percent": 88.36,
+      "function_coverage_percent": 94.12,
+      "branch_coverage_percent": 61.61,
       "npm_audit_high_or_critical": 0
     },
     "first_successful_public_baseline": {
@@ -52,6 +69,14 @@
       "security_conclusion": "SUCCESS"
     },
     "latest_strengthened_public_baseline": {
+      "commit": "cd4995b10a7f68ad9ea1f7bd06214d13c46b617f",
+      "quality_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/39145385949",
+      "security_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/39145386094",
+      "quality_conclusion": "SUCCESS",
+      "security_conclusion": "SUCCESS",
+      "open_codeql_alerts": 0
+    },
+    "alpha5_strengthened_public_baseline": {
       "commit": "aa211ada3ba82de4ddb126c36a252f35f4829110",
       "quality_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29644175382",
       "security_run": "https://github.com/OrgAnchor/OrgAnchor/actions/runs/29644175383",

@@ -10,16 +10,16 @@ It is not a product roadmap. It is the final gate for packaging, documentation, 
 
 ## Release Identity
 
-- [x] Active tool candidate: `organchor@0.1.0-alpha.6`; intended tag `v0.1.0-alpha.6`.
-- [ ] Alpha.6 publication and registry-install verification completed; see the
-      [release plan](./RELEASE_PUBLISHING_PLAN.md) for the current gate state.
+- [x] Published tool: `organchor@0.1.0-alpha.6`; tag `v0.1.0-alpha.6`.
+- [x] Alpha.6 publication and registry-install verification completed; see the
+      [release verification](../history/PUBLIC_SELF_VERIFICATION_2026-10-18.md).
 - [ ] Real root-authority migration: deliberately excluded and requires separate approval.
 
 The completed Alpha.5 baseline below is historical evidence, not a claim that
-the Alpha.6 publication gates have already passed.
+later milestones have passed without their own evidence.
 
-- [x] Current published alpha version: `0.1.0-alpha.5`.
-- [x] Current published alpha tag: `v0.1.0-alpha.5`.
+- [x] Previous baseline version: `0.1.0-alpha.5`.
+- [x] Previous baseline tag: `v0.1.0-alpha.5`.
 - [x] Release notes drafted in `CHANGELOG.md`.
 - [x] NPM package name occupied on the public registry: `organchor@0.1.0-alpha.1`.
 - [x] `package.json` defaults publish tag to `alpha`.

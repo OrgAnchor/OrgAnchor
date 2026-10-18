@@ -1,12 +1,15 @@
 # OrgAnchor Release Publishing Plan
 
-Status: Alpha.6 publication authorized by the owner on 2026-10-18, conditional
-on pre-release gates passing. Publication has not yet been claimed complete.
+Status: Alpha.6 tool publication and public registry-install acceptance completed
+on 2026-10-18. Real root-authority migration remains an owner-confirmation gate.
+
+See the [completed release verification](../history/PUBLIC_SELF_VERIFICATION_2026-10-18.md)
+or its [Chinese companion](../history/PUBLIC_SELF_VERIFICATION_2026-10-18.zh-CN.md).
 
 ## Release Scope
 
 ```text
-candidate: organchor@0.1.0-alpha.6
+published tool: organchor@0.1.0-alpha.6
 tag: v0.1.0-alpha.6
 publish dist-tag: alpha
 repository: https://github.com/OrgAnchor/OrgAnchor

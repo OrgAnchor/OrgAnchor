@@ -44,7 +44,7 @@ badge or security certification. The machine-readable companion is
 
 ## Alpha.6 Verification Follow-Up
 
-The 2026-10-18 Alpha.6 candidate adds ML-DSA-65, per-holder hybrid signing,
+The initial 2026-10-18 Alpha.6 assessment covers ML-DSA-65, per-holder hybrid signing,
 dual-authority migration and sealed historical checkpoints. Full release gates
 passed locally with 296 tests and 87.89% line, 93.83% function and 61.09% branch
 coverage. Five later history regressions changed no production code; the final

@@ -49,6 +49,8 @@ installation does not rotate real keys or rewrite published adopter records.
 - Bounded timestamp proof input, recursion, entry count, individual transformed
   messages and cumulative retained output; small branching/reverse proofs cannot
   bypass the shared 16 MiB transformed-message budget.
+- Pending/Bitcoin attestation collectors also bound cumulative commitment-string
+  output before conversion, including repeated attestations across branches.
 - Malformed checkpoint PQ-policy flag values fail explicitly instead of silently
   disabling a requested post-quantum requirement.
 - Starter configuration and example alignment for official GitHub and documentation endpoints.

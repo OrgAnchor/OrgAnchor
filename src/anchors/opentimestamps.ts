@@ -58,6 +58,7 @@ const MAX_TIMESTAMP_DEPTH = 128;
 const MAX_TIMESTAMP_ENTRIES = 4096;
 const MAX_MESSAGE_BYTES = 1024 * 1024;
 const MAX_TOTAL_MESSAGE_BYTES = 16 * 1024 * 1024;
+const MAX_TOTAL_COMMITMENT_BYTES = 16 * 1024 * 1024;
 
 interface ParseBudget {
   entries: number;
@@ -126,6 +127,7 @@ export function mergeTimestamp(target: TimestampNode, incoming: TimestampNode): 
 
 export function findPendingAttestations(node: TimestampNode): PendingAttestation[] {
   const result: PendingAttestation[] = [];
+  const budget = { bytes: 0 };
   visitTimestamp(node, (current) => {
     for (const entry of current.entries) {
       if (entry.kind !== "attestation" || !entry.tag.equals(PENDING_TAG)) continue;
@@ -133,7 +135,7 @@ export function findPendingAttestations(node: TimestampNode): PendingAttestation
       const uri = payloadReader.readVarBytes(1000).toString("ascii");
       result.push({
         uri,
-        commitment: current.msg.toString("hex")
+        commitment: commitmentHex(current.msg, budget)
       });
     }
   });
@@ -142,17 +144,25 @@ export function findPendingAttestations(node: TimestampNode): PendingAttestation
 
 export function findBitcoinAttestations(node: TimestampNode): BitcoinAttestation[] {
   const result: BitcoinAttestation[] = [];
+  const budget = { bytes: 0 };
   visitTimestamp(node, (current) => {
     for (const entry of current.entries) {
       if (entry.kind !== "attestation" || !entry.tag.equals(BITCOIN_TAG)) continue;
       const payloadReader = new ByteReader(entry.payload);
       result.push({
         height: payloadReader.readVaruint(),
-        commitment: current.msg.toString("hex")
+        commitment: commitmentHex(current.msg, budget)
       });
     }
   });
   return result;
+}
+
+function commitmentHex(msg: Buffer, budget: { bytes: number }): string {
+  const size = msg.length * 2;
+  if (size > MAX_TOTAL_COMMITMENT_BYTES - budget.bytes) throw new Error("OpenTimestamps attestation commitment output exceeds the cumulative size limit of 16 MiB");
+  budget.bytes += size;
+  return msg.toString("hex");
 }
 
 export function findTimestampNode(node: TimestampNode, commitmentHex: string): TimestampNode | null {

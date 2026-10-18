@@ -2,7 +2,7 @@
   "$schema": "https://organchor.org/schemas/quality-assurance-status.v1.json",
   "type": "OrgAnchorQualityAssuranceStatus",
   "version": "1.0",
-  "assessed_at": "2026-07-18",
+  "assessed_at": "2026-10-18",
   "package": "organchor@0.1.0-alpha.6",
   "repository": "https://github.com/OrgAnchor/OrgAnchor",
   "release_decision": {
@@ -10,10 +10,10 @@
     "meaning": "Suitable for public inspection, bounded evaluation, and low-risk pilots."
   },
   "production_identity_assurance": "NOT_ESTABLISHED",
-  "source_only_followup": {
+  "initial_alpha6_local_assessment": {
     "assessed_at": "2026-10-18",
     "candidate_package": "organchor@0.1.0-alpha.6",
-    "scope": "UNRELEASED_POST_QUANTUM_MIGRATION_AND_HISTORY",
+    "scope": "ALPHA_6_POST_QUANTUM_MIGRATION_AND_HISTORY_PRE_RELEASE_ASSESSMENT",
     "release_check": "PASS_LOCAL",
     "full_gate_tests_passed": 296,
     "final_combined_focused_tests_passed": 115,
@@ -27,7 +27,7 @@
     "real_adopter_migration": "NOT_PERFORMED",
     "new_live_time_anchor": "NOT_PERFORMED",
     "evidence": "docs/protocol/POST_QUANTUM_MIGRATION.md",
-    "boundary": "Local tests do not establish public CI success, absolute quantum security, external time anchoring or real-world claim truth. Published Alpha.5 remains unchanged."
+    "boundary": "This is the initial local assessment, not the final public release record. Local tests do not establish public CI success, absolute quantum security, external time anchoring or real-world claim truth. Real root migration has not been performed."
   },
   "automated_baseline": {
     "node_version": "24",

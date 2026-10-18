@@ -14,6 +14,7 @@ import {
   createPendingTimestampForTest,
   detachedProofFromTimestampBytes,
   findBitcoinAttestations,
+  findPendingAttestations,
   MAX_OPENTIMESTAMPS_PROOF_BYTES,
   parseDetachedOpenTimestamp,
   serializeDetachedOpenTimestamp,
@@ -370,6 +371,41 @@ test("OpenTimestamps cumulative budget counts the root and actual hash output, a
   assert.doesNotThrow(() => detachedProofFromTimestampBytes(digest, createPendingTimestampForTest(digest, "https://example.org")));
 });
 
+for (const kind of ["pending", "bitcoin"] as const) {
+  const collect = kind === "pending" ? findPendingAttestations : findBitcoinAttestations;
+
+  test(`OpenTimestamps ${kind} collector bounds repeated commitment strings before conversion`, (t) => {
+    const digest = Buffer.alloc(32);
+    const timestamp = Buffer.concat([Buffer.alloc(15, 0xf3), repeatedAttestations(kind, 9)]);
+    assert.ok(timestamp.length < 1024);
+    const proof = detachedProofFromTimestampBytes(digest, timestamp);
+    let leaf = proof.timestamp;
+    for (let i = 0; i < 15; i++) {
+      const entry = leaf.entries[0];
+      assert.ok(entry?.kind === "op");
+      leaf = entry.child;
+    }
+    assert.equal(leaf.msg.length, 1024 * 1024);
+    // Stub conversion so a regressed collector cannot allocate oversized strings.
+    const conversion = t.mock.method(leaf.msg, "toString", () => "bounded fixture");
+    assert.throws(() => collect(proof.timestamp), /commitment output exceeds the cumulative size limit of 16 MiB/);
+    assert.equal(conversion.mock.callCount(), 8, "The ninth conversion must be rejected before allocating");
+  });
+
+  test(`OpenTimestamps ${kind} collector shares its output budget across branches`, () => {
+    const digest = Buffer.alloc(32);
+    const branched = (lastCount: number) => detachedProofFromTimestampBytes(digest, Buffer.concat([
+      Buffer.alloc(15, 0xf3),
+      Buffer.from([0xff, 0xf2]), repeatedAttestations(kind, 4),
+      Buffer.from([0xf2]), repeatedAttestations(kind, lastCount)
+    ])).timestamp;
+    const allowed = collect(branched(4));
+    assert.equal(allowed.length, 8);
+    assert.equal(allowed.reduce((size, entry) => size + entry.commitment.length, 0), 16 * 1024 * 1024);
+    assert.throws(() => collect(branched(5)), /commitment output exceeds the cumulative size limit of 16 MiB/);
+  });
+}
+
 test("OpenTimestamps lengths cannot wrap to negative signed integers", () => {
   const encoded = Buffer.from([0xff, 0xff, 0xff, 0xff, 0x0f]);
   assert.equal(new ByteReader(encoded).readVaruint(), 0xffffffff);
@@ -386,6 +422,9 @@ test("OpenTimestamps existing pending and Bitcoin proof bytes round-trip unchang
   }
   assert.deepEqual(findBitcoinAttestations(detachedProofFromTimestampBytes(digest, bitcoin.timestamp).timestamp), [
     { height: 123456, commitment: bitcoin.merkleRoot }
+  ]);
+  assert.deepEqual(findPendingAttestations(detachedProofFromTimestampBytes(digest, createPendingTimestampForTest(digest, "https://example.org")).timestamp), [
+    { uri: "https://example.org", commitment: digest.toString("hex") }
   ]);
 });
 
@@ -414,6 +453,20 @@ function expandingTimestamp(branches: number, chain: Buffer): Buffer {
     ...Array.from({ length: branches - 1 }, () => Buffer.concat([Buffer.from([0xff]), branch])),
     branch
   ]);
+}
+
+function repeatedAttestations(kind: "pending" | "bitcoin", count: number): Buffer {
+  const payload = new ByteWriter();
+  if (kind === "pending") payload.writeVarBytes(Buffer.from("https://example.org", "ascii"));
+  else payload.writeVaruint(123456);
+  const writer = new ByteWriter();
+  for (let i = 0; i < count; i++) {
+    if (i < count - 1) writer.writeByte(0xff);
+    writer.writeByte(0);
+    writer.writeBytes(Buffer.from(kind === "pending" ? "83dfe30d2ef90c8e" : "0588960d73d71901", "hex"));
+    writer.writeVarBytes(payload.toBuffer());
+  }
+  return writer.toBuffer();
 }
 
 function trustedBlockPin(merkleRoot: string, height: number) {

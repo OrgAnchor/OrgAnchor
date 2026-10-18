@@ -20,12 +20,12 @@ export async function signManifestFile(options: {
     throw new Error(`Private key "${privateKey.id}" is not part of the root authority`);
   }
   const manifest = options.validate(await readJsonFile(options.inputPath));
-  const newSignature = createSignatureFile(manifest, privateKey);
+  const newSignature = createSignatureFile(manifest, privateKey, new Date(), authority);
   const signature = await maybeAppendSignature(options.outputPath, newSignature, options.append === true);
   await writeJsonFile(options.outputPath, signature);
   return {
     hash: signature.hash.value,
-    signatures: signature.signatures.length,
+    signatures: verifySignatureFile(manifest, signature, authority).valid_authorizers.length,
     required: authority.threshold.required
   };
 }
@@ -66,6 +66,9 @@ async function maybeAppendSignature(
   const existing = validateSignatureFile(await readJsonFile(outputPath));
   if (existing.hash.value !== newSignature.hash.value) {
     throw new Error("Existing signature file hash does not match the manifest being signed");
+  }
+  if (existing.version !== newSignature.version || existing.authority_hash !== newSignature.authority_hash) {
+    throw new Error("Existing signature version or authority binding does not match the new signature");
   }
   const entry = newSignature.signatures[0];
   if (!entry) throw new Error("New signature file has no signature entry");

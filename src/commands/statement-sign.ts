@@ -7,7 +7,7 @@ import {
   validateRootAuthority,
   validateSignatureFile
 } from "../core/validate.ts";
-import { createSignatureFile } from "../crypto/signature.ts";
+import { createSignatureFile, verifySignatureFile } from "../crypto/signature.ts";
 import type { SignatureFile } from "../types/artifacts.ts";
 
 export async function statementSignCommand(options: Record<string, string | boolean>): Promise<void> {
@@ -27,12 +27,12 @@ export async function statementSignCommand(options: Record<string, string | bool
     throw new Error("Statement root_authority_hash does not match authority file");
   }
 
-  const newSignature = createSignatureFile(statement, privateKey);
+  const newSignature = createSignatureFile(statement, privateKey, new Date(), authority);
   const signature = await maybeAppendSignature(out, newSignature, options.append === true);
   await writeJsonFile(out, signature);
   console.log(`Created signature: ${out}`);
   console.log(`Statement hash: ${signature.hash.value}`);
-  console.log(`Signatures: ${signature.signatures.length}/${authority.threshold.required} required`);
+  console.log(`Signatures: ${verifySignatureFile(statement, signature, authority).valid_authorizers.length}/${authority.threshold.required} required`);
 }
 
 function requireOption(value: string | boolean | undefined, message: string): string {
@@ -49,6 +49,9 @@ async function maybeAppendSignature(
   const existing = validateSignatureFile(await readJsonFile(out));
   if (existing.hash.value !== newSignature.hash.value) {
     throw new Error("Existing signature file hash does not match the statement being signed");
+  }
+  if (existing.version !== newSignature.version || existing.authority_hash !== newSignature.authority_hash) {
+    throw new Error("Existing signature version or authority binding does not match the new signature");
   }
   const entry = newSignature.signatures[0];
   if (!entry) throw new Error("New signature file has no signature entry");

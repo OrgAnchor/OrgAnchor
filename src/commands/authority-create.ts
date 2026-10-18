@@ -1,31 +1,20 @@
 import { readJsonFile } from "../core/json.ts";
 import { writeJsonFile } from "../core/files.ts";
 import { sha256CanonicalJson } from "../core/hash.ts";
-import { validatePrivateKey, validateRootAuthority } from "../core/validate.ts";
-import { rootAuthorityKeyFromPrivate } from "../crypto/ed25519.ts";
-import type { RootAuthority } from "../types/artifacts.ts";
+import { readRootAuthorityKey } from "../core/root-authority-keys.ts";
+import { applyHolderIds, buildRootAuthority } from "../crypto/authority.ts";
 
 export async function authorityCreateCommand(options: Record<string, string | boolean>): Promise<void> {
   const keyPaths = getKeyPaths(options);
   const out = typeof options.out === "string" ? options.out : "root-authority.json";
-  const privateKeys = [];
+  const keys = [];
   for (const keyPath of keyPaths) {
-    privateKeys.push(validatePrivateKey(await readJsonFile(keyPath)));
+    keys.push(await readRootAuthorityKey(keyPath));
   }
-  const thresholdRequired = parseThreshold(options.threshold, privateKeys.length);
-  const authority: RootAuthority = {
-    schema: "https://organchor.org/schemas/root-authority.v1.json",
-    type: "OrgAnchorRootAuthority",
-    version: "1.0",
-    authority_id: typeof options.id === "string" ? options.id : "root-authority-2026",
-    created_at: new Date().toISOString(),
-    threshold: {
-      required: thresholdRequired,
-      total: privateKeys.length
-    },
-    keys: privateKeys.map((privateKey) => rootAuthorityKeyFromPrivate(privateKey))
-  };
-  validateRootAuthority(authority);
+  const thresholdRequired = parseThreshold(options.threshold, keys.length);
+  const authority = buildRootAuthority(applyHolderIds(keys, options["holder-ids"]), thresholdRequired,
+    typeof options.id === "string" ? options.id : "root-authority-2026",
+    typeof options.policy === "string" ? options.policy : undefined);
   await writeJsonFile(out, authority);
   console.log(`Created root authority: ${out}`);
   console.log(`Threshold: ${authority.threshold.required}-of-${authority.threshold.total}`);

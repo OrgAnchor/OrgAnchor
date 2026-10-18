@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://organchor.org/schemas/root-authority-migration.v2.json",
+  "title": "OrgAnchor Root Authority Migration v2",
+  "description": "A migration payload requiring separate old-authority authorization and new-authority acceptance over the same payload. Detached signature envelope versions follow their respective signing authorities.",
+  "$comment": "Runtime validation must check both canonical authority hashes, distinct old/new hashes, effective_at >= issued_at, no post-quantum downgrade, predecessor hash and sequence continuity across the migration chain, and both complete-authorizer thresholds. Independently trusted authority pins and publication-time evidence are verifier inputs, not facts established by this schema or the embedded authorities. Register the referenced v1 and v2 authority schemas by their $id values for offline validation.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "type", "version", "sequence", "previous_migration_hash", "migration_id", "issued_at", "effective_at", "reason", "old_root_authority", "old_root_authority_hash", "new_root_authority", "new_root_authority_hash", "supersedes_statement_hashes", "notes"],
+  "properties": {
+    "schema": { "const": "https://organchor.org/schemas/root-authority-migration.v2.json" },
+    "type": { "const": "OrgAnchorRootAuthorityMigration" },
+    "version": { "const": "2.0" },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Monotonic migration sequence; migrate create increments the supplied predecessor's sequence, or starts at 1."
+    },
+    "previous_migration_hash": {
+      "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }],
+      "description": "Canonical SHA-256 digest of the preceding migration, or null when no predecessor is supplied."
+    },
+    "migration_id": { "type": "string", "minLength": 1 },
+    "issued_at": { "$ref": "#/$defs/utcTimestamp" },
+    "effective_at": { "$ref": "#/$defs/utcTimestamp" },
+    "reason": { "type": "string", "minLength": 1 },
+    "old_root_authority": { "$ref": "#/$defs/authority" },
+    "old_root_authority_hash": { "$ref": "#/$defs/sha256" },
+    "new_root_authority": { "$ref": "#/$defs/authority" },
+    "new_root_authority_hash": { "$ref": "#/$defs/sha256" },
+    "supersedes_statement_hashes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/sha256" }
+    },
+    "notes": { "type": "string", "minLength": 1 }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "old_root_authority": { "properties": { "version": { "const": "2.0" } }, "required": ["version"] }
+        }
+      },
+      "then": {
+        "properties": {
+          "new_root_authority": { "$ref": "https://organchor.org/schemas/root-authority.v2.json" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "authority": {
+      "oneOf": [
+        { "$ref": "https://organchor.org/schemas/root-authority.v1.json" },
+        { "$ref": "https://organchor.org/schemas/root-authority.v2.json" }
+      ]
+    },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "utcTimestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"
+    }
+  }
+}

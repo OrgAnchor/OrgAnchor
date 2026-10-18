@@ -62,6 +62,8 @@ import { opentimestampsStampCommand } from "./commands/opentimestamps-stamp.ts";
 import { opentimestampsUpgradeCommand } from "./commands/opentimestamps-upgrade.ts";
 import { opentimestampsVerifyCommand } from "./commands/opentimestamps-verify.ts";
 import { pageGenerateCommand } from "./commands/page-generate.ts";
+import { safetyScanCommand } from "./commands/safety-scan.ts";
+import { historyCheckpointCreateCommand, historyCheckpointSignCommand, historyCheckpointSealCommand, historyCheckpointVerifyCommand } from "./commands/history-checkpoint.ts";
 import { statementCreateCommand } from "./commands/statement-create.ts";
 import { statementHashCommand } from "./commands/statement-hash.ts";
 import { statementSignCommand } from "./commands/statement-sign.ts";
@@ -137,6 +139,11 @@ const commands: Record<string, CommandHandler> = {
   "authority create": authorityCreateCommand,
   "authority verify": authorityVerifyCommand,
   "page generate": pageGenerateCommand,
+  "safety scan": safetyScanCommand,
+  "history checkpoint create": historyCheckpointCreateCommand,
+  "history checkpoint sign": historyCheckpointSignCommand,
+  "history checkpoint seal": historyCheckpointSealCommand,
+  "history checkpoint verify": historyCheckpointVerifyCommand,
   "statement create": statementCreateCommand,
   "statement hash": statementHashCommand,
   "statement sign": statementSignCommand,
@@ -210,6 +217,16 @@ Usage:
   organchor adoption status --verify-dir public/verify --origin https://example.org --level 3
   organchor init
   organchor key generate --id root-2026
+  organchor key generate --id root-pq --algorithm ml-dsa-65 --holder alice
+  organchor authority create --keys keys/root-2026.public.json,keys/root-pq.public.json --holder-ids alice,alice --policy hybrid-ed25519-ml-dsa-65 --threshold 1 --out root-authority-next.json
+  organchor migrate sign --role new --key keys/root-pq.private.json --new-authority root-authority-next.json --in statements/migration-2026-001.json --append
+  organchor migrate verify --old-authority root-authority.json --new-authority root-authority-next.json --in statements/migration-2026-001.json --sig statements/migration-2026-001.json.sig --acceptance-sig statements/migration-2026-001.json.acceptance.sig
+  organchor history checkpoint create --verify-dir public/verify --out history/checkpoint-001.json
+  organchor history checkpoint sign --in history/checkpoint-001.json --authority root-authority.json --key keys/root-2026.private.json
+  organchor history checkpoint verify --in history/checkpoint-001.json --sig history/checkpoint-001.json.sig --authority root-authority.json --verify-dir public/verify
+  organchor history checkpoint seal --in history/checkpoint-001.json --authority root-authority.json
+  organchor anchor opentimestamps stamp --file history/checkpoint-001.json.seal.json
+  organchor history checkpoint verify --in history/checkpoint-001.json --authority root-authority.json --verify-dir public/verify --seal history/checkpoint-001.json.seal.json --proof history/checkpoint-001.json.seal.json.ots --trusted-bitcoin-block independently-verified-block.json --before 2030-01-01T00:00:00Z
   organchor key public --key keys/root-2026.private.json
   organchor key rotate-plan --authority root-authority.json --replace-key root-a --new-key keys/root-d.public.json
   organchor lockfile hash --in organchor.lock.json
@@ -288,6 +305,7 @@ Usage:
   organchor ens plan example.eth --statement statements/official-endpoints.json
   organchor ens verify example.eth --statement statements/official-endpoints.json --records ens-records.json
   organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json
+  organchor safety scan --dir public
   organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --value-report reports/value-continuity-report.json
   organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --directory-snapshot public/directory/directory-snapshot.json
   organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --migration statements/migration-2027-001.json --migration-sig statements/migration-2027-001.json.sig

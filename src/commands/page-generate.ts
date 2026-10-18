@@ -28,6 +28,8 @@ import type {
 } from "../page/template.ts";
 import type { OfficialEndpointsStatement, RootAuthority } from "../types/artifacts.ts";
 import { hashFile } from "../core/artifacts.ts";
+import { cryptoAssurance, completeAuthorizers } from "../core/crypto-policy.ts";
+import { verifyMigrationSignatures } from "../core/migration.ts";
 
 const STATEMENT_FILE = "official-endpoints.json";
 const SIGNATURE_FILE = "official-endpoints.json.sig";
@@ -51,6 +53,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
   const evidenceSigPath = typeof options["evidence-sig"] === "string" ? options["evidence-sig"] : `${evidencePath}.sig`;
   const migrationPaths = parseCsv(options.migration ?? options.migrations);
   const migrationSigPaths = parseCsv(options["migration-sig"] ?? options["migration-sigs"]);
+  const migrationAcceptancePaths = parseCsv(options["migration-acceptance-sig"] ?? options["migration-acceptance-sigs"]);
   const out = typeof options.out === "string" ? options.out : "public/verify";
   const lockfilePath = typeof options.lockfile === "string" ? options.lockfile : "organchor.lock.json";
   const explicitLockfile = typeof options.lockfile === "string";
@@ -136,6 +139,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
   const migrationArtifacts = await includeMigrations({
     migrationPaths,
     migrationSigPaths,
+    migrationAcceptancePaths,
     targetDir: join(out, "migrations"),
     currentAuthorityHash: authorityHash
   });
@@ -188,6 +192,8 @@ export async function pageGenerateCommand(options: Record<string, string | boole
     version: "1.0",
     generated_at: generatedAt,
     role: "adopting-organization-verify-index",
+    crypto_assurance: cryptoAssurance(authority),
+    ...(typeof options["history-checkpoint-url"] === "string" ? { history_checkpoint: historyCheckpointHint(options["history-checkpoint-url"]) } : {}),
     organization: statement.organization,
     statement: {
       path: STATEMENT_FILE,
@@ -258,6 +264,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
         statement_signed: true,
         threshold_met: true,
         valid_signature_count: verification.valid_signatures.length,
+        valid_authorizer_count: verification.valid_authorizers.length,
         required_signature_count: verification.required_signatures,
         linked_artifact_count: linkedArtifacts.length,
         migration_count: migrationArtifacts.length,
@@ -320,6 +327,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
         hash: migration.hash,
         signature_path: migration.signaturePath,
         signature_hash: migration.signatureHash,
+        ...(migration.acceptancePath ? { acceptance_path: migration.acceptancePath, acceptance_hash: migration.acceptanceHash! } : {}),
         old_root_authority: {
           authority_id: migration.oldAuthorityId,
           hash: migration.oldAuthorityHash,
@@ -335,6 +343,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
         old_root_required_signatures: migration.requiredSignatures
       })),
       historical_verification_rule: rootContinuity.historicalVerificationRule,
+      historical_verification_boundary: "Mathematical validity, current algorithm suitability and independently checked publication time are separate checks.",
       future_statement_rule: rootContinuity.futureStatementRule
     },
     carrier_receipts: {
@@ -363,6 +372,7 @@ export async function pageGenerateCommand(options: Record<string, string | boole
         hash: migration.hash,
         signature_path: migration.signaturePath,
         signature_hash: migration.signatureHash,
+        ...(migration.acceptancePath ? { acceptance_path: migration.acceptancePath, acceptance_hash: migration.acceptanceHash! } : {}),
         old_root_authority_hash: migration.oldAuthorityHash,
         new_root_authority_hash: migration.newAuthorityHash,
         effective_at: migration.effectiveAt,
@@ -607,6 +617,17 @@ function buildRootContinuity(options: {
   };
 }
 
+function historyCheckpointHint(value: string): JsonValue {
+  const url = new URL(value);
+  if (url.protocol !== "https:" && url.protocol !== "http:") throw new Error("--history-checkpoint-url must be HTTP(S)");
+  if (url.username || url.password || url.search || url.hash) throw new Error("History checkpoint URL must not contain credentials, query or fragment");
+  return {
+    checkpoint_url: url.toString(), signature_url: `${url}.sig`, seal_url: `${url}.seal.json`,
+    proof_url: `${url}.seal.json.ots`, status: "DISCOVERY_HINT_NOT_VERIFIED",
+    verification: "Download the complete checkpoint bundle and run organchor history checkpoint verify with your independently trusted block pin and authority hash."
+  };
+}
+
 function buildProofChecks(options: {
   authority: RootAuthority;
   authorityHash: string;
@@ -635,7 +656,7 @@ function buildProofChecks(options: {
     {
       label: "Signature threshold",
       status: "PASS",
-      detail: `${options.validSignatures.length} valid signature(s) found; ${options.authority.threshold.required} required.`
+      detail: `${completeAuthorizers(options.authority, options.validSignatures).length} complete authorizer(s) found; ${options.authority.threshold.required} required.`
     },
     {
       label: "Signature file",
@@ -985,6 +1006,7 @@ async function includeLockfileIntegrity(options: {
     signatureHash,
     validSignatures: verification.valid_signatures,
     requiredSignatures: verification.required_signatures,
+    validAuthorizers: verification.valid_authorizers,
     sourceLockfile: basename(options.lockfilePath),
     sourceSignature: basename(options.signaturePath)
   };
@@ -1009,6 +1031,7 @@ function lockfileIntegrityIndex(lockfile: VerifyLockfileIntegrity): JsonValue {
     signature_path: lockfile.signaturePath ?? null,
     signature_hash: lockfile.signatureHash ?? null,
     valid_signatures: lockfile.validSignatures,
+    valid_authorizers: lockfile.validAuthorizers ?? lockfile.validSignatures,
     required_signatures: lockfile.requiredSignatures,
     source_lockfile: lockfile.sourceLockfile ?? null,
     source_signature: lockfile.sourceSignature ?? null,
@@ -1022,7 +1045,7 @@ function lockfileIntegrityIndex(lockfile: VerifyLockfileIntegrity): JsonValue {
 
 function lockfileIntegrityDetail(lockfile: VerifyLockfileIntegrity): string {
   if (lockfile.status === "SIGNED") {
-    return `${LOCKFILE_FILE} hash ${lockfile.hash ?? ""} is signed by ${lockfile.validSignatures.length}/${lockfile.requiredSignatures} required root member(s).`;
+    return `${LOCKFILE_FILE} hash ${lockfile.hash ?? ""} is signed by ${(lockfile.validAuthorizers ?? lockfile.validSignatures).length}/${lockfile.requiredSignatures} required root member(s).`;
   }
   if (lockfile.status === "UNSIGNED") {
     return `${LOCKFILE_FILE} hash ${lockfile.hash ?? ""} is included, but no root signature was found. Treat carrier receipts as unsigned metadata.`;
@@ -1098,6 +1121,7 @@ function metric(value: JsonValue | undefined): string {
 async function includeMigrations(options: {
   migrationPaths: string[];
   migrationSigPaths: string[];
+  migrationAcceptancePaths: string[];
   targetDir: string;
   currentAuthorityHash: string;
 }): Promise<VerifyMigrationArtifact[]> {
@@ -1109,20 +1133,28 @@ async function includeMigrations(options: {
   if (signaturePaths.length !== options.migrationPaths.length) {
     throw new Error("--migration and --migration-sig must contain the same number of comma-separated paths");
   }
+  if (options.migrationAcceptancePaths.length > 0 && options.migrationAcceptancePaths.length !== options.migrationPaths.length) throw new Error("Provide one --migration-acceptance-sig path per migration");
 
   await ensureDir(options.targetDir);
   const artifacts: VerifyMigrationArtifact[] = [];
   let previousNewAuthorityHash: string | null = null;
+  let previousMigrationHash: string | null = null;
+  let previousSequence = 0;
   for (let index = 0; index < options.migrationPaths.length; index++) {
     const migrationPath = options.migrationPaths[index];
     const signaturePath = signaturePaths[index];
     if (!migrationPath || !signaturePath) throw new Error("Invalid migration path");
     const migration = validateRootAuthorityMigration(await readJsonFile(migrationPath));
     const signature = validateSignatureFile(await readJsonFile(signaturePath));
-    const result = verifySignatureFile(migration, signature, migration.old_root_authority);
-    if (!result.ok) {
-      throw new Error(`Cannot include invalid migration ${migrationPath}: ${result.errors.join("; ")}`);
+    const acceptancePath = migration.version === "2.0" ? options.migrationAcceptancePaths[index] ?? `${migrationPath}.acceptance.sig` : undefined;
+    const acceptance = acceptancePath ? validateSignatureFile(await readJsonFile(acceptancePath)) : undefined;
+    const checked = verifyMigrationSignatures(migration, signature, acceptance);
+    const result = checked.oldResult;
+    if (!checked.ok) {
+      throw new Error(`Cannot include invalid migration ${migrationPath}: ${checked.errors.join("; ")}`);
     }
+    if (migration.version === "2.0" && (migration.previous_migration_hash !== previousMigrationHash || migration.sequence !== previousSequence + 1)) throw new Error("Migration predecessor hash or sequence is broken");
+    if (migration.version === "2.0" && Date.parse(migration.effective_at) > Date.now()) throw new Error("A future migration cannot activate the current authority yet");
     if (previousNewAuthorityHash && migration.old_root_authority_hash !== previousNewAuthorityHash) {
       throw new Error(`Migration chain is broken before ${migrationPath}`);
     }
@@ -1131,6 +1163,7 @@ async function includeMigrations(options: {
     const targetSignaturePath = `migrations/${basename(signaturePath)}`;
     await copyFile(migrationPath, join(options.targetDir, basename(migrationPath)));
     await copyFile(signaturePath, join(options.targetDir, basename(signaturePath)));
+    if (acceptancePath) await copyFile(acceptancePath, join(options.targetDir, basename(acceptancePath)));
     artifacts.push({
       migrationId: migration.migration_id,
       path: targetPath,
@@ -1145,9 +1178,13 @@ async function includeMigrations(options: {
       newAuthorityThreshold: migration.new_root_authority.threshold,
       effectiveAt: migration.effective_at,
       validSignatures: result.valid_signatures,
-      requiredSignatures: result.required_signatures
+      requiredSignatures: result.required_signatures,
+      validAuthorizers: result.valid_authorizers,
+      ...(acceptancePath && acceptance ? { acceptancePath: `migrations/${basename(acceptancePath)}`, acceptanceHash: sha256CanonicalJson(acceptance) } : {})
     });
     previousNewAuthorityHash = migration.new_root_authority_hash;
+    previousMigrationHash = sha256CanonicalJson(migration);
+    previousSequence = Number(migration.sequence ?? 0);
   }
 
   const finalMigration = artifacts.at(-1);

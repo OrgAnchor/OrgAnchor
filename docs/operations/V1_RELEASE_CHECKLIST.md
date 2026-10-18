@@ -10,6 +10,14 @@ It is not a product roadmap. It is the final gate for packaging, documentation, 
 
 ## Release Identity
 
+- [x] Active tool candidate: `organchor@0.1.0-alpha.6`; intended tag `v0.1.0-alpha.6`.
+- [ ] Alpha.6 publication and registry-install verification completed; see the
+      [release plan](./RELEASE_PUBLISHING_PLAN.md) for the current gate state.
+- [ ] Real root-authority migration: deliberately excluded and requires separate approval.
+
+The completed Alpha.5 baseline below is historical evidence, not a claim that
+the Alpha.6 publication gates have already passed.
+
 - [x] Current published alpha version: `0.1.0-alpha.5`.
 - [x] Current published alpha tag: `v0.1.0-alpha.5`.
 - [x] Release notes drafted in `CHANGELOG.md`.

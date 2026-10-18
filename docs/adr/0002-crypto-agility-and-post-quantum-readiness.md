@@ -4,6 +4,11 @@
 
 Accepted
 
+Implementation update, 2026-10-18: v1 remains unchanged; the accepted
+[post-quantum migration plan](../protocol/POST_QUANTUM_MIGRATION.md) defines the
+v2 implementation and its acceptance gates. See the
+[operator guide](../guides/POST_QUANTUM_MIGRATION_GUIDE.md) for the migration flow.
+
 ## Context
 
 OrgAnchor needs digital signatures for long-term identity continuity.
@@ -30,14 +35,50 @@ OrgAnchor will also require crypto agility from the beginning:
 
 The identity root is the organization root authority, not Ed25519 itself.
 
+## V2 Implementation
+
+Native Node.js/OpenSSL ML-DSA-65 implements the post-quantum primitive; OrgAnchor
+does not implement low-level signature cryptography. Native vetted primitives
+and a standardized algorithm do not establish completion of an independent
+audit of OrgAnchor or its integration.
+
+- [Key handling](../../src/crypto/keys.ts) preserves Ed25519 JWK and uses base64url
+  PKCS#8 DER private material and SPKI DER public material for ML-DSA-65.
+- [Authority validation](../../src/core/validate.ts) and
+  [policy evaluation](../../src/core/crypto-policy.ts) enforce `holder_id`, explicit
+  `hybrid-ed25519-ml-dsa-65` or `ml-dsa-65` policy, and complete-holder thresholds.
+  A hybrid vote requires Ed25519 AND ML-DSA-65 from the same holder.
+- [Signature handling](../../src/crypto/signature.ts) binds the payload,
+  `authority_hash`, `key_id`, `algorithm`, and `signed_at` through the canonical
+  domain-separated v2 signing input. The v1 signing input is unchanged.
+- [Migration verification](../../src/core/migration.ts) requires old-authority
+  authorization and separate successor acceptance for v2 migration records.
+  Expected authority hashes must be independently pinned; PQ protection cannot
+  be dropped by migration to a classical-only authority.
+- V2 migration sequence numbers and predecessor hashes bind successive records.
+  History checkpoint seals commit to the exact checkpoint, detached signature
+  and authority bytes before timestamping. Trusted-time verification requires
+  independently acquired chain pins and externally supplied cutoff policy.
+- Separate [authority](../../src/schema/root-authority.v2.schema.json),
+  [signature](../../src/schema/signature.v2.schema.json), and
+  [migration](../../src/schema/root-authority-migration.v2.schema.json) schemas
+  describe v2 structure without changing v1 schemas. Runtime validation remains
+  necessary for cross-field rules, key decoding, hashes and signatures.
+
+Legacy Ed25519 key files may carry `holder_id` while retaining version 1.0.
+Payload formats that have not changed retain their versions even when embedding
+a v2 authority. A v1 authority signs its authorization of a v2 migration using
+its existing envelope semantics; the v2 successor uses v2 acceptance signatures.
+
 ## Consequences
 
 Benefits:
 
 - v1 can ship with a mature and practical signing system.
 - The file format can survive future algorithm migration.
-- Hybrid classical/post-quantum root authorities are possible later.
-- Historical Ed25519 statements remain verifiable.
+- V2 supports hybrid classical/post-quantum and ML-DSA-65-only root authorities.
+- Historical Ed25519 signatures remain mathematically verifiable under v1 rules;
+  historical attribution also needs suitable pre-compromise external time evidence.
 
 Costs:
 
@@ -47,18 +88,26 @@ Costs:
 
 ## Post-Quantum Position
 
-OrgAnchor should track NIST post-quantum signature standards, especially:
+V2 uses ML-DSA-65; SLH-DSA remains a reviewed future diversity option. Unsupported
+algorithms, versions and native runtimes fail closed, without a classical-only
+fallback. The accepted plan, rather than this ADR, tracks implementation
+completion and testing.
 
-- ML-DSA.
-- SLH-DSA.
-
-OrgAnchor should not make an experimental post-quantum JavaScript implementation a required v1 dependency unless it is mature, audited, actively maintained, license-compatible, and has usable test vectors.
+Mathematical signature validity, current algorithm suitability, and independently
+verified publication time are separate judgments. Authenticated `signed_at`, a
+CID, an archive reference, or a pending timestamp receipt alone cannot establish
+pre-compromise history. Historical evidence and renewal must follow the
+[cryptography policy](../project/CRYPTO_POLICY.md) and accepted migration plan.
 
 ## Non-Goals
 
 OrgAnchor does not use quantum key distribution.
 
 OrgAnchor does not claim v1 is quantum-proof.
+
+V2 is not a promise of absolute quantum-proof security or completed independent
+audit. Migration must precede compromise, and a self-contained package cannot
+prove that no newer valid authority or package exists elsewhere.
 
 OrgAnchor does not replace organizational key governance with cryptographic branding.
 

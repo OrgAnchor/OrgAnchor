@@ -11,7 +11,7 @@ platform accounts, websites, or infrastructure change.
 
 OrgAnchor 帮助组织发布经过签名、可复查的公开资料，将身份、官方入口、主张、证据和迁移历史串联起来。它为外部用户和 AI Agent 提供共同的验证路径，旨在降低发现、核验、理解和比较组织时的重复成本，同时避免将某个域名、平台或 OrgAnchor 官方目录变成身份根。
 
-> **Fireseed Alpha:** `organchor@0.1.0-alpha.5` is ready for public inspection
+> **Fireseed Alpha:** `organchor@0.1.0-alpha.6` is for public inspection
 > and low-risk pilots. It is not stable v1 and must not be an organization's
 > only production identity control.
 
@@ -103,6 +103,10 @@ listing policy.
 
 ## Current Alpha Boundary
 
+Alpha.6 adds opt-in PQ/hybrid signing, migration and sealed checkpoints while
+preserving old records; [migration guide](docs/guides/POST_QUANTUM_MIGRATION_GUIDE.md).
+Upgrading tools does not migrate real keys. Native ML-DSA requires Node 24.6+.
+
 | Area | Current state | Important limit |
 | --- | --- | --- |
 | Root authority, threshold signatures, official presence, migration, `/verify`, and direct URL verification | Implemented and tested | Independent cryptographic review is still pending. |
@@ -126,6 +130,9 @@ npm install -g organchor@alpha
 organchor --help
 ```
 
+On Windows PowerShell, use `npm.cmd` or `npx.cmd` if script execution policy
+blocks the `npm.ps1` or `npx.ps1` launcher.
+
 For a disposable 1-of-1 trial in an empty directory:
 
 ```bash
@@ -137,6 +144,7 @@ organchor statement create --config organchor.config.json --authority root-autho
 organchor statement sign --key keys/root-2026.private.json --authority root-authority.json --in statements/official-endpoints.json
 organchor statement verify --authority root-authority.json --in statements/official-endpoints.json --sig statements/official-endpoints.json.sig
 organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --out public/verify
+organchor safety scan --dir public
 ```
 
 A serious public pilot should use independent key holders and threshold

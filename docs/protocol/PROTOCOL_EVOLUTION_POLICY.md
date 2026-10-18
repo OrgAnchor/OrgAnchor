@@ -175,6 +175,13 @@ Before OrgAnchor publishes a future v2 or incompatible schema line, the project 
 
 ## Boundary
 
+Compatibility preserves original bytes, interpretation and mathematical
+verification. It does not override algorithm retirement, key-compromise
+evidence or the consuming verifier's security policy. A historical record can
+remain readable and mathematically verifiable while its authenticity requires
+additional pre-compromise time evidence. See
+[POST_QUANTUM_MIGRATION.md](./POST_QUANTUM_MIGRATION.md).
+
 This policy does not require OrgAnchor to support every experimental draft forever.
 
 It applies to adopter-facing packages and stable release lines that organizations could reasonably have used for public identity continuity. Draft examples, local rehearsals, and unpublished development artifacts may be superseded more freely, but public adopter records should be treated as historical facts.

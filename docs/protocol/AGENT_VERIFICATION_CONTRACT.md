@@ -4,6 +4,22 @@ Status: Accepted for v1 alpha.
 
 ## Purpose
 
+Alpha.6 adds `crypto_assurance` to full, brief
+and compact results. It reports `CLASSICAL_ONLY`, `HYBRID` or
+`POST_QUANTUM_ONLY`, whether PQ signatures are mandatory, and unchecked
+historical-time evidence. These fields are computed from validated authority
+policy, never trusted from Beacon declarations. Existing result versions and
+legacy package bytes are preserved.
+
+`verify url --expected-authority-hash` and
+`--expected-predecessor-authority-hash` apply independent verifier-owned pins;
+`--require-post-quantum` rejects classical-only current authority. Advertised
+migration artifacts are fetched and checked, including both thresholds for v2,
+hash/sequence links and effective time. Self-contained chain verification cannot
+prove that there is no later package elsewhere. `history checkpoint verify`
+handles complete sealed evidence and external cutoff/time checks separately.
+See [POST_QUANTUM_MIGRATION.md](./POST_QUANTUM_MIGRATION.md).
+
 OrgAnchor's primary verification consumer is expected to be an external AI agent acting for another person, organization, buyer, partner, auditor, journalist, maintainer, or marketplace.
 
 The contract goal is low-friction verification:
@@ -298,7 +314,7 @@ These checks do not prove product quality by themselves. They reduce the cost of
 
 ### External Evidence Signatures
 
-For evidence items that declare `external_signatures`, the ordinary verifier also checks the exact evidence-file hash, detached-signature-file hash, authority-document hash, and Ed25519 threshold signature. The full and brief results expose `external_evidence_signatures` with per-route status and summary counts.
+For evidence items that declare `external_signatures`, the ordinary verifier also checks the exact evidence-file hash, detached-signature-file hash, authority-document hash, and the declared authority's signature policy (v1 Ed25519 or supported v2 PQ/hybrid). The full and brief results expose `external_evidence_signatures` with per-route status and summary counts.
 
 Stable route statuses are:
 

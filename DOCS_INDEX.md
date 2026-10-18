@@ -56,6 +56,7 @@ over an older plan that describes intended work.
 3. [Adoption Guide](./docs/guides/ADOPTION_GUIDE.md)
 4. [Root Authority Custody Guide](./docs/guides/ROOT_AUTHORITY_CUSTODY_GUIDE.md)
 5. [Publishing Guide](./docs/guides/PUBLISHING_GUIDE.md)
+6. [Post-Quantum Migration](./docs/protocol/POST_QUANTUM_MIGRATION.md)
 
 ### AI Agent Or Verifier Builder
 

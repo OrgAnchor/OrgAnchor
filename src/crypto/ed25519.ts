@@ -59,6 +59,9 @@ export function verifyEd25519(data: Buffer, signature: string, key: RootAuthorit
 }
 
 function importPrivateKey(privateKey: OrgAnchorPrivateKey): KeyObject {
+  if (privateKey.algorithm !== "ed25519" || privateKey.key_material.format !== "jwk") {
+    throw new Error("Ed25519 signing requires an Ed25519 JWK private key");
+  }
   return createPrivateKey({
     key: privateKey.key_material.jwk as unknown as NodeJsonWebKey,
     format: "jwk"
@@ -66,6 +69,9 @@ function importPrivateKey(privateKey: OrgAnchorPrivateKey): KeyObject {
 }
 
 function importPublicKey(key: RootAuthorityKey): KeyObject {
+  if (key.algorithm !== "ed25519" || key.public_key.format !== "jwk") {
+    throw new Error("Ed25519 verification requires an Ed25519 JWK public key");
+  }
   return createPublicKey({
     key: key.public_key.jwk as unknown as NodeJsonWebKey,
     format: "jwk"

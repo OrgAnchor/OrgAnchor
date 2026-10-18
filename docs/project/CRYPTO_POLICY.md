@@ -36,8 +36,8 @@ OrgAnchor cryptography must support:
 - Multiple keys in one root authority.
 - Multiple signatures over one canonical statement.
 - Threshold rules such as `1-of-1`, `2-of-3`, and `3-of-5`.
-- Future hybrid signatures.
-- Future post-quantum signature algorithms.
+- V2 per-holder hybrid Ed25519 AND ML-DSA-65 signatures.
+- V2 ML-DSA-65-only signing and explicit future algorithm review.
 - Migration statements that connect old root authority records to new ones.
 - Verification of historical statements even after newer algorithms are introduced.
 
@@ -72,9 +72,21 @@ NIST has standardized post-quantum algorithms, including:
 - SLH-DSA for stateless hash-based digital signatures.
 - ML-KEM for key encapsulation, which is not the main primitive OrgAnchor needs for signed public statements.
 
-OrgAnchor should track ML-DSA and SLH-DSA for future signature support.
+V2 uses native Node.js/OpenSSL ML-DSA-65 with either
+`hybrid-ed25519-ml-dsa-65` or `ml-dsa-65` signing policy. V1 Ed25519
+verification and signing input remain unchanged. SLH-DSA is a future diversity
+option, not an enabled signing algorithm.
 
-v1 should not require a post-quantum JavaScript implementation as a hard dependency unless the implementation is mature, audited, actively maintained, and license-compatible.
+Use vetted native primitives; do not implement low-level cryptography or silently
+fall back to Ed25519 when native ML-DSA support is unavailable. Native support
+requires an ML-DSA-capable Node.js/OpenSSL build (Node 24.6+). Standardization and
+use of native primitives do not establish that OrgAnchor's integration has
+completed an independent security audit.
+
+ML-DSA private material is base64url PKCS#8 DER; public material is base64url
+SPKI DER (`public_key.format: "spki-der"`, `public_key.data`). Ed25519 remains
+JWK encoded. A legacy Ed25519 key file can retain `version: "1.0"` and carry
+`holder_id`; participating in a v2 authority does not convert it to an ML-DSA key.
 
 ## Recommended Migration Path
 
@@ -93,7 +105,7 @@ Use a signature file format that can contain multiple signatures:
   "canonicalization": "RFC8785-JCS",
   "hash": {
     "algorithm": "sha256",
-    "value": "BASE64URL_OR_HEX_HASH"
+    "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
   },
   "signatures": [
     {
@@ -108,37 +120,72 @@ Use a signature file format that can contain multiple signatures:
 
 ### Phase 2: Hybrid Root Authority
 
-Add a post-quantum key alongside existing Ed25519 keys:
+Create a v2 authority that gives each holder both required algorithms. This
+structural illustration omits usable key material; generate actual keys with the
+CLI rather than publishing these placeholders:
 
 ```json
 {
-  "root_authority": {
-    "id": "root-authority-2027",
-    "threshold": {
-      "required": 2,
-      "total": 2
-    },
-    "keys": [
-      {
-        "id": "root-ed25519-2026",
-        "algorithm": "ed25519",
-        "public_key": "..."
-      },
-      {
-        "id": "root-ml-dsa-2027",
-        "algorithm": "ml-dsa",
-        "public_key": "..."
+  "schema": "https://organchor.org/schemas/root-authority.v2.json",
+  "type": "OrgAnchorRootAuthority",
+  "version": "2.0",
+  "authority_id": "root-authority-hybrid-2026",
+  "created_at": "2026-10-18T00:00:00Z",
+  "signing_policy": "hybrid-ed25519-ml-dsa-65",
+  "threshold": { "required": 1, "total": 1 },
+  "keys": [
+    {
+      "id": "alice-ed25519",
+      "holder_id": "alice",
+      "algorithm": "ed25519",
+      "public_key": {
+        "format": "jwk",
+        "jwk": { "kty": "OKP", "crv": "Ed25519", "x": "PUBLIC_KEY_PLACEHOLDER" }
       }
-    ]
-  }
+    },
+    {
+      "id": "alice-ml-dsa-65",
+      "holder_id": "alice",
+      "algorithm": "ml-dsa-65",
+      "public_key": { "format": "spki-der", "data": "PUBLIC_KEY_PLACEHOLDER" }
+    }
+  ]
 }
 ```
 
-This lets a statement require both a classical and a post-quantum signature during the transition period.
+This is **1-of-1 holders**, not 2-of-2 keys. Alice counts only after both her
+Ed25519 and ML-DSA-65 signatures verify. A 2-of-3 hybrid authority has three
+complete holder pairs and needs both signatures from each of two holders;
+Ed25519 from Alice plus ML-DSA-65 from Bob is not a complete vote.
+
+V2 signature envelopes require `authority_hash`. Each signature covers the
+canonical domain-separated `OrgAnchorSigningInput` v2 object containing that
+hash, `key_id`, `algorithm`, `signed_at`, and the entire payload. The envelope's
+`hash.value` remains the SHA-256 digest of the canonical payload. V1 continues
+to sign the canonical payload directly. Unknown versions and algorithms fail
+closed; algorithm labels alone do not implement these rules.
+
+Any migration involving a v2 authority uses a v2 migration payload, old-authority
+authorization, and separate new-authority acceptance over the same payload.
+Envelope versions follow the respective signing authorities: an existing v1
+authority can authorize the v2 migration with a v1 envelope, while its v2
+successor accepts with a v2 envelope. Preserve the existing old-only v1-to-v1
+workflow. Independently pin the expected authority hashes; prohibit migration
+from a PQ-requiring authority to an Ed25519-only authority.
+
+V2 migration records also require positive integer `sequence` and
+`previous_migration_hash` (a canonical SHA-256 digest or null). Creating a
+successive migration with `--previous-migration` binds its predecessor and
+increments the sequence. Verify hash links and authority continuity across the
+whole chain; a valid isolated migration is not proof that it is the latest one.
 
 ### Phase 3: Post-Quantum Primary
 
-When implementation quality, ecosystem support, and interoperability are strong enough, OrgAnchor can make post-quantum signatures the recommended default for new root authorities.
+The v2 `ml-dsa-65` policy requires one ML-DSA-65 key and signature per counted
+holder. Moving from hybrid to PQ-only requires another authenticated migration,
+not removal of the classical signatures from an existing hybrid envelope.
+Changing defaults requires review of implementation quality, ecosystem support,
+and interoperability; it must not rewrite v1 history.
 
 Ed25519 can remain supported for historical verification.
 
@@ -146,16 +193,46 @@ Ed25519 can remain supported for historical verification.
 
 OrgAnchor statements are public. The main quantum risk is not decryption of old secrets; it is future forgery of signatures if old public-key algorithms become breakable.
 
-To make historical forgery harder to confuse with genuine history, OrgAnchor should encourage timestamped and independently archived records:
+Keep three separate judgments: mathematical signature validity, suitability of
+the algorithm for current use, and independently established publication time.
+A signed date, including v2 authenticated `signed_at`, is not an independent
+timestamp. After an algorithm becomes forgeable, a new signature made with it
+cannot by itself establish the legitimate history or successor authority.
+
+Preserve exact public artifact bytes, authority records, detached signatures,
+migration authorization and acceptance, checkpoints, and proof chains. Archives
+and carriers provide durability and retrieval, but the following alone do not
+prove pre-compromise existence:
 
 - Arweave publication.
 - IPFS CID records.
 - Git tags or releases.
 - Traditional website history.
 - Third-party mirrors.
-- Future timestamping receipts.
+- A pending OpenTimestamps calendar receipt without a checked attestation.
 
-These records do not replace signatures, but they help show that a specific statement existed before a later cryptographic break.
+Create and sign a history checkpoint, then create an `OrgAnchorHistorySeal`
+version 1.0 object containing SHA-256 and SHA-512 digests of the exact checkpoint,
+detached signature and authority files. Timestamp the **seal**, not the unsigned
+checkpoint alone, so the anchor also commits to the existing signatures. Keep
+all sealed files byte-for-byte; changing signature metadata also changes its
+sealed digest.
+
+Strong historical attribution requires a verified pre-cutoff anchor over the
+exact artifacts under the consumer's trusted chain/anchor policy, with
+independently obtained block/hash pins where required. An unchecked block API
+response, local clock, CID, Git tag, or self-reported lockfile is insufficient.
+Evidence renewal must bind the prior checkpoint and signature, retain prior
+proofs, and occur before the relevant signature, hash, or anchor assumptions
+fail. SHA-512 checkpoint digests supplement rather than replace v1 SHA-256
+hashes. Local signature or migration PASS must not be reported as externally
+time-anchored; absent, pending, and verified time evidence remain distinct.
+Trusted-time verification supplies the seal, its OTS proof, and an independently
+acquired Bitcoin block pin containing `height`, `block_hash` and `header_hex`.
+Consumers must establish canonical-chain membership and confirmations themselves;
+checking a header hash is not equivalent to that trust decision. Supply
+`--classical-cutoff` from external algorithm-retirement policy and `--before`
+for an explicit anchor cutoff. OrgAnchor must not invent retirement dates.
 
 ## Forbidden Claims
 
@@ -163,6 +240,7 @@ OrgAnchor must not claim:
 
 - Ed25519 is permanently secure.
 - OrgAnchor is quantum-proof in v1.
+- V2 is absolutely quantum-proof or its independent security audit is complete.
 - A signed statement proves legal identity.
 - Arweave or IPFS makes a statement automatically trustworthy.
 - Quantum key distribution is needed for OrgAnchor.
@@ -172,8 +250,9 @@ Correct claims:
 
 - OrgAnchor v1 uses mature classical signatures.
 - OrgAnchor is designed for cryptographic migration.
-- OrgAnchor can add post-quantum signatures without changing its core product model.
+- V2 supports explicit per-holder hybrid and ML-DSA-65-only signing policies.
 - The root authority, not a fixed algorithm, is the identity continuity concept.
+- Signature validity alone does not establish historical publication time or claim truth.
 
 ## Testing Requirements
 
@@ -188,6 +267,10 @@ Cryptographic tests must cover:
 - Multi-signature files are parsed deterministically.
 - Threshold rules fail if too few valid signatures are present.
 - Historical Ed25519 verification still works after new algorithms are introduced.
+- Partial or cross-holder hybrid signatures never satisfy the holder threshold.
+- V2 authority, algorithm, key ID and signed-at changes invalidate signatures.
+- V2 migration needs both authorities, pinned expected hashes, and no PQ downgrade.
+- Historical outputs distinguish absent, pending, and checked external time evidence.
 
 ## Review Requirements
 
@@ -216,10 +299,16 @@ OrgAnchor's post-quantum posture should be reviewed against primary public sourc
 
 ## Current Recommendation
 
-Use Ed25519 for v1 implementation.
+Follow the accepted 2026-10-18 implementation plan in
+[POST_QUANTUM_MIGRATION.md](../protocol/POST_QUANTUM_MIGRATION.md) and the operator
+[POST_QUANTUM_MIGRATION_GUIDE.md](../guides/POST_QUANTUM_MIGRATION_GUIDE.md).
+The plan's acceptance checklist tracks completion; this policy is not a claim
+that every checkpoint, integration, audit, or release gate is complete.
 
-Design all data structures as if post-quantum signatures will be added later.
+Historical verifiability does not mean that an algorithm remains secure forever.
+Independent pre-compromise time evidence and evidence renewal are required for
+strong long-term historical attribution. A migration must precede compromise.
 
-Do not implement low-level cryptography ourselves.
-
-Do not add experimental post-quantum signing as a default dependency in v1.
+Preserve existing v1 schemas, bytes, hashes and signing input. Use separate v2
+schemas for new cryptographic semantics, native vetted primitives, complete
+holder thresholds, and authenticated migration before algorithm retirement.

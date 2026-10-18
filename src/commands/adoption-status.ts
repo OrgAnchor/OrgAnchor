@@ -209,7 +209,7 @@ async function inspectIdentity(
       statement_hash: statementHash,
       signature_hash: signatureHash,
       root_authority_threshold: `${authority.threshold.required}-of-${authority.threshold.total}`,
-      valid_signature_count: verification.valid_signatures.length,
+      valid_signature_count: verification.valid_authorizers.length,
       required_signature_count: verification.required_signatures
     };
   } catch (error) {

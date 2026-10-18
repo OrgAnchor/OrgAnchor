@@ -2,8 +2,9 @@
 
 Status: Active public assurance boundary.
 
-- Assessed: 2026-07-18
-- Package: `organchor@0.1.0-alpha.5`
+- Published-package baseline assessed: 2026-07-18
+- Unreleased source follow-up: 2026-10-18
+- Tool release candidate: `organchor@0.1.0-alpha.6`
 - Current decision: `ALPHA_REVIEW_READY`
 - Production decision: `PRODUCTION_IDENTITY_ASSURANCE_NOT_ESTABLISHED`
 
@@ -31,7 +32,7 @@ badge or security certification. The machine-readable companion is
 | --- | --- | --- | --- |
 | Canonical JSON, SHA-256, Ed25519, threshold authority, migration, and tamper rejection | Machine verified | Focused automated tests exercise the declared behavior. | An independent security and cryptographic review has not been completed. |
 | Windows and Linux clean-environment checks | Machine verified | The corrected public GitHub run passed the full quality gate on Node.js 24 for both systems; the failed first attempt remains in project history. | The matrix does not represent every downstream operating environment. |
-| Test coverage | Machine verified | The current local run passed 184 tests and measured 87.77% lines, 93.99% functions, and 57.36% branches. CI rejects drops below 80%, 85%, and 50% respectively. | Coverage measures executed code, not correctness of every assumption. |
+| Test coverage | Machine verified | The published-package baseline run passed 184 tests and measured 87.77% lines, 93.99% functions, and 57.36% branches. CI rejects drops below 80%, 85%, and 50% respectively. The newer source-only observation is recorded below. | Coverage measures executed code, not correctness of every assumption. |
 | Package and clean installation | Machine verified | Package contents, private-material exclusions, CLI behavior, and clean installation have executable smoke checks. | Downstream environments outside the tested matrix can still fail. |
 | Dependency and static security checks | Machine verified | npm audit passed publicly. The first CodeQL analysis exposed five high-severity and one medium-severity findings; the corrected scan closed all six and now rejects any open medium-or-higher alert. Dependency graph and a real pull-request dependency review were verified, while weekly Dependabot updates, secret scanning, and push protection are active. | Automated scanners cannot establish that no vulnerability exists. |
 | Documentation and implementation alignment | Machine verified | Documentation links, required state language, and capability traceability are checked mechanically. | Internal consistency is not independent proof of usability or correctness. |
@@ -40,6 +41,22 @@ badge or security certification. The machine-readable companion is
 | External organization adoption | Not completed | Pilot procedures and a guided entry exist. | No unfamiliar organization has completed the loop yet. |
 | Real transaction-cost reduction | Not completed | The project defines measurable discovery and verification tasks. | The effect has not been established across real organizations. |
 | Final organization or product truth | Out of scope | OrgAnchor can expose signed records, evidence structure, gaps, and recheck paths. | It does not certify that an organization is truthful, safe, lawful, or best. |
+
+## Alpha.6 Verification Follow-Up
+
+The 2026-10-18 Alpha.6 candidate adds ML-DSA-65, per-holder hybrid signing,
+dual-authority migration and sealed historical checkpoints. Full release gates
+passed locally with 296 tests and 87.89% line, 93.83% function and 61.09% branch
+coverage. Five later history regressions changed no production code; the final
+combined PQ, migration, checkpoint and OTS suite passed 115/115. Installation
+smoke also exercised v1-to-hybrid migration and sealed-checkpoint verification.
+
+These are local results, not a new public CI run, an independent security audit,
+a real-adopter migration or a completed live Bitcoin timestamp. Native Node
+24.6.0 passed the 28-test PQ suite; the complete local gate used Node 24.15.0.
+The live authority remains unchanged. Alpha.6 tool publication is tracked in the
+[release plan](../operations/RELEASE_PUBLISHING_PLAN.md). See the
+[accepted plan and remaining rollout boundaries](../protocol/POST_QUANTUM_MIGRATION.md).
 
 ## Public Evidence Links
 

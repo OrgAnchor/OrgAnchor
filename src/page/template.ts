@@ -1,5 +1,6 @@
 import type { OfficialEndpointsStatement, RootAuthority, SignatureFile } from "../types/artifacts.ts";
 import type { JsonValue } from "../core/json.ts";
+import { cryptoAssurance, completeAuthorizers } from "../core/crypto-policy.ts";
 
 export interface VerifyLinkedArtifact {
   label: string;
@@ -30,6 +31,9 @@ export interface VerifyMigrationArtifact {
   effectiveAt: string;
   validSignatures: string[];
   requiredSignatures: number;
+  validAuthorizers?: string[];
+  acceptancePath?: string;
+  acceptanceHash?: string;
 }
 
 export interface VerifyRootAuthoritySummary {
@@ -78,6 +82,7 @@ export interface VerifyLockfileIntegrity {
   signatureHash?: string;
   validSignatures: string[];
   requiredSignatures: number;
+  validAuthorizers?: string[];
   sourceLockfile?: string;
   sourceSignature?: string;
 }
@@ -202,7 +207,7 @@ export function renderVerifyPage(model: VerifyPageModel): string {
           <td>${escapeHtml(migration.effectiveAt)}</td>
           <td>${escapeHtml(migration.oldAuthorityId)}<br><code>${escapeHtml(migration.oldAuthorityHash)}</code></td>
           <td>${escapeHtml(migration.newAuthorityId)}<br><code>${escapeHtml(migration.newAuthorityHash)}</code></td>
-          <td>${escapeHtml(String(migration.validSignatures.length))} of ${escapeHtml(String(migration.requiredSignatures))}</td>
+          <td>${escapeHtml(String((migration.validAuthorizers ?? migration.validSignatures).length))} of ${escapeHtml(String(migration.requiredSignatures))}</td>
         </tr>`
     )
     .join("\n");
@@ -214,6 +219,7 @@ export function renderVerifyPage(model: VerifyPageModel): string {
           <br><code>${escapeHtml(migration.hash)}</code>
           <br><a href="./${escapeHtml(migration.signaturePath)}">${escapeHtml(migration.signaturePath)}</a>
           <br><code>${escapeHtml(migration.signatureHash)}</code>
+          ${migration.acceptancePath ? `<br><a href="./${escapeHtml(migration.acceptancePath)}">New authority acceptance</a><br><code>${escapeHtml(migration.acceptanceHash ?? "")}</code>` : ""}
         </li>`
     )
     .join("\n");
@@ -245,7 +251,7 @@ export function renderVerifyPage(model: VerifyPageModel): string {
         ${lockfileIntegrity.signaturePath ? `<dt>Lockfile signature</dt>
         <dd><a href="./${escapeHtml(lockfileIntegrity.signaturePath)}">${escapeHtml(lockfileIntegrity.signaturePath)}</a><br><code>${escapeHtml(lockfileIntegrity.signatureHash ?? "")}</code></dd>` : ""}
         <dt>Root signatures</dt>
-        <dd>${escapeHtml(String(lockfileIntegrity.validSignatures.length))} of ${escapeHtml(String(lockfileIntegrity.requiredSignatures))}</dd>
+        <dd>${escapeHtml(String((lockfileIntegrity.validAuthorizers ?? lockfileIntegrity.validSignatures).length))} of ${escapeHtml(String(lockfileIntegrity.requiredSignatures))}</dd>
       </dl>` :
     "<p>No lockfile snapshot was included in this verification package.</p>";
   const valueContinuity = model.valueContinuity;
@@ -840,14 +846,15 @@ export function renderVerifyPage(model: VerifyPageModel): string {
           <span class="summary-value">${escapeHtml(String(model.authority.threshold.required))} of ${escapeHtml(String(model.authority.threshold.total))}</span>
         </div>
         <div class="summary-item">
-          <span class="summary-label">Valid signatures</span>
-          <span class="summary-value">${escapeHtml(String(model.signature.signatures.length))}</span>
+          <span class="summary-label">Complete authorizers</span>
+          <span class="summary-value">${escapeHtml(String(completeAuthorizers(model.authority, model.signature.signatures.map((entry) => entry.key_id)).length))}</span>
         </div>
         <div class="summary-item">
           <span class="summary-label">Generated</span>
           <span class="summary-value">${escapeHtml(formatShortDate(model.generatedAt))}</span>
         </div>
       </div>
+      <p>Signing protection: <strong>${escapeHtml(cryptoAssurance(model.authority).profile)}</strong>. External publication time has not been checked by page generation. Mathematical validity does not establish historical authorship after algorithm compromise.</p>
     </header>
 
     <section aria-labelledby="how-to-read">

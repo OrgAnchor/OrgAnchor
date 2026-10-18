@@ -1,4 +1,7 @@
 import { fail } from "./errors.ts";
+import { createPrivateKey, createPublicKey } from "node:crypto";
+import { fromBase64Url, toBase64Url } from "./base64url.ts";
+import { assertNoCryptoDowngrade, requiredAlgorithms } from "./crypto-policy.ts";
 import { sha256CanonicalJson } from "./hash.ts";
 import type { JsonValue } from "./json.ts";
 import type {
@@ -78,34 +81,35 @@ export function requireIsoTimestamp(object: Record<string, JsonValue>, key: stri
 export function validatePrivateKey(value: JsonValue): OrgAnchorPrivateKey {
   const object = asObject(value, "private key");
   requireLiteral(object, "type", "OrgAnchorPrivateKey", "private key");
-  requireLiteral(object, "version", "1.0", "private key");
-  requireEd25519Algorithm(object.algorithm, "private key.algorithm");
+  requireKeyVersion(object, "private key");
   requireString(object, "id", "private key");
   requireIsoTimestamp(object, "created_at", "private key");
   const material = asObject(object.key_material ?? null, "private key.key_material");
-  if (material.format !== "jwk") fail("VALIDATION_ERROR", "Private key material must be JWK");
-  validateEd25519Jwk(asObject(material.jwk ?? null, "private key.key_material.jwk"), true, "private key.key_material.jwk");
+  if (object.algorithm === "ed25519") {
+    if (material.format !== "jwk") fail("VALIDATION_ERROR", "Private key material must be JWK");
+    validateEd25519Jwk(asObject(material.jwk ?? null, "private key.key_material.jwk"), true, "private key.key_material.jwk");
+  } else {
+    validateDerMaterial(material, true);
+  }
   return value as unknown as OrgAnchorPrivateKey;
 }
 
 export function validatePublicKey(value: JsonValue): OrgAnchorPublicKey {
   const object = asObject(value, "public key");
   requireLiteral(object, "type", "OrgAnchorPublicKey", "public key");
-  requireLiteral(object, "version", "1.0", "public key");
-  requireEd25519Algorithm(object.algorithm, "public key.algorithm");
+  requireKeyVersion(object, "public key");
   requireString(object, "id", "public key");
   requireIsoTimestamp(object, "created_at", "public key");
   const publicKey = asObject(object.public_key ?? null, "public key.public_key");
-  if (publicKey.format !== "jwk") fail("VALIDATION_ERROR", "Public key material must be JWK");
-  validateEd25519Jwk(asObject(publicKey.jwk ?? null, "public key.public_key.jwk"), false, "public key.public_key.jwk");
+  validatePublicMaterial(object.algorithm, publicKey);
   return value as unknown as OrgAnchorPublicKey;
 }
 
 export function validateRootAuthority(value: JsonValue): RootAuthority {
   const object = asObject(value, "root authority");
-  requireLiteral(object, "schema", ROOT_AUTHORITY_SCHEMA, "root authority");
   requireLiteral(object, "type", "OrgAnchorRootAuthority", "root authority");
-  requireLiteral(object, "version", "1.0", "root authority");
+  requireSupportedVersion(object, "root authority");
+  requireLiteral(object, "schema", object.version === "1.0" ? ROOT_AUTHORITY_SCHEMA : "https://organchor.org/schemas/root-authority.v2.json", "root authority");
   requireString(object, "authority_id", "root authority");
   requireIsoTimestamp(object, "created_at", "root authority");
   const threshold = asObject(object.threshold ?? null, "root authority.threshold");
@@ -113,19 +117,42 @@ export function validateRootAuthority(value: JsonValue): RootAuthority {
   const total = requireInteger(threshold, "total", "root authority.threshold");
   const keys = object.keys;
   if (!Array.isArray(keys) || keys.length === 0) fail("VALIDATION_ERROR", "root authority.keys must be non-empty");
-  if (required < 1 || total < 1 || required > total || total !== keys.length) {
+  if (required < 1 || total < 1 || required > total || (object.version === "1.0" && total !== keys.length)) {
     fail("VALIDATION_ERROR", "Invalid root authority threshold");
   }
   const seen = new Set<string>();
+  const materials = new Set<string>();
+  const holders = new Map<string, Set<string>>();
+  const algorithms = object.version === "2.0" ? requiredAlgorithms(value as unknown as RootAuthority) : ["ed25519"];
+  if (object.version === "2.0" && keys.length > 128) fail("VALIDATION_ERROR", "A v2 authority supports at most 128 keys");
   for (const key of keys) {
     const keyObject = asObject(key, "root authority key");
     const id = requireString(keyObject, "id", "root authority key");
     if (seen.has(id)) fail("VALIDATION_ERROR", `Duplicate root authority key id "${id}"`);
     seen.add(id);
-    requireEd25519Algorithm(keyObject.algorithm, "root authority key.algorithm");
+    if (object.version === "1.0") requireEd25519Algorithm(keyObject.algorithm, "root authority key.algorithm");
+    else if (!algorithms.includes(keyObject.algorithm as "ed25519" | "ml-dsa-65")) fail("UNSUPPORTED_ALGORITHM", "Root key algorithm is not permitted by the authority policy");
     const publicKey = asObject(keyObject.public_key ?? null, "root authority key.public_key");
-    if (publicKey.format !== "jwk") fail("VALIDATION_ERROR", "Root authority public key must be JWK");
-    validateEd25519Jwk(asObject(publicKey.jwk ?? null, "root authority key.public_key.jwk"), false, "root authority key.public_key.jwk");
+    validatePublicMaterial(keyObject.algorithm, publicKey);
+    if (object.version === "2.0") {
+      const holder = requireString(keyObject, "holder_id", "root authority key");
+      const holderAlgorithms = holders.get(holder) ?? new Set<string>();
+      if (holderAlgorithms.has(String(keyObject.algorithm))) fail("VALIDATION_ERROR", "A holder can have only one key per required algorithm");
+      holderAlgorithms.add(String(keyObject.algorithm));
+      holders.set(holder, holderAlgorithms);
+      let fingerprint: string;
+      if (publicKey.format === "jwk") {
+        const x = requireString(asObject(publicKey.jwk ?? null, "JWK"), "x", "JWK");
+        const bytes = fromBase64Url(x);
+        if (bytes.length !== 32 || toBase64Url(bytes) !== x) fail("VALIDATION_ERROR", "V2 Ed25519 public key must have canonical 32-byte base64url encoding");
+        fingerprint = `ed25519:${bytes.toString("hex")}`;
+      } else fingerprint = `ml-dsa-65:${String(publicKey.data)}`;
+      if (materials.has(fingerprint)) fail("VALIDATION_ERROR", "Duplicate public key material cannot represent independent holders");
+      materials.add(fingerprint);
+    }
+  }
+  if (object.version === "2.0" && (holders.size !== total || [...holders.values()].some((set) => algorithms.some((algorithm) => !set.has(algorithm))))) {
+    fail("VALIDATION_ERROR", "V2 threshold total must equal the number of holders with a complete required algorithm set");
   }
   return value as unknown as RootAuthority;
 }
@@ -133,7 +160,8 @@ export function validateRootAuthority(value: JsonValue): RootAuthority {
 export function validateSignatureFile(value: JsonValue): SignatureFile {
   const object = asObject(value, "signature");
   requireLiteral(object, "type", "OrgAnchorSignature", "signature");
-  requireLiteral(object, "version", "1.0", "signature");
+  requireSupportedVersion(object, "signature");
+  if (object.version === "2.0") requireSha256Digest(object, "authority_hash", "signature");
   requireLiteral(object, "canonicalization", "RFC8785-JCS", "signature");
   const hash = asObject(object.hash ?? null, "signature.hash");
   requireLiteral(hash, "algorithm", "sha256", "signature.hash");
@@ -147,7 +175,8 @@ export function validateSignatureFile(value: JsonValue): SignatureFile {
     const keyId = requireString(sig, "key_id", "signature entry");
     if (seen.has(keyId)) fail("VALIDATION_ERROR", `Duplicate signature for key "${keyId}"`);
     seen.add(keyId);
-    requireEd25519Algorithm(sig.algorithm, "signature entry.algorithm");
+    if (object.version === "1.0") requireEd25519Algorithm(sig.algorithm, "signature entry.algorithm");
+    else if (sig.algorithm !== "ed25519" && sig.algorithm !== "ml-dsa-65") fail("UNSUPPORTED_ALGORITHM", "Unsupported v2 signature algorithm");
     requireBase64Url(sig, "signature", "signature entry");
     requireIsoTimestamp(sig, "signed_at", "signature entry");
   }
@@ -182,9 +211,9 @@ export function validateOfficialStatement(value: JsonValue): OfficialEndpointsSt
 
 export function validateRootAuthorityMigration(value: JsonValue): RootAuthorityMigration {
   const object = asObject(value, "root authority migration");
-  requireLiteral(object, "schema", ROOT_MIGRATION_SCHEMA, "migration");
   requireLiteral(object, "type", "OrgAnchorRootAuthorityMigration", "migration");
-  requireLiteral(object, "version", "1.0", "migration");
+  requireSupportedVersion(object, "migration");
+  requireLiteral(object, "schema", object.version === "1.0" ? ROOT_MIGRATION_SCHEMA : "https://organchor.org/schemas/root-authority-migration.v2.json", "migration");
   requireString(object, "migration_id", "migration");
   requireIsoTimestamp(object, "issued_at", "migration");
   requireIsoTimestamp(object, "effective_at", "migration");
@@ -193,6 +222,15 @@ export function validateRootAuthorityMigration(value: JsonValue): RootAuthorityM
   const newRootAuthorityHash = requireSha256Digest(object, "new_root_authority_hash", "migration");
   const oldRootAuthority = validateRootAuthority(object.old_root_authority ?? null);
   const newRootAuthority = validateRootAuthority(object.new_root_authority ?? null);
+  if (object.version === "1.0" && (oldRootAuthority.version !== "1.0" || newRootAuthority.version !== "1.0")) {
+    fail("VALIDATION_ERROR", "Migration involving a v2 authority requires a v2 migration record");
+  }
+  if (object.version === "2.0") {
+    assertNoCryptoDowngrade(oldRootAuthority, newRootAuthority);
+    if (requireInteger(object, "sequence", "migration") < 1) fail("VALIDATION_ERROR", "Migration sequence must be positive");
+    if (object.previous_migration_hash !== null) requireSha256Digest(object, "previous_migration_hash", "migration");
+    if (Date.parse(String(object.effective_at)) < Date.parse(String(object.issued_at))) fail("VALIDATION_ERROR", "Migration effective_at must not precede issued_at");
+  }
   if (oldRootAuthorityHash !== sha256CanonicalJson(oldRootAuthority)) {
     fail("VALIDATION_ERROR", "migration.old_root_authority_hash does not match embedded old_root_authority");
   }
@@ -217,6 +255,41 @@ export function validateRootAuthorityMigration(value: JsonValue): RootAuthorityM
 function requireEd25519Algorithm(value: JsonValue | undefined, label: string): void {
   if (value !== "ed25519") {
     fail("UNSUPPORTED_ALGORITHM", `${label}: only ed25519 is supported in v1`);
+  }
+}
+
+function requireSupportedVersion(object: Record<string, JsonValue>, label: string): void {
+  if (object.version !== "1.0" && object.version !== "2.0") fail("UNSUPPORTED_VERSION", `${label}: unsupported version`);
+}
+
+function requireKeyVersion(object: Record<string, JsonValue>, label: string): void {
+  requireSupportedVersion(object, label);
+  if (object.algorithm === "ed25519") requireLiteral(object, "version", "1.0", label);
+  else if (object.algorithm === "ml-dsa-65") requireLiteral(object, "version", "2.0", label);
+  else fail("UNSUPPORTED_ALGORITHM", `${label}: unsupported key algorithm`);
+  if (object.holder_id !== undefined) requireString(object, "holder_id", label);
+}
+
+function validatePublicMaterial(algorithm: JsonValue | undefined, material: Record<string, JsonValue>): void {
+  if (algorithm === "ed25519") {
+    if (material.format !== "jwk") fail("VALIDATION_ERROR", "Ed25519 public key must be JWK");
+    validateEd25519Jwk(asObject(material.jwk ?? null, "public JWK"), false, "public JWK");
+  } else if (algorithm === "ml-dsa-65") validateDerMaterial(material, false);
+  else fail("UNSUPPORTED_ALGORITHM", "Unsupported public key algorithm");
+}
+
+function validateDerMaterial(material: Record<string, JsonValue>, privateMaterial: boolean): void {
+  requireLiteral(material, "format", privateMaterial ? "pkcs8-der" : "spki-der", "ML-DSA material");
+  if (Object.keys(material).some((key) => key !== "format" && key !== "data")) fail("VALIDATION_ERROR", "Unexpected ML-DSA material field");
+  const data = requireBase64Url(material, "data", "ML-DSA material");
+  if (data.length > 20000) fail("VALIDATION_ERROR", "ML-DSA material exceeds the bounded key size");
+  try {
+    const bytes = fromBase64Url(data);
+    const key = privateMaterial ? createPrivateKey({ key: bytes, format: "der", type: "pkcs8" }) : createPublicKey({ key: bytes, format: "der", type: "spki" });
+    const exported = privateMaterial ? key.export({ format: "der", type: "pkcs8" }) : key.export({ format: "der", type: "spki" });
+    if (key.asymmetricKeyType !== "ml-dsa-65" || toBase64Url(exported) !== data) throw new Error("Invalid encoding or algorithm");
+  } catch {
+    fail("VALIDATION_ERROR", "Invalid or unsupported ML-DSA-65 key encoding; use a native ML-DSA capable runtime");
   }
 }
 

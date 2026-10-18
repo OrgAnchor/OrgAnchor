@@ -1,39 +1,35 @@
 import type { JsonValue } from "../core/json.ts";
 
-export type Algorithm = "ed25519";
+export type Algorithm = "ed25519" | "ml-dsa-65";
 export type Jwk = Record<string, JsonValue>;
+export type PublicKeyMaterial = { format: "jwk"; jwk: Jwk } | { format: "spki-der"; data: string };
+export type PrivateKeyMaterial = { format: "jwk"; jwk: Jwk } | { format: "pkcs8-der"; data: string };
 
 export interface OrgAnchorPrivateKey {
   [key: string]: JsonValue;
   type: "OrgAnchorPrivateKey";
-  version: "1.0";
+  version: "1.0" | "2.0";
   id: string;
   algorithm: Algorithm;
   created_at: string;
-  key_material: {
-    format: "jwk";
-    jwk: Jwk;
-  };
+  key_material: PrivateKeyMaterial;
 }
 
 export interface OrgAnchorPublicKey {
   [key: string]: JsonValue;
   type: "OrgAnchorPublicKey";
-  version: "1.0";
+  version: "1.0" | "2.0";
   id: string;
   algorithm: Algorithm;
   created_at: string;
-  public_key: {
-    format: "jwk";
-    jwk: Jwk;
-  };
+  public_key: PublicKeyMaterial;
 }
 
 export interface RootAuthority {
   [key: string]: JsonValue;
   schema: string;
   type: "OrgAnchorRootAuthority";
-  version: "1.0";
+  version: "1.0" | "2.0";
   authority_id: string;
   created_at: string;
   threshold: {
@@ -47,16 +43,13 @@ export interface RootAuthorityKey {
   [key: string]: JsonValue;
   id: string;
   algorithm: Algorithm;
-  public_key: {
-    format: "jwk";
-    jwk: Jwk;
-  };
+  public_key: PublicKeyMaterial;
 }
 
 export interface SignatureFile {
   [key: string]: JsonValue;
   type: "OrgAnchorSignature";
-  version: "1.0";
+  version: "1.0" | "2.0";
   canonicalization: "RFC8785-JCS";
   hash: {
     algorithm: "sha256";
@@ -102,7 +95,7 @@ export interface RootAuthorityMigration {
   [key: string]: JsonValue;
   schema: string;
   type: "OrgAnchorRootAuthorityMigration";
-  version: "1.0";
+  version: "1.0" | "2.0";
   migration_id: string;
   issued_at: string;
   effective_at: string;

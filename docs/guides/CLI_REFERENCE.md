@@ -1,6 +1,6 @@
 # OrgAnchor CLI Reference
 
-Status: Active Alpha.5 command-family reference.
+Status: Active Alpha.6 command-family reference.
 
 This page keeps operational commands out of the public README. It is a compact
 reference, not a substitute for custody, publishing, or pilot guidance. Run
@@ -46,6 +46,7 @@ organchor statement sign --key keys/root-2026.private.json --authority root-auth
 organchor statement sign --key keys/root-b.private.json --authority root-authority.json --in statements/official-endpoints.json --append
 organchor statement verify --authority root-authority.json --in statements/official-endpoints.json --sig statements/official-endpoints.json.sig
 organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --out public/verify
+organchor safety scan --dir public
 organchor verify url https://example.org
 organchor verify url https://example.org --brief
 organchor verify url https://example.org --compact
@@ -183,6 +184,29 @@ organchor page generate --statement statements/official-endpoints.json --sig sta
 
 Preserve old signed packages and publish a signed migration chain. A new
 OrgAnchor version must not silently rewrite an adopter's authority history.
+
+## Post-Quantum Authorities And Historical Checkpoints
+
+These commands are included in Alpha.6. Alpha.5 remains Ed25519-only.
+Upgrade verification tools first; new cryptographic policies are opt-in.
+
+```bash
+organchor key generate --id root-pq --algorithm ml-dsa-65 --holder alice
+organchor authority create --keys keys/root-ed.public.json,keys/root-pq.public.json --holder-ids alice,alice --policy hybrid-ed25519-ml-dsa-65 --threshold 1 --out next.json
+organchor migrate sign --role new --new-authority next.json --key keys/root-pq.private.json --in statements/migration-pq.json --append
+organchor migrate verify --old-authority root-authority.json --new-authority next.json --in statements/migration-pq.json --sig statements/migration-pq.json.sig --acceptance-sig statements/migration-pq.json.acceptance.sig
+organchor verify url https://example.org --require-post-quantum --expected-authority-hash sha256:<independently-verified-current-hash>
+organchor history checkpoint create --verify-dir public/verify --out history/checkpoint.json
+organchor history checkpoint sign --in history/checkpoint.json --authority next.json --key keys/root-pq.private.json --append
+organchor history checkpoint seal --in history/checkpoint.json --authority next.json
+organchor history checkpoint verify --in history/checkpoint.json --authority next.json --verify-dir public/verify
+```
+
+Hybrid signing requires both keys of each counted holder. Collect the other
+required signatures before verification or sealing. Use the complete
+[migration runbook](./POST_QUANTUM_MIGRATION_GUIDE.md) for old authorization,
+new acceptance, retained v1 packages, renewal, independently pinned timestamp
+proofs, and retirement cutoffs. A local PASS does not establish external time.
 
 ## Safety Boundary
 

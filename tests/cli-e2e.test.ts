@@ -18,6 +18,9 @@ test("Stage 1 CLI flow creates, signs, verifies, and rejects tampering", () => {
     const gitignore = readFileSync(join(workspace, ".gitignore"), "utf8");
     assert.match(gitignore, /keys\/\*\.private\.json/);
     assert.match(gitignore, /\*\.private\.json/);
+    const config = JSON.parse(readFileSync(join(workspace, "organchor.config.json"), "utf8"));
+    assert.equal(config.official_endpoints.github, "https://github.com/example");
+    assert.equal(config.official_endpoints.documentation, "https://example.org/docs");
 
     const privateKey = JSON.parse(readFileSync(join(workspace, "keys", "root-2026.private.json"), "utf8"));
     assert.equal(privateKey.type, "OrgAnchorPrivateKey");

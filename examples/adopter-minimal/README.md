@@ -37,8 +37,18 @@ organchor statement create --config organchor.config.json --authority root-autho
 organchor statement sign --key keys/root-2026.private.json --authority root-authority.json --in statements/official-endpoints.json --out statements/official-endpoints.json.sig
 organchor statement verify --authority root-authority.json --in statements/official-endpoints.json --sig statements/official-endpoints.json.sig
 organchor page generate --statement statements/official-endpoints.json --sig statements/official-endpoints.json.sig --authority root-authority.json --out public/verify
+organchor safety scan --dir public
+```
+
+This is the minimum local preview. When preparing or checking a public Level 2
+deployment, also run:
+
+```bash
 organchor adoption status --verify-dir public/verify --origin https://example.org --level 2 --out ADOPTION_STATUS.md --json reports/adoption-status-report.json
 ```
+
+Before the origin is deployed and audited, `NEEDS_WORK` can be the correct
+readiness result even when local identity verification is `PASS`.
 
 Use `docs/guides/ADOPTER_QUICKSTART.md` for the short explanation and `docs/guides/EXTERNAL_PILOT_RUNBOOK.md` for the full pilot path.
 

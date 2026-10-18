@@ -105,6 +105,10 @@ try {
   assertContains(copiedFiles, join("examples", "complete", "statements", "official-endpoints.json.sig"));
   assertContains(copiedFiles, join("src", "schema", "directory-snapshot.schema.json"));
   assertContains(copiedFiles, join("src", "schema", "official-endpoints.schema.json"));
+  assertContains(copiedFiles, join("src", "schema", "root-authority.v2.schema.json"));
+  assertContains(copiedFiles, join("src", "schema", "signature.v2.schema.json"));
+  assertContains(copiedFiles, join("src", "schema", "root-authority-migration.v2.schema.json"));
+  assertContains(copiedFiles, "docs/guides/POST_QUANTUM_MIGRATION_GUIDE.md");
   assertNotContainsPrefix(copiedFiles, "docs/history");
   assertNotContainsPrefix(copiedFiles, "public-assets/");
 

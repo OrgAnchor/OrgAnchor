@@ -2,8 +2,11 @@ import { readJsonFile } from "../core/json.ts";
 import { sha256CanonicalJson } from "../core/hash.ts";
 import { validateOfficialStatement, validateRootAuthority, validateSignatureFile } from "../core/validate.ts";
 import { verifySignatureFile } from "../crypto/signature.ts";
+import { cryptoAssurance } from "../core/crypto-policy.ts";
 
 export async function statementVerifyCommand(options: Record<string, string | boolean>): Promise<void> {
+  if (options["expected-authority-hash"] !== undefined) requireOption(options["expected-authority-hash"], "--expected-authority-hash requires a value");
+  if (options["require-post-quantum"] !== undefined && options["require-post-quantum"] !== true) throw new Error("--require-post-quantum is a flag without a value");
   const input = requireOption(options.in, "--in is required");
   const sigPath = requireOption(options.sig, "--sig is required");
   const authorityPath = typeof options.authority === "string" ? options.authority : "root-authority.json";
@@ -14,6 +17,9 @@ export async function statementVerifyCommand(options: Record<string, string | bo
   const authorityHash = sha256CanonicalJson(authority);
 
   const errors: string[] = [];
+  if (options["require-post-quantum"] === true && !cryptoAssurance(authority).post_quantum_required) {
+    errors.push("Verifier policy requires a post-quantum root authority");
+  }
   if (statement.root_authority_hash !== authorityHash) {
     errors.push("Statement root_authority_hash does not match authority file");
   }
@@ -35,6 +41,8 @@ export async function statementVerifyCommand(options: Record<string, string | bo
   console.log(`Statement hash: ${result.statement_hash}`);
   console.log(`Authority hash: ${authorityHash}`);
   console.log(`Valid signatures: ${result.valid_signatures.join(", ")}`);
+  console.log(`Complete authorizers: ${result.valid_authorizers.length}/${authority.threshold.required}`);
+  console.log(`Crypto profile: ${cryptoAssurance(authority).profile}; external publication time: NOT_CHECKED`);
 }
 
 function requireOption(value: string | boolean | undefined, message: string): string {

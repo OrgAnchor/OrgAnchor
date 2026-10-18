@@ -30,7 +30,8 @@ export async function initCommand(options: Record<string, string | boolean>): Pr
         website: "https://example.org",
         verify: "https://example.org/verify",
         security: "mailto:security@example.org",
-        github: "https://github.com/example"
+        github: "https://github.com/example",
+        documentation: "https://example.org/docs"
       },
       domain_security: {
         primary_domain: "example.org",

@@ -1,96 +1,103 @@
 # OrgAnchor Release Publishing Plan
 
-Status: `0.1.0-alpha.5` publication sequence completed and verified on 2026-07-17. This plan remains the recovery record; do not republish the immutable npm version.
+Status: Alpha.6 publication authorized by the owner on 2026-10-18, conditional
+on pre-release gates passing. Publication has not yet been claimed complete.
 
-Last checked: 2026-07-17.
-
-## Current State
+## Release Scope
 
 ```text
-package name: organchor
-release source version: 0.1.0-alpha.5
-current npm alpha: 0.1.0-alpha.5
-current GitHub prerelease: v0.1.0-alpha.5
+candidate: organchor@0.1.0-alpha.6
+tag: v0.1.0-alpha.6
 publish dist-tag: alpha
-source repository: https://github.com/OrgAnchor/OrgAnchor
-public self-pilot: https://organchor.org
+repository: https://github.com/OrgAnchor/OrgAnchor
+previous published alpha: 0.1.0-alpha.5
 ```
 
-The npm `latest` tag still points to the historical `0.1.0-alpha.1`. Public Alpha installation instructions must use `organchor@alpha`; no prerelease should be promoted as stable.
+Alpha.6 adds opt-in ML-DSA-65/hybrid signing, authenticated authority migration,
+sealed public-package checkpoints, explicit time/policy boundaries and public
+output safety checks. It also packages the adoption/documentation improvements
+since Alpha.5. It is not stable v1 or an independent security certification.
 
-## Candidate Purpose
+This is a **tool release**, not a real identity migration. Do not generate or
+replace real root keys, re-sign the live self-pilot, activate a migration or
+submit new identity/time-anchor records under this approval. Stop for explicit
+owner approval before any real root-authority migration.
 
-Alpha.5 packages the work learned from Fireseed Agent falsification after Alpha.4:
+Existing v1 bytes, schemas, hashes and signing input stay unchanged. Upgrade
+verification tools before adopting v2. Native ML-DSA requires Node 24.6+;
+classical-only behavior remains available on the existing Node 24 baseline.
 
-- ordinary brief-first URL verification for low-friction Agents;
-- generic hash-bound verification of declared external evidence signatures;
-- explicit separation of cryptographic provenance, evidence sufficiency, claim truth, and external policy;
-- runnable weak-evidence, stale-evidence, and conflicting-current-evidence scenarios;
-- deterministic scorers, unsafe hard failures, preserved raw results, and regression tests;
-- fixture arithmetic and overclaim corrections found by those evaluations.
+## Pre-Release Gates
 
-This is a protocol and Agent-interface Alpha. It is not stable v1, a trust badge, a certification decision, or a supplier ranking.
-
-## Local Gate
-
-Before requesting publication approval, all of these must pass against the exact candidate commit:
+Against the exact release candidate:
 
 ```bash
 npm run release:check
 npm pack --dry-run
 npm publish --dry-run --tag alpha
+npm audit --audit-level=high
 ```
 
-Also confirm:
+Also verify:
 
-```text
-package.json and package-lock.json both say 0.1.0-alpha.5;
-CHANGELOG.md describes the candidate without implying stable maturity;
-the npm file list contains no private key, token, wallet, payment data, production media, or local operator notes;
-the public self-pilot remains reachable and verifies, or any unrelated carrier gap is recorded explicitly;
-main is clean and pushed;
-no v0.1.0-alpha.5 tag or npm version already exists.
-```
+- Package and lockfile versions agree with the tag and changelog.
+- No private key, credential, wallet, local operation note or production media
+  enters Git or the npm file list.
+- Original v1 schemas and fixture hashes remain unchanged.
+- A clean installed package preserves v1 verification and exercises new opt-in
+  signing, authenticated migration and sealed-checkpoint verification.
+- Current public homepage, verify index and Beacon remain reachable; their
+  authority and signed statement must not change merely because tools upgrade.
+- Windows/Linux quality CI and the security baseline pass on the candidate.
+- No matching npm version or remote tag already exists.
 
-## Human-Owner Gate
-
-Approval to publish `v0.1.0-alpha.5` was recorded and exercised on 2026-07-17. A future version still requires a new explicit approval.
-
-That tag push is not reversible as an ordinary edit: the GitHub Actions Trusted Publishing workflow runs the release checks and publishes `organchor@0.1.0-alpha.5` to npm under `alpha`. Npm versions are immutable.
-
-Do not run local `npm publish` and do not trigger the manual workflow after a successful tag-triggered publication.
+Publish v2 schemas with the package and versioned GitHub source/release assets.
+Canonical schema identifiers are not trusted network dependencies: offline
+validators must register the versioned schema files explicitly. A schema URL
+returning the site's HTML fallback is not schema availability.
 
 ## Publication Sequence
 
-After owner approval:
+1. Finish review and local gates; commit the complete candidate without secrets.
+2. Push the candidate source and wait for cross-platform quality/security CI.
+3. Reconfirm npm state, then push the annotated matching tag once.
+4. Watch `publish-npm.yml`; it checks the version, repeats release gates and
+   publishes using npm Trusted Publishing/OIDC without a local publish token.
+5. Check npm `alpha` resolves to Alpha.6 and its provenance names the intended
+   GitHub repository, workflow and release commit.
+6. Install the exact registry version into a new temporary workspace; check CLI
+   behavior, included v2 schemas, old public identity verification and a local
+   opt-in PQ/hybrid exercise with disposable keys only.
+7. Create the GitHub prerelease with the Alpha.6 changelog, exact tag, npm link
+   and versioned schema assets. Do not mark a prerelease as stable.
+8. Recheck public identity hashes and record the completed release linkage.
 
-1. Freeze and record the candidate commit.
-2. Push the signed or annotated `v0.1.0-alpha.5` tag once.
-3. Watch `.github/workflows/publish-npm.yml` through completion.
-4. Verify `npm view organchor@alpha version` returns `0.1.0-alpha.5`.
-5. Install `organchor@alpha` in a clean temporary workspace and run `organchor --help` plus one URL verification.
-6. Create the GitHub prerelease from the Alpha.5 changelog section and link the exact tag and npm package.
-7. Recheck `https://organchor.org`, `/verify/`, `/.well-known/organchor.json`, and installed-CLI verification.
-8. Record whether the website package was regenerated. A package-version release alone does not silently rewrite the organization's signed identity history.
+The npm `latest` tag remains the historical Alpha.1; use `organchor@alpha` for
+the current Alpha. Never run a second local publish or workflow dispatch after
+the tag-triggered publication has succeeded: npm versions are immutable.
 
-## Hold Conditions
+## Hold And Recovery
 
-Do not publish if:
+Hold if any release gate fails, CI reports a security finding, package contents
+leak private state, versions disagree, the candidate already exists, or OIDC
+does not match the expected publisher. Fix and rerun before publishing.
 
-- any release, package, install, secret, or public-self-pilot check fails;
-- package, tag, changelog, and release notes do not name the same version;
-- public material describes signature validity as claim truth or real-world issuer identity;
-- the release implies external Agent results are universal benchmarks;
-- the tag already exists or npm already contains the candidate version;
-- GitHub Trusted Publishing configuration is unavailable or points at a different repository/workflow.
+If a workflow fails, inspect npm first. If nothing was published, repair the
+failure and use a controlled workflow rerun only after confirming the immutable
+version is absent. If npm succeeded but a later carrier check failed, do not
+republish: repair that carrier and disclose the partial state.
 
-## Recovery Rule
+Independent cryptographic review, actual adopter migration and independently
+checked live time anchoring remain separate milestones. Local tests with
+synthetic Bitcoin headers do not establish those outcomes.
 
-If the tag workflow fails before npm publication, diagnose and fix the workflow, then use the documented recovery path only after checking npm state. If npm publication succeeded but a later GitHub Release or website check failed, never republish the same npm version; record the partial state and repair the remaining carrier separately.
+## Prior Release Record
+
+Alpha.5 completed on 2026-07-17. Preserve its immutable tag/package and
+[publication verification](../history/PUBLIC_SELF_VERIFICATION_2026-07-17.md).
 
 ## References
 
-- `docs/operations/RELEASE_INTEGRITY.md`
-- `docs/operations/PUBLIC_RELEASE_CHECKLIST.md`
-- `docs/operations/NPM_TRUSTED_PUBLISHING.md`
-- `.github/workflows/publish-npm.yml`
+- [Release integrity](./RELEASE_INTEGRITY.md)
+- [Npm Trusted Publishing](./NPM_TRUSTED_PUBLISHING.md)
+- [Post-quantum migration](../guides/POST_QUANTUM_MIGRATION_GUIDE.md)

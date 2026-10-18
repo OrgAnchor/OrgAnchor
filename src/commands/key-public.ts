@@ -1,7 +1,7 @@
 import { readJsonFile } from "../core/json.ts";
 import { writeJsonFile } from "../core/files.ts";
 import { validatePrivateKey } from "../core/validate.ts";
-import { exportPublicKey } from "../crypto/ed25519.ts";
+import { exportPublicKey } from "../crypto/keys.ts";
 
 export async function keyPublicCommand(options: Record<string, string | boolean>): Promise<void> {
   const keyPath = requireOption(options.key, "--key is required");

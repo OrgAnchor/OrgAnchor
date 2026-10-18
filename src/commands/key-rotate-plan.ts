@@ -5,6 +5,7 @@ import { readRootAuthorityKey } from "../core/root-authority-keys.ts";
 import { validateRootAuthority } from "../core/validate.ts";
 import type { JsonValue } from "../core/json.ts";
 import type { RootAuthority } from "../types/artifacts.ts";
+import { assertNoCryptoDowngrade } from "../core/crypto-policy.ts";
 
 export async function keyRotatePlanCommand(options: Record<string, string | boolean>): Promise<void> {
   const authorityPath = typeof options.authority === "string" ? options.authority : "root-authority.json";
@@ -27,16 +28,20 @@ export async function keyRotatePlanCommand(options: Record<string, string | bool
   const newAuthority: RootAuthority = {
     schema: oldAuthority.schema,
     type: "OrgAnchorRootAuthority",
-    version: "1.0",
+    version: oldAuthority.version,
+    ...(oldAuthority.version === "2.0" ? { signing_policy: oldAuthority.signing_policy! } : {}),
     authority_id: typeof options["new-authority-id"] === "string" ? options["new-authority-id"] : `${oldAuthority.authority_id}-next`,
     created_at: new Date().toISOString(),
     threshold: {
       required: thresholdRequired,
       total: oldAuthority.threshold.total
     },
-    keys: oldAuthority.keys.map((key) => key.id === replaceKeyId ? newRootKey : key)
+    keys: oldAuthority.keys.map((key) => key.id === replaceKeyId ? {
+      ...newRootKey, ...(typeof key.holder_id === "string" ? { holder_id: key.holder_id } : {})
+    } : key)
   };
   validateRootAuthority(newAuthority);
+  assertNoCryptoDowngrade(oldAuthority, newAuthority);
   const newAuthorityHash = sha256CanonicalJson(newAuthority);
   const plan: JsonValue = {
     schema: "https://organchor.org/schemas/key-rotation-plan.v1.json",

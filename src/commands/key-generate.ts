@@ -1,11 +1,13 @@
 import { writeNewJsonFile } from "../core/files.ts";
 import { restrictPrivateFilePermissions } from "../core/permissions.ts";
-import { generateEd25519PrivateKey } from "../crypto/ed25519.ts";
+import { generatePrivateKey } from "../crypto/keys.ts";
 
 export async function keyGenerateCommand(options: Record<string, string | boolean>): Promise<void> {
   const id = getString(options.id, "root-2026");
   const out = getString(options.out, `keys/${id}.private.json`);
-  const privateKey = generateEd25519PrivateKey(id);
+  const algorithm = typeof options.algorithm === "string" ? options.algorithm : "ed25519";
+  if (algorithm !== "ed25519" && algorithm !== "ml-dsa-65") throw new Error("--algorithm must be ed25519 or ml-dsa-65");
+  const privateKey = generatePrivateKey(id, algorithm, typeof options.holder === "string" ? options.holder : undefined);
   await writeNewJsonFile(out, privateKey, 0o600);
   await restrictPrivateFilePermissions(out);
   console.log(`Created private key: ${out}`);

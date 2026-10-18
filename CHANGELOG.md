@@ -6,7 +6,22 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 
 ## Unreleased
 
+## 0.1.0-alpha.6 - 2026-10-18
+
+Cryptographic migration and historical-evidence Alpha. New algorithms are opt-in;
+installation does not rotate real keys or rewrite published adopter records.
+
 ### Added
+
+- V2 ML-DSA-65 and per-holder Ed25519/ML-DSA-65 hybrid signing,
+  with authority-bound signing input and unchanged historical v1 verification.
+- V2 dual-authority migration acceptance, predecessor hash/sequence checks,
+  PQ downgrade rejection and independent current/predecessor authority pins.
+- Sealed historical checkpoints with SHA-256/SHA-512 byte commitments,
+  renewal links, independently pinned Bitcoin headers and explicit verifier
+  cutoff handling. Agent results distinguish signing protection from time proof.
+- A public-output safety scan that detects private key material and common
+  credential markers without printing secret values.
 
 - Added an accepted historical-anchor policy that classifies events into
   immediate external anchors, periodic checkpoints, local-only records, and
@@ -29,10 +44,31 @@ OrgAnchor uses semantic versioning once the public package is released. Alpha re
 
 ### Fixed
 
+- OpenTimestamps Bitcoin API path handling and Merkle-root display byte order;
+  pending, offline and API-reported results no longer imply trusted time.
+- Bounded timestamp proof input, recursion, entry count, individual transformed
+  messages and cumulative retained output; small branching/reverse proofs cannot
+  bypass the shared 16 MiB transformed-message budget.
+- Malformed checkpoint PQ-policy flag values fail explicitly instead of silently
+  disabling a requested post-quantum requirement.
+- Starter configuration and example alignment for official GitHub and documentation endpoints.
 - Corrected public quality wording so the failed first run and the strengthened
   zero-open-alert security result are not conflated.
 - Updated the adopter quickstart S3 example to include the current bounded-pool,
   credential, and nullifier fields.
+
+### Compatibility And Security Boundary
+
+- V1 schemas, fixture hashes and signing input are unchanged. Defaults remain
+  Ed25519; native ML-DSA support requires Node 24.6+ and never silently falls back.
+- Hybrid thresholds count complete holders, each supplying both algorithms.
+  Migration involving v2 requires old authorization and new acceptance; PQ
+  protection cannot be dropped by migrating back to a classical-only authority.
+- Mathematical validity, current algorithm suitability and independently checked
+  publication time are separate. A late migration cannot repair missing
+  pre-compromise evidence. Consumer-owned pins and retirement policy are required.
+- Local tests and synthetic time anchors are not an independent cryptographic
+  audit or a guarantee of security against every future quantum attack.
 
 ## 0.1.0-alpha.5 - 2026-07-17
 

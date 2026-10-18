@@ -4,6 +4,8 @@ import { readJsonFile } from "../core/json.ts";
 import { readRootAuthorityKey } from "../core/root-authority-keys.ts";
 import { validateRootAuthority } from "../core/validate.ts";
 import type { RootAuthority, RootAuthorityChangePlan, RootAuthorityKey } from "../types/artifacts.ts";
+import { applyHolderIds, buildRootAuthority } from "../crypto/authority.ts";
+import { assertNoCryptoDowngrade } from "../core/crypto-policy.ts";
 
 export async function authorityChangePlanCommand(options: Record<string, string | boolean>): Promise<void> {
   const oldAuthorityPath = typeof options["old-authority"] === "string" ?
@@ -19,22 +21,13 @@ export async function authorityChangePlanCommand(options: Record<string, string 
   const oldAuthorityHash = sha256CanonicalJson(oldAuthority);
   const retainedKeys = selectRetainedKeys(oldAuthority, options);
   const addedKeys = await readAddedKeys(options);
-  const nextKeys = [...retainedKeys, ...addedKeys];
+  const nextKeys = applyHolderIds([...retainedKeys, ...addedKeys], options["holder-ids"]);
   assertUniqueKeyIds(nextKeys);
   const thresholdRequired = parseRequiredThreshold(options.threshold, nextKeys.length);
-  const newAuthority: RootAuthority = {
-    schema: oldAuthority.schema,
-    type: "OrgAnchorRootAuthority",
-    version: "1.0",
-    authority_id: typeof options["new-authority-id"] === "string" ? options["new-authority-id"] : `${oldAuthority.authority_id}-next`,
-    created_at: new Date().toISOString(),
-    threshold: {
-      required: thresholdRequired,
-      total: nextKeys.length
-    },
-    keys: nextKeys
-  };
-  validateRootAuthority(newAuthority);
+  const newAuthority = buildRootAuthority(nextKeys, thresholdRequired,
+    typeof options["new-authority-id"] === "string" ? options["new-authority-id"] : `${oldAuthority.authority_id}-next`,
+    typeof options.policy === "string" ? options.policy : typeof oldAuthority.signing_policy === "string" ? oldAuthority.signing_policy : undefined);
+  assertNoCryptoDowngrade(oldAuthority, newAuthority);
   const newAuthorityHash = sha256CanonicalJson(newAuthority);
   if (newAuthorityHash === oldAuthorityHash) {
     throw new Error("No root authority change requested; old and new authority hashes are identical");

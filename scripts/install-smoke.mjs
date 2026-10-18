@@ -139,6 +139,31 @@ try {
   assertEqual(index.visible_proof?.status, "PASS", "visible_proof.status");
   assertEqual(index.root_continuity?.status, "CURRENT_ROOT_ONLY", "root_continuity.status");
 
+  runInstalled(binPath, ["key", "generate", "--id", "root-pq", "--algorithm", "ml-dsa-65", "--holder", "owner"], installWorkspace, env);
+  runInstalled(binPath, ["authority", "create", "--keys", "keys/root-2026.private.json,keys/root-pq.private.json", "--holder-ids", "owner,owner", "--policy", "hybrid-ed25519-ml-dsa-65", "--out", "hybrid.json"], installWorkspace, env);
+  runInstalled(binPath, ["migrate", "create", "--old-authority", "root-authority.json", "--new-authority", "hybrid.json", "--out", "migration.json"], installWorkspace, env);
+  runInstalled(binPath, ["migrate", "sign", "--role", "old", "--old-authority", "root-authority.json", "--key", "keys/root-2026.private.json", "--in", "migration.json"], installWorkspace, env);
+  for (const [i, key] of ["root-2026", "root-pq"].entries()) {
+    runInstalled(binPath, ["migrate", "sign", "--role", "new", "--new-authority", "hybrid.json", "--key", `keys/${key}.private.json`, "--in", "migration.json", ...(i ? ["--append"] : [])], installWorkspace, env);
+  }
+  runInstalled(binPath, ["migrate", "verify", "--in", "migration.json", "--sig", "migration.json.sig", "--acceptance-sig", "migration.json.acceptance.sig", "--old-authority", "root-authority.json", "--new-authority", "hybrid.json", "--expected-old-authority-hash", authorityHash], installWorkspace, env);
+  runInstalled(binPath, ["statement", "create", "--authority", "hybrid.json", "--out", "hybrid-statement.json"], installWorkspace, env);
+  for (const [i, key] of ["root-2026", "root-pq"].entries()) {
+    runInstalled(binPath, ["statement", "sign", "--authority", "hybrid.json", "--key", `keys/${key}.private.json`, "--in", "hybrid-statement.json", ...(i ? ["--append"] : [])], installWorkspace, env);
+  }
+  runInstalled(binPath, ["statement", "verify", "--authority", "hybrid.json", "--in", "hybrid-statement.json", "--sig", "hybrid-statement.json.sig", "--require-post-quantum"], installWorkspace, env);
+  runInstalled(binPath, ["page", "generate", "--authority", "hybrid.json", "--statement", "hybrid-statement.json", "--migration", "migration.json", "--out", "hybrid-public/verify"], installWorkspace, env);
+  runInstalled(binPath, ["history", "checkpoint", "create", "--verify-dir", "hybrid-public/verify", "--out", "history/checkpoint.json"], installWorkspace, env);
+  for (const [i, key] of ["root-2026", "root-pq"].entries()) {
+    runInstalled(binPath, ["history", "checkpoint", "sign", "--in", "history/checkpoint.json", "--authority", "hybrid.json", "--key", `keys/${key}.private.json`, ...(i ? ["--append"] : [])], installWorkspace, env);
+  }
+  runInstalled(binPath, ["history", "checkpoint", "seal", "--in", "history/checkpoint.json", "--authority", "hybrid.json"], installWorkspace, env);
+  const checkpoint = JSON.parse(runInstalled(binPath, ["history", "checkpoint", "verify", "--in", "history/checkpoint.json", "--authority", "hybrid.json", "--verify-dir", "hybrid-public/verify", "--require-post-quantum"], installWorkspace, env).stdout);
+  assertEqual(checkpoint.status, "PASS", "installed PQ checkpoint status");
+  assertEqual(checkpoint.crypto_assurance.profile, "HYBRID", "installed crypto policy");
+  assertEqual(checkpoint.time_evidence.status, "NOT_CHECKED", "local smoke must not invent external time evidence");
+  console.log("Installed v1-to-hybrid migration and sealed-checkpoint smoke PASS");
+
   const evaluationScript = join(packageDir, "scripts", "evidence-interpretation-evaluation.mjs");
   const evaluationOut = join(workspace, "evidence-interpretation-evaluation");
   const evaluationBuild = run(

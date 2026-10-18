@@ -75,6 +75,7 @@ export interface BeaconInspectResult {
     root_authority_hash: string | null;
     statement_hash: string | null;
     policy_route: string | null;
+    crypto_assurance?: AgentVerificationResult["crypto_assurance"];
   };
   checks: BeaconInspectCheck[];
   risk_gaps: BeaconRiskGap[];
@@ -263,7 +264,8 @@ async function runStrictVerification(
         value_status: result.value_status,
         root_authority_hash: stringValue(result.identity.root_authority_hash),
         statement_hash: stringValue(result.identity.statement_hash),
-        policy_route: result.policy_route.route
+        policy_route: result.policy_route.route,
+        crypto_assurance: result.crypto_assurance
       }
     };
   } catch (error) {

@@ -53,6 +53,16 @@ const MULTI = 0xff;
 const PENDING_TAG = Buffer.from("83dfe30d2ef90c8e", "hex");
 const BITCOIN_TAG = Buffer.from("0588960d73d71901", "hex");
 const LITECOIN_TAG = Buffer.from("06869a0d73d71b45", "hex");
+export const MAX_OPENTIMESTAMPS_PROOF_BYTES = 1024 * 1024;
+const MAX_TIMESTAMP_DEPTH = 128;
+const MAX_TIMESTAMP_ENTRIES = 4096;
+const MAX_MESSAGE_BYTES = 1024 * 1024;
+const MAX_TOTAL_MESSAGE_BYTES = 16 * 1024 * 1024;
+
+interface ParseBudget {
+  entries: number;
+  messageBytes: number;
+}
 
 export const DEFAULT_OPENTIMESTAMPS_CALENDARS = [
   "https://a.pool.opentimestamps.org",
@@ -164,18 +174,21 @@ export function readVaruintForTest(bytes: Buffer): number {
   return new ByteReader(bytes).readVaruint();
 }
 
-function parseTimestamp(reader: ByteReader, msg: Buffer): TimestampNode {
+function parseTimestamp(reader: ByteReader, msg: Buffer, budget: ParseBudget = { entries: 0, messageBytes: msg.length }, depth = 1): TimestampNode {
+  if (depth > MAX_TIMESTAMP_DEPTH) throw new Error("OpenTimestamps proof exceeds the depth limit of 128");
+  if (msg.length > MAX_MESSAGE_BYTES) throw new Error("OpenTimestamps message exceeds the 1 MiB limit");
   const entries: TimestampEntry[] = [];
   let tag = reader.readByte();
   while (tag === MULTI) {
-    entries.push(parseEntry(reader, reader.readByte(), msg));
+    entries.push(parseEntry(reader, reader.readByte(), msg, budget, depth));
     tag = reader.readByte();
   }
-  entries.push(parseEntry(reader, tag, msg));
+  entries.push(parseEntry(reader, tag, msg, budget, depth));
   return { msg, entries };
 }
 
-function parseEntry(reader: ByteReader, tag: number, msg: Buffer): TimestampEntry {
+function parseEntry(reader: ByteReader, tag: number, msg: Buffer, budget: ParseBudget, depth: number): TimestampEntry {
+  if (++budget.entries > MAX_TIMESTAMP_ENTRIES) throw new Error("OpenTimestamps proof exceeds the entry limit of 4096");
   if (tag === ATTESTATION) {
     const attestationTag = reader.readBytes(8);
     const payload = reader.readVarBytes(8192);
@@ -186,12 +199,13 @@ function parseEntry(reader: ByteReader, tag: number, msg: Buffer): TimestampEntr
     };
   }
 
+  if (depth >= MAX_TIMESTAMP_DEPTH) throw new Error("OpenTimestamps proof exceeds the depth limit of 128");
   const op = parseOp(reader, tag);
-  const childMsg = applyOp(op, msg);
+  const childMsg = applyOp(op, msg, budget);
   const entry: OpEntry = {
     kind: "op",
     tag,
-    child: parseTimestamp(reader, childMsg)
+    child: parseTimestamp(reader, childMsg, budget, depth + 1)
   };
   if (op.arg !== undefined) entry.arg = op.arg;
   return entry;
@@ -207,7 +221,13 @@ function parseOp(reader: ByteReader, tag: number): { tag: number; arg?: Buffer }
   throw new Error(`Unsupported OpenTimestamps operation tag: 0x${tag.toString(16)}`);
 }
 
-function applyOp(op: { tag: number; arg?: Buffer }, msg: Buffer): Buffer {
+function applyOp(op: { tag: number; arg?: Buffer }, msg: Buffer, budget: ParseBudget): Buffer {
+  const size = op.tag === OP_HEXLIFY ? msg.length * 2 :
+    op.tag === OP_APPEND || op.tag === OP_PREPEND ? msg.length + (op.arg?.length ?? 0) :
+    op.tag === OP_SHA1 || op.tag === OP_RIPEMD160 ? 20 : op.tag === OP_SHA256 ? 32 : msg.length;
+  if (size > MAX_MESSAGE_BYTES) throw new Error("OpenTimestamps transformed message exceeds the 1 MiB limit");
+  if (size > MAX_TOTAL_MESSAGE_BYTES - budget.messageBytes) throw new Error("OpenTimestamps proof exceeds the cumulative message size limit of 16 MiB");
+  budget.messageBytes += size;
   if (op.tag === OP_APPEND) return Buffer.concat([msg, op.arg ?? Buffer.alloc(0)]);
   if (op.tag === OP_PREPEND) return Buffer.concat([op.arg ?? Buffer.alloc(0), msg]);
   if (op.tag === OP_REVERSE) return Buffer.from(msg).reverse();
@@ -258,6 +278,7 @@ export class ByteReader {
   private readonly data: Buffer;
 
   constructor(data: Buffer) {
+    if (data.length > MAX_OPENTIMESTAMPS_PROOF_BYTES) throw new Error("OpenTimestamps proof exceeds the 1 MiB input size limit");
     this.data = data;
   }
 
@@ -270,6 +291,7 @@ export class ByteReader {
   }
 
   readBytes(length: number): Buffer {
+    if (!Number.isSafeInteger(length) || length < 0) throw new Error("Invalid OpenTimestamps byte length");
     if (this.offset + length > this.data.length) throw new Error("Unexpected end of OpenTimestamps data");
     const value = this.data.subarray(this.offset, this.offset + length);
     this.offset += length;
@@ -281,7 +303,7 @@ export class ByteReader {
     let shift = 0;
     while (true) {
       const byte = this.readByte();
-      value |= (byte & 0x7f) << shift;
+      value += (byte & 0x7f) * 2 ** shift;
       if ((byte & 0x80) === 0) return value;
       shift += 7;
       if (shift > 28) throw new Error("OpenTimestamps varuint is too large");

@@ -27,17 +27,28 @@ Use this quickstart if the organization wants to publish:
 
 Do not use OrgAnchor as a badge that says the organization is good, safe, lawful, cheap, or best.
 
-## Minimum Result
+## Minimum Local Preview Result
 
-The minimum useful result is:
+The minimum useful local result is:
 
 ```text
 root-authority.json
 statements/official-endpoints.json
 statements/official-endpoints.json.sig
 public/verify/
-ADOPTION_STATUS.md
 ```
+
+A completed public Level 2 pilot also adds:
+
+```text
+ADOPTION_STATUS.md
+reports/adoption-status-report.json
+reports/domain-security-report.json
+reports/domain-security-report.md
+```
+
+Do not treat those public-readiness reports as a prerequisite for generating
+and checking the first local preview.
 
 Optional but recommended after the first pass:
 
@@ -66,6 +77,14 @@ From the adoption workspace:
 
 ```bash
 organchor init
+```
+
+On Windows PowerShell, use `npm.cmd` and `npx.cmd` when execution policy blocks
+the `npm.ps1` or `npx.ps1` launcher. For example:
+
+```powershell
+npm.cmd install -g organchor@alpha
+npx.cmd --yes organchor@alpha --help
 ```
 
 If using the source checkout before a package install:
@@ -176,6 +195,16 @@ Human-visible check:
 - open `/verify/`
 - confirm the visible proof trail is understandable
 - confirm no private key or provider secret appears in public files
+
+Run the machine-readable disclosure scan before publishing:
+
+```bash
+organchor safety scan --dir public
+```
+
+`PASS` means the scanner found no high-confidence private-key or credential
+markers. It complements review and custody controls; it does not prove that
+every public file is appropriate to disclose.
 
 ## 7. Add Claims And Evidence Only When Needed
 

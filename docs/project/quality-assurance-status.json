@@ -3,13 +3,32 @@
   "type": "OrgAnchorQualityAssuranceStatus",
   "version": "1.0",
   "assessed_at": "2026-07-18",
-  "package": "organchor@0.1.0-alpha.5",
+  "package": "organchor@0.1.0-alpha.6",
   "repository": "https://github.com/OrgAnchor/OrgAnchor",
   "release_decision": {
     "status": "ALPHA_REVIEW_READY",
     "meaning": "Suitable for public inspection, bounded evaluation, and low-risk pilots."
   },
   "production_identity_assurance": "NOT_ESTABLISHED",
+  "source_only_followup": {
+    "assessed_at": "2026-10-18",
+    "candidate_package": "organchor@0.1.0-alpha.6",
+    "scope": "UNRELEASED_POST_QUANTUM_MIGRATION_AND_HISTORY",
+    "release_check": "PASS_LOCAL",
+    "full_gate_tests_passed": 296,
+    "final_combined_focused_tests_passed": 115,
+    "additional_history_regressions_after_full_gate": 5,
+    "line_coverage_percent": 87.89,
+    "function_coverage_percent": 93.83,
+    "branch_coverage_percent": 61.09,
+    "node_version": "24.15.0",
+    "minimum_native_runtime_suite": { "node_version": "24.6.0", "tests_passed": 28 },
+    "independent_security_review": "PENDING",
+    "real_adopter_migration": "NOT_PERFORMED",
+    "new_live_time_anchor": "NOT_PERFORMED",
+    "evidence": "docs/protocol/POST_QUANTUM_MIGRATION.md",
+    "boundary": "Local tests do not establish public CI success, absolute quantum security, external time anchoring or real-world claim truth. Published Alpha.5 remains unchanged."
+  },
   "automated_baseline": {
     "node_version": "24",
     "coverage_thresholds": {

@@ -2,7 +2,7 @@
 
 Status: active alpha implementation snapshot
 
-Last updated: 2026-07-18
+Last updated: 2026-10-18
 
 This document records what is already implemented, what remains external or future work, and what OrgAnchor intentionally does not do. It exists to keep development aligned with the project north star: lower the cost for third-party AI agents, organizations, and people to discover, verify, understand, and compare organization-controlled identity and value evidence without turning OrgAnchor into a central trust authority.
 
@@ -10,7 +10,7 @@ This document records what is already implemented, what remains external or futu
 
 ```text
 Lifecycle: FIRESEED_ALPHA
-Published package: organchor@0.1.0-alpha.5
+Tool release line: organchor@0.1.0-alpha.6 (publication tracked in release plan)
 Stable v1: NOT_RELEASED
 Stages 1-5 functional scope: IMPLEMENTED_FOR_ALPHA_WITH_DISCLOSED_EXTERNAL_GAPS
 S1-S3 evidence baseline: IMPLEMENTED_AND_TESTED
@@ -18,7 +18,9 @@ S4 real-use observation: PARTIAL / DESIGN_PREVIEW
 S5 challenge and accountability: DESIGN_ONLY
 Commercial-fit protocol: DESIGN_ONLY
 Delegated product/service credentials: DESIGN_ONLY
-Historical event classification and checkpoints: DESIGN_ONLY
+Historical event classification: DESIGN_ONLY
+Sealed public-package checkpoints and explicit trusted-anchor checks: IMPLEMENTED_ALPHA_6
+Post-quantum/hybrid authority and authenticated migration: IMPLEMENTED_ALPHA_6
 Broad external organization pilot: NOT_COMPLETED
 Broad internet discovery coverage: NOT_IMPLEMENTED
 ```
@@ -30,6 +32,20 @@ protocol design document is not shipped merely because its design is accepted.
 ## Implemented Core
 
 Identity continuity:
+
+- Alpha.6 v2 ML-DSA-65 and per-holder Ed25519/ML-DSA-65 hybrid authority;
+  both algorithms are required for each counted hybrid holder. Alpha.5 remains
+  Ed25519-only; upgrading tools does not migrate any adopter's real authority.
+- Versioned signature input binding payload, authority, algorithm, key ID and
+  declared signing time, while preserving the exact v1 signing input.
+- V2 migration requires old authorization and new acceptance, canonical hash
+  predecessor links, a sequence, no PQ downgrade, and verifier-provided pins.
+- Sealed historical checkpoints bind exact public-package bytes, signatures,
+  authorities and migration acceptance using SHA-256 and SHA-512. Independent
+  block pins are required for trusted Bitcoin time evidence. Retirement cutoffs
+  are supplied by consuming verifiers, not asserted by publishers.
+- Full/brief/compact Agent output and human pages expose classical/hybrid/PQ
+  protection separately from mathematical validity and unchecked time evidence.
 
 - Root key and threshold root authority creation.
 - Signed official-presence statements.
@@ -69,7 +85,10 @@ Value evidence layer:
 - Commercial fit layer documented as an accepted design direction for price disclosure modes, signed public price sheets, private signed quotes, lead time, MOQ, validity windows, and commercial-fit routing without turning OrgAnchor into a marketplace or price judge.
 - Evidence sufficiency model documented as an accepted design principle so OrgAnchor can avoid field-count competition and report purpose-fit support instead of universal completeness scores.
 - Subject binding model documented as the accepted rule that discovery matches, claims, evidence, samples, observations, credentials, and challenges must declare the subject they cover and must not silently widen evidence coverage.
-- Historical anchor policy documented as the accepted event-selection rule for immediate external anchors, periodic checkpoints, local-only records, and material prohibited from public anchoring. Dedicated event schemas, deterministic checkpoint aggregation, and automated classification remain design-only.
+- Historical anchor policy documents event selection. Dedicated event schemas,
+  automatic event classification and scheduled aggregation remain design-only;
+  explicit public-package checkpoints, sealing, renewal links and independently
+  pinned timestamp verification are implemented in source.
 
 Carriers and auxiliary surfaces:
 

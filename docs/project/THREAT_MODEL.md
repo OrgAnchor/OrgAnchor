@@ -254,12 +254,25 @@ Mitigation:
 - algorithm identifiers are explicit,
 - canonical hashing is separate from signing,
 - root authority migration can introduce new key algorithms,
-- post-quantum migration is an explicit design path,
-- high-value historical hashes can be timestamped.
+- Alpha.6 v2 supports native ML-DSA-65 and per-holder hybrid AND signatures;
+- migration requires both authorities' thresholds and rejects PQ downgrade;
+- verifier-owned authority pins prevent a replayed old package from satisfying
+  the pinned current identity;
+- history seals bind payloads, signatures, authorities and migration acceptance;
+- pending/calendar/API-reported observations do not count as trusted time;
+- pinned Bitcoin headers and external retirement cutoffs can constrain
+  historical acceptance without rewriting old signed records.
 
 Residual risk:
 
-- quantum-safe operational migration depends on future mature libraries, standards, and adoption,
+- algorithm adoption still requires an independently approved real-adopter
+  migration; upgrading tools does not rotate keys. Alpha.5 is Ed25519-only;
+- independent cryptographic review, broader interoperability and operational
+  recovery remain necessary;
+- a post-compromise signature or late renewal cannot establish an unambiguous
+  legitimate successor when pre-compromise evidence is missing;
+- supplied block pins depend on independent canonical-chain validation and
+  confirmations; block header time is not exact wall-clock signing time;
 - old signatures may become historical evidence rather than future-proof authentication.
 
 ### 11. AI-agent misuse

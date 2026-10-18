@@ -13,11 +13,15 @@ export async function migrateCreateCommand(options: Record<string, string | bool
   const now = new Date();
   const oldAuthority = validateRootAuthority(await readJsonFile(oldAuthorityPath));
   const newAuthority = validateRootAuthority(await readJsonFile(newAuthorityPath));
-  const supersedes = await readSupersededStatementHashes(options);
+  const v2 = oldAuthority.version === "2.0" || newAuthority.version === "2.0";
+  const supersedes = await readSupersededStatementHashes(options, v2);
+  const previous = typeof options["previous-migration"] === "string" ? validateRootAuthorityMigration(await readJsonFile(options["previous-migration"])) : undefined;
+  if (previous && previous.new_root_authority_hash !== sha256CanonicalJson(oldAuthority)) throw new Error("Previous migration does not end at the old authority");
   const migration: RootAuthorityMigration = {
-    schema: "https://organchor.org/schemas/root-authority-migration.v1.json",
+    schema: `https://organchor.org/schemas/root-authority-migration.v${v2 ? "2" : "1"}.json`,
     type: "OrgAnchorRootAuthorityMigration",
-    version: "1.0",
+    version: v2 ? "2.0" : "1.0",
+    ...(v2 ? { sequence: previous ? Number(previous.sequence ?? 0) + 1 : 1, previous_migration_hash: previous ? sha256CanonicalJson(previous) : null } : {}),
     migration_id: typeof options.id === "string" ? options.id : `organchor-migration-${now.getUTCFullYear()}-001`,
     issued_at: now.toISOString(),
     effective_at: typeof options["effective-at"] === "string" ? options["effective-at"] : now.toISOString(),
@@ -27,7 +31,8 @@ export async function migrateCreateCommand(options: Record<string, string | bool
     new_root_authority: newAuthority,
     new_root_authority_hash: sha256CanonicalJson(newAuthority),
     supersedes_statement_hashes: supersedes,
-    notes: "This migration is valid only if signed by the old root authority threshold. Future statements should use the new root authority after the effective time."
+    notes: v2 ? "Requires both old-authority authorization and new-authority acceptance. External pre-compromise publication time must be established separately. Preserve the old package and anchor the complete migration before algorithm retirement." :
+      "This migration is valid only if signed by the old root authority threshold. Future statements should use the new root authority after the effective time."
   };
   validateRootAuthorityMigration(migration);
   await writeJsonFile(out, migration);
@@ -37,14 +42,14 @@ export async function migrateCreateCommand(options: Record<string, string | bool
   console.log(`New authority hash: ${migration.new_root_authority_hash}`);
 }
 
-async function readSupersededStatementHashes(options: Record<string, string | boolean>): Promise<string[]> {
+async function readSupersededStatementHashes(options: Record<string, string | boolean>, canonical = false): Promise<string[]> {
   const hashes: string[] = [];
   if (typeof options["supersedes-hash"] === "string") {
     hashes.push(...options["supersedes-hash"].split(",").map((part) => part.trim()).filter(Boolean));
   }
   if (typeof options.statement === "string") {
-    const artifact = await hashFile(options.statement);
-    hashes.push(artifact.hash);
+    if (canonical) hashes.push(sha256CanonicalJson(await readJsonFile(options.statement)));
+    else hashes.push((await hashFile(options.statement)).hash);
   }
   return [...new Set(hashes)];
 }

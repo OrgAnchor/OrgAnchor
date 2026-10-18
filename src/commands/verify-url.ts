@@ -6,8 +6,10 @@ import {
 import { sha256CanonicalJson } from "../core/hash.ts";
 import { parseStrictJson, type JsonValue } from "../core/json.ts";
 import { validateLockfile } from "../core/lockfile.ts";
-import { asObject, validateOfficialStatement, validateRootAuthority, validateSignatureFile } from "../core/validate.ts";
+import { asObject, validateOfficialStatement, validateRootAuthority, validateRootAuthorityMigration, validateSignatureFile } from "../core/validate.ts";
 import { verifySignatureFile } from "../crypto/signature.ts";
+import { cryptoAssurance } from "../core/crypto-policy.ts";
+import { verifyMigrationSignatures } from "../core/migration.ts";
 
 export type CheckStatus = "PASS" | "WARN" | "FAIL" | "NOT_INCLUDED";
 export type AgentConformanceStatus =
@@ -32,6 +34,7 @@ export interface AgentDiscoverySignal {
 }
 
 export interface AgentVerificationResult {
+  crypto_assurance: ReturnType<typeof cryptoAssurance>;
   type: "OrgAnchorAgentVerificationResult";
   version: "1.0";
   target: string;
@@ -67,6 +70,7 @@ export interface AgentArtifactUrls {
 }
 
 export interface AgentVerificationBriefResult {
+  crypto_assurance: ReturnType<typeof cryptoAssurance>;
   type: "OrgAnchorAgentVerificationBriefResult";
   version: "1.0";
   target: string;
@@ -112,6 +116,7 @@ export interface AgentVerificationBriefResult {
 }
 
 export interface AgentVerificationCompactResult {
+  crypto_assurance: ReturnType<typeof cryptoAssurance>;
   type: "OrgAnchorAgentVerificationCompactResult";
   version: "1.0";
   target: string;
@@ -233,8 +238,17 @@ export interface AgentPolicyRoute {
 }
 
 export async function verifyUrlCommand(options: Record<string, string | boolean>): Promise<void> {
+  for (const flag of ["expected-authority-hash", "expected-predecessor-authority-hash"]) {
+    if (options[flag] !== undefined && (typeof options[flag] !== "string" || !options[flag])) throw new Error(`--${flag} requires a value`);
+  }
+  if (options["require-post-quantum"] !== undefined && options["require-post-quantum"] !== true) throw new Error("--require-post-quantum is a flag without a value");
   const target = requireTarget(options);
-  const result = await verifyUrlTarget(target, { timeoutMs: parseTimeoutMs(options["timeout-ms"]) });
+  const result = await verifyUrlTarget(target, {
+    timeoutMs: parseTimeoutMs(options["timeout-ms"]),
+    expectedAuthorityHash: typeof options["expected-authority-hash"] === "string" ? options["expected-authority-hash"] : undefined,
+    expectedPredecessorAuthorityHash: typeof options["expected-predecessor-authority-hash"] === "string" ? options["expected-predecessor-authority-hash"] : undefined,
+    requirePostQuantum: options["require-post-quantum"] === true
+  });
   const output = options.brief === true ? briefResult(result) : options.compact === true ? compactResult(result) : result;
   console.log(JSON.stringify(output, null, 2));
   if (result.overall_status === "FAIL") process.exitCode = 1;
@@ -244,6 +258,9 @@ export async function verifyUrlTarget(
   target: string,
   options: {
     timeoutMs?: number;
+    expectedAuthorityHash?: string | undefined;
+    expectedPredecessorAuthorityHash?: string | undefined;
+    requirePostQuantum?: boolean;
   } = {}
 ): Promise<AgentVerificationResult> {
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
@@ -277,6 +294,9 @@ export async function verifyUrlTarget(
   const authorityHash = sha256CanonicalJson(authority);
   const statementHash = sha256CanonicalJson(statement);
   const signatureHash = sha256CanonicalJson(signature);
+  const assurance = cryptoAssurance(authority);
+  if (options.expectedAuthorityHash !== undefined) addCheck(checks, "expected_authority_pin", authorityHash === options.expectedAuthorityHash ? "PASS" : "FAIL", "Current authority must match the verifier's independent pin.");
+  if (options.requirePostQuantum) addCheck(checks, "post_quantum_policy", assurance.post_quantum_required ? "PASS" : "FAIL", "The verifier requires mandatory post-quantum authorization.");
 
   addHashCheck(checks, "statement_hash", statementRef.hash, statementHash, "Official endpoint statement hash");
   addHashCheck(checks, "signature_hash", signatureRef.hash, signatureHash, "Official endpoint signature hash");
@@ -310,7 +330,7 @@ export async function verifyUrlTarget(
     "statement_signature_threshold",
     statementVerification.ok ? "PASS" : "FAIL",
     statementVerification.ok
-      ? `${statementVerification.valid_signatures.length}/${statementVerification.required_signatures} required root signatures are valid.`
+      ? `${statementVerification.valid_authorizers.length}/${statementVerification.required_signatures} required root authorizers are complete.`
       : statementVerification.errors.join("; ")
   );
 
@@ -389,6 +409,7 @@ export async function verifyUrlTarget(
     authority,
     timeoutMs
   });
+  const migrationHistory = await verifyPublishedMigrations(indexObject, artifactBaseUrl, authorityHash, checks, timeoutMs, options.expectedPredecessorAuthorityHash);
 
   addCheck(
     checks,
@@ -412,6 +433,7 @@ export async function verifyUrlTarget(
   });
   const result: AgentVerificationResult = {
     type: "OrgAnchorAgentVerificationResult",
+    crypto_assurance: assurance,
     version: "1.0",
     target,
     index_url: index.url.toString(),
@@ -440,9 +462,10 @@ export async function verifyUrlTarget(
       authority_id: authority.authority_id,
       threshold_required: authority.threshold.required,
       threshold_total: authority.threshold.total,
-      valid_signatures: statementVerification.valid_signatures
+      valid_signatures: statementVerification.valid_signatures,
+      valid_authorizers: statementVerification.valid_authorizers
     },
-    history: history.publicHistory,
+    history: { ...history.publicHistory, migration_continuity: migrationHistory, external_time_evidence: "NOT_CHECKED", checkpoint_discovery: optionalRecord(indexObject.history_checkpoint) },
     value_continuity: valueContinuity.publicValue,
     external_evidence_signatures: externalEvidenceSignatures,
     policy_route: policyRoute,
@@ -469,6 +492,7 @@ function briefResult(result: AgentVerificationResult): AgentVerificationBriefRes
   }
   return {
     type: "OrgAnchorAgentVerificationBriefResult",
+    crypto_assurance: result.crypto_assurance,
     version: "1.0",
     target: result.target,
     overall_status: result.overall_status,
@@ -564,6 +588,7 @@ function compactResult(result: AgentVerificationResult): AgentVerificationCompac
 
   return {
     type: "OrgAnchorAgentVerificationCompactResult",
+    crypto_assurance: result.crypto_assurance,
     version: "1.0",
     target: result.target,
     overall_status: result.overall_status,
@@ -737,7 +762,8 @@ const identityCheckIds = new Set([
   "beacon_declared_root_authority_hash",
   "beacon_declared_statement_hash",
   "statement_authority_binding",
-  "statement_signature_threshold"
+  "statement_signature_threshold",
+  "expected_authority_pin", "post_quantum_policy", "migration_continuity"
 ]);
 
 const DEFAULT_TIMEOUT_MS = 15000;
@@ -858,6 +884,67 @@ function resolveArtifactBaseUrl(indexUrl: URL, index: Record<string, JsonValue>)
   return new URL("./", indexUrl);
 }
 
+async function verifyPublishedMigrations(index: Record<string, JsonValue>, base: URL, currentHash: string, checks: AgentCheck[], timeout: number, expectedPredecessor?: string): Promise<Record<string, JsonValue>> {
+  const history = optionalRecord(index.migration_history);
+  const continuity = optionalRecord(index.root_continuity);
+  const entries = Array.isArray(history.migrations) ? history.migrations : [];
+  const duplicateEntries = Array.isArray(continuity.migration_chain) ? continuity.migration_chain : [];
+  const errors: string[] = [];
+  if (!entries.length) {
+    if (expectedPredecessor || duplicateEntries.length || continuity.status === "MIGRATION_CHAIN_VERIFIED" || history.status === "PASS") errors.push("Declared or pinned migration continuity has no published migration artifacts");
+    addCheck(checks, "migration_continuity", errors.length ? "FAIL" : "NOT_INCLUDED", errors.join("; ") || "No migration chain is included; current-authority validity does not prove complete historical continuity.");
+    return { status: errors.length ? "FAIL" : "NOT_INCLUDED", external_time_evidence: "NOT_CHECKED" };
+  }
+  if (entries.length > 32) {
+    addCheck(checks, "migration_continuity", "FAIL", "Migration chain exceeds the bounded automatic verification limit of 32; supply a separately pinned checkpoint.");
+    return { status: "FAIL", external_time_evidence: "NOT_CHECKED" };
+  }
+  if (duplicateEntries.length && (duplicateEntries.length !== entries.length || duplicateEntries.some((entry, i) => {
+    const other = optionalRecord(entry), primary = optionalRecord(entries[i]);
+    return ["path", "hash", "signature_path", "signature_hash", "acceptance_path", "acceptance_hash"].some((key) => other[key] !== primary[key]);
+  }))) errors.push("The two published migration indexes disagree");
+  let previousHash: string | null = null;
+  let previousAuthority: string | null = null;
+  let previousSequence = 0;
+  let firstAuthority = "";
+  const seen = new Set<string>();
+  for (const value of entries) {
+    try {
+      const entry = asObject(value, "migration reference");
+      const migration = validateRootAuthorityMigration(await fetchJson(boundMigrationUrl(base, requireString(entry, "path", "migration")), "migration", timeout));
+      const signature = validateSignatureFile(await fetchJson(boundMigrationUrl(base, requireString(entry, "signature_path", "migration")), "migration authorization", timeout));
+      if (entry.hash !== sha256CanonicalJson(migration) || entry.signature_hash !== sha256CanonicalJson(signature)) throw new Error("Migration payload or authorization hash mismatch");
+      const acceptance = migration.version === "2.0" ? validateSignatureFile(await fetchJson(boundMigrationUrl(base, requireString(entry, "acceptance_path", "migration")), "migration acceptance", timeout)) : undefined;
+      if (acceptance && entry.acceptance_hash !== sha256CanonicalJson(acceptance)) throw new Error("Migration acceptance hash mismatch");
+      const verified = verifyMigrationSignatures(migration, signature, acceptance);
+      if (!verified.ok) throw new Error(verified.errors.join("; "));
+      if (!firstAuthority) firstAuthority = migration.old_root_authority_hash;
+      if (previousAuthority && previousAuthority !== migration.old_root_authority_hash) throw new Error("Broken migration authority chain");
+      if (seen.has(migration.new_root_authority_hash)) throw new Error("Migration authority cycle");
+      seen.add(migration.old_root_authority_hash);
+      seen.add(migration.new_root_authority_hash);
+      if (migration.version === "2.0") {
+        if (migration.previous_migration_hash !== previousHash || migration.sequence !== previousSequence + 1) throw new Error("Migration hash link or sequence mismatch");
+        if (Date.parse(migration.effective_at) > Date.now()) throw new Error("Future migration cannot activate current root authority");
+      }
+      previousHash = sha256CanonicalJson(migration);
+      previousAuthority = migration.new_root_authority_hash;
+      previousSequence = Number(migration.sequence ?? 0);
+    } catch (error) { errors.push(error instanceof Error ? error.message : String(error)); }
+  }
+  if (previousAuthority !== currentHash) errors.push("Migration history does not end at the current authority");
+  if (expectedPredecessor && expectedPredecessor !== firstAuthority) errors.push("Migration predecessor does not match the verifier's independent pin");
+  addCheck(checks, "migration_continuity", errors.length ? "FAIL" : "PASS", errors.join("; ") || "Published migration signatures and chain links verify; external publication time and latest-version completeness remain separate checks.");
+  return { status: errors.length ? "FAIL" : "SIGNATURE_CHAIN_VERIFIED", migration_count: entries.length,
+    predecessor_pin_checked: expectedPredecessor !== undefined, external_time_evidence: "NOT_CHECKED" };
+}
+
+function boundMigrationUrl(base: URL, path: string): URL {
+  const url = new URL(path, base);
+  if (url.origin !== base.origin || !url.pathname.startsWith(base.pathname.endsWith("/") ? base.pathname : `${base.pathname}/`)) throw new Error("Migration artifact escapes the public verification root");
+  return url;
+}
+
 function resolveArtifactUrl(baseUrl: URL, path: string): URL {
   return new URL(path, baseUrl);
 }
@@ -919,7 +1006,7 @@ async function verifyOptionalSignedManifest(options: {
     options.id,
     errors.length === 0 ? "PASS" : "FAIL",
     errors.length === 0
-      ? `${options.label} is signed by ${verification.valid_signatures.length}/${verification.required_signatures} required root member(s).`
+      ? `${options.label} is signed by ${verification.valid_authorizers.length}/${verification.required_signatures} required root member(s).`
       : errors.join("; ")
   );
   return { value: manifest };
@@ -1092,7 +1179,7 @@ async function verifyLockfileIntegrity(options: {
     "lockfile_signature",
     errors.length === 0 ? "PASS" : "FAIL",
     errors.length === 0
-      ? `Lockfile is signed by ${verification.valid_signatures.length}/${verification.required_signatures} required root member(s).`
+      ? `Lockfile is signed by ${verification.valid_authorizers.length}/${verification.required_signatures} required root member(s).`
       : errors.join("; ")
   );
   return {
